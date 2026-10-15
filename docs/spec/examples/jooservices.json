@@ -1,0 +1,130 @@
+{
+  "$schema": "https://jooservices.com/schemas/joo-theme-1.json",
+  "schema": 1,
+  "slug": "jooservices",
+  "name": "JOOservices",
+  "core": "^0.1",
+  "modules": {
+    "seo": true,
+    "lazy": true,
+    "perf": true,
+    "compat": true,
+    "blocks": true,
+    "i18n": true,
+    "terminal": true,
+    "content": true
+  },
+  "features": {
+    "terminal": true,
+    "slider": true,
+    "theme_toggle": true,
+    "reading_progress": true,
+    "hide_featured_in_list": true
+  },
+  "design": {
+    "colorSchemes": ["dark", "light"],
+    "defaultScheme": "dark",
+    "followSystem": true,
+    "tokens": "design/tokens.json"
+  },
+  "menus": {
+    "primary": "Primary menu",
+    "footer": "Footer menu"
+  },
+  "imageSizes": [
+    {
+      "name": "joo-card",
+      "w": 640,
+      "h": 480,
+      "crop": true
+    },
+    {
+      "name": "joo-cover",
+      "w": 1600,
+      "h": 686,
+      "crop": true
+    },
+    {
+      "name": "joo-thumb",
+      "w": 88,
+      "h": 88,
+      "crop": true
+    },
+    {
+      "name": "joo-avatar",
+      "w": 128,
+      "h": 128,
+      "crop": true
+    }
+  ],
+  "images": {
+    "sizesPresets": {
+      "card": "(min-width: 900px) 220px, 100vw",
+      "cover": "(min-width: 1240px) 900px, 100vw",
+      "thumb": "44px"
+    }
+  },
+  "seo": {
+    "siteType": "blog",
+    "yield": "auto",
+    "titleSeparator": "|",
+    "organization": {
+      "name": "JOOservices Ltd",
+      "url": "https://jooservices.com"
+    },
+    "person": {
+      "userId": 0
+    }
+  },
+  "lazy": {
+    "enabled": true,
+    "images": true,
+    "iframes": true,
+    "fragments": true,
+    "sections": true,
+    "comments": true,
+    "eagerCount": 1
+  },
+  "perf": {
+    "fonts": [
+      {
+        "family": "IBM Plex Sans",
+        "files": ["assets/fonts/plex-sans-latin-vi.woff2"],
+        "weight": "400 600",
+        "display": "swap",
+        "preload": true,
+        "fallback": {
+          "family": "Arial",
+          "sizeAdjust": "105%",
+          "ascentOverride": "92%",
+          "descentOverride": "24%",
+          "lineGapOverride": "0%"
+        }
+      }
+    ],
+    "preload": [],
+    "preconnect": [],
+    "budgets": "budgets.json"
+  },
+  "compat": {
+    "tiers": {
+      "tier1": ["yoast", "rankmath", "aioseo", "seopress", "litespeed-cache", "polylang"]
+    }
+  },
+  "i18n": {
+    "default": "en",
+    "languages": ["en", "vi"]
+  },
+  "terminal": {
+    "banner": "jooservices.com read-only shell",
+    "maxPosts": 500
+  },
+  "blocks": {
+    "disabled": [],
+    "patterns": ["jooservices"],
+    "canvas": true
+  },
+  "content": {
+    "provider": "wp"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "slug": "portfolio",
+  "name": "Portfolio",
+  "core": "^0.1",
+  "modules": {
+    "seo": true,
+    "lazy": true,
+    "perf": true,
+    "compat": true,
+    "blocks": true,
+    "i18n": false,
+    "terminal": false,
+    "content": true
+  },
+  "features": {
+    "terminal": false,
+    "slider": false,
+    "reading_progress": false
+  },
+  "design": {
+    "colorSchemes": ["dark", "light"],
+    "defaultScheme": "dark"
+  },
+  "seo": {
+    "siteType": "portfolio",
+    "person": {
+      "userId": 0
+    }
+  },
+  "blocks": {
+    "disabled": ["joo/category-tree", "joo/top-topics", "joo/tag-list", "joo/terminal-dock"],
+    "canvas": true
+  }
+}

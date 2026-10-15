@@ -1,0 +1,382 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jooservices.com/schemas/joo-theme-1.json",
+  "title": "JOOservices theme manifest v1",
+  "description": "Declares how a theme uses the JOOservices core. Keywords are limited to the subset supported by the runtime validator (Config\\SchemaValidator).",
+  "type": "object",
+  "required": ["schema", "slug", "name", "core"],
+  "additionalProperties": false,
+  "patternProperties": {
+    "^x-": {}
+  },
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema": {
+      "type": "integer",
+      "enum": [1]
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,30}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "core": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "pattern": "^[\\^~<>=0-9.| x*-]+$"
+    },
+    "modules": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "description": "Module id => enabled. Known ids: seo, lazy, perf, compat, content, blocks, i18n, terminal."
+    },
+    "features": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "terminal": {
+          "type": "boolean"
+        },
+        "slider": {
+          "type": "boolean"
+        },
+        "theme_toggle": {
+          "type": "boolean"
+        },
+        "reading_progress": {
+          "type": "boolean"
+        },
+        "hide_featured_in_list": {
+          "type": "boolean"
+        }
+      }
+    },
+    "design": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "colorSchemes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["dark", "light"]
+          },
+          "minItems": 1
+        },
+        "defaultScheme": {
+          "type": "string",
+          "enum": ["dark", "light"]
+        },
+        "followSystem": {
+          "type": "boolean"
+        },
+        "tokens": {
+          "type": "string"
+        }
+      }
+    },
+    "menus": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "imageSizes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "w", "h"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "w": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4096
+          },
+          "h": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4096
+          },
+          "crop": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "images": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sizesPresets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "seo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "siteType": {
+          "type": "string",
+          "enum": ["blog", "magazine", "portfolio", "business"]
+        },
+        "yield": {
+          "type": "string",
+          "enum": ["auto", "never", "always"]
+        },
+        "titleSeparator": {
+          "type": "string",
+          "maxLength": 3
+        },
+        "organization": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "logo": {
+              "type": "string"
+            },
+            "sameAs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "person": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "userId": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "lazy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "images": {
+          "type": "boolean"
+        },
+        "iframes": {
+          "type": "boolean"
+        },
+        "fragments": {
+          "type": "boolean"
+        },
+        "sections": {
+          "type": "boolean"
+        },
+        "comments": {
+          "type": "boolean"
+        },
+        "terminal": {
+          "type": "boolean"
+        },
+        "eagerCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        }
+      }
+    },
+    "perf": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fonts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["family", "files"],
+            "additionalProperties": false,
+            "properties": {
+              "family": {
+                "type": "string",
+                "minLength": 1
+              },
+              "files": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              },
+              "weight": {
+                "type": "string"
+              },
+              "style": {
+                "type": "string",
+                "enum": ["normal", "italic"]
+              },
+              "display": {
+                "type": "string",
+                "enum": ["swap", "fallback", "optional", "block", "auto"]
+              },
+              "preload": {
+                "type": "boolean"
+              },
+              "unicodeRange": {
+                "type": "string"
+              },
+              "fallback": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "family": {
+                    "type": "string"
+                  },
+                  "sizeAdjust": {
+                    "type": "string"
+                  },
+                  "ascentOverride": {
+                    "type": "string"
+                  },
+                  "descentOverride": {
+                    "type": "string"
+                  },
+                  "lineGapOverride": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "preload": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "preconnect": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "budgets": {
+          "type": "string"
+        }
+      }
+    },
+    "compat": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tiers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "i18n": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "default": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 10
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 10
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "terminal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "banner": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "maxPosts": {
+          "type": "integer",
+          "minimum": 50,
+          "maximum": 1000
+        }
+      }
+    },
+    "blocks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "disabled": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "canvas": {
+          "type": "boolean"
+        },
+        "removeCorePatterns": {
+          "type": "boolean"
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "type": "string",
+          "enum": ["wp", "null"]
+        }
+      }
+    }
+  }
+}

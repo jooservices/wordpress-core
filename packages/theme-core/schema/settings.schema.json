@@ -1,0 +1,628 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "id": "general",
+      "title": "General"
+    },
+    {
+      "id": "seo",
+      "title": "SEO"
+    },
+    {
+      "id": "performance",
+      "title": "Performance"
+    },
+    {
+      "id": "lazy",
+      "title": "Lazy loading"
+    },
+    {
+      "id": "content",
+      "title": "Content"
+    },
+    {
+      "id": "terminal",
+      "title": "Terminal"
+    },
+    {
+      "id": "languages",
+      "title": "Languages"
+    }
+  ],
+  "settings": {
+    "modules.seo.enabled": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Enable SEO module",
+      "description": "Turns the SEO module on or off for this site.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "modules.seo"
+    },
+    "modules.lazy.enabled": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Enable Lazy loading module",
+      "description": "Turns the Lazy loading module on or off for this site.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "modules.lazy"
+    },
+    "modules.perf.enabled": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Enable Performance module",
+      "description": "Turns the Performance module on or off for this site.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "modules.perf"
+    },
+    "modules.compat.enabled": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Enable Compatibility module",
+      "description": "Turns the Compatibility module on or off for this site.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "modules.compat"
+    },
+    "modules.blocks.enabled": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Enable Blocks module",
+      "description": "Turns the Blocks module on or off for this site.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "modules.blocks"
+    },
+    "modules.i18n.enabled": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Enable Languages module",
+      "description": "Turns the Languages module on or off for this site.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "modules.i18n"
+    },
+    "modules.terminal.enabled": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Enable Terminal module",
+      "description": "Turns the Terminal module on or off for this site.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "modules.terminal"
+    },
+    "modules.content.enabled": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Enable Content providers module",
+      "description": "Turns the Content providers module on or off for this site.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "modules.content"
+    },
+    "core.debug": {
+      "type": "boolean",
+      "default": false,
+      "group": "general",
+      "title": "Debug mode",
+      "description": "Writes core log lines to the PHP error log and shows the performance admin bar node.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "seo.enabled": {
+      "type": "boolean",
+      "default": true,
+      "group": "seo",
+      "title": "Output SEO tags",
+      "description": "Print title, description, canonical, robots, Open Graph, Twitter and JSON-LD.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "seo.enabled"
+    },
+    "seo.yield": {
+      "type": "string",
+      "default": "auto",
+      "group": "seo",
+      "title": "SEO plugin yield",
+      "description": "auto: step aside when an SEO plugin is active; never: always print; always: never print.",
+      "ui": "select",
+      "sanitize": "enum",
+      "enum": ["auto", "never", "always"],
+      "manifest": "seo.yield"
+    },
+    "seo.yield_hreflang": {
+      "type": "boolean",
+      "default": true,
+      "group": "seo",
+      "title": "Yield hreflang to SEO plugin",
+      "description": "When yielding, also leave hreflang tags to the plugin.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "seo.yield_jetpack": {
+      "type": "boolean",
+      "default": true,
+      "group": "seo",
+      "title": "Replace Jetpack Open Graph",
+      "description": "Core Open Graph wins and Jetpack Open Graph is disabled.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "seo.title_separator": {
+      "type": "string",
+      "default": "|",
+      "group": "seo",
+      "title": "Title separator",
+      "description": "Separator used by %sep% in title templates.",
+      "ui": "text",
+      "sanitize": "text",
+      "manifest": "seo.titleSeparator",
+      "maxLength": 3
+    },
+    "seo.title_template.home": {
+      "type": "string",
+      "default": "%sitename% %sep% %tagline%",
+      "group": "seo",
+      "title": "Title template: home",
+      "description": "Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%.",
+      "ui": "text",
+      "sanitize": "text",
+      "maxLength": 160
+    },
+    "seo.title_template.single": {
+      "type": "string",
+      "default": "%title% %sep% %sitename%",
+      "group": "seo",
+      "title": "Title template: single",
+      "description": "Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%.",
+      "ui": "text",
+      "sanitize": "text",
+      "maxLength": 160
+    },
+    "seo.title_template.page": {
+      "type": "string",
+      "default": "%title% %sep% %sitename%",
+      "group": "seo",
+      "title": "Title template: page",
+      "description": "Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%.",
+      "ui": "text",
+      "sanitize": "text",
+      "maxLength": 160
+    },
+    "seo.title_template.archive": {
+      "type": "string",
+      "default": "%title% %sep% %sitename%",
+      "group": "seo",
+      "title": "Title template: archive",
+      "description": "Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%.",
+      "ui": "text",
+      "sanitize": "text",
+      "maxLength": 160
+    },
+    "seo.title_template.search": {
+      "type": "string",
+      "default": "Search results for \"%title%\" %sep% %sitename%",
+      "group": "seo",
+      "title": "Title template: search",
+      "description": "Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%.",
+      "ui": "text",
+      "sanitize": "text",
+      "maxLength": 160
+    },
+    "seo.title_template.404": {
+      "type": "string",
+      "default": "Page not found %sep% %sitename%",
+      "group": "seo",
+      "title": "Title template: 404",
+      "description": "Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%.",
+      "ui": "text",
+      "sanitize": "text",
+      "maxLength": 160
+    },
+    "seo.default_og_image": {
+      "type": "integer",
+      "default": 0,
+      "group": "seo",
+      "title": "Default social image",
+      "description": "Attachment id used when a post has no image (1200x630 recommended).",
+      "ui": "media",
+      "sanitize": "attachment_id",
+      "minimum": 0
+    },
+    "seo.twitter_site": {
+      "type": "string",
+      "default": "",
+      "group": "seo",
+      "title": "Twitter/X site handle",
+      "description": "Without @, optional.",
+      "ui": "text",
+      "sanitize": "text",
+      "maxLength": 40
+    },
+    "seo.paged_noindex": {
+      "type": "boolean",
+      "default": false,
+      "group": "seo",
+      "title": "Noindex paginated archives",
+      "description": "Adds noindex,follow to /page/N/ archives.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "seo.breadcrumbs_owner": {
+      "type": "string",
+      "default": "core",
+      "group": "seo",
+      "title": "Breadcrumb schema owner",
+      "description": "core prints BreadcrumbList; plugin leaves it to the active SEO plugin.",
+      "ui": "select",
+      "sanitize": "enum",
+      "enum": ["core", "plugin"]
+    },
+    "lazy.enabled": {
+      "type": "boolean",
+      "default": true,
+      "group": "lazy",
+      "title": "Lazy loading (master switch)",
+      "description": "Master switch for every lazy loading feature.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "lazy.enabled"
+    },
+    "lazy.images": {
+      "type": "boolean",
+      "default": true,
+      "group": "lazy",
+      "title": "Lazy load images",
+      "description": "Below-the-fold images use loading=lazy. The LCP image never does.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "lazy.images"
+    },
+    "lazy.iframes": {
+      "type": "boolean",
+      "default": true,
+      "group": "lazy",
+      "title": "Lazy load iframes and embeds",
+      "description": "Iframes lazy load; YouTube and Vimeo use click-to-load facades.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "lazy.iframes"
+    },
+    "lazy.fragments": {
+      "type": "boolean",
+      "default": true,
+      "group": "lazy",
+      "title": "Defer secondary blocks",
+      "description": "Sidebar, related posts and similar blocks load when near the viewport, with a no-JS fallback.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "lazy.fragments"
+    },
+    "lazy.sections": {
+      "type": "boolean",
+      "default": true,
+      "group": "lazy",
+      "title": "Skip rendering of off-screen sections",
+      "description": "Uses CSS content-visibility for below-the-fold sections.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "lazy.sections"
+    },
+    "lazy.comments": {
+      "type": "boolean",
+      "default": true,
+      "group": "lazy",
+      "title": "Load comments on demand",
+      "description": "Comments load on request or when linked to.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "lazy.comments"
+    },
+    "lazy.terminal": {
+      "type": "boolean",
+      "default": true,
+      "group": "lazy",
+      "title": "Load the terminal on demand",
+      "description": "Terminal code and data load after the first open.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "lazy.terminal"
+    },
+    "lazy.eager_count": {
+      "type": "integer",
+      "default": 1,
+      "group": "lazy",
+      "title": "Eager images",
+      "description": "Number of leading content images that are never lazy.",
+      "ui": "number",
+      "sanitize": "int_range",
+      "minimum": 0,
+      "maximum": 6,
+      "manifest": "lazy.eagerCount"
+    },
+    "lazy.yield_to_plugins": {
+      "type": "boolean",
+      "default": true,
+      "group": "lazy",
+      "title": "Yield to optimisation plugins",
+      "description": "Do not lazy load images or iframes when another plugin already does.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "lazy.embed_thumbnails": {
+      "type": "string",
+      "default": "local",
+      "group": "lazy",
+      "title": "Embed facade thumbnails",
+      "description": "local: no third-party requests before click; remote: show the provider thumbnail.",
+      "ui": "select",
+      "sanitize": "enum",
+      "enum": ["local", "remote"]
+    },
+    "perf.disable_emoji": {
+      "type": "boolean",
+      "default": true,
+      "group": "performance",
+      "title": "Remove emoji scripts",
+      "description": "Removes the emoji detection script and styles on the front end.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "perf.disable_embeds": {
+      "type": "boolean",
+      "default": true,
+      "group": "performance",
+      "title": "Remove wp-embed",
+      "description": "Removes wp-embed and oEmbed discovery on the front end.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "perf.dashicons_guests": {
+      "type": "boolean",
+      "default": true,
+      "group": "performance",
+      "title": "Remove Dashicons for visitors",
+      "description": "Dashicons are only needed for logged-in users.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "perf.jquery_frontend": {
+      "type": "string",
+      "default": "auto",
+      "group": "performance",
+      "title": "jQuery on the front end",
+      "description": "auto removes jQuery when nothing depends on it.",
+      "ui": "select",
+      "sanitize": "enum",
+      "enum": ["auto", "keep", "remove"]
+    },
+    "perf.speculation": {
+      "type": "string",
+      "default": "conservative",
+      "group": "performance",
+      "title": "Speculation rules",
+      "description": "Prefetch/prerender same-origin links (Chromium).",
+      "ui": "select",
+      "sanitize": "enum",
+      "enum": ["off", "conservative", "moderate"]
+    },
+    "perf.block_css_granular": {
+      "type": "boolean",
+      "default": true,
+      "group": "performance",
+      "title": "Load block CSS on demand",
+      "description": "Core and custom block styles load only when the block is used.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "perf.remove_head_noise": {
+      "type": "boolean",
+      "default": true,
+      "group": "performance",
+      "title": "Clean the document head",
+      "description": "Removes generator, RSD, WLW and shortlink output.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "perf.preconnect": {
+      "type": "array",
+      "default": [],
+      "group": "performance",
+      "title": "Preconnect origins",
+      "description": "Origins to preconnect (https only).",
+      "ui": "text",
+      "sanitize": "string_list",
+      "manifest": "perf.preconnect"
+    },
+    "features.terminal": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Terminal dock",
+      "description": "Enable terminal dock.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "features.terminal"
+    },
+    "features.slider": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Featured slider",
+      "description": "Enable featured slider.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "features.slider"
+    },
+    "features.theme_toggle": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Dark/light toggle",
+      "description": "Enable dark/light toggle.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "features.theme_toggle"
+    },
+    "features.reading_progress": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Reading progress bar",
+      "description": "Enable reading progress bar.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "features.reading_progress"
+    },
+    "features.hide_featured_in_list": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Hide featured posts from the latest list",
+      "description": "Enable hide featured posts from the latest list.",
+      "ui": "toggle",
+      "sanitize": "bool",
+      "manifest": "features.hide_featured_in_list"
+    },
+    "content.profile_user_id": {
+      "type": "integer",
+      "default": 0,
+      "group": "content",
+      "title": "Profile user",
+      "description": "User shown in About me and schema Person (0 = first administrator).",
+      "ui": "user",
+      "sanitize": "user_id",
+      "minimum": 0
+    },
+    "content.topics_strategy": {
+      "type": "string",
+      "default": "count",
+      "group": "content",
+      "title": "Top topics order",
+      "description": "count: most posts first; manual: curated list.",
+      "ui": "select",
+      "sanitize": "enum",
+      "enum": ["count", "manual"]
+    },
+    "content.topics_limit": {
+      "type": "integer",
+      "default": 4,
+      "group": "content",
+      "title": "Top topics limit",
+      "description": "Number of topics shown.",
+      "ui": "number",
+      "sanitize": "int_range",
+      "minimum": 1,
+      "maximum": 12
+    },
+    "content.topics_manual": {
+      "type": "array",
+      "default": [],
+      "group": "content",
+      "title": "Curated topics",
+      "description": "Tag ids in display order (used by the manual strategy).",
+      "ui": "terms",
+      "sanitize": "term_ids"
+    },
+    "i18n.default": {
+      "type": "string",
+      "default": "en",
+      "group": "languages",
+      "title": "Default language",
+      "description": "Language code of the default language.",
+      "ui": "text",
+      "sanitize": "text",
+      "manifest": "i18n.default",
+      "maxLength": 10
+    },
+    "i18n.languages": {
+      "type": "array",
+      "default": ["en"],
+      "group": "languages",
+      "title": "Languages",
+      "description": "Language codes used by this site.",
+      "ui": "text",
+      "sanitize": "string_list",
+      "manifest": "i18n.languages"
+    },
+    "i18n.switch_locale": {
+      "type": "boolean",
+      "default": false,
+      "group": "languages",
+      "title": "Switch WordPress locale per post",
+      "description": "Render core UI strings in the language of the post.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "terminal.enabled": {
+      "type": "boolean",
+      "default": true,
+      "group": "terminal",
+      "title": "Enable terminal",
+      "description": "Show the terminal dock.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "terminal.open_by_default": {
+      "type": "boolean",
+      "default": false,
+      "group": "terminal",
+      "title": "Open by default",
+      "description": "Open the dock on page load.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "terminal.persist_history": {
+      "type": "boolean",
+      "default": false,
+      "group": "terminal",
+      "title": "Remember command history",
+      "description": "Keeps history in sessionStorage.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "terminal.max_posts": {
+      "type": "integer",
+      "default": 500,
+      "group": "terminal",
+      "title": "Maximum posts in the file system",
+      "description": "Newest posts first.",
+      "ui": "number",
+      "sanitize": "int_range",
+      "minimum": 50,
+      "maximum": 1000,
+      "manifest": "terminal.maxPosts"
+    },
+    "terminal.banner": {
+      "type": "string",
+      "default": "read-only shell",
+      "group": "terminal",
+      "title": "Banner text",
+      "description": "First line shown when the terminal opens.",
+      "ui": "text",
+      "sanitize": "text",
+      "manifest": "terminal.banner",
+      "maxLength": 120
+    },
+    "terminal.hide_on_404": {
+      "type": "boolean",
+      "default": true,
+      "group": "terminal",
+      "title": "Hide on 404 pages",
+      "description": "The 404 page is full width.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    }
+  }
+}

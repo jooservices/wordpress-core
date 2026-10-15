@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "slug": "bad",
+  "name": "Bad",
+  "core": "^1",
+  "lazy": {
+    "eagerCount": "one"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "slug": "bad",
+  "name": "Bad",
+  "core": "^1",
+  "nonsense": true
+}

@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "slug": "starter",
+  "name": "Starter",
+  "core": "^0.1",
+  "modules": {
+    "seo": true,
+    "lazy": true,
+    "perf": true,
+    "compat": true,
+    "blocks": true,
+    "i18n": true,
+    "terminal": true,
+    "content": true
+  },
+  "design": {
+    "colorSchemes": ["dark", "light"],
+    "defaultScheme": "light"
+  },
+  "menus": {
+    "primary": "Primary menu",
+    "footer": "Footer menu"
+  },
+  "imageSizes": [
+    {
+      "name": "joo-card",
+      "w": 640,
+      "h": 480,
+      "crop": true
+    },
+    {
+      "name": "joo-cover",
+      "w": 1600,
+      "h": 686,
+      "crop": true
+    }
+  ],
+  "seo": {
+    "siteType": "blog"
+  },
+  "lazy": {
+    "enabled": true
+  },
+  "i18n": {
+    "default": "en",
+    "languages": ["en"]
+  }
+}

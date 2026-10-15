@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "slug": "magazine",
+  "name": "Magazine",
+  "core": "^0.1",
+  "modules": {
+    "seo": true,
+    "lazy": true,
+    "perf": true,
+    "compat": true,
+    "blocks": true,
+    "i18n": true,
+    "terminal": false,
+    "content": true
+  },
+  "features": {
+    "slider": true,
+    "terminal": false,
+    "theme_toggle": false
+  },
+  "design": {
+    "colorSchemes": ["light"],
+    "defaultScheme": "light"
+  },
+  "imageSizes": [
+    {
+      "name": "mag-hero",
+      "w": 1200,
+      "h": 675,
+      "crop": true
+    },
+    {
+      "name": "mag-tile",
+      "w": 480,
+      "h": 320,
+      "crop": true
+    }
+  ],
+  "seo": {
+    "siteType": "magazine",
+    "yield": "auto"
+  },
+  "lazy": {
+    "enabled": true,
+    "fragments": true
+  },
+  "blocks": {
+    "disabled": ["joo/companies", "joo/profile-card", "joo/terminal-dock"],
+    "patterns": ["magazine"]
+  }
+}
