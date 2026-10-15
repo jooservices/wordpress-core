@@ -72,7 +72,7 @@
       "path": "/wp-sitemap.xml",
       "status": 200,
       "type": "xml",
-      "altPaths": ["/sitemap_index.xml", "/sitemap.xml"]
+      "altPaths": ["/sitemap_index.xml", "/sitemap.xml", "/sitemaps.xml"]
     },
     {
       "name": "robots",
