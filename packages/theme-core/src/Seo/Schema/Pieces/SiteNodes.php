@@ -47,6 +47,10 @@ final class SiteNodes {
 	 * @param Manifest $manifest Manifest.
 	 */
 	public static function ownerId( Manifest $manifest ): int {
+		$provided = (int) \JOOservices\ThemeCore\Support\Hooks::filter( 'joo/profile/owner_id', 0 );
+		if ( $provided > 0 ) {
+			return $provided;
+		}
 		$configured = (int) $manifest->get( 'seo.person.userId', 0 );
 		if ( $configured > 0 && false !== get_userdata( $configured ) ) {
 			return $configured;

@@ -17,3 +17,22 @@
 declare(strict_types=1);
 
 defined( 'ABSPATH' ) || exit;
+
+define( 'JOO_CONTENT_FILE', __FILE__ );
+define( 'JOO_CONTENT_DIR', plugin_dir_path( __FILE__ ) );
+
+spl_autoload_register(
+	static function ( string $class ): void {
+		$prefix = 'JOOservices\\Content\\';
+		if ( 0 !== strpos( $class, $prefix ) ) {
+			return;
+		}
+		$file = JOO_CONTENT_DIR . 'src/' . str_replace( '\\', '/', substr( $class, strlen( $prefix ) ) ) . '.php';
+		if ( is_readable( $file ) ) {
+			require_once $file;
+		}
+	}
+);
+
+register_activation_hook( __FILE__, array( \JOOservices\Content\Plugin::class, 'activate' ) );
+add_action( 'plugins_loaded', array( \JOOservices\Content\Plugin::class, 'boot' ) );

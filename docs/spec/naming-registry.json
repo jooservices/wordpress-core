@@ -128,6 +128,7 @@
     "joo/seo/primary_category",
     "joo/seo/noindex_post_ids",
     "joo/perf/skip_critical_css",
-    "joo/compat/forms_needed"
+    "joo/compat/forms_needed",
+    "joo/profile/owner_id"
   ]
 }

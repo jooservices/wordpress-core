@@ -86,7 +86,14 @@ final class PersonPiece extends AbstractPiece {
 		if ( is_string( $socials ) ) {
 			$socials = preg_split( '/\s+/', trim( $socials ) ) ?: array();
 		}
-		$socials = array_values( array_filter( (array) $socials, static fn( $u ) => is_string( $u ) && 1 === preg_match( '#^https?://#', $u ) ) );
+		$urls = array();
+		foreach ( (array) $socials as $entry ) {
+			$url = is_array( $entry ) ? ( $entry['url'] ?? '' ) : $entry; // The content plugin stores {label, url} rows.
+			if ( is_string( $url ) && 1 === preg_match( '#^https?://#', $url ) ) {
+				$urls[] = $url;
+			}
+		}
+		$socials = $urls;
 		$avatar  = get_avatar_url( $id, array( 'size' => 256 ) );
 		$url     = Hooks::filter( 'joo/profile/url', get_author_posts_url( $id ), $id );
 		return array(

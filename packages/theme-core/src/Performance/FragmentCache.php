@@ -56,6 +56,29 @@ final class FragmentCache {
 		add_action( 'updated_user_meta', fn() => $this->bump( 'profile' ) );
 		add_action( 'added_user_meta', fn() => $this->bump( 'profile' ) );
 		add_action( 'updated_option', array( $this, 'onOptionChange' ) );
+		foreach ( array( 'added_post_meta', 'updated_post_meta', 'deleted_post_meta' ) as $hook ) {
+			add_action( $hook, array( $this, 'onPostMeta' ), 10, 3 );
+		}
+		foreach ( array( 'added_term_meta', 'updated_term_meta', 'deleted_term_meta' ) as $hook ) {
+			add_action( $hook, fn() => $this->bump( 'terms' ) );
+		}
+		add_action( 'update_option_sticky_posts', fn() => $this->bump( 'posts' ) );
+		add_action( 'add_option_sticky_posts', fn() => $this->bump( 'posts' ) );
+	}
+
+	/**
+	 * Theme meta changes (featured flags, company fields) invalidate the matching tag.
+	 *
+	 * @param mixed  $metaId  Meta id.
+	 * @param mixed  $postId  Post id.
+	 * @param string $metaKey Meta key.
+	 */
+	public function onPostMeta( $metaId, $postId, $metaKey ): void {
+		unset( $metaId, $postId );
+		if ( 0 !== strpos( (string) $metaKey, '_joo_' ) ) {
+			return;
+		}
+		$this->bump( 1 === preg_match( '/^_joo_company_/', (string) $metaKey ) ? 'companies' : 'posts' );
 	}
 
 	/**

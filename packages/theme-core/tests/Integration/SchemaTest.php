@@ -49,7 +49,20 @@ final class SchemaTest extends IntegrationTestCase {
 			)
 		);
 		update_user_meta( $this->owner, 'joo_title', 'Software Engineer' );
-		update_user_meta( $this->owner, 'joo_socials', "https://github.com/example\nhttps://x.test/profile javascript:alert(1)" );
+		update_user_meta(
+			$this->owner,
+			'joo_socials',
+			array(
+				array(
+					'label' => 'GitHub',
+					'url'   => 'https://github.com/example',
+				),
+				array(
+					'label' => 'X',
+					'url'   => 'https://x.test/profile',
+				),
+			)
+		);
 	}
 
 	public function tear_down(): void {
@@ -163,7 +176,7 @@ final class SchemaTest extends IntegrationTestCase {
 		$person = $types['Person'];
 		$this->assertSame( 'Viet Vu', $person['name'] );
 		$this->assertSame( 'Software Engineer', $person['jobTitle'] );
-		$this->assertSame( array( 'https://github.com/example', 'https://x.test/profile' ), $person['sameAs'], 'non-http(s) values such as javascript: are dropped' );
+		$this->assertSame( array( 'https://github.com/example', 'https://x.test/profile' ), $person['sameAs'], 'urls come from the {label, url} rows' );
 		$this->assertSame( 'WebSite', $types['WebSite']['@type'] );
 		$this->assertSame( home_url( '/?s={search_term_string}' ), $types['WebSite']['potentialAction']['target']['urlTemplate'] );
 	}
