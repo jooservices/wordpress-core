@@ -1,0 +1,10 @@
+{
+  "name": "jooservices-wp-themes",
+  "private": true,
+  "version": "0.1.0",
+  "description": "JOOservices WordPress themes monorepo",
+  "license": "GPL-2.0-or-later",
+  "engines": { "node": ">=22" },
+  "workspaces": ["packages/*", "themes/*", "tests/*"],
+  "scripts": {}
+}
