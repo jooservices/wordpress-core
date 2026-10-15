@@ -1,0 +1,359 @@
+{
+  "v": 1,
+  "lang": "en",
+  "site": {
+    "name": "jooservices.com",
+    "home": "https://jooservices.test/",
+    "user": "viet",
+    "host": "jooservices"
+  },
+  "nodes": [
+    {
+      "p": "/ai",
+      "t": "d",
+      "cat": "AI",
+      "url": "https://jooservices.test/category/ai/"
+    },
+    {
+      "p": "/blog",
+      "t": "d",
+      "cat": "Blog",
+      "url": "https://jooservices.test/category/blog/"
+    },
+    {
+      "p": "/blog/companies",
+      "t": "d",
+      "cat": "Companies",
+      "url": "https://jooservices.test/category/companies/"
+    },
+    {
+      "p": "/blog/news",
+      "t": "d",
+      "cat": "News",
+      "url": "https://jooservices.test/category/news/"
+    },
+    {
+      "p": "/research-and-development",
+      "t": "d",
+      "cat": "Research & Development",
+      "url": "https://jooservices.test/category/research-and-development/"
+    },
+    {
+      "p": "/research-and-development/homelab",
+      "t": "d",
+      "cat": "Homelab",
+      "url": "https://jooservices.test/category/homelab/"
+    },
+    {
+      "p": "/research-and-development/study-cases",
+      "t": "d",
+      "cat": "Study cases",
+      "url": "https://jooservices.test/category/study-cases/"
+    },
+    {
+      "p": "/research-and-development/tips-and-tricks",
+      "t": "d",
+      "cat": "Tips & Tricks",
+      "url": "https://jooservices.test/category/tips-and-tricks/"
+    },
+    {
+      "p": "/ai/wordpress-mcp-v1.md",
+      "t": "f",
+      "id": 1,
+      "title": "WordPress MCP v1.0.0: let an AI agent manage your site",
+      "ex": "A small MCP server that exposes posts, media and settings to an agent, with scoped credentials and an audit trail. What it does, how it is secured, and where it still falls short.",
+      "d": "2026-09-05",
+      "u": "2026-09-08",
+      "m": 8,
+      "tg": ["mcp", "wordpress", "agents"],
+      "url": "https://jooservices.test/wordpress-mcp-v1/",
+      "c": "AI"
+    },
+    {
+      "p": "/blog/news/wordpress-mcp-v1.md",
+      "t": "l",
+      "to": "/ai/wordpress-mcp-v1.md"
+    },
+    {
+      "p": "/ai/read-only-skills-server.md",
+      "t": "f",
+      "id": 2,
+      "title": "Designing a read-only skills server for coding agents",
+      "ex": "One canonical skill store, many clients. How discovery, loading and scope boundaries work without giving agents write access.",
+      "d": "2026-09-20",
+      "u": "2026-09-20",
+      "m": 7,
+      "tg": ["agents", "mcp", "llm"],
+      "url": "https://jooservices.test/read-only-skills-server/",
+      "c": "AI"
+    },
+    {
+      "p": "/research-and-development/homelab/shared-docker-stack.md",
+      "t": "f",
+      "id": 3,
+      "title": "A shared Docker stack for every project on one workstation",
+      "ex": "Redis, RabbitMQ, Elasticsearch and databases behind loopback ports, one compose file, namespaced per project.",
+      "d": "2026-08-18",
+      "u": "2026-08-18",
+      "m": 6,
+      "tg": ["docker", "homelab"],
+      "url": "https://jooservices.test/shared-docker-stack/",
+      "c": "Homelab"
+    },
+    {
+      "p": "/research-and-development/study-cases/idempotent-webhooks-laravel.md",
+      "t": "f",
+      "id": 4,
+      "title": "Idempotent webhooks in Laravel without a lock table",
+      "ex": "Accept the same event twice and still process it once, with a unique key and a small state machine.",
+      "d": "2026-07-02",
+      "u": "2026-07-02",
+      "m": 11,
+      "tg": ["laravel", "queues"],
+      "url": "https://jooservices.test/idempotent-webhooks-laravel/",
+      "c": "Study cases"
+    },
+    {
+      "p": "/research-and-development/homelab/local-elasticsearch-kibana.md",
+      "t": "f",
+      "id": 5,
+      "title": "Running a local Elasticsearch and Kibana pair safely",
+      "ex": "Health checks, memory limits and a read-only MCP window into your indices.",
+      "d": "2026-09-12",
+      "u": "2026-09-14",
+      "m": 9,
+      "tg": ["docker", "homelab"],
+      "url": "https://jooservices.test/local-elasticsearch-kibana/",
+      "c": "Homelab"
+    },
+    {
+      "p": "/ai/prompt-caching.md",
+      "t": "f",
+      "id": 6,
+      "title": "Prompt caching: what actually saves money",
+      "ex": "Where the cache hits, where it silently misses, and how to measure it in production traffic.",
+      "d": "2026-08-30",
+      "u": "2026-08-30",
+      "m": 7,
+      "tg": ["llm", "agents"],
+      "url": "https://jooservices.test/prompt-caching/",
+      "c": "AI"
+    },
+    {
+      "p": "/research-and-development/tips-and-tricks/shell-habits.md",
+      "t": "f",
+      "id": 7,
+      "title": "Five shell habits that save an hour a week",
+      "ex": "Small, boring defaults for history, aliases and project switching that add up.",
+      "d": "2026-05-21",
+      "u": "2026-06-01",
+      "m": 3,
+      "tg": ["zsh"],
+      "url": "https://jooservices.test/shell-habits/",
+      "c": "Tips & Tricks"
+    },
+    {
+      "p": "/research-and-development/study-cases/block-theme.md",
+      "t": "f",
+      "id": 8,
+      "title": "Why my WordPress theme is a block theme",
+      "ex": "theme.json, patterns and style variations versus a pile of PHP templates.",
+      "d": "2026-04-09",
+      "u": "2026-04-09",
+      "m": 10,
+      "tg": ["wordpress", "seo"],
+      "url": "https://jooservices.test/block-theme/",
+      "c": "Study cases"
+    },
+    {
+      "p": "/tags",
+      "t": "d"
+    },
+    {
+      "p": "/tags/agents",
+      "t": "d",
+      "tag": "agents",
+      "url": "https://jooservices.test/tag/agents/"
+    },
+    {
+      "p": "/tags/agents/wordpress-mcp-v1.md",
+      "t": "l",
+      "to": "/ai/wordpress-mcp-v1.md"
+    },
+    {
+      "p": "/tags/agents/read-only-skills-server.md",
+      "t": "l",
+      "to": "/ai/read-only-skills-server.md"
+    },
+    {
+      "p": "/tags/agents/prompt-caching.md",
+      "t": "l",
+      "to": "/ai/prompt-caching.md"
+    },
+    {
+      "p": "/tags/docker",
+      "t": "d",
+      "tag": "docker",
+      "url": "https://jooservices.test/tag/docker/"
+    },
+    {
+      "p": "/tags/docker/shared-docker-stack.md",
+      "t": "l",
+      "to": "/research-and-development/homelab/shared-docker-stack.md"
+    },
+    {
+      "p": "/tags/docker/local-elasticsearch-kibana.md",
+      "t": "l",
+      "to": "/research-and-development/homelab/local-elasticsearch-kibana.md"
+    },
+    {
+      "p": "/tags/homelab",
+      "t": "d",
+      "tag": "homelab",
+      "url": "https://jooservices.test/tag/homelab/"
+    },
+    {
+      "p": "/tags/homelab/shared-docker-stack.md",
+      "t": "l",
+      "to": "/research-and-development/homelab/shared-docker-stack.md"
+    },
+    {
+      "p": "/tags/homelab/local-elasticsearch-kibana.md",
+      "t": "l",
+      "to": "/research-and-development/homelab/local-elasticsearch-kibana.md"
+    },
+    {
+      "p": "/tags/laravel",
+      "t": "d",
+      "tag": "laravel",
+      "url": "https://jooservices.test/tag/laravel/"
+    },
+    {
+      "p": "/tags/laravel/idempotent-webhooks-laravel.md",
+      "t": "l",
+      "to": "/research-and-development/study-cases/idempotent-webhooks-laravel.md"
+    },
+    {
+      "p": "/tags/llm",
+      "t": "d",
+      "tag": "llm",
+      "url": "https://jooservices.test/tag/llm/"
+    },
+    {
+      "p": "/tags/llm/read-only-skills-server.md",
+      "t": "l",
+      "to": "/ai/read-only-skills-server.md"
+    },
+    {
+      "p": "/tags/llm/prompt-caching.md",
+      "t": "l",
+      "to": "/ai/prompt-caching.md"
+    },
+    {
+      "p": "/tags/mcp",
+      "t": "d",
+      "tag": "mcp",
+      "url": "https://jooservices.test/tag/mcp/"
+    },
+    {
+      "p": "/tags/mcp/wordpress-mcp-v1.md",
+      "t": "l",
+      "to": "/ai/wordpress-mcp-v1.md"
+    },
+    {
+      "p": "/tags/mcp/read-only-skills-server.md",
+      "t": "l",
+      "to": "/ai/read-only-skills-server.md"
+    },
+    {
+      "p": "/tags/queues",
+      "t": "d",
+      "tag": "queues",
+      "url": "https://jooservices.test/tag/queues/"
+    },
+    {
+      "p": "/tags/queues/idempotent-webhooks-laravel.md",
+      "t": "l",
+      "to": "/research-and-development/study-cases/idempotent-webhooks-laravel.md"
+    },
+    {
+      "p": "/tags/seo",
+      "t": "d",
+      "tag": "seo",
+      "url": "https://jooservices.test/tag/seo/"
+    },
+    {
+      "p": "/tags/seo/block-theme.md",
+      "t": "l",
+      "to": "/research-and-development/study-cases/block-theme.md"
+    },
+    {
+      "p": "/tags/wordpress",
+      "t": "d",
+      "tag": "wordpress",
+      "url": "https://jooservices.test/tag/wordpress/"
+    },
+    {
+      "p": "/tags/wordpress/wordpress-mcp-v1.md",
+      "t": "l",
+      "to": "/ai/wordpress-mcp-v1.md"
+    },
+    {
+      "p": "/tags/wordpress/block-theme.md",
+      "t": "l",
+      "to": "/research-and-development/study-cases/block-theme.md"
+    },
+    {
+      "p": "/tags/zsh",
+      "t": "d",
+      "tag": "zsh",
+      "url": "https://jooservices.test/tag/zsh/"
+    },
+    {
+      "p": "/tags/zsh/shell-habits.md",
+      "t": "l",
+      "to": "/research-and-development/tips-and-tricks/shell-habits.md"
+    },
+    {
+      "p": "/pages/about.md",
+      "t": "f",
+      "page": "about",
+      "title": "About",
+      "text": "Viet VU, software engineer. Builds things with PHP, Go and AI agents.",
+      "url": "https://jooservices.test/about/"
+    },
+    {
+      "p": "/pages/contact.md",
+      "t": "f",
+      "page": "about",
+      "title": "Contact",
+      "text": "hello@jooservices.com\ngithub.com/jooservices",
+      "url": "https://jooservices.test/contact/"
+    },
+    {
+      "p": "/pages/privacy.md",
+      "t": "f",
+      "title": "Privacy",
+      "text": "No cookies are set by this terminal. Nothing you type is sent anywhere."
+    },
+    {
+      "p": "/authors/viet.md",
+      "t": "f",
+      "page": "author",
+      "title": "Viet VU",
+      "text": "Viet VU\nSoftware engineer.",
+      "url": "https://jooservices.test/author/viet/"
+    },
+    {
+      "p": "/README.md",
+      "t": "f",
+      "text": "jooservices.com - technical notes on AI, engineering and R&D.\n\nThis is a read-only shell."
+    },
+    {
+      "p": "/.config",
+      "t": "f",
+      "hidden": true,
+      "text": "theme=dark\nlang=en\nreadonly=true"
+    }
+  ]
+}

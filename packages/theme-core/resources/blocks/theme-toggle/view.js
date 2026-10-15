@@ -50,10 +50,24 @@ export class JooThemeToggle extends HTMLElement {
       this.sync();
     };
     this.media?.addEventListener?.('change', this.onSystem);
+    // The terminal's `theme` command asks for a scheme through this event.
+    this.onRequest = (event) => {
+      const value = event.detail?.value;
+      if (value !== 'light' && value !== 'dark') return;
+      apply(value);
+      try {
+        localStorage.setItem(KEY, value);
+      } catch {
+        /* private mode */
+      }
+      this.sync();
+    };
+    window.addEventListener('joo:theme', this.onRequest);
   }
 
   disconnectedCallback() {
     this.media?.removeEventListener?.('change', this.onSystem);
+    window.removeEventListener('joo:theme', this.onRequest);
   }
 
   sync() {

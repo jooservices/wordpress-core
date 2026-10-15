@@ -7,7 +7,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-15T14:12:54+00:00\n"
+"POT-Creation-Date: 2026-10-15T14:32:26+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: joo-core\n"
@@ -81,6 +81,32 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
+#: resources/blocks/not-found/render.php:21
+msgid "Not Found"
+msgstr ""
+
+#: resources/blocks/not-found/render.php:22
+msgid "Request transcript"
+msgstr ""
+
+#: resources/blocks/not-found/render.php:30
+msgid "Search the site"
+msgstr ""
+
+#: resources/blocks/not-found/render.php:32
+#: src/Blocks/Blocks/SearchTrigger.php:38
+msgid "Search"
+msgstr ""
+
+#: resources/blocks/not-found/render.php:36
+#: src/I18n/JsStrings.php:52
+msgid "Did you mean"
+msgstr ""
+
+#: resources/blocks/not-found/render.php:45
+msgid "Try another path"
+msgstr ""
+
 #: resources/blocks/profile-card/render.php:56
 msgid "View full profile"
 msgstr ""
@@ -96,6 +122,18 @@ msgstr ""
 
 #: resources/blocks/search-trigger/render.php:16
 msgid "Close"
+msgstr ""
+
+#: resources/blocks/terminal-dock/render.php:13
+msgid "Open terminal ( ` )"
+msgstr ""
+
+#: resources/blocks/terminal-dock/render.php:13
+msgid "terminal"
+msgstr ""
+
+#: resources/blocks/terminal-dock/render.php:14
+msgid "Read-only terminal"
 msgstr ""
 
 #: resources/blocks/theme-toggle/render.php:13
@@ -340,10 +378,6 @@ msgstr ""
 msgid "Updated %s"
 msgstr ""
 
-#: src/Blocks/Blocks/SearchTrigger.php:38
-msgid "Search"
-msgstr ""
-
 #: src/Blocks/Blocks/SearchTrigger.php:39
 msgid "Search articles…"
 msgstr ""
@@ -490,6 +524,38 @@ msgstr ""
 
 #: src/I18n/JsStrings.php:49
 msgid "Page {page} of {total}"
+msgstr ""
+
+#: src/I18n/JsStrings.php:53
+msgid "Close terminal"
+msgstr ""
+
+#: src/I18n/JsStrings.php:54
+msgid "Terminal command"
+msgstr ""
+
+#: src/I18n/JsStrings.php:55
+msgid "This page has no translation. Use the language switcher."
+msgstr ""
+
+#: src/I18n/JsStrings.php:56
+msgid "Blocked: not a link on this site."
+msgstr ""
+
+#: src/I18n/JsStrings.php:57
+msgid "read-only shell · nothing is sent anywhere"
+msgstr ""
+
+#: src/I18n/JsStrings.php:58
+msgid "Type "
+msgstr ""
+
+#: src/I18n/JsStrings.php:59
+msgid "loading file system…"
+msgstr ""
+
+#: src/I18n/JsStrings.php:60
+msgid "The terminal could not be loaded."
 msgstr ""
 
 #: src/I18n/LanguageTagging.php:123
@@ -698,6 +764,16 @@ msgctxt "block description"
 msgid "Links to the other languages of the page."
 msgstr ""
 
+#: resources/blocks/not-found/block.json
+msgctxt "block title"
+msgid "Not found (terminal)"
+msgstr ""
+
+#: resources/blocks/not-found/block.json
+msgctxt "block description"
+msgid "A terminal-style 404 view with a transcript, search and suggestions."
+msgstr ""
+
 #: resources/blocks/post-meta/block.json
 msgctxt "block title"
 msgid "Post meta"
@@ -756,6 +832,16 @@ msgstr ""
 #: resources/blocks/tag-list/block.json
 msgctxt "block description"
 msgid "Tags as chips or a weighted cloud."
+msgstr ""
+
+#: resources/blocks/terminal-dock/block.json
+msgctxt "block title"
+msgid "Terminal dock"
+msgstr ""
+
+#: resources/blocks/terminal-dock/block.json
+msgctxt "block description"
+msgid "A read-only terminal docked at the side of the page (loads on first open)."
 msgstr ""
 
 #: resources/blocks/theme-toggle/block.json

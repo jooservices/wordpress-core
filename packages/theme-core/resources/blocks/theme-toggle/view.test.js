@@ -54,4 +54,12 @@ describe('theme toggle', () => {
     apply('light');
     expect(current()).toBe('light');
   });
+
+  it('applies a scheme requested through the joo:theme event (terminal)', () => {
+    window.dispatchEvent(new CustomEvent('joo:theme', { detail: { value: 'light' } }));
+    expect(current()).toBe('light');
+    expect(stored()).toBe('light');
+    window.dispatchEvent(new CustomEvent('joo:theme', { detail: { value: 'purple' } }));
+    expect(current()).toBe('light');
+  });
 });

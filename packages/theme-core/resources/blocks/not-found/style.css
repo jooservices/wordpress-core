@@ -1,0 +1,37 @@
+.joo-404__title {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.joo-404__transcript {
+  padding: 1rem;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+  color: rgb(214 221 230);
+  background: rgb(13 17 23);
+  border: 1px solid rgb(128 128 128 / 35%);
+  border-radius: 0.5rem;
+}
+
+.joo-404__ps {
+  color: rgb(94 234 212);
+}
+
+.joo-404__err {
+  color: rgb(255 123 114);
+}
+
+.joo-404__search,
+.joo-404__retry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.joo-404__search input,
+.joo-404__retry input {
+  flex: 1;
+  min-width: 12rem;
+  min-height: 2.75rem;
+}

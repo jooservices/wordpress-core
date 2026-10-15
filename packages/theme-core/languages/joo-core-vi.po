@@ -51,6 +51,24 @@ msgstr "Slide sau"
 msgid "Language"
 msgstr "Ngôn ngữ"
 
+msgid "Not Found"
+msgstr "Không tìm thấy"
+
+msgid "Request transcript"
+msgstr "Nhật ký yêu cầu"
+
+msgid "Search the site"
+msgstr "Tìm trong site"
+
+msgid "Search"
+msgstr "Tìm kiếm"
+
+msgid "Did you mean"
+msgstr "Có phải bạn muốn"
+
+msgid "Try another path"
+msgstr "Thử đường dẫn khác"
+
 msgid "View full profile"
 msgstr "Xem hồ sơ đầy đủ"
 
@@ -62,6 +80,15 @@ msgstr "Bài viết liên quan"
 
 msgid "Close"
 msgstr "Đóng"
+
+msgid "Open terminal ( ` )"
+msgstr "Mở terminal ( ` )"
+
+msgid "terminal"
+msgstr "terminal"
+
+msgid "Read-only terminal"
+msgstr "Terminal chỉ đọc"
 
 msgid "Toggle dark mode"
 msgstr "Bật/tắt chế độ tối"
@@ -228,9 +255,6 @@ msgstr "Hiện tại"
 msgid "Updated %s"
 msgstr "Cập nhật %s"
 
-msgid "Search"
-msgstr "Tìm kiếm"
-
 msgid "Search articles…"
 msgstr "Tìm bài viết…"
 
@@ -338,6 +362,30 @@ msgstr "Không tải được trang này."
 
 msgid "Page {page} of {total}"
 msgstr "Trang {page} trên {total}"
+
+msgid "Close terminal"
+msgstr "Đóng terminal"
+
+msgid "Terminal command"
+msgstr "Lệnh terminal"
+
+msgid "This page has no translation. Use the language switcher."
+msgstr "Trang này chưa có bản dịch. Hãy dùng bộ chuyển ngôn ngữ."
+
+msgid "Blocked: not a link on this site."
+msgstr "Đã chặn: không phải liên kết của site này."
+
+msgid "read-only shell · nothing is sent anywhere"
+msgstr "shell chỉ đọc · không gửi gì đi đâu cả"
+
+msgid "Type "
+msgstr "Gõ "
+
+msgid "loading file system…"
+msgstr "đang tải hệ thống tệp…"
+
+msgid "The terminal could not be loaded."
+msgstr "Không tải được terminal."
 
 msgid "Lang"
 msgstr "Ngôn ngữ"
@@ -472,6 +520,12 @@ msgstr "Chuyển ngôn ngữ"
 msgid "Links to the other languages of the page."
 msgstr "Liên kết tới các ngôn ngữ khác của trang."
 
+msgid "Not found (terminal)"
+msgstr "Không tìm thấy (terminal)"
+
+msgid "A terminal-style 404 view with a transcript, search and suggestions."
+msgstr "Trang 404 kiểu terminal với nhật ký yêu cầu, tìm kiếm và gợi ý."
+
 msgid "Post meta"
 msgstr "Thông tin bài viết"
 
@@ -501,6 +555,12 @@ msgstr "Danh sách thẻ"
 
 msgid "Tags as chips or a weighted cloud."
 msgstr "Thẻ dạng chip hoặc đám mây theo trọng số."
+
+msgid "Terminal dock"
+msgstr "Dock terminal"
+
+msgid "A read-only terminal docked at the side of the page (loads on first open)."
+msgstr "Terminal chỉ đọc gắn bên cạnh trang (tải khi mở lần đầu)."
 
 msgid "Theme toggle"
 msgstr "Chuyển giao diện"

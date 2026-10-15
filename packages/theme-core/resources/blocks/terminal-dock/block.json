@@ -1,0 +1,11 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/terminal-dock",
+  "title": "Terminal dock",
+  "category": "joo",
+  "description": "A read-only terminal docked at the side of the page (loads on first open).",
+  "textdomain": "joo-core",
+  "attributes": {},
+  "supports": { "html": false }
+}
