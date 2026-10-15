@@ -4,7 +4,7 @@
   "settings": {
     "appearanceTools": false,
     "layout": {
-      "contentSize": "70ch",
+      "contentSize": "680px",
       "wideSize": "1240px"
     },
     "color": {
@@ -123,22 +123,17 @@
         {
           "slug": "large",
           "name": "Large",
-          "size": "1.375rem",
-          "fluid": {
-            "min": "1.25rem",
-            "max": "1.5rem"
-          }
+          "size": "1.1875rem",
+          "fluid": false
         },
         {
           "slug": "xl",
           "name": "Extra large",
           "size": "2.125rem",
-          "fluid": {
-            "min": "1.625rem",
-            "max": "2.375rem"
-          }
+          "fluid": false
         }
-      ]
+      ],
+      "defaultFontSizes": false
     },
     "spacing": {
       "units": ["px", "rem", "%", "vw"],

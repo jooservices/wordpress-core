@@ -61,6 +61,6 @@ add_action(
 add_action(
 	'after_setup_theme',
 	static function (): void {
-		add_editor_style( 'assets/src/css/editor.css' );
+		add_editor_style( 'assets/editor.css' );
 	}
 );

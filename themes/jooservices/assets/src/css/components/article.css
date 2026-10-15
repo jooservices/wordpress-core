@@ -141,7 +141,7 @@
 /* prose */
 .joo-prose {
   overflow-wrap: anywhere;
-  max-width: 70ch;
+  max-width: 680px;
   min-width: 0;
 }
 
@@ -508,4 +508,13 @@
 .joo-prose .alignright {
   float: none;
   margin-inline: 0;
+}
+
+/* Striped tables from the editor use the surface token (core's stripes are light grey). */
+.joo-prose .wp-block-table.is-style-stripes tbody tr:nth-child(odd) {
+  background: var(--joo-surface);
+}
+
+.joo-prose .wp-block-table.is-style-stripes {
+  border-color: var(--joo-line);
 }
