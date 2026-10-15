@@ -32,3 +32,19 @@ Built-in tagging: `_joo_lang` and `_joo_translation_of` (validated on save: no s
 
 ## Editor
 Panel "SEO" (title, description with live counters and a search-result preview from `resources/editor/serp.js`, noindex, canonical, social image) and panel "Language".
+
+## Structured data (C8)
+`Seo\Schema\Graph` builds one `@graph` from `Piece` objects (plus classes/instances added with `joo/seo/graph/pieces`): empty values removed (0/false kept), duplicate ids dropped (first wins), dangling `@id` references removed and logged, size guard 64 KB (lowest priority nodes first). `GraphPrinter` prints one `<script type="application/ld+json" class="joo-schema">` at `wp_head` priority 20 with `JSON_HEX_TAG|JSON_HEX_AMP`, so content can never close the script.
+
+Pieces: `WebSite` (with SearchAction), `Organization` (manifest `seo.organization.*`, site icon logo), `Person` (owner: manifest `seo.person.userId`, else the first administrator; user meta `joo_title`, `joo_socials`), `WebPage` / `CollectionPage` / `ProfilePage` / `SearchResultsPage`, `BlogPosting`, `ImageObject` (primary image), `BreadcrumbList`. Adjust any node with `joo/seo/schema/{piece}`. Not needed on 404 (only WebSite + Organization). `wordCount` and `timeRequired` come from `Support\ReadingTime`, the same counter the reading-time label uses.
+
+While an SEO plugin owns the SEO output, only `alwaysOn()` pieces (BreadcrumbList) are printed, unless `seo.breadcrumbs_owner = plugin`.
+
+## Breadcrumbs
+`Breadcrumbs\TrailBuilder` is the single source for the visible block and the schema list: Home > primary category ancestors > post (explicit `_joo_primary_category`, else deepest category, else first by name); pages use their ancestry; tags, authors, dates, search and 404 have fixed shapes. Filter `joo/breadcrumbs/trail`. Display labels are cut at 50 characters and paged views get "(Page N)"; the schema keeps full labels and the last item has no `item`.
+
+## Sitemaps
+Core sitemaps stay in charge. We exclude noindex and password-protected posts, add `lastmod` (posts and terms), limit taxonomies to categories and tags, list only authors with published posts, cap files at 2000 URLs and make sure `robots.txt` has exactly one `Sitemap:` line.
+
+## HTTP semantics
+404 responses are marked 404 with no-cache headers (a warning is logged if something forced another status); no redirect of unknown URLs to home; blank searches (`?s=`) get a 301 to the home page; comments feed discovery is removed when comments are closed site-wide. The Docker e2e `tests/e2e/specs/shared/seo.spec.ts` asserts all of this over real HTTP.

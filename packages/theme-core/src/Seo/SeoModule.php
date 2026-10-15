@@ -16,6 +16,20 @@ use JOOservices\ThemeCore\Config\Manifest;
 use JOOservices\ThemeCore\Config\Settings;
 use JOOservices\ThemeCore\Container\Container;
 use JOOservices\ThemeCore\Module\AbstractModule;
+use JOOservices\ThemeCore\Performance\FragmentCache;
+use JOOservices\ThemeCore\Seo\Breadcrumbs\TrailBuilder;
+use JOOservices\ThemeCore\Seo\Schema\Graph;
+use JOOservices\ThemeCore\Seo\Schema\GraphPrinter;
+use JOOservices\ThemeCore\Seo\Schema\Pieces\ArticlePiece;
+use JOOservices\ThemeCore\Seo\Schema\Pieces\BreadcrumbPiece;
+use JOOservices\ThemeCore\Seo\Schema\Pieces\OrganizationPiece;
+use JOOservices\ThemeCore\Seo\Schema\Pieces\PageUrl;
+use JOOservices\ThemeCore\Seo\Schema\Pieces\PersonPiece;
+use JOOservices\ThemeCore\Seo\Schema\Pieces\PrimaryImagePiece;
+use JOOservices\ThemeCore\Seo\Schema\Pieces\WebPagePiece;
+use JOOservices\ThemeCore\Seo\Schema\Pieces\WebSitePiece;
+use JOOservices\ThemeCore\Seo\Sitemaps\SitemapTweaks;
+use JOOservices\ThemeCore\Support\Logger;
 
 /**
  * Titles, descriptions, canonical, robots, Open Graph, Twitter, hreflang and the plugin yield policy.
@@ -66,6 +80,35 @@ final class SeoModule extends AbstractModule {
 				$c->get( YieldPolicy::class )
 			)
 		);
+		$this->registerSchema( $container );
+	}
+
+	/**
+	 * Binds the structured data, breadcrumb, sitemap and HTTP services.
+	 *
+	 * @param Container $container Container.
+	 */
+	private function registerSchema( Container $container ): void {
+		$container->singleton( TrailBuilder::class, static fn() => new TrailBuilder() );
+		$container->singleton( PageUrl::class, static fn( Container $c ) => new PageUrl( $c->get( Canonical::class ) ) );
+		$container->singleton(
+			Graph::class,
+			static fn( Container $c ) => new Graph(
+				array(
+					new WebSitePiece(),
+					new OrganizationPiece( $c->get( Manifest::class ) ),
+					new PersonPiece( $c->get( Manifest::class ) ),
+					new WebPagePiece( $c->get( PageUrl::class ), $c->get( TitleBuilder::class ) ),
+					new ArticlePiece( $c->get( PageUrl::class ), $c->get( DescriptionBuilder::class ), $c->get( Manifest::class ) ),
+					new PrimaryImagePiece( $c->get( PageUrl::class ), $c->get( SocialTags::class ) ),
+					new BreadcrumbPiece( $c->get( PageUrl::class ), $c->get( TrailBuilder::class ), $c->get( Settings::class ) ),
+				),
+				$c->get( Logger::class )
+			)
+		);
+		$container->singleton( GraphPrinter::class, static fn( Container $c ) => new GraphPrinter( $c->get( Graph::class ), $c->get( YieldPolicy::class ), $c->get( HeadPrinter::class ) ) );
+		$container->singleton( SitemapTweaks::class, static fn( Container $c ) => new SitemapTweaks( $c->get( FragmentCache::class ) ) );
+		$container->singleton( HttpSemantics::class, static fn( Container $c ) => new HttpSemantics( $c->get( Logger::class ) ) );
 	}
 
 	/**
@@ -94,6 +137,15 @@ final class SeoModule extends AbstractModule {
 		/** @var HeadPrinter $printer */
 		$printer = $c->get( HeadPrinter::class );
 		$printer->hook();
+		/** @var GraphPrinter $graph */
+		$graph = $c->get( GraphPrinter::class );
+		$graph->hook();
+		/** @var SitemapTweaks $sitemaps */
+		$sitemaps = $c->get( SitemapTweaks::class );
+		$sitemaps->hook();
+		/** @var HttpSemantics $http */
+		$http = $c->get( HttpSemantics::class );
+		$http->hook();
 	}
 
 	/**
