@@ -218,11 +218,13 @@ final class Kernel {
 	private function loadModules(): void {
 		/** @var Logger $logger */
 		$logger  = $this->container->get( Logger::class );
-		$classes = array_values( array_filter( self::BUILTIN_MODULES, static fn( string $class ): bool => class_exists( $class ) ) );
-		$classes = Hooks::filter( 'joo/core/modules', $classes );
+		$classes = Hooks::filter( 'joo/core/modules', self::BUILTIN_MODULES );
 		$classes = is_array( $classes ) ? $classes : array();
 
 		foreach ( $classes as $class ) {
+			if ( is_string( $class ) && ! class_exists( $class ) ) {
+				continue; // Module not shipped in this core version.
+			}
 			try {
 				$this->registry->add( $class );
 			} catch ( \Throwable $error ) {
