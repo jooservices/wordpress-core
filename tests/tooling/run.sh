@@ -47,4 +47,5 @@ PHP
 expect_fail "deptrac" php -d error_reporting=24575 vendor/bin/deptrac analyse --no-progress --fail-on-uncovered
 rm -rf packages/theme-core/src/ToolingFixture themes/jooservices/inc/ToolingFixture.php
 expect_pass "deptrac" php -d error_reporting=24575 vendor/bin/deptrac analyse --no-progress --fail-on-uncovered
+bash tests/tooling/docs-compat.sh || fail=1
 exit $fail

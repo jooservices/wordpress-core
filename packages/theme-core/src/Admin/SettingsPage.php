@@ -314,13 +314,13 @@ final class SettingsPage {
 		echo '<h2>' . esc_html__( 'Detected plugins', 'joo-core' ) . '</h2>';
 		/** @var list<array{label: string, version: string, provides: list<string>}> $rows */
 		$rows = Hooks::filter( 'joo/compat/report', array() );
-		echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Plugin', 'joo-core' ) . '</th><th>' . esc_html__( 'Version', 'joo-core' ) . '</th><th>' . esc_html__( 'Provides', 'joo-core' ) . '</th></tr></thead><tbody>';
+		echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Plugin', 'joo-core' ) . '</th><th>' . esc_html__( 'Version', 'joo-core' ) . '</th><th>' . esc_html__( 'Provides', 'joo-core' ) . '</th><th>' . esc_html__( 'Adapter', 'joo-core' ) . '</th><th>' . esc_html__( 'Notes', 'joo-core' ) . '</th></tr></thead><tbody>';
 		if ( ! is_array( $rows ) || array() === $rows ) {
-			echo '<tr><td colspan="3">' . esc_html__( 'No supported plugins detected.', 'joo-core' ) . '</td></tr>';
+			echo '<tr><td colspan="5">' . esc_html__( 'No supported plugins detected.', 'joo-core' ) . '</td></tr>';
 			$rows = array();
 		}
 		foreach ( $rows as $row ) {
-			echo '<tr><td>' . esc_html( $row['label'] ) . '</td><td>' . esc_html( $row['version'] ) . '</td><td>' . esc_html( implode( ', ', $row['provides'] ) ) . '</td></tr>';
+			echo '<tr><td>' . esc_html( $row['label'] ) . '</td><td>' . esc_html( $row['version'] ) . '</td><td>' . esc_html( implode( ', ', $row['provides'] ) ) . '</td><td>' . esc_html( (string) ( $row['adapter'] ?? '' ) ) . '</td><td>' . esc_html( (string) ( $row['notice'] ?? '' ) ) . '</td></tr>';
 		}
 		echo '</tbody></table>';
 	}

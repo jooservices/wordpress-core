@@ -1,0 +1,205 @@
+{
+  "schema": 1,
+  "plugins": [
+    {
+      "key": "yoast",
+      "name": "Yoast SEO",
+      "group": "SEO",
+      "tier": 1,
+      "slug": "wordpress-seo",
+      "source": "wporg"
+    },
+    {
+      "key": "rankmath",
+      "name": "Rank Math SEO",
+      "group": "SEO",
+      "tier": 1,
+      "slug": "seo-by-rank-math",
+      "source": "wporg"
+    },
+    {
+      "key": "aioseo",
+      "name": "All in One SEO",
+      "group": "SEO",
+      "tier": 1,
+      "slug": "all-in-one-seo-pack",
+      "source": "wporg"
+    },
+    {
+      "key": "seopress",
+      "name": "SEOPress",
+      "group": "SEO",
+      "tier": 1,
+      "slug": "wp-seopress",
+      "source": "wporg"
+    },
+    {
+      "key": "litespeed-cache",
+      "name": "LiteSpeed Cache",
+      "group": "Cache",
+      "tier": 1,
+      "slug": "litespeed-cache",
+      "source": "wporg"
+    },
+    {
+      "key": "wp-rocket",
+      "name": "WP Rocket",
+      "group": "Cache",
+      "tier": 1,
+      "slug": "",
+      "source": "manual"
+    },
+    {
+      "key": "w3-total-cache",
+      "name": "W3 Total Cache",
+      "group": "Cache",
+      "tier": 1,
+      "slug": "w3-total-cache",
+      "source": "wporg"
+    },
+    {
+      "key": "autoptimize",
+      "name": "Autoptimize",
+      "group": "Cache",
+      "tier": 1,
+      "slug": "autoptimize",
+      "source": "wporg"
+    },
+    {
+      "key": "polylang",
+      "name": "Polylang",
+      "group": "Multilingual",
+      "tier": 1,
+      "slug": "polylang",
+      "source": "wporg"
+    },
+    {
+      "key": "wpml",
+      "name": "WPML",
+      "group": "Multilingual",
+      "tier": 1,
+      "slug": "",
+      "source": "manual"
+    },
+    {
+      "key": "translatepress",
+      "name": "TranslatePress",
+      "group": "Multilingual",
+      "tier": 1,
+      "slug": "translatepress-multilingual",
+      "source": "wporg"
+    },
+    {
+      "key": "cf7",
+      "name": "Contact Form 7",
+      "group": "Forms",
+      "tier": 1,
+      "slug": "contact-form-7",
+      "source": "wporg"
+    },
+    {
+      "key": "wpforms",
+      "name": "WPForms Lite",
+      "group": "Forms",
+      "tier": 1,
+      "slug": "wpforms-lite",
+      "source": "wporg"
+    },
+    {
+      "key": "fluentform",
+      "name": "Fluent Forms",
+      "group": "Forms",
+      "tier": 1,
+      "slug": "fluentform",
+      "source": "wporg"
+    },
+    {
+      "key": "jetpack",
+      "name": "Jetpack",
+      "group": "Other",
+      "tier": 1,
+      "slug": "jetpack",
+      "source": "wporg"
+    },
+    {
+      "key": "site-kit",
+      "name": "Site Kit by Google",
+      "group": "Other",
+      "tier": 1,
+      "slug": "google-site-kit",
+      "source": "wporg"
+    },
+    {
+      "key": "smush",
+      "name": "Smush",
+      "group": "Images",
+      "tier": 1,
+      "slug": "wp-smushit",
+      "source": "wporg"
+    },
+    {
+      "key": "shortpixel",
+      "name": "ShortPixel Image Optimizer",
+      "group": "Images",
+      "tier": 1,
+      "slug": "shortpixel-image-optimiser",
+      "source": "wporg"
+    },
+    {
+      "key": "ewww",
+      "name": "EWWW Image Optimizer",
+      "group": "Images",
+      "tier": 1,
+      "slug": "ewww-image-optimizer",
+      "source": "wporg"
+    },
+    {
+      "key": "tablepress",
+      "name": "TablePress",
+      "group": "Other",
+      "tier": 1,
+      "slug": "tablepress",
+      "source": "wporg"
+    },
+    {
+      "key": "acf",
+      "name": "Advanced Custom Fields",
+      "group": "Other",
+      "tier": 1,
+      "slug": "advanced-custom-fields",
+      "source": "wporg"
+    },
+    {
+      "key": "akismet",
+      "name": "Akismet",
+      "group": "Other",
+      "tier": 1,
+      "slug": "akismet",
+      "source": "wporg"
+    },
+    {
+      "key": "wordfence",
+      "name": "Wordfence",
+      "group": "Security",
+      "tier": 1,
+      "slug": "wordfence",
+      "source": "wporg"
+    },
+    {
+      "key": "woocommerce",
+      "name": "WooCommerce",
+      "group": "Shop",
+      "tier": 3,
+      "slug": "woocommerce",
+      "source": "wporg"
+    },
+    {
+      "key": "elementor",
+      "name": "Elementor",
+      "group": "Page builder",
+      "tier": 3,
+      "slug": "elementor",
+      "source": "wporg"
+    }
+  ]
+}

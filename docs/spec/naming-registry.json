@@ -124,6 +124,10 @@
     "joo/lazy/provider",
     "joo/seo/alternates",
     "joo/seo/allow_external_canonical",
-    "joo/seo/head_end"
+    "joo/seo/head_end",
+    "joo/seo/primary_category",
+    "joo/seo/noindex_post_ids",
+    "joo/perf/skip_critical_css",
+    "joo/compat/forms_needed"
   ]
 }

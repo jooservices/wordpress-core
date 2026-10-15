@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JOOservices\ThemeCore\Seo\Sitemaps;
 
 use JOOservices\ThemeCore\Performance\FragmentCache;
+use JOOservices\ThemeCore\Support\Hooks;
 
 /**
  * Excludes noindex and protected posts, adds lastmod, limits taxonomies and keeps one Sitemap line in robots.txt.
@@ -55,6 +56,10 @@ final class SitemapTweaks {
 	 */
 	public function postQuery( array $args ): array {
 		$args['has_password'] = false;
+		$plugin_noindex       = array_filter( array_map( 'intval', (array) Hooks::filter( 'joo/seo/noindex_post_ids', array() ) ) );
+		if ( array() !== $plugin_noindex ) {
+			$args['post__not_in'] = array_values( array_unique( array_merge( (array) ( $args['post__not_in'] ?? array() ), $plugin_noindex ) ) );
+		}
 		// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- sitemap queries are cached by core.
 		$args['meta_query'] = array(
 			'relation' => 'OR',

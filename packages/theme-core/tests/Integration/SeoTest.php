@@ -481,7 +481,7 @@ final class SeoTest extends IntegrationTestCase {
 	public function test_yield_modes(): void {
 		$this->boot();
 		$settings = Kernel::container()->get( Settings::class );
-		$active   = new Detector( static fn( string $c ): ?string => 'WPSEO_VERSION' === $c ? '24.1' : null );
+		$active   = new Detector( static fn( string $k, string $n ): ?string => 'WPSEO_VERSION' === $n ? '24.1' : null );
 		$none     = new Detector( static fn(): ?string => null );
 		$mode     = static function ( string $value ): void {
 			remove_all_filters( 'joo/settings/value' );
@@ -500,7 +500,7 @@ final class SeoTest extends IntegrationTestCase {
 	public function test_hreflang_is_left_to_the_plugin_only_while_yielding(): void {
 		$this->boot();
 		$settings = Kernel::container()->get( Settings::class );
-		$active   = new Detector( static fn( string $c ): ?string => 'RANK_MATH_VERSION' === $c ? '1.0' : null );
+		$active   = new Detector( static fn( string $k, string $n ): ?string => 'RANK_MATH_VERSION' === $n ? '1.0' : null );
 		$policy   = new YieldPolicy( $settings, $active );
 		$this->assertTrue( $policy->yieldsHreflang() );
 		add_filter( 'joo/settings/value', static fn( $v, $key ) => 'seo.yield_hreflang' === $key ? false : $v, 10, 2 );

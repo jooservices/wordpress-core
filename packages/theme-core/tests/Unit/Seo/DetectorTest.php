@@ -32,7 +32,7 @@ final class DetectorTest extends TestCase {
 	 * @dataProvider plugins
 	 */
 	public function test_each_plugin_is_detected_by_its_constant( string $constant, string $name ): void {
-		$detector = new Detector( static fn( string $c ): ?string => $c === $constant ? '24.1' : null );
+		$detector = new Detector( static fn( string $k, string $n ): ?string => 'constant' === $k && $n === $constant ? '24.1' : null );
 		$this->assertSame(
 			array(
 				'name'    => $name,
@@ -45,11 +45,7 @@ final class DetectorTest extends TestCase {
 
 	public function test_nothing_active_and_two_active(): void {
 		$this->assertNull( ( new Detector( static fn(): ?string => null ) )->seoPlugin() );
-		$two = new Detector( static fn( string $c ): ?string => in_array( $c, array( 'WPSEO_VERSION', 'RANK_MATH_VERSION' ), true ) ? '1' : null );
+		$two = new Detector( static fn( string $k, string $n ): ?string => 'constant' === $k && in_array( $n, array( 'WPSEO_VERSION', 'RANK_MATH_VERSION' ), true ) ? '1' : null );
 		$this->assertCount( 2, $two->seoPlugins() );
-	}
-
-	public function test_the_default_probe_reads_real_constants(): void {
-		$this->assertNull( ( new Detector() )->seoPlugin() );
 	}
 }

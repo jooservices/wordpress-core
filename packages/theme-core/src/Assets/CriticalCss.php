@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JOOservices\ThemeCore\Assets;
 
+use JOOservices\ThemeCore\Support\Hooks;
 use JOOservices\ThemeCore\Support\Paths;
 
 /**
@@ -72,6 +73,9 @@ final class CriticalCss {
 	 * Critical CSS for the current request ('' when none exists).
 	 */
 	public function css(): string {
+		if ( (bool) Hooks::filter( 'joo/perf/skip_critical_css', false ) ) {
+			return '';
+		}
 		$context = $this->context();
 		if ( ! isset( $this->cache[ $context ] ) ) {
 			$css = '';

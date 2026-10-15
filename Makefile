@@ -102,8 +102,8 @@ test-matrix: ## Plugin compatibility matrix (THEME=...)
 package: ## Build the installable theme zip (THEME=...)
 	$(call require_theme)
 	$(call stub,package)
-docs: ## Generate reference docs
-	$(call stub,docs)
+docs: ## Generate reference docs (compatibility matrix; more generators land with their stories)
+	@node tools/docs-compat.mjs
 hooks: ## Install repository git hooks (repo-local config only)
 	@git config --local core.hooksPath tools/githooks
 	@echo "core.hooksPath = $$(git config --local core.hooksPath)"

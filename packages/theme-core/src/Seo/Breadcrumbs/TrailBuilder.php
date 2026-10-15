@@ -174,6 +174,12 @@ final class TrailBuilder {
 				return $term;
 			}
 		}
+		$plugin = (int) Hooks::filter( 'joo/seo/primary_category', 0, $post->ID );
+		foreach ( $terms as $term ) {
+			if ( $plugin > 0 && $term->term_id === $plugin ) {
+				return $term;
+			}
+		}
 		$best  = null;
 		$depth = -1;
 		foreach ( $terms as $term ) {

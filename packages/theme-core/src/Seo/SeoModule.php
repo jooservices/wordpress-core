@@ -51,7 +51,7 @@ final class SeoModule extends AbstractModule {
 	 * @return list<string>
 	 */
 	public function dependencies(): array {
-		return array( 'admin' );
+		return array( 'admin', 'compat' );
 	}
 
 	/**
@@ -60,7 +60,6 @@ final class SeoModule extends AbstractModule {
 	 * @param Container $container Container.
 	 */
 	public function register( Container $container ): void {
-		$container->singleton( Detector::class, static fn() => new Detector() );
 		$container->singleton( YieldPolicy::class, static fn( Container $c ) => new YieldPolicy( $c->get( Settings::class ), $c->get( Detector::class ) ) );
 		$container->singleton( TitleBuilder::class, static fn( Container $c ) => new TitleBuilder( $c->get( Settings::class ) ) );
 		$container->singleton( DescriptionBuilder::class, static fn() => new DescriptionBuilder() );
