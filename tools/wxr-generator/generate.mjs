@@ -478,7 +478,7 @@ ${items.join('\n')}
     options: {
       blogname: 'JOOservices',
       blogdescription: 'Technical notes on AI, engineering and R&D',
-      permalink_structure: '/%postname%/',
+
       posts_per_page: '10',
       show_on_front: 'posts',
       default_comment_status: 'open',

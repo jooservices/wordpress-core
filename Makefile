@@ -5,7 +5,7 @@ THEME ?= jooservices
 export JOOWT_PROJECT ?= jooservices-wp-themes
 
 
-.PHONY: i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
+.PHONY: seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -87,6 +87,14 @@ test-e2e: ## Playwright e2e against the running demo (THEME=..., ARGS="specs/sha
 	$(call require_theme)
 	@curl -fsS -o /dev/null $${E2E_BASE_URL:-http://127.0.0.1:8080}/ || { echo "demo not reachable: run make up first"; exit 1; }
 	@E2E_THEME=$(THEME) E2E_BASE_URL=$${E2E_BASE_URL:-http://127.0.0.1:8080} npx --no-install playwright test -c tests/e2e/playwright.config.ts $(ARGS)
+seed: ## Generate and import the deterministic demo content (idempotent; THEME=...)
+	$(call require_theme)
+	@node tools/wxr-generator/generate.mjs --out artifacts/demo/$(THEME) >/dev/null
+	@$(COMPOSE) exec -T -u www-data wordpress bash /scripts/seed.sh $(THEME)
+seed-reset: ## Remove only demo content and import it again (THEME=...)
+	$(call require_theme)
+	@node tools/wxr-generator/generate.mjs --out artifacts/demo/$(THEME) >/dev/null
+	@$(COMPOSE) exec -T -u www-data wordpress bash /scripts/seed.sh $(THEME) --reset
 demo: ## Build, start Docker, install WordPress + theme, seed, health check (THEME=...)
 	$(call require_theme)
 	$(call stub,demo)
