@@ -288,9 +288,12 @@ final class ContentBlocksTest extends IntegrationTestCase {
 		$post = self::factory()->post->create();
 		$this->visit( $post );
 		// WordPress 7 renders the heading block with a leading newline.
+		HeadingAnchors::reset( '' );
 		$out = ( new HeadingAnchors() )->filter( "\n<h2 class=\"wp-block-heading\">Spaced out</h2>\n", array() );
 		$this->assertStringContainsString( 'id="spaced-out"', $out );
 		$this->assertStringContainsString( 'href="#spaced-out"', $out );
+		HeadingAnchors::leave( '' );
+		$this->assertStringNotContainsString( 'joo-anchor', ( new HeadingAnchors() )->filter( '<h4 class="wp-block-heading">Footer</h4>', array() ), 'headings outside the post content stay untouched' );
 	}
 
 	public function test_code_blocks_get_a_copy_button_and_the_module_loads_only_then(): void {

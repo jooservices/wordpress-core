@@ -27,11 +27,30 @@ final class HeadingAnchors {
 	private static array $used = array();
 
 	/**
+	 * Whether post content is being rendered (headings of template parts, such as the footer, get no anchor).
+	 *
+	 * @var bool
+	 */
+	private static bool $inContent = false;
+
+	/**
 	 * Hooks WordPress.
 	 */
 	public function hook(): void {
 		add_filter( 'render_block_core/heading', array( $this, 'filter' ), 10, 2 );
 		add_filter( 'the_content', array( self::class, 'reset' ), 1 );
+		add_filter( 'the_content', array( self::class, 'leave' ), 99999 );
+	}
+
+	/**
+	 * End of a content render.
+	 *
+	 * @param mixed $content Content (passed through).
+	 * @return mixed
+	 */
+	public static function leave( $content ) {
+		self::$inContent = false;
+		return $content;
 	}
 
 	/**
@@ -41,7 +60,8 @@ final class HeadingAnchors {
 	 * @return mixed
 	 */
 	public static function reset( $content ) {
-		self::$used = array();
+		self::$used      = array();
+		self::$inContent = true;
 		return $content;
 	}
 
@@ -121,7 +141,7 @@ final class HeadingAnchors {
 	public function filter( $html, $block = array() ): string {
 		$html = (string) $html;
 		$post = get_the_ID();
-		if ( ! is_singular() || ! $post || 1 !== preg_match( '#^\s*<h([2-4])\b([^>]*)>(.*)</h\1>\s*$#is', $html, $m ) ) {
+		if ( ! self::$inContent || ! is_singular() || ! $post || 1 !== preg_match( '#^\s*<h([2-4])\b([^>]*)>(.*)</h\1>\s*$#is', $html, $m ) ) {
 			return $html;
 		}
 		$level  = (int) $m[1];

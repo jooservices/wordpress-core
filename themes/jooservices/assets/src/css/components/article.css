@@ -467,3 +467,10 @@
     text-align: left;
   }
 }
+
+/* heading anchors */
+.joo-anchor {
+  margin-left: 0.25em;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
