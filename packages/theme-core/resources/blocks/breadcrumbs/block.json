@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/breadcrumbs",
+  "title": "Breadcrumbs",
+  "category": "joo",
+  "description": "Breadcrumb trail (same data as the structured data).",
+  "textdomain": "joo-core",
+  "attributes": {
+    "separator": { "type": "string", "default": "slash", "enum": ["slash", "chevron"] },
+    "showHome": { "type": "boolean", "default": true },
+    "maxLabel": { "type": "integer", "default": 50 }
+  },
+  "supports": { "html": false, "align": ["wide", "full"], "spacing": { "margin": true, "padding": true }, "typography": { "fontSize": true } },
+  "x-joo": {
+    "controls": [
+      {
+        "attribute": "separator",
+        "type": "select",
+        "label": "Separator",
+        "options": [
+          ["slash", "Slash"],
+          ["chevron", "Chevron"]
+        ]
+      },
+      { "attribute": "showHome", "type": "toggle", "label": "Show home" },
+      { "attribute": "maxLabel", "type": "range", "min": 20, "max": 80, "label": "Label length" }
+    ]
+  }
+}

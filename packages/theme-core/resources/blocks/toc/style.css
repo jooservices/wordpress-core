@@ -1,0 +1,34 @@
+.joo-toc {
+  border: 1px solid var(--wp--preset--color--border, rgb(128 128 128 / 30%));
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.joo-toc summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.joo-toc ol {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.joo-toc li {
+  margin: 0.25rem 0;
+}
+
+.joo-toc__l3 {
+  padding-inline-start: 1rem;
+}
+
+.joo-toc__l4 {
+  padding-inline-start: 2rem;
+}
+
+.joo-toc a[aria-current='location'] {
+  font-weight: 600;
+  text-decoration: underline;
+}

@@ -1,0 +1,32 @@
+.joo-breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+}
+
+.joo-breadcrumbs li {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.joo-breadcrumbs li + li::before {
+  content: '/';
+  margin-inline-end: 0.5rem;
+  opacity: 0.6;
+}
+
+.joo-breadcrumbs--chevron li + li::before {
+  content: '›';
+}
+
+.joo-breadcrumbs a,
+.joo-breadcrumbs span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -18,3 +18,17 @@ Optional files: `view.js` (script module) and `style.css`; the build writes hash
 
 ## Patterns, scheme
 `PatternLoader` registers the `jooservices` pattern category, patterns from manifest folders (`blocks.patterns`) and can remove the core patterns (`blocks.removeCorePatterns`). `ThemeScheme` adds `data-theme` to `<html>` (the no-JS default) and prints one inline script (<= 300 bytes, nonce through `joo/assets/inline_script_nonce`) that applies the stored choice (`localStorage` key `joo-theme`) or the system preference before first paint. With a single scheme no script is printed.
+
+## Content blocks (C12)
+| Block | Notes |
+|---|---|
+| `joo/breadcrumbs` | Same `TrailBuilder` trail as the BreadcrumbList; `separator`, `showHome`, `maxLabel`; no JS |
+| `joo/featured-slider` | `ContentProvider::featured()`; scroll-snap track (works without JS), first image eager with `fetchpriority=high`, `<joo-slider>` adds buttons, dots, keyboard, autoplay with a pause button (WCAG 2.2.2), paused on hover, focus, touch, hidden tab and reduced motion. View module about 1.1 KB gzip |
+| `joo/post-meta` | category, date, updated (only when more than a day later), reading time, author, tags; Query Loop aware |
+| `joo/toc`, `joo/reading-progress` | ids from `HeadingAnchors` (the heading filter and the TOC compute the same ids); `<joo-toc>` scroll-spy sets `aria-current="location"` |
+| code blocks | `CodeEnhancer` wraps `core/code` with a language label and a copy button (hidden until `code-copy.js` loads; the module is enqueued only on pages with code) |
+| `joo/related-posts` | deferred as a `<joo-lazy>` fragment `related`; identical HTML inline and over REST |
+| `joo/author-box` | owner profile, else WordPress user data; `rel="author"`, socials `rel="me noopener"` |
+| `joo/theme-toggle`, `joo/lang-switcher`, `joo/search-trigger` | toggle hidden without JS and with one scheme; switcher from `Compat\Multilingual` (nothing with one language); search link opens a `<dialog>` (`/` shortcut) |
+
+Reading time: `Support\ReadingTime::forPost()` (code at 25%, 220 wpm English / 200 Vietnamese) is computed on `save_post`, cached in `_joo_reading_cache` and used by the post-meta block, post cards and JSON-LD `timeRequired`/`wordCount`.

@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "slug": "fixture-theme",
+  "name": "Fixture",
+  "core": "^0.1",
+  "modules": { "blocks": true },
+  "i18n": { "default": "en", "languages": ["en", "vi"] },
+  "design": { "colorSchemes": ["dark", "light"], "defaultScheme": "dark" }
+}

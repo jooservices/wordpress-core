@@ -1,0 +1,22 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/toc",
+  "title": "Table of contents",
+  "category": "joo",
+  "description": "Contents of the article with a scroll-spy.",
+  "textdomain": "joo-core",
+  "usesContext": ["postId"],
+  "attributes": {
+    "minHeadings": { "type": "integer", "default": 3 },
+    "levels": { "type": "array", "default": ["h2", "h3"] },
+    "collapsed": { "type": "boolean", "default": false }
+  },
+  "supports": { "html": false, "spacing": { "margin": true } },
+  "x-joo": {
+    "controls": [
+      { "attribute": "minHeadings", "type": "range", "min": 1, "max": 10, "label": "Minimum headings" },
+      { "attribute": "collapsed", "type": "toggle", "label": "Collapsed" }
+    ]
+  }
+}

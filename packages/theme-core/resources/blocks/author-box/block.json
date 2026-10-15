@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/author-box",
+  "title": "Author box",
+  "category": "joo",
+  "description": "About the author of the article.",
+  "textdomain": "joo-core",
+  "usesContext": ["postId"],
+  "attributes": {},
+  "supports": { "html": false, "spacing": { "margin": true } }
+}

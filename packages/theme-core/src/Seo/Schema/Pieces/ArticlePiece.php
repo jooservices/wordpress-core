@@ -93,14 +93,15 @@ final class ArticlePiece extends AbstractPiece {
 		if ( null === $post ) {
 			return array();
 		}
-		$url    = (string) $this->url->of( $context );
-		$words  = ReadingTime::words( Text::plain( $post->post_content ) );
-		$cats   = 'post' === $post->post_type ? get_the_category( $post->ID ) : array();
-		$tags   = get_the_tags( $post->ID );
-		$tags   = is_array( $tags ) ? $tags : array();
-		$author = (int) $post->post_author;
-		$type   = Hooks::filter( 'joo/seo/schema/article_type', 'post' === $post->post_type ? 'BlogPosting' : 'Article', $context );
-		$minute = ReadingTime::minutes( $words );
+		$url     = (string) $this->url->of( $context );
+		$reading = ReadingTime::forPost( $post->ID );
+		$words   = $reading['words'];
+		$cats    = 'post' === $post->post_type ? get_the_category( $post->ID ) : array();
+		$tags    = get_the_tags( $post->ID );
+		$tags    = is_array( $tags ) ? $tags : array();
+		$author  = (int) $post->post_author;
+		$type    = Hooks::filter( 'joo/seo/schema/article_type', 'post' === $post->post_type ? 'BlogPosting' : 'Article', $context );
+		$minute  = $reading['minutes'];
 		return array(
 			'@type'            => is_string( $type ) ? $type : 'BlogPosting',
 			'isPartOf'         => array( '@id' => $url . '#webpage' ),

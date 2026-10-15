@@ -76,6 +76,9 @@
 		<exclude-pattern>*/tests/*</exclude-pattern>
 		<exclude-pattern>*/test-kit/*</exclude-pattern>
 		<exclude-pattern>*/tools/*</exclude-pattern>
+		<!-- Block templates are included from inside a closure: their variables are local. -->
+		<exclude-pattern>*/resources/blocks/*/render.php</exclude-pattern>
+		<exclude-pattern>*/parts/joo/*.php</exclude-pattern>
 		<exclude-pattern>*/docker/*</exclude-pattern>
 	</rule>
 	<rule ref="WordPress.WP.AlternativeFunctions">

@@ -1,0 +1,16 @@
+.joo-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  height: 3px;
+  pointer-events: none;
+}
+
+.joo-progress__bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--wp--preset--color--accent, currentcolor);
+  transform: scaleX(0);
+  transform-origin: left;
+}

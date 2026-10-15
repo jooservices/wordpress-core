@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/post-meta",
+  "title": "Post meta",
+  "category": "joo",
+  "description": "Category, dates, reading time and author of a post.",
+  "textdomain": "joo-core",
+  "usesContext": ["postId", "postType"],
+  "attributes": {
+    "items": { "type": "array", "default": ["category", "date", "updated", "reading"] },
+    "separator": { "type": "string", "default": "dot", "enum": ["dot", "slash"] },
+    "linkCategory": { "type": "boolean", "default": true }
+  },
+  "supports": { "html": false, "spacing": { "margin": true }, "typography": { "fontSize": true } },
+  "x-joo": {
+    "controls": [
+      {
+        "attribute": "separator",
+        "type": "select",
+        "label": "Separator",
+        "options": [
+          ["dot", "Dot"],
+          ["slash", "Slash"]
+        ]
+      },
+      { "attribute": "linkCategory", "type": "toggle", "label": "Link the category" }
+    ]
+  }
+}

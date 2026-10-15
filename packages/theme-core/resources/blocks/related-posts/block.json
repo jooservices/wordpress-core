@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/related-posts",
+  "title": "Related posts",
+  "category": "joo",
+  "description": "Posts related by category and tags.",
+  "textdomain": "joo-core",
+  "usesContext": ["postId"],
+  "attributes": {
+    "limit": { "type": "integer", "default": 3 },
+    "showImage": { "type": "boolean", "default": true },
+    "showExcerpt": { "type": "boolean", "default": false }
+  },
+  "supports": { "html": false, "spacing": { "margin": true } },
+  "x-joo": {
+    "controls": [
+      { "attribute": "limit", "type": "range", "min": 1, "max": 8, "label": "Posts" },
+      { "attribute": "showImage", "type": "toggle", "label": "Show images" },
+      { "attribute": "showExcerpt", "type": "toggle", "label": "Show excerpts" }
+    ]
+  }
+}

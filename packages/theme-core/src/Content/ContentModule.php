@@ -16,6 +16,7 @@ use JOOservices\ThemeCore\Container\Container;
 use JOOservices\ThemeCore\Content\Rest\ContentRoutes;
 use JOOservices\ThemeCore\Module\AbstractModule;
 use JOOservices\ThemeCore\Performance\FragmentCache;
+use JOOservices\ThemeCore\Support\ReadingTime;
 
 /**
  * Chooses the content provider and registers the public content routes.
@@ -71,6 +72,18 @@ final class ContentModule extends AbstractModule {
 		/** @var ContentRoutes $routes */
 		$routes = $c->get( ContentRoutes::class );
 		$routes->hook();
+
+		// Reading time is computed when a post is saved (and lazily for older posts).
+		add_action(
+			'save_post',
+			static function ( $postId, $post ): void {
+				if ( $post instanceof \WP_Post && 'post' === $post->post_type && ! wp_is_post_revision( (int) $postId ) && 'auto-draft' !== $post->post_status ) {
+					ReadingTime::forPost( (int) $postId );
+				}
+			},
+			10,
+			2
+		);
 
 		add_filter(
 			'joo/profile/owner_id',

@@ -1,0 +1,17 @@
+.joo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.joo-meta > * + *::before {
+  content: '·';
+  margin-inline-end: 0.75rem;
+  opacity: 0.6;
+}
+
+.joo-meta--slash > * + *::before {
+  content: '/';
+}

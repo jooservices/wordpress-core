@@ -80,7 +80,8 @@
     "joo-tree",
     "joo-theme-toggle",
     "joo-progress",
-    "joo-404"
+    "joo-404",
+    "joo-search"
   ],
   "hooks": [
     "joo/core/ready",

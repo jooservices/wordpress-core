@@ -9,8 +9,11 @@ declare(strict_types=1);
 
 namespace JOOservices\ThemeCore\Blocks;
 
+use JOOservices\ThemeCore\Assets\AssetRegistry;
+use JOOservices\ThemeCore\Blocks\Blocks\RelatedPosts;
 use JOOservices\ThemeCore\Config\Manifest;
 use JOOservices\ThemeCore\Container\Container;
+use JOOservices\ThemeCore\Lazy\FragmentLazy;
 use JOOservices\ThemeCore\Module\AbstractModule;
 
 /**
@@ -33,7 +36,7 @@ final class BlocksModule extends AbstractModule {
 	 * @return list<string>
 	 */
 	public function dependencies(): array {
-		return array( 'assets', 'content' );
+		return array( 'assets', 'content', 'lazy', 'compat', 'seo' );
 	}
 
 	/**
@@ -45,6 +48,8 @@ final class BlocksModule extends AbstractModule {
 		$container->singleton( BlockRegistrar::class, static fn( Container $c ) => new BlockRegistrar( $c ) );
 		$container->singleton( PatternLoader::class, static fn( Container $c ) => new PatternLoader( $c->get( Manifest::class ) ) );
 		$container->singleton( ThemeScheme::class, static fn( Container $c ) => new ThemeScheme( $c->get( Manifest::class ) ) );
+		$container->singleton( HeadingAnchors::class, static fn() => new HeadingAnchors() );
+		$container->singleton( CodeEnhancer::class, static fn() => new CodeEnhancer() );
 		$container->singleton( EditorBundle::class, static fn( Container $c ) => new EditorBundle( $c->get( BlockRegistrar::class ) ) );
 	}
 
@@ -60,5 +65,42 @@ final class BlocksModule extends AbstractModule {
 		$c->get( PatternLoader::class )->hook();
 		$c->get( ThemeScheme::class )->hook();
 		$c->get( EditorBundle::class )->hook();
+		$c->get( HeadingAnchors::class )->hook();
+		$c->get( CodeEnhancer::class )->hook();
+
+		/** @var AssetRegistry $assets */
+		$assets = $c->get( AssetRegistry::class );
+		$assets->module( 'joo-code-copy', 'code-copy', array( 'lazy' => true ) );
+
+		/** @var FragmentLazy $fragments */
+		$fragments = $c->get( FragmentLazy::class );
+		$fragments->register(
+			RelatedPosts::FRAGMENT,
+			static function ( array $args ) use ( $c ): string {
+				$block = $c->get( BlockRegistrar::class )->instance( 'joo/related-posts' );
+				return $block instanceof RelatedPosts ? $block->html( (int) $args['post'], (int) $args['limit'], (bool) ( $args['image'] ?? true ), (bool) ( $args['excerpt'] ?? false ) ) : '';
+			},
+			array(
+				'post'    => array(
+					'type' => 'int',
+					'min'  => 1,
+				),
+				'limit'   => array(
+					'type'    => 'int',
+					'default' => 3,
+					'min'     => 1,
+					'max'     => 8,
+				),
+				'image'   => array(
+					'type'    => 'bool',
+					'default' => true,
+				),
+				'excerpt' => array(
+					'type'    => 'bool',
+					'default' => false,
+				),
+			),
+			360
+		);
 	}
 }

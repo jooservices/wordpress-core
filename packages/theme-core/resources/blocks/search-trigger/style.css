@@ -1,0 +1,20 @@
+.joo-search__dialog {
+  width: min(90vw, 36rem);
+  padding: 1rem;
+  border: 1px solid var(--wp--preset--color--border, rgb(128 128 128 / 40%));
+  border-radius: 0.75rem;
+}
+
+.joo-search__dialog::backdrop {
+  background: rgb(0 0 0 / 55%);
+}
+
+.joo-search form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.joo-search input[type='search'] {
+  flex: 1;
+  min-height: 2.75rem;
+}

@@ -46,6 +46,13 @@ final class BlockRegistrar {
 	private array $registered = array();
 
 	/**
+	 * Block folders by name.
+	 *
+	 * @var array<string, string>
+	 */
+	private array $dirs = array();
+
+	/**
 	 * Creates the registrar.
 	 *
 	 * @param Container $container Container.
@@ -118,6 +125,11 @@ final class BlockRegistrar {
 				}
 				continue;
 			}
+			if ( \WP_Block_Type_Registry::get_instance()->is_registered( $name ) ) {
+				$this->registered[]  = $name;
+				$this->dirs[ $name ] = $dir;
+				continue;
+			}
 			$slug = substr( $name, 4 );
 			/** @var array<string, mixed> $args */
 			$args = array_merge( array( 'render_callback' => fn( $attrs, $content, $block ) => $this->render( $name, $dir, (array) $attrs, (string) $content, $block ) ), $this->assets( $slug ) );
@@ -127,8 +139,26 @@ final class BlockRegistrar {
 				continue;
 			}
 			GenericBlock::remember( $name, $dir );
-			$this->registered[] = $name;
+			$this->dirs[ $name ] = $dir;
+			$this->registered[]  = $name;
 		}
+	}
+
+	/**
+	 * The class instance of a block (null for blocks without a class).
+	 *
+	 * @param string $name Block name.
+	 */
+	public function instance( string $name ): ?DynamicBlock {
+		if ( ! isset( $this->instances[ $name ] ) && isset( $this->dirs[ $name ] ) ) {
+			$class = 'JOOservices\\ThemeCore\\Blocks\\Blocks\\' . str_replace( ' ', '', ucwords( str_replace( '-', ' ', substr( $name, 4 ) ) ) );
+			if ( class_exists( $class ) && is_subclass_of( $class, DynamicBlock::class ) ) {
+				$instance = new $class( $this->container );
+				$instance->setDir( $this->dirs[ $name ] );
+				$this->instances[ $name ] = $instance;
+			}
+		}
+		return $this->instances[ $name ] ?? null;
 	}
 
 	/**
@@ -156,7 +186,17 @@ final class BlockRegistrar {
 		}
 		$handle = 'joo-block-' . $slug;
 		if ( $manifest->has( 'blocks/' . $slug . '/view' ) ) {
-			wp_register_script_module( $handle, $manifest->url( 'blocks/' . $slug . '/view' ), array(), null );
+			wp_register_script_module(
+				$handle,
+				$manifest->url( 'blocks/' . $slug . '/view' ),
+				array(
+					array(
+						'id'     => 'joo-runtime',
+						'import' => 'static',
+					),
+				),
+				null
+			);
 			$args['view_script_module_ids'] = array( $handle );
 		}
 		if ( $manifest->has( 'blocks/' . $slug . '/style' ) ) {
@@ -176,16 +216,9 @@ final class BlockRegistrar {
 	 * @param \WP_Block            $block   Block.
 	 */
 	private function render( string $name, string $dir, array $attrs, string $content, \WP_Block $block ): string {
-		if ( ! isset( $this->instances[ $name ] ) ) {
-			$class = 'JOOservices\\ThemeCore\\Blocks\\Blocks\\' . str_replace( ' ', '', ucwords( str_replace( '-', ' ', substr( $name, 4 ) ) ) );
-			if ( class_exists( $class ) && is_subclass_of( $class, DynamicBlock::class ) ) {
-				$instance = new $class( $this->container );
-				$instance->setDir( $dir );
-				$this->instances[ $name ] = $instance;
-			}
-		}
-		if ( isset( $this->instances[ $name ] ) ) {
-			return $this->instances[ $name ]->render( $attrs, $content, $block );
+		$instance = $this->instance( $name );
+		if ( null !== $instance ) {
+			return $instance->render( $attrs, $content, $block );
 		}
 		return ( new GenericBlock( $this->container ) )->renderNamed( $name, $attrs, $content, $block );
 	}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/featured-slider",
+  "title": "Featured slider",
+  "category": "joo",
+  "description": "Owner-picked posts in a swipeable slider.",
+  "textdomain": "joo-core",
+  "attributes": {
+    "limit": { "type": "integer", "default": 5 },
+    "autoplay": { "type": "boolean", "default": true },
+    "interval": { "type": "integer", "default": 6500 },
+    "showMeta": { "type": "boolean", "default": true },
+    "showExcerpt": { "type": "boolean", "default": true }
+  },
+  "supports": { "html": false, "align": ["wide", "full"], "spacing": { "margin": true } },
+  "x-joo": {
+    "controls": [
+      { "attribute": "limit", "type": "range", "min": 1, "max": 12, "label": "Posts" },
+      { "attribute": "autoplay", "type": "toggle", "label": "Autoplay" },
+      { "attribute": "interval", "type": "range", "min": 3000, "max": 15000, "label": "Interval (ms)" },
+      { "attribute": "showMeta", "type": "toggle", "label": "Show meta" },
+      { "attribute": "showExcerpt", "type": "toggle", "label": "Show excerpt" }
+    ]
+  }
+}

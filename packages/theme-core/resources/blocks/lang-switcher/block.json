@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/lang-switcher",
+  "title": "Language switcher",
+  "category": "joo",
+  "description": "Links to the other languages of the page.",
+  "textdomain": "joo-core",
+  "attributes": {
+    "style": { "type": "string", "default": "list", "enum": ["list", "dropdown"] },
+    "hideCurrent": { "type": "boolean", "default": false }
+  },
+  "supports": { "html": false },
+  "x-joo": {
+    "controls": [
+      {
+        "attribute": "style",
+        "type": "select",
+        "label": "Style",
+        "options": [
+          ["list", "List"],
+          ["dropdown", "Dropdown"]
+        ]
+      },
+      { "attribute": "hideCurrent", "type": "toggle", "label": "Hide current language" }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+.joo-theme-toggle__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+
+:root[data-theme='dark'] .joo-theme-toggle__sun,
+:root[data-theme='light'] .joo-theme-toggle__moon {
+  display: none;
+}

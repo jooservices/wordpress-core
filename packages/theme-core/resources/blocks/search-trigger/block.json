@@ -1,0 +1,16 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/search-trigger",
+  "title": "Search trigger",
+  "category": "joo",
+  "description": "Opens a search dialog (press / to open).",
+  "textdomain": "joo-core",
+  "attributes": {
+    "label": { "type": "string", "default": "Search" }
+  },
+  "supports": { "html": false },
+  "x-joo": {
+    "controls": [{ "attribute": "label", "type": "text", "label": "Label" }]
+  }
+}

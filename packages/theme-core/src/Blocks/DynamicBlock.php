@@ -146,7 +146,12 @@ abstract class DynamicBlock {
 		if ( '' === $file ) {
 			return '';
 		}
-		$wrapper = get_block_wrapper_attributes();
+		$previous = \WP_Block_Supports::$block_to_render;
+		if ( null === $previous ) {
+			// REST fragments and previews render outside the block parser: give block supports a block to work with.
+			\WP_Block_Supports::$block_to_render = $block->parsed_block;
+		}
+		$wrapper = get_block_wrapper_attributes( isset( $data['_class'] ) ? array( 'class' => (string) $data['_class'] ) : array() );
 		$level   = ob_get_level();
 		ob_start();
 		try {
@@ -158,6 +163,8 @@ abstract class DynamicBlock {
 				ob_end_clean();
 			}
 			throw $error;
+		} finally {
+			\WP_Block_Supports::$block_to_render = $previous;
 		}
 		return trim( (string) ob_get_clean() );
 	}

@@ -1,0 +1,32 @@
+.joo-author {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem;
+  border: 1px solid var(--wp--preset--color--border, rgb(128 128 128 / 30%));
+  border-radius: 0.75rem;
+}
+
+.joo-author__avatar {
+  flex: none;
+  border-radius: 50%;
+}
+
+.joo-author__name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.joo-author__title,
+.joo-author__bio {
+  opacity: 0.8;
+}
+
+.joo-author__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}

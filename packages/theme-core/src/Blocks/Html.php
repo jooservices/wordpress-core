@@ -72,14 +72,15 @@ final class Html {
 			return '';
 		}
 		$attrs = array(
-			'src'      => esc_url_raw( $image->url ),
-			'alt'      => $image->alt,
-			'width'    => $image->width > 0 ? $image->width : null,
-			'height'   => $image->height > 0 ? $image->height : null,
-			'class'    => isset( $opts['class'] ) ? (string) $opts['class'] : null,
-			'sizes'    => isset( $opts['sizes'] ) ? (string) $opts['sizes'] : null,
-			'loading'  => ! empty( $opts['eager'] ) ? null : 'lazy',
-			'decoding' => 'async',
+			'src'           => esc_url_raw( $image->url ),
+			'alt'           => $image->alt,
+			'width'         => $image->width > 0 ? $image->width : null,
+			'height'        => $image->height > 0 ? $image->height : null,
+			'class'         => isset( $opts['class'] ) ? (string) $opts['class'] : null,
+			'sizes'         => isset( $opts['sizes'] ) ? (string) $opts['sizes'] : null,
+			'loading'       => ! empty( $opts['eager'] ) ? null : 'lazy',
+			'fetchpriority' => ! empty( $opts['priority'] ) ? 'high' : null,
+			'decoding'      => 'async',
 		);
 		return '<img' . self::attrs( $attrs ) . '>';
 	}

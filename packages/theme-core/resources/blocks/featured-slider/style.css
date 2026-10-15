@@ -1,0 +1,84 @@
+.joo-slider {
+  position: relative;
+}
+
+.joo-slider__track {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.joo-slider__track::-webkit-scrollbar {
+  display: none;
+}
+
+.joo-slide {
+  flex: 0 0 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  scroll-snap-align: start;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--wp--preset--color--border, rgb(128 128 128 / 30%));
+  border-radius: 0.75rem;
+}
+
+.joo-slide__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 21 / 9;
+  object-fit: cover;
+}
+
+.joo-slide__body {
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.joo-slide__title {
+  margin: 0.25rem 0;
+}
+
+.joo-slider__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.joo-slider__controls button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+
+.joo-slider__dots {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+.joo-slider__dot {
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.joo-slider__dot[aria-current='true'] {
+  opacity: 1;
+}
+
+@media (min-width: 900px) {
+  .joo-slide {
+    grid-template-columns: 1.1fr 1fr;
+  }
+
+  .joo-slide__media img {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+}

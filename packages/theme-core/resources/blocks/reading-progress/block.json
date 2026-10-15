@@ -1,0 +1,11 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/reading-progress",
+  "title": "Reading progress",
+  "category": "joo",
+  "description": "A thin bar showing how far the reader is in the article.",
+  "textdomain": "joo-core",
+  "attributes": {},
+  "supports": { "html": false }
+}

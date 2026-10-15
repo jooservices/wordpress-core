@@ -574,7 +574,6 @@ final class WpContentProvider implements ContentProviderInterface {
 		$post  = get_post( $id );
 		$cats  = get_the_category( $id );
 		$thumb = (int) get_post_thumbnail_id( $id );
-		$words = ReadingTime::words( Text::plain( $post instanceof \WP_Post ? $post->post_content : '' ) );
 		$cat   = '';
 		$prim  = $this->primaryCategoryId( $id, array_values( array_map( static fn( \WP_Term $t ) => $t->term_id, $cats ) ) );
 		foreach ( $cats as $term ) {
@@ -591,7 +590,7 @@ final class WpContentProvider implements ContentProviderInterface {
 			(string) get_post_time( 'c', true, $id ),
 			(string) get_post_modified_time( 'c', true, $id ),
 			$cat,
-			ReadingTime::minutes( $words ),
+			ReadingTime::forPost( $id )['minutes'],
 			$thumb > 0 ? $this->image( $thumb, 'joo-card' ) : null
 		);
 	}
