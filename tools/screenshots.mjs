@@ -16,6 +16,7 @@ export const VIEWS = [
   ['about', '/about/'],
   ['not-found', '/definitely-not-here/'],
 ];
+/** @type {Array<[string, number, number]>} */
 export const VIEWPORTS = [
   ['phone', 390, 844],
   ['tablet', 820, 1180],
@@ -35,7 +36,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   mkdirSync(out, { recursive: true });
   const browser = await chromium.launch();
   let count = 0;
-  for (const scheme of ['dark', 'light']) {
+  for (const scheme of /** @type {const} */ (['dark', 'light'])) {
     for (const [vname, width, height] of VIEWPORTS) {
       const context = await browser.newContext({
         viewport: { width, height },
