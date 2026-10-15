@@ -1,0 +1,42 @@
+.joo-settings .joo-badge {
+  display: inline-block;
+  margin-inline-start: 8px;
+  padding: 0 8px;
+  border: 1px solid #c3c4c7;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 20px;
+  color: #50575e;
+  background: #f6f7f7;
+}
+
+.joo-settings .joo-badge--filter {
+  border-color: #b32d2e;
+  color: #b32d2e;
+  background: #fcf0f1;
+}
+
+.joo-settings .joo-badge--user {
+  border-color: #2271b1;
+  color: #2271b1;
+  background: #f0f6fc;
+}
+
+.joo-settings .joo-field-error {
+  color: #b32d2e;
+  font-weight: 600;
+}
+
+.joo-settings .joo-term-choice {
+  display: inline-block;
+  margin: 0 12px 6px 0;
+}
+
+.joo-settings .joo-settings__reset {
+  margin-top: 8px;
+}
+
+.joo-settings .joo-media__preview {
+  vertical-align: middle;
+  border-radius: 4px;
+}

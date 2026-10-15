@@ -5,9 +5,10 @@ const reports = '../../artifacts/reports/e2e';
 
 export default defineConfig({
   testDir: './specs',
-  fullyParallel: true,
+  // Admin specs change shared settings and share one WordPress session store: run one test at a time.
+  fullyParallel: false,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 2 : undefined,
+  workers: 1,
   timeout: 45_000,
   expect: { timeout: 10_000 },
   reporter: [

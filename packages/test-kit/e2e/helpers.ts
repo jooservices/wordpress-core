@@ -109,3 +109,22 @@ export async function setScheme(page: Page, scheme: 'dark' | 'light'): Promise<v
     }
   }, scheme);
 }
+
+/** Read WP_ADMIN_USER / WP_ADMIN_PASSWORD from the repository .env (never printed). */
+export async function adminCredentials(): Promise<{ user: string; password: string }> {
+  const { readFileSync } = await import('node:fs');
+  // The repository .env (three levels above this file), never a parent directory's.
+  const text = readFileSync(new URL('../../../.env', import.meta.url), 'utf8');
+  const get = (key: string) => (text.match(new RegExp(`^${key}=(.*)$`, 'm')) ?? [])[1]?.trim() ?? '';
+  return { user: get('WP_ADMIN_USER'), password: get('WP_ADMIN_PASSWORD') };
+}
+
+/** Log in to wp-admin (fails the test when the login does not succeed). */
+export async function loginAsAdmin(page: Page): Promise<void> {
+  const { user, password } = await adminCredentials();
+  await page.goto('/wp-login.php');
+  await page.locator('#user_login').fill(user);
+  await page.locator('#user_pass').fill(password);
+  await page.locator('#wp-submit').click();
+  await expect(page.locator('#wpadminbar')).toBeVisible();
+}
