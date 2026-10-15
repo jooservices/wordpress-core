@@ -5,7 +5,7 @@ THEME ?= jooservices
 export JOOWT_PROJECT ?= jooservices-wp-themes
 
 
-.PHONY: coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
+.PHONY: i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -102,6 +102,11 @@ test-matrix: ## Plugin compatibility matrix (THEME=...)
 package: ## Build the installable theme zip (THEME=...)
 	$(call require_theme)
 	$(call stub,package)
+i18n: ## Make POT files (WP-CLI in Docker), build the Vietnamese .po/.mo and fail on untranslated strings
+	@mkdir -p artifacts/i18n
+	@$(COMPOSE) exec -T -u www-data wordpress wp i18n make-pot /workspace/packages/theme-core /workspace/artifacts/i18n/joo-core.pot --domain=joo-core --exclude=tests,node_modules,resources/build,languages --skip-js --quiet
+	@$(COMPOSE) exec -T -u www-data wordpress wp i18n make-pot /workspace/plugins/jooservices-content /workspace/artifacts/i18n/jooservices-content.pot --domain=jooservices-content --exclude=tests,node_modules,languages --skip-js --quiet
+	@node tools/i18n.mjs
 docs: ## Generate reference docs (compatibility matrix; more generators land with their stories)
 	@node tools/docs-compat.mjs
 hooks: ## Install repository git hooks (repo-local config only)

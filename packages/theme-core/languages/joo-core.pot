@@ -1,0 +1,789 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-15T14:12:54+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: joo-core\n"
+
+#: resources/blocks/author-box/render.php:17
+msgid "About the author"
+msgstr ""
+
+#: resources/blocks/breadcrumbs/render.php:16
+msgid "Breadcrumb"
+msgstr ""
+
+#. translators: %s: category name.
+#: resources/blocks/category-tree/render.php:20
+#, php-format
+msgid "Toggle %s"
+msgstr ""
+
+#: resources/blocks/companies/render.php:50
+msgid "Companies pages"
+msgstr ""
+
+#: resources/blocks/companies/render.php:54
+msgid "Previous page"
+msgstr ""
+
+#: resources/blocks/companies/render.php:61
+msgid "Next page"
+msgstr ""
+
+#: resources/blocks/featured-slider/render.php:18
+msgid "Featured articles"
+msgstr ""
+
+#. translators: 1: slide number, 2: slide count.
+#: resources/blocks/featured-slider/render.php:22
+#, php-format
+msgid "%1$d of %2$d"
+msgstr ""
+
+#. translators: %d: minutes.
+#: resources/blocks/featured-slider/render.php:46
+#: src/Blocks/Blocks/PostMeta.php:101
+#, php-format
+msgid "%d min read"
+msgid_plural "%d min read"
+msgstr[0] ""
+msgstr[1] ""
+
+#: resources/blocks/featured-slider/render.php:59
+msgid "Previous slide"
+msgstr ""
+
+#. translators: %d: slide number.
+#: resources/blocks/featured-slider/render.php:62
+#, php-format
+msgid "Go to slide %d"
+msgstr ""
+
+#: resources/blocks/featured-slider/render.php:65
+msgid "Pause autoplay"
+msgstr ""
+
+#: resources/blocks/featured-slider/render.php:66
+msgid "Next slide"
+msgstr ""
+
+#: resources/blocks/lang-switcher/render.php:22
+#: resources/blocks/lang-switcher/render.php:25
+#: src/Seo/SeoModule.php:218
+msgid "Language"
+msgstr ""
+
+#: resources/blocks/profile-card/render.php:56
+msgid "View full profile"
+msgstr ""
+
+#: resources/blocks/reading-progress/render.php:12
+msgid "Reading progress"
+msgstr ""
+
+#: resources/blocks/related-posts/render.php:15
+#: resources/blocks/related-posts/render.php:16
+msgid "Related posts"
+msgstr ""
+
+#: resources/blocks/search-trigger/render.php:16
+msgid "Close"
+msgstr ""
+
+#: resources/blocks/theme-toggle/render.php:13
+msgid "Toggle dark mode"
+msgstr ""
+
+#: resources/blocks/toc/render.php:15
+#: src/I18n/JsStrings.php:51
+msgid "On this page"
+msgstr ""
+
+#: resources/blocks/toc/render.php:16
+msgid "Table of contents"
+msgstr ""
+
+#: src/Admin/EditorPanels.php:186
+msgid "These options are in the editor sidebar."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:97
+msgid "Compatibility"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:98
+msgid "Tools"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:107
+#: src/Admin/SettingsPage.php:522
+msgid "You do not have permission to manage these settings."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:114
+msgid "Settings sections"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:151
+msgid "Save changes"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:156
+msgid "Reset this tab to defaults?"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:156
+msgid "Reset this tab to defaults"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:224
+msgid "Choose image"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:234
+msgid "Automatic (first administrator)"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:271
+#: src/Blocks/Blocks/TagList.php:172
+#: src/Seo/Breadcrumbs/TrailBuilder.php:204
+msgid "Tags"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:273
+msgid "No tags yet."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:300
+msgid "Overridden by code"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:302
+msgid "Saved"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:304
+msgid "Theme"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:306
+msgid "Default"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:314
+msgid "Detected plugins"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:317
+msgid "Plugin"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:317
+msgid "Version"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:317
+msgid "Provides"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:317
+msgid "Adapter"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:317
+msgid "Notes"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:319
+msgid "No supported plugins detected."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:332
+msgid "Export settings"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:335
+msgid "Download JSON"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:337
+msgid "Import settings"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:340
+msgid "Settings file (JSON)"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:341
+msgid "Import"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:344
+msgid "Caches"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:347
+msgid "Flush JOOservices caches"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:355
+msgid "Performance snapshot"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:358
+msgid "The performance module is not running."
+msgstr ""
+
+#. translators: %s: yes or no.
+#: src/Admin/SettingsPage.php:362
+#, php-format
+msgid "OPcache enabled: %s"
+msgstr ""
+
+#. translators: %s: yes or no.
+#: src/Admin/SettingsPage.php:362
+#: src/Admin/SettingsPage.php:363
+#: src/Admin/SettingsPage.php:364
+msgid "yes"
+msgstr ""
+
+#. translators: %s: yes or no.
+#: src/Admin/SettingsPage.php:362
+#: src/Admin/SettingsPage.php:363
+#: src/Admin/SettingsPage.php:364
+msgid "no"
+msgstr ""
+
+#. translators: %s: yes or no.
+#: src/Admin/SettingsPage.php:363
+#, php-format
+msgid "Persistent object cache: %s"
+msgstr ""
+
+#. translators: %s: yes or no.
+#: src/Admin/SettingsPage.php:364
+#, php-format
+msgid "Response compression available: %s"
+msgstr ""
+
+#. translators: 1: HTTP status, 2: milliseconds, 3: bytes, 4: scripts, 5: stylesheets, 6: images.
+#: src/Admin/SettingsPage.php:369
+#, php-format
+msgid "Home page: HTTP %1$d in %2$d ms, %3$d bytes, %4$d script tags, %5$d stylesheets, %6$d images."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:371
+msgid "The self-test could not reach the home page (loopback requests may be blocked)."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:376
+msgid "Run self-test"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:479
+msgid "Choose a settings file."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:499
+msgid "This is not a JOOservices settings export."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:527
+msgid "Unknown settings tab."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:631
+msgid "Some values were not saved. Check the highlighted fields."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:633
+msgid "Settings saved."
+msgstr ""
+
+#: src/Blocks/BlockRegistrar.php:82
+#: src/Blocks/PatternLoader.php:57
+msgid "JOOservices"
+msgstr ""
+
+#: src/Blocks/Blocks/CategoryTree.php:151
+msgid "Categories"
+msgstr ""
+
+#: src/Blocks/Blocks/Companies.php:149
+msgid "Companies"
+msgstr ""
+
+#: src/Blocks/Blocks/Companies.php:150
+msgid "Current company"
+msgstr ""
+
+#: src/Blocks/Blocks/Companies.php:151
+msgid "Companies I have worked on"
+msgstr ""
+
+#: src/Blocks/Blocks/Companies.php:178
+#: src/I18n/JsStrings.php:50
+msgid "Present"
+msgstr ""
+
+#. translators: %s: date.
+#: src/Blocks/Blocks/PostMeta.php:93
+#, php-format
+msgid "Updated %s"
+msgstr ""
+
+#: src/Blocks/Blocks/SearchTrigger.php:38
+msgid "Search"
+msgstr ""
+
+#: src/Blocks/Blocks/SearchTrigger.php:39
+msgid "Search articles…"
+msgstr ""
+
+#: src/Blocks/Blocks/TopTopics.php:125
+msgid "Top topics"
+msgstr ""
+
+#: src/Blocks/CodeEnhancer.php:43
+msgid "Copy code"
+msgstr ""
+
+#: src/Blocks/CodeEnhancer.php:43
+msgid "Copy"
+msgstr ""
+
+#: src/Blocks/HeadingAnchors.php:141
+msgid "Link to section"
+msgstr ""
+
+#: src/Compat/Adapters/AioseoAdapter.php:30
+msgid "Core SEO output yields to All in One SEO. Noindex posts are not removed from the core sitemap automatically (AIOSEO stores them in its own table)."
+msgstr ""
+
+#: src/Compat/Adapters/CacheAdapters.php:53
+msgid "Our script handles are excluded from LiteSpeed JS optimisation and defer. Lazy loading yields when LiteSpeed lazy-loads images."
+msgstr ""
+
+#: src/Compat/Adapters/CacheAdapters.php:69
+msgid "Our scripts are excluded from WP Rocket minify, defer and \"Delay JavaScript\". Lazy loading yields when WP Rocket lazy-loads images."
+msgstr ""
+
+#: src/Compat/Adapters/CacheAdapters.php:89
+msgid "Our script tags are skipped by W3 Total Cache minification. Configure lazy loading in either W3TC or the theme, not both."
+msgstr ""
+
+#: src/Compat/Adapters/CacheAdapters.php:105
+msgid "Our script handles are excluded from Autoptimize aggregation. Lazy loading yields when Autoptimize lazy-loads images."
+msgstr ""
+
+#: src/Compat/Adapters/CacheAdapters.php:116
+msgid "Lazy loading yields when Smush lazy-loads images. Smush WebP conversion and the theme image sizes work together."
+msgstr ""
+
+#: src/Compat/Adapters/CacheAdapters.php:124
+msgid "Lazy loading yields when EWWW lazy-loads images."
+msgstr ""
+
+#: src/Compat/Adapters/CacheAdapters.php:131
+msgid "ShortPixel compresses uploads. Its lazy-loading state cannot be detected reliably, so the theme keeps lazy loading on: switch one of them off if you see double loading."
+msgstr ""
+
+#: src/Compat/Adapters/FormsAdapter.php:33
+msgid "Contact Form 7 assets load only on pages that contain a form."
+msgstr ""
+
+#: src/Compat/Adapters/JetpackAdapter.php:60
+msgid "Core Open Graph tags win; Jetpack Open Graph is switched off (setting \"Replace Jetpack Open Graph\"). Jetpack lazy images are detected."
+msgstr ""
+
+#: src/Compat/Adapters/RankMathAdapter.php:30
+msgid "Core SEO output yields to Rank Math. The primary category and noindex flags are read from it."
+msgstr ""
+
+#: src/Compat/Adapters/SeoPressAdapter.php:30
+msgid "Core SEO output yields to SEOPress. The primary category and noindex flags are read from it."
+msgstr ""
+
+#: src/Compat/Adapters/WooCommerceAdapter.php:30
+msgid "Basic support (Tier 3): cart, checkout and account are noindex, excluded from speculation rules and never lazy-fragmented. No storefront design is shipped."
+msgstr ""
+
+#: src/Compat/Adapters/YoastAdapter.php:30
+msgid "Core SEO output yields to Yoast SEO. The primary category and noindex flags are read from it."
+msgstr ""
+
+#: src/Compat/CompatModule.php:80
+msgid "No changes needed: Site Kit tags are left alone and are not counted in the script budgets."
+msgstr ""
+
+#: src/Compat/CompatModule.php:81
+msgid "No changes needed: tables use the theme tokens through the table block styles."
+msgstr ""
+
+#: src/Compat/CompatModule.php:82
+msgid "Use Compat\\Acf::field() in templates; it is guarded against ACF being inactive."
+msgstr ""
+
+#: src/Compat/CompatModule.php:83
+msgid "No changes needed: the comment form posts normally, also when comments are lazy-loaded."
+msgstr ""
+
+#: src/Compat/CompatModule.php:84
+msgid "If the firewall blocks the REST route joo/v1, allow-list /wp-json/joo/v1/."
+msgstr ""
+
+#: src/Compat/CompatModule.php:85
+msgid "WPForms loads its assets only where a form is present."
+msgstr ""
+
+#: src/Compat/CompatModule.php:86
+msgid "Fluent Forms loads its assets only where a form is present."
+msgstr ""
+
+#: src/Compat/CompatModule.php:87
+msgid "Supported: the SEO and language fields have classic meta boxes."
+msgstr ""
+
+#: src/Compat/CompatModule.php:88
+#: src/Compat/CompatModule.php:89
+#: src/Compat/CompatModule.php:90
+#: src/Compat/CompatModule.php:91
+msgid "Tier 3: use the Canvas page template; core content filters skip builder pages."
+msgstr ""
+
+#: src/Content/ContentModule.php:97
+msgid "Featured"
+msgstr ""
+
+#: src/Content/ContentModule.php:102
+msgid "Featured post"
+msgstr ""
+
+#: src/Content/ContentModule.php:103
+msgid "Shown in the featured slider on the home page."
+msgstr ""
+
+#: src/Content/ContentModule.php:113
+msgid "Featured order"
+msgstr ""
+
+#: src/Content/ContentModule.php:114
+msgid "Lower numbers come first."
+msgstr ""
+
+#: src/I18n/JsStrings.php:46
+#: src/I18n/JsStrings.php:47
+msgid "Retry"
+msgstr ""
+
+#: src/I18n/JsStrings.php:48
+msgid "Could not load this page."
+msgstr ""
+
+#: src/I18n/JsStrings.php:49
+msgid "Page {page} of {total}"
+msgstr ""
+
+#: src/I18n/LanguageTagging.php:123
+msgid "Lang"
+msgstr ""
+
+#: src/I18n/LanguageTagging.php:149
+msgid "All languages"
+msgstr ""
+
+#. translators: %s: language name.
+#: src/I18n/LanguageTagging.php:189
+#, php-format
+msgid "Set language: %s"
+msgstr ""
+
+#. translators: %s: video title.
+#: src/Lazy/EmbedFacade.php:127
+#, php-format
+msgid "Play video: %s"
+msgstr ""
+
+#: src/Lazy/FragmentLazy.php:185
+msgid "Loading…"
+msgstr ""
+
+#: src/Lazy/LazyModule.php:69
+msgid "Lazy loading"
+msgstr ""
+
+#: src/Lazy/LazyModule.php:74
+msgid "Lazy loading for this post"
+msgstr ""
+
+#: src/Lazy/LazyModule.php:75
+msgid "default follows the site settings; off loads everything immediately; on forces lazy loading."
+msgstr ""
+
+#. translators: %d: number of comments.
+#: src/Lazy/SectionLazy.php:139
+#, php-format
+msgid "Show %d comment"
+msgid_plural "Show %d comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of comments.
+#: src/Lazy/SectionLazy.php:140
+msgid "Leave a comment"
+msgstr ""
+
+#: src/Seo/Breadcrumbs/TrailBuilder.php:30
+msgid "Home"
+msgstr ""
+
+#. translators: %d: page number.
+#: src/Seo/Breadcrumbs/TrailBuilder.php:57
+#, php-format
+msgid "(Page %d)"
+msgstr ""
+
+#: src/Seo/Breadcrumbs/TrailBuilder.php:102
+msgid "Blog"
+msgstr ""
+
+#: src/Seo/Breadcrumbs/TrailBuilder.php:112
+msgid "Authors"
+msgstr ""
+
+#: src/Seo/Breadcrumbs/TrailBuilder.php:127
+msgid "Archive"
+msgstr ""
+
+#. translators: %s: search query.
+#: src/Seo/Breadcrumbs/TrailBuilder.php:131
+#, php-format
+msgid "Search results for \"%s\""
+msgstr ""
+
+#: src/Seo/Breadcrumbs/TrailBuilder.php:134
+msgid "Page not found"
+msgstr ""
+
+#: src/Seo/SeoModule.php:131
+msgid "SEO output"
+msgstr ""
+
+#: src/Seo/SeoModule.php:157
+#: src/Seo/SeoModule.php:266
+msgid "SEO"
+msgstr ""
+
+#: src/Seo/SeoModule.php:162
+msgid "SEO title"
+msgstr ""
+
+#: src/Seo/SeoModule.php:163
+msgid "Up to 70 characters. Empty uses the title template."
+msgstr ""
+
+#: src/Seo/SeoModule.php:175
+msgid "Meta description"
+msgstr ""
+
+#: src/Seo/SeoModule.php:176
+msgid "Aim for 120 to 160 characters. Empty uses the excerpt."
+msgstr ""
+
+#: src/Seo/SeoModule.php:188
+msgid "Hide from search engines"
+msgstr ""
+
+#: src/Seo/SeoModule.php:198
+msgid "Canonical URL"
+msgstr ""
+
+#: src/Seo/SeoModule.php:199
+msgid "Only when this content also exists elsewhere on this site."
+msgstr ""
+
+#: src/Seo/SeoModule.php:211
+msgid "Social image (attachment id)"
+msgstr ""
+
+#: src/Seo/SeoModule.php:223
+msgid "Content language"
+msgstr ""
+
+#: src/Seo/SeoModule.php:224
+msgid "Language code such as en or vi. Used for hreflang and the html lang attribute."
+msgstr ""
+
+#: src/Seo/SeoModule.php:236
+msgid "Translation of (post id)"
+msgstr ""
+
+#: src/Seo/SeoModule.php:237
+msgid "The original post this content translates. Empty when this is the original."
+msgstr ""
+
+#: src/Seo/SeoModule.php:261
+msgid "More than one SEO plugin is active"
+msgstr ""
+
+#: src/Seo/SeoModule.php:261
+msgid "SEO output is consistent"
+msgstr ""
+
+#: resources/blocks/author-box/block.json
+msgctxt "block title"
+msgid "Author box"
+msgstr ""
+
+#: resources/blocks/author-box/block.json
+msgctxt "block description"
+msgid "About the author of the article."
+msgstr ""
+
+#: resources/blocks/breadcrumbs/block.json
+msgctxt "block title"
+msgid "Breadcrumbs"
+msgstr ""
+
+#: resources/blocks/breadcrumbs/block.json
+msgctxt "block description"
+msgid "Breadcrumb trail (same data as the structured data)."
+msgstr ""
+
+#: resources/blocks/category-tree/block.json
+msgctxt "block title"
+msgid "Category tree"
+msgstr ""
+
+#: resources/blocks/category-tree/block.json
+msgctxt "block description"
+msgid "Collapsible categories with descriptions and counts."
+msgstr ""
+
+#: resources/blocks/companies/block.json
+msgctxt "block title"
+msgid "Companies"
+msgstr ""
+
+#: resources/blocks/companies/block.json
+msgctxt "block description"
+msgid "Current company plus a paginated list of previous employers."
+msgstr ""
+
+#: resources/blocks/featured-slider/block.json
+msgctxt "block title"
+msgid "Featured slider"
+msgstr ""
+
+#: resources/blocks/featured-slider/block.json
+msgctxt "block description"
+msgid "Owner-picked posts in a swipeable slider."
+msgstr ""
+
+#: resources/blocks/lang-switcher/block.json
+msgctxt "block title"
+msgid "Language switcher"
+msgstr ""
+
+#: resources/blocks/lang-switcher/block.json
+msgctxt "block description"
+msgid "Links to the other languages of the page."
+msgstr ""
+
+#: resources/blocks/post-meta/block.json
+msgctxt "block title"
+msgid "Post meta"
+msgstr ""
+
+#: resources/blocks/post-meta/block.json
+msgctxt "block description"
+msgid "Category, dates, reading time and author of a post."
+msgstr ""
+
+#: resources/blocks/profile-card/block.json
+msgctxt "block title"
+msgid "Profile card (About me)"
+msgstr ""
+
+#: resources/blocks/profile-card/block.json
+msgctxt "block description"
+msgid "Avatar, name, title and short bio of the site owner."
+msgstr ""
+
+#: resources/blocks/reading-progress/block.json
+msgctxt "block title"
+msgid "Reading progress"
+msgstr ""
+
+#: resources/blocks/reading-progress/block.json
+msgctxt "block description"
+msgid "A thin bar showing how far the reader is in the article."
+msgstr ""
+
+#: resources/blocks/related-posts/block.json
+msgctxt "block title"
+msgid "Related posts"
+msgstr ""
+
+#: resources/blocks/related-posts/block.json
+msgctxt "block description"
+msgid "Posts related by category and tags."
+msgstr ""
+
+#: resources/blocks/search-trigger/block.json
+msgctxt "block title"
+msgid "Search trigger"
+msgstr ""
+
+#: resources/blocks/search-trigger/block.json
+msgctxt "block description"
+msgid "Opens a search dialog (press / to open)."
+msgstr ""
+
+#: resources/blocks/tag-list/block.json
+msgctxt "block title"
+msgid "Tag list"
+msgstr ""
+
+#: resources/blocks/tag-list/block.json
+msgctxt "block description"
+msgid "Tags as chips or a weighted cloud."
+msgstr ""
+
+#: resources/blocks/theme-toggle/block.json
+msgctxt "block title"
+msgid "Theme toggle"
+msgstr ""
+
+#: resources/blocks/theme-toggle/block.json
+msgctxt "block description"
+msgid "Switch between dark and light mode."
+msgstr ""
+
+#: resources/blocks/toc/block.json
+msgctxt "block title"
+msgid "Table of contents"
+msgstr ""
+
+#: resources/blocks/toc/block.json
+msgctxt "block description"
+msgid "Contents of the article with a scroll-spy."
+msgstr ""
+
+#: resources/blocks/top-topics/block.json
+msgctxt "block title"
+msgid "Top topics"
+msgstr ""
+
+#: resources/blocks/top-topics/block.json
+msgctxt "block description"
+msgid "Topics with a small image, post count and intro."
+msgstr ""

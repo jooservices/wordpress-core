@@ -48,4 +48,10 @@ expect_fail "deptrac" php -d error_reporting=24575 vendor/bin/deptrac analyse --
 rm -rf packages/theme-core/src/ToolingFixture themes/jooservices/inc/ToolingFixture.php
 expect_pass "deptrac" php -d error_reporting=24575 vendor/bin/deptrac analyse --no-progress --fail-on-uncovered
 bash tests/tooling/docs-compat.sh || fail=1
+# i18n check: passes with a complete dictionary, fails when a string has no translation
+node tools/i18n.mjs --check >/dev/null 2>&1 && echo "ok:   i18n check passes with a complete dictionary" || { echo "FAIL: i18n check"; fail=1; }
+cp packages/theme-core/languages/vi.json "$TMP/vi.json.bak"
+python3 -c "import json;p='packages/theme-core/languages/vi.json';d=json.load(open(p));d.pop('Home');json.dump(d,open(p,'w'),ensure_ascii=False)"
+expect_fail "i18n check" node tools/i18n.mjs --check
+cp "$TMP/vi.json.bak" packages/theme-core/languages/vi.json
 exit $fail

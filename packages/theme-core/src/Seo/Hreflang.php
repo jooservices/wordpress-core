@@ -40,7 +40,6 @@ final class Hreflang {
 	 * Hooks WordPress.
 	 */
 	public function hook(): void {
-		add_filter( 'language_attributes', array( $this, 'htmlLang' ), 20, 2 );
 		add_filter( 'update_post_metadata', array( $this, 'guardTranslationOf' ), 10, 4 );
 	}
 
@@ -118,28 +117,6 @@ final class Hreflang {
 	}
 
 	/**
-	 * `<html lang>` follows the language of the post.
-	 *
-	 * @param string $output  Attributes.
-	 * @param string $doctype Doctype.
-	 */
-	public function htmlLang( string $output, string $doctype = 'html' ): string {
-		if ( 'html' !== $doctype || ! is_singular() ) {
-			return $output;
-		}
-		$post = get_queried_object();
-		if ( ! $post instanceof \WP_Post ) {
-			return $output;
-		}
-		$lang = (string) get_post_meta( $post->ID, '_joo_lang', true );
-		if ( '' === $lang ) {
-			return $output;
-		}
-		$lang = Context::normaliseLanguage( $lang );
-		return (string) preg_replace( '/lang="[^"]*"/', 'lang="' . esc_attr( $lang ) . '"', $output, 1 );
-	}
-
-	/**
 	 * Refuses `_joo_translation_of` values that point to the post itself, to a missing post or to a post that is itself a translation.
 	 *
 	 * @param mixed  $check    Short-circuit value.
@@ -156,7 +133,16 @@ final class Hreflang {
 		if ( 0 === $target ) {
 			return $check;
 		}
-		if ( $target === (int) $post_id || null === get_post( $target ) || (int) get_post_meta( $target, '_joo_translation_of', true ) > 0 ) {
+		$source = get_post( $target );
+		if ( $target === (int) $post_id || null === $source || (int) get_post_meta( $target, '_joo_translation_of', true ) > 0 ) {
+			return false;
+		}
+		if ( get_post_type( (int) $post_id ) !== $source->post_type ) {
+			return false;
+		}
+		$mine   = (string) get_post_meta( (int) $post_id, '_joo_lang', true );
+		$theirs = (string) get_post_meta( $target, '_joo_lang', true );
+		if ( '' !== $mine && $mine === $theirs ) {
 			return false;
 		}
 		return $check;

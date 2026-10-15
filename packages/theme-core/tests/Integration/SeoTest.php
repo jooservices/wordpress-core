@@ -47,11 +47,11 @@ final class SeoTest extends IntegrationTestCase {
 	 *
 	 * @param array<string, mixed> $settings Setting values by key.
 	 */
-	private function boot( array $settings = array() ): HeadPrinter {
+	private function boot( array $settings = array(), string $manifest = self::MANIFEST ): HeadPrinter {
 		if ( array() !== $settings ) {
 			add_filter( 'joo/settings/value', static fn( $value, $key ) => array_key_exists( $key, $settings ) ? $settings[ $key ] : $value, 10, 2 );
 		}
-		Kernel::boot( self::MANIFEST );
+		Kernel::boot( $manifest );
 		do_action( 'after_setup_theme' );
 		return Kernel::container()->get( HeadPrinter::class );
 	}
@@ -420,7 +420,7 @@ final class SeoTest extends IntegrationTestCase {
 	}
 
 	public function test_hreflang_is_reciprocal_and_has_x_default(): void {
-		$printer = $this->boot();
+		$printer = $this->boot( array(), '/workspace/packages/theme-core/tests/Fixtures/manifests/multilang.json' );
 		$en      = self::factory()->post->create( array( 'post_title' => 'English' ) );
 		$vi      = self::factory()->post->create( array( 'post_title' => 'Tiếng Việt' ) );
 		update_post_meta( $en, '_joo_lang', 'en' );
@@ -439,7 +439,7 @@ final class SeoTest extends IntegrationTestCase {
 	}
 
 	public function test_single_language_posts_print_no_hreflang_and_unpublished_translations_are_skipped(): void {
-		$printer = $this->boot();
+		$printer = $this->boot( array(), '/workspace/packages/theme-core/tests/Fixtures/manifests/multilang.json' );
 		$en      = self::factory()->post->create();
 		update_post_meta( $en, '_joo_lang', 'en' );
 		$this->assertStringNotContainsString( 'hreflang', $this->head( $printer, get_permalink( $en ) ) );
@@ -450,7 +450,7 @@ final class SeoTest extends IntegrationTestCase {
 	}
 
 	public function test_translation_of_cannot_point_to_itself_or_to_another_translation(): void {
-		$this->boot();
+		$this->boot( array(), '/workspace/packages/theme-core/tests/Fixtures/manifests/multilang.json' );
 		$a = self::factory()->post->create();
 		$b = self::factory()->post->create();
 		$c = self::factory()->post->create();
