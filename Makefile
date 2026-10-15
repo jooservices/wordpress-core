@@ -65,7 +65,8 @@ fix: ## Auto-fix PHP (phpcbf), CSS (stylelint) and formatting (prettier)
 analyse: ## PHPStan (core level 8, others level 6), tsc checkJs, deptrac
 	@$(PHP) vendor/bin/phpstan analyse -c phpstan-core.neon --no-progress --memory-limit=1G
 	@$(PHP) vendor/bin/phpstan analyse -c phpstan-themes.neon --no-progress --memory-limit=1G
-	@npx --no-install tsc -p tsconfig.json
+	@npx --no-install tsc -p tsconfig.tools.json
+	@if ls packages/*/resources/js/*.js themes/*/assets/src/js/*.js >/dev/null 2>&1; then npx --no-install tsc -p tsconfig.json; fi
 	@$(PHP) vendor/bin/deptrac analyse --no-progress --fail-on-uncovered
 test-tooling: ## Prove that every quality tool fails on a violation
 	@tests/make-help.sh

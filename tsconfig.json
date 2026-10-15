@@ -11,6 +11,6 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["packages/*/resources/js/**/*.js", "themes/*/assets/src/js/**/*.js", "tools/**/*.mjs"],
+  "include": ["packages/*/resources/js/**/*.js", "themes/*/assets/src/js/**/*.js"],
   "exclude": ["**/node_modules/**", "**/build/**", "**/*.test.js"]
 }

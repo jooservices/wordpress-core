@@ -9,6 +9,8 @@ parameters:
     - tools
   excludePaths:
     - themes/*/core
+    - themes/*/core/*
+    - themes/*/core/**
     - themes/*/node_modules
     - themes/*/assets/build
     - tools/bc
