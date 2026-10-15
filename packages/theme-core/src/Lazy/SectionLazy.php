@@ -127,6 +127,11 @@ final class SectionLazy {
 		if ( $post_id < 1 || ! $this->policy->decide( 'comments' )->lazy ) {
 			return $html;
 		}
+		if ( str_contains( $html, '<joo-lazy name="comments"' ) ) {
+			// WordPress can run render_block twice for the comments block; wrapping the wrapper would make the
+			// fragment load itself forever and overwrite the stored snapshot.
+			return $html;
+		}
 		$count = (int) get_comments_number( $post_id );
 		$args  = array(
 			'post'  => $post_id,

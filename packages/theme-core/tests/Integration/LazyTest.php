@@ -409,6 +409,10 @@ final class LazyTest extends IntegrationTestCase {
 			)
 		);
 		$this->assertSame( $comments, rest_do_request( $request )->get_data()['html'] );
+		// A second pass over the wrapped markup must not wrap it again or replace the snapshot.
+		$again = $this->service( SectionLazy::class )->filter( $html, array( 'blockName' => 'core/comments' ) );
+		$this->assertSame( $html, $again );
+		$this->assertSame( $comments, rest_do_request( $request )->get_data()['html'] );
 		unset( $wp_query );
 	}
 
