@@ -7,7 +7,8 @@ const WIDTHS = [320, 360, 390, 430, 768, 820, 1024, 1280, 1440, 1920, 2560, 3840
 const VIEWS = ['/', '/category/ai/', '/about/', '/?s=docker', '/definitely-not-here/'];
 
 test.describe('shell', () => {
-  test('skip link is the first focusable element and moves focus to main', async ({ page }) => {
+  test('skip link is the first focusable element and moves focus to main', async ({ page, browserName }) => {
+    test.skip(browserName === 'webkit', 'Safari moves focus to links only with Option+Tab');
     await page.goto('/');
     await page.keyboard.press('Tab');
     const skip = page.locator('a.skip-link');

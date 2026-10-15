@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 
 const baseURL = process.env.E2E_BASE_URL ?? 'http://127.0.0.1:8080';
 const theme = process.env.E2E_THEME ?? '';
@@ -28,5 +28,12 @@ export default defineConfig({
     },
     { name: 'tablet', use: { viewport: { width: 820, height: 1180 }, hasTouch: true } },
     { name: 'desktop', use: { viewport: { width: 1440, height: 900 } } },
+    // Cross-engine runs (E2E_ENGINES=webkit,firefox): WebKit is the Safari engine.
+    ...(process.env.E2E_ENGINES?.includes('webkit')
+      ? [{ name: 'webkit', use: { ...devices['Desktop Safari'], viewport: { width: 1440, height: 900 } } }]
+      : []),
+    ...(process.env.E2E_ENGINES?.includes('firefox')
+      ? [{ name: 'firefox', use: { ...devices['Desktop Firefox'], viewport: { width: 1440, height: 900 } } }]
+      : []),
   ],
 });

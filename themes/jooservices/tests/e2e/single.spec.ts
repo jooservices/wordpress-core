@@ -48,7 +48,8 @@ test.describe('single post', () => {
     await expect.poll(async () => Number(await bar.getAttribute('aria-valuenow'))).toBeGreaterThan(10);
   });
 
-  test('code blocks scroll inside their box and copy through the button', async ({ page, context }) => {
+  test('code blocks scroll inside their box and copy through the button', async ({ page, context, browserName }) => {
+    test.skip(browserName !== 'chromium', 'clipboard permissions are Chromium only');
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto(CODE);
     const pre = page.locator('.joo-prose pre').first();
