@@ -69,10 +69,29 @@ test.describe('terminal dock', () => {
     await expect(page).toHaveURL(/prompt-caching/);
   });
 
-  test('state persists across navigation', async ({ page }) => {
+  test('the terminal makes no extra requests, writes no storage and sets no cookies', async ({ page, context }) => {
     await open(page);
-    await page.goto('/category/ai/');
-    await expect(page.locator('joo-terminal')).toHaveAttribute('data-state', 'open');
+    const requests: string[] = [];
+    page.on('request', (r) => requests.push(r.url()));
+    for (const cmd of [
+      'ls',
+      'tree',
+      'help',
+      'cd ai',
+      'ls',
+      'cd ..',
+      'grep -ri docker .',
+      'cat ai/prompt-caching',
+      'pwd',
+      'whoami',
+      'history',
+    ]) {
+      await run(page, cmd);
+    }
+    expect(requests.filter((u) => !u.endsWith('.woff2'))).toEqual([]);
+    expect(await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('joo-term')))).toEqual([]);
+    const cookies = await context.cookies();
+    expect(cookies.filter((c) => /term/i.test(c.name))).toEqual([]);
   });
 
   test('phone: the closed dock is a bar after the page and the open dock is a bottom sheet', async ({ page }) => {

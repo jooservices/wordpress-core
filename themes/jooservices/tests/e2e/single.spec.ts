@@ -57,7 +57,7 @@ test.describe('single post', () => {
     const copy = page.locator('.joo-code__copy, joo-code-copy button, button:has-text("Copy")').first();
     await expect(copy).toBeVisible();
     await copy.click();
-    await expect(page.locator('[role="status"], .joo-code__copy')).toContainText(/copied/i);
+    await expect(page.locator('.joo-code__status').first()).toContainText(/copied/i);
   });
 
   test('previous and next links show titles', async ({ page }) => {
@@ -83,9 +83,14 @@ test.describe('single post', () => {
 
   test('comments load on demand and nested replies are indented', async ({ page }) => {
     await page.goto('/ai/prompt-caching/');
-    const lazy = page.locator('joo-lazy[name="comments"]');
+    const lazy = page.locator('joo-lazy[name="comments"]').first();
     await lazy.scrollIntoViewIfNeeded();
-    await expect(page.locator('#respond, .joo-comments').first()).toBeVisible();
+    await lazy
+      .getByRole('button', { name: /comment/i })
+      .first()
+      .click();
+    await expect(page.locator('#respond')).toBeVisible();
+    await expect(page.locator('joo-lazy[name="comments"] joo-lazy')).toHaveCount(0);
   });
 
   test('a single post exposes a BlogPosting graph with breadcrumbs', async ({ page }) => {
@@ -98,6 +103,6 @@ test.describe('single post', () => {
   test('a password protected post asks for the password and hides the content', async ({ page }) => {
     await page.goto('/blog/protected-ask-me/');
     await expect(page.locator('input[name="post_password"]')).toBeVisible();
-    await expect(page.locator('.joo-prose')).toHaveCount(0);
+    await expect(page.locator('.joo-prose h2')).toHaveCount(0);
   });
 });

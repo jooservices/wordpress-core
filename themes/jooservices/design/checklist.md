@@ -92,7 +92,7 @@ Tick every item against the running demo (`make demo THEME=jooservices`) at 390,
 - [ ] TERMINAL-04 ls, cd, cat, tree, grep, open, theme and lang commands work
 - [ ] TERMINAL-05 Terminal is read only and has no network access of its own
 - [ ] TERMINAL-06 Close button and Escape return focus to the tab
-- [ ] TERMINAL-07 State persists across navigation
+- [ ] TERMINAL-07 Open or closed state is not persisted and the terminal makes no network request after the first load
 - [ ] TERMINAL-08 Reduced motion disables the caret blink
 
 _68 items._

@@ -1,11 +1,17 @@
 import { test, expect } from '@playwright/test';
 
 test.skip(process.env.E2E_THEME !== 'jooservices', 'jooservices theme specs');
+// Autoplay would move the slider under the assertions.
+test.use({ reducedMotion: 'reduce' });
 
 test.describe('home', () => {
   test('the rail shows profile, companies, categories, topics and tags in order', async ({ page }) => {
     await page.goto('/');
     const rail = page.locator('#joo-rail');
+    for (const name of ['companies', 'category-tree', 'top-topics', 'tag-list']) {
+      await page.locator(`joo-lazy[name="${name}"]`).scrollIntoViewIfNeeded();
+      await expect(page.locator(`joo-lazy[name="${name}"] .joo-lazy__placeholder`)).toHaveCount(0);
+    }
     const order = await rail.evaluate((node) =>
       [
         ...node.querySelectorAll(
@@ -32,9 +38,23 @@ test.describe('home', () => {
     await expect.poll(() => track.evaluate((n) => n.scrollLeft)).toBeLessThanOrEqual(before + 1);
     await page.getByRole('button', { name: 'Go to slide 3' }).click();
     await expect(page.getByRole('button', { name: 'Go to slide 3' })).toHaveAttribute('aria-current', 'true');
-    const pause = page.getByRole('button', { name: /pause autoplay/i });
+  });
+
+  test('autoplay can be paused and is off when reduced motion is requested', async ({ browser }) => {
+    const motion = await browser.newContext({ reducedMotion: 'no-preference' });
+    const page = await motion.newPage();
+    await page.goto('/');
+    const pause = page.locator('.joo-slider__pause');
+    const label = await pause.getAttribute('aria-label');
     await pause.click();
-    await expect(page.getByRole('button', { name: /start autoplay|play/i })).toBeVisible();
+    await expect(pause).not.toHaveAttribute('aria-label', label ?? '');
+    await motion.close();
+    const calm = await browser.newContext({ reducedMotion: 'reduce' });
+    const still = await calm.newPage();
+    await still.goto('/');
+    await still.waitForTimeout(8000);
+    expect(await still.locator('.joo-slider__track').evaluate((n) => n.scrollLeft)).toBe(0);
+    await calm.close();
   });
 
   test('featured posts are not repeated in the latest list', async ({ page }) => {
@@ -69,6 +89,8 @@ test.describe('home', () => {
 
   test('companies paginate in place without leaving the page', async ({ page }) => {
     await page.goto('/');
+    await page.locator('joo-lazy[name="companies"]').scrollIntoViewIfNeeded();
+    await expect(page.locator('.joo-companies__list')).toBeVisible();
     const first = await page.locator('.joo-companies__list .joo-company__name').first().innerText();
     await page.locator('.joo-companies__pager a', { hasText: '2' }).first().click();
     await expect
@@ -79,6 +101,7 @@ test.describe('home', () => {
 
   test('the category tree toggles children', async ({ page }) => {
     await page.goto('/');
+    await page.locator('joo-lazy[name="category-tree"]').scrollIntoViewIfNeeded();
     const toggle = page.locator('.joo-tree__toggle').first();
     await expect(toggle).toBeVisible();
     const expanded = await toggle.getAttribute('aria-expanded');

@@ -52,13 +52,17 @@ final class FeaturedSlider extends DynamicBlock {
 	}
 
 	/**
-	 * Hides the block when nothing is featured.
+	 * Hides the block when nothing is featured and on paginated pages.
 	 *
 	 * @param array<string, mixed> $attrs   Attributes.
 	 * @param string               $content Content.
 	 * @param \WP_Block            $block   Block.
 	 */
 	public function render( array $attrs, string $content, \WP_Block $block ): string {
+		// Featured posts are shown once, on the first page of the list.
+		if ( is_paged() ) {
+			return '';
+		}
 		/** @var ContentProviderInterface $provider */
 		$provider = $this->container->get( ContentProviderInterface::class );
 		if ( array() === $provider->featured( 1 ) ) {

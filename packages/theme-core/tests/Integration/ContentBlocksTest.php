@@ -232,6 +232,9 @@ final class ContentBlocksTest extends IntegrationTestCase {
 		$this->assertStringNotContainsString( '<script>', $html );
 		$this->assertStringContainsString( 'joo-slider__controls', $html );
 		$this->assertStringContainsString( 'data-autoplay="0"', do_blocks( '<!-- wp:joo/featured-slider {"autoplay":false} /-->' ) );
+		$this->go_to( '/' );
+		$GLOBALS['wp_query']->is_paged = true;
+		$this->assertSame( '', trim( do_blocks( '<!-- wp:joo/featured-slider /-->' ) ), 'the slider is only on the first page' );
 	}
 
 	public function test_a_single_featured_post_has_no_controls_or_autoplay(): void {

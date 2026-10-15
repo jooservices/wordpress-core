@@ -286,6 +286,10 @@
   border-color: color-mix(in srgb, var(--joo-accent) 50%, var(--joo-line));
 }
 
+.joo-card:not(:has(.joo-card__thumb)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .joo-card__thumb {
   margin: 0;
   overflow: hidden;
