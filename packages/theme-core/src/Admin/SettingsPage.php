@@ -59,6 +59,7 @@ final class SettingsPage {
 		add_action( 'admin_post_joo_export_settings', array( $this, 'handleExport' ) );
 		add_action( 'admin_post_joo_import_settings', array( $this, 'handleImport' ) );
 		add_action( 'admin_post_joo_flush_caches', array( $this, 'handleFlush' ) );
+		add_action( 'admin_post_joo_selftest', array( $this, 'handleSelfTest' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 	}
 
@@ -339,11 +340,66 @@ final class SettingsPage {
 		echo '<p><label for="joo-import-file">' . esc_html__( 'Settings file (JSON)', 'joo-core' ) . '</label> <input type="file" id="joo-import-file" name="joo_import_file" accept="application/json,.json"></p>';
 		submit_button( __( 'Import', 'joo-core' ), 'secondary' );
 		echo '</form>';
+		$this->renderPerformance();
 		echo '<h2>' . esc_html__( 'Caches', 'joo-core' ) . '</h2>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="joo_flush_caches">';
 		wp_nonce_field( 'joo_settings_tools' );
 		submit_button( __( 'Flush JOOservices caches', 'joo-core' ), 'secondary' );
 		echo '</form>';
+	}
+
+	/**
+	 * Performance snapshot and the self-test button (Tools tab).
+	 */
+	private function renderPerformance(): void {
+		echo '<h2>' . esc_html__( 'Performance snapshot', 'joo-core' ) . '</h2>';
+		$diagnostics = $this->diagnostics();
+		if ( null === $diagnostics ) {
+			echo '<p>' . esc_html__( 'The performance module is not running.', 'joo-core' ) . '</p>';
+			return;
+		}
+		$snapshot = $diagnostics->snapshot();
+		echo '<ul class="joo-snapshot"><li>' . esc_html( sprintf( /* translators: %s: yes or no. */ __( 'OPcache enabled: %s', 'joo-core' ), $snapshot['opcache'] ? __( 'yes', 'joo-core' ) : __( 'no', 'joo-core' ) ) ) . '</li>';
+		echo '<li>' . esc_html( sprintf( /* translators: %s: yes or no. */ __( 'Persistent object cache: %s', 'joo-core' ), $snapshot['object'] ? __( 'yes', 'joo-core' ) : __( 'no', 'joo-core' ) ) ) . '</li>';
+		echo '<li>' . esc_html( sprintf( /* translators: %s: yes or no. */ __( 'Response compression available: %s', 'joo-core' ), $snapshot['compress'] ? __( 'yes', 'joo-core' ) : __( 'no', 'joo-core' ) ) ) . '</li></ul>';
+		$result = get_transient( 'joo_selftest_' . get_current_user_id() );
+		if ( is_array( $result ) ) {
+			delete_transient( 'joo_selftest_' . get_current_user_id() );
+			if ( ! empty( $result['ok'] ) ) {
+				echo '<p class="joo-selftest">' . esc_html( sprintf( /* translators: 1: HTTP status, 2: milliseconds, 3: bytes, 4: scripts, 5: stylesheets, 6: images. */ __( 'Home page: HTTP %1$d in %2$d ms, %3$d bytes, %4$d script tags, %5$d stylesheets, %6$d images.', 'joo-core' ), (int) $result['status'], (int) $result['ttfb_ms'], (int) $result['bytes'], (int) $result['scripts'], (int) $result['styles'], (int) $result['images'] ) ) . '</p>';
+			} else {
+				echo '<p class="joo-selftest">' . esc_html__( 'The self-test could not reach the home page (loopback requests may be blocked).', 'joo-core' ) . '</p>';
+			}
+		}
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="joo_selftest">';
+		wp_nonce_field( 'joo_settings_tools' );
+		submit_button( __( 'Run self-test', 'joo-core' ), 'secondary' );
+		echo '</form>';
+	}
+
+	/**
+	 * Runs the performance self-test and returns to the Tools tab.
+	 */
+	public function handleSelfTest(): void {
+		$this->guard( null, 'tools' );
+		$diagnostics = $this->diagnostics();
+		if ( null !== $diagnostics ) {
+			set_transient( 'joo_selftest_' . get_current_user_id(), $diagnostics->selfTest(), 60 );
+		}
+		$this->redirect( 'tools', array(), array() );
+	}
+
+	/**
+	 * Diagnostics service when the performance module runs.
+	 */
+	private function diagnostics(): ?\JOOservices\ThemeCore\Performance\Diagnostics {
+		$container = \JOOservices\ThemeCore\Kernel::container();
+		if ( null === $container || ! $container->has( \JOOservices\ThemeCore\Performance\Diagnostics::class ) ) {
+			return null;
+		}
+		/** @var \JOOservices\ThemeCore\Performance\Diagnostics $diagnostics */
+		$diagnostics = $container->get( \JOOservices\ThemeCore\Performance\Diagnostics::class );
+		return $diagnostics;
 	}
 
 	/**

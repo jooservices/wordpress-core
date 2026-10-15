@@ -38,10 +38,22 @@ final class DoctorCommand {
 	/**
 	 * Checks requirements, manifest, modules and more. Exit code 0 = ok, 1 = recommendations, 2 = critical problems.
 	 *
-	 * @param array<int, string> $args Positional arguments.
+	 * ## OPTIONS
+	 *
+	 * [--perf]
+	 * : Also print the performance snapshot and measure the home page with a loopback request.
+	 *
+	 * @param array<int, string>    $args       Positional arguments.
+	 * @param array<string, string> $assoc_args Flags.
 	 */
-	public function __invoke( array $args ): void {
+	public function __invoke( array $args, array $assoc_args = array() ): void {
 		unset( $args );
+		if ( isset( $assoc_args['perf'] ) && $this->container->has( \JOOservices\ThemeCore\Performance\Diagnostics::class ) ) {
+			/** @var \JOOservices\ThemeCore\Performance\Diagnostics $diagnostics */
+			$diagnostics = $this->container->get( \JOOservices\ThemeCore\Performance\Diagnostics::class );
+			\WP_CLI::line( 'snapshot: ' . wp_json_encode( $diagnostics->snapshot() ) );
+			\WP_CLI::line( 'self-test: ' . wp_json_encode( $diagnostics->selfTest() ) );
+		}
 		/** @var SiteHealth $health */
 		$health   = $this->container->get( SiteHealth::class );
 		$worst    = 0;

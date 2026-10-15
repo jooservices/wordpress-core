@@ -18,3 +18,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 RUN mkdir -p /var/log/php && chown www-data:www-data /var/log/php
 
 COPY php.ini /usr/local/etc/php/conf.d/zz-joowt.ini
+COPY entrypoint.sh /usr/local/bin/joowt-entrypoint.sh
+RUN chmod +x /usr/local/bin/joowt-entrypoint.sh
+ENTRYPOINT ["joowt-entrypoint.sh"]
+CMD ["apache2-foreground"]

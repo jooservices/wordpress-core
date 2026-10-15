@@ -36,13 +36,15 @@
       "name": "joo-card",
       "w": 640,
       "h": 480,
-      "crop": true
+      "crop": true,
+      "retina": true
     },
     {
       "name": "joo-cover",
-      "w": 1600,
-      "h": 686,
-      "crop": true
+      "w": 900,
+      "h": 386,
+      "crop": true,
+      "retina": true
     },
     {
       "name": "joo-thumb",

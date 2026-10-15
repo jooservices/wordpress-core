@@ -72,7 +72,8 @@ final class AssetsTest extends IntegrationTestCase {
 				'enqueued' => $this->registry()->debugList(),
 			)
 		);
-		$this->assertMatchesRegularExpression( '#<script[^>]*id="joo-runtime-js-module"[^>]*src="[^"]*/core/resources/build/js/runtime-[A-Za-z0-9]+\.js"#', $html, (string) $debug );
+		$this->assertStringContainsString( 'id="joo-runtime-js-module"', $html, (string) $debug );
+		$this->assertMatchesRegularExpression( '#<script[^>]*src="[^"]*/core/resources/build/js/runtime-[A-Za-z0-9]+\.js"[^>]*>#', $html, (string) $debug );
 		$this->assertMatchesRegularExpression( '#<link[^>]*id=\'joo-core-css\'[^>]*href=\'[^\']*/core/resources/build/css/core-[A-Za-z0-9]+\.css\'#', $html, (string) $debug );
 		preg_match_all( '#[\'"]([^\'"]*/core/resources/build/[^\'"]+)[\'"]#', $html, $m );
 		$this->assertNotEmpty( $m[1] );

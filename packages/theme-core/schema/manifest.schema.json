@@ -114,6 +114,9 @@
           },
           "crop": {
             "type": "boolean"
+          },
+          "retina": {
+            "type": "boolean"
           }
         }
       }

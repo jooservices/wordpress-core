@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "slug": "fixture-theme",
+  "name": "Fixture",
+  "core": "^0.1",
+  "modules": {
+    "seo": true,
+    "lazy": true
+  },
+  "imageSizes": [
+    {
+      "name": "joo-card",
+      "w": 640,
+      "h": 480,
+      "crop": true,
+      "retina": true
+    },
+    {
+      "name": "joo-cover",
+      "w": 900,
+      "h": 386,
+      "crop": true,
+      "retina": true
+    }
+  ],
+  "images": {
+    "sizesPresets": {
+      "card": "(min-width: 900px) 220px, 100vw",
+      "cover": "(min-width: 1240px) 900px, 100vw",
+      "content": "(min-width: 900px) 700px, 100vw"
+    }
+  },
+  "perf": {
+    "fonts": [
+      {
+        "family": "Demo \"Sans\"",
+        "files": ["assets/fonts/demo.woff2"],
+        "weight": "400 600",
+        "display": "swap",
+        "preload": true,
+        "fallback": {
+          "family": "Arial",
+          "sizeAdjust": "105%",
+          "ascentOverride": "92%",
+          "descentOverride": "24%",
+          "lineGapOverride": "0%"
+        }
+      },
+      {
+        "family": "Demo Mono",
+        "files": ["assets/fonts/mono.woff2"],
+        "preload": true
+      },
+      {
+        "family": "Third",
+        "files": ["assets/fonts/third.woff2"],
+        "preload": true
+      }
+    ],
+    "preconnect": ["https://cdn.example.test"]
+  }
+}

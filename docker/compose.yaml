@@ -52,6 +52,7 @@ services:
         define( 'JOO_DEMO', true );
         define( 'WP_HOME', '${WP_SITE_URL}' );
         define( 'WP_SITEURL', '${WP_SITE_URL}' );
+      WP_PORT: ${WP_PORT:-8080}
       WP_SITE_URL: ${WP_SITE_URL}
       WP_ADMIN_USER: ${WP_ADMIN_USER}
       WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
