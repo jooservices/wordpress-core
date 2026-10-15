@@ -58,6 +58,7 @@ final class ContentModule extends AbstractModule {
 				return self::wantsWpProvider( $wanted, post_type_exists( 'joo_company' ), (bool) did_action( 'init' ), defined( 'JOO_CONTENT_FILE' ) ) ? $c->get( WpContentProvider::class ) : new NullProvider();
 			}
 		);
+		$container->singleton( FeaturedExclusion::class, static fn( Container $c ) => new FeaturedExclusion( $c->get( ContentProviderInterface::class ), $c->get( Settings::class ) ) );
 		$container->singleton( ContentRoutes::class, static fn( Container $c ) => new ContentRoutes( $c->get( ContentProviderInterface::class ), $c->get( Settings::class ) ) );
 	}
 
@@ -90,6 +91,7 @@ final class ContentModule extends AbstractModule {
 		/** @var ContentRoutes $routes */
 		$routes = $c->get( ContentRoutes::class );
 		$routes->hook();
+		$c->get( FeaturedExclusion::class )->hook();
 
 		// Reading time is computed when a post is saved (and lazily for older posts).
 		add_action(

@@ -504,4 +504,28 @@ final class ContentTest extends IntegrationTestCase {
 			$this->assertLessThanOrEqual( 6, $wpdb->num_queries - $before, $route . ' warm-cache query count' );
 		}
 	}
+
+	public function test_featured_posts_are_left_out_of_the_blog_home_but_not_of_other_views(): void {
+		$featured = self::factory()->post->create( array( 'post_title' => 'Featured one' ) );
+		$normal   = self::factory()->post->create( array( 'post_title' => 'Normal one' ) );
+		update_post_meta( $featured, '_joo_featured', '1' );
+		update_post_meta( $featured, '_joo_featured_order', 1 );
+		$this->boot_fresh();
+		$this->go_to( '/' );
+		$ids = wp_list_pluck( $GLOBALS['wp_query']->posts, 'ID' );
+		$this->assertContains( $normal, $ids );
+		$this->assertNotContains( $featured, $ids, 'the slider already shows it' );
+		$this->go_to( '/?s=Featured' );
+		$this->assertContains( $featured, wp_list_pluck( $GLOBALS['wp_query']->posts, 'ID' ), 'search still finds it' );
+	}
+
+	public function test_the_exclusion_can_be_switched_off_in_settings(): void {
+		$featured = self::factory()->post->create( array( 'post_title' => 'Featured two' ) );
+		update_post_meta( $featured, '_joo_featured', '1' );
+		update_post_meta( $featured, '_joo_featured_order', 1 );
+		add_filter( 'joo/settings/value', static fn( $v, $key ) => 'features.hide_featured_in_list' === $key ? false : $v, 10, 2 );
+		$this->boot_fresh();
+		$this->go_to( '/' );
+		$this->assertContains( $featured, wp_list_pluck( $GLOBALS['wp_query']->posts, 'ID' ) );
+	}
 }

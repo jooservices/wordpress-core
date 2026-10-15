@@ -99,6 +99,7 @@
     "joo/seo/graph/pieces",
     "joo/seo/schema/{piece}",
     "joo/seo/yield",
+    "joo/content/featured_exclusion_limit",
     "joo/seo/block_author_enumeration",
     "joo/seo/x_default",
     "joo/seo/profile_page",
