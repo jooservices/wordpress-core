@@ -8,3 +8,4 @@ composer.lock
 *.md
 *.php
 tests/tooling/fixtures
+themes/*/assets/critical

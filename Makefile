@@ -111,7 +111,7 @@ health: ## Verify the running demo (THEME=...)
 		node tools/health.mjs --base $${E2E_BASE_URL:-http://127.0.0.1:8080} --values "$$values"
 perf: ## Lighthouse CI and size budgets (THEME=...)
 	$(call require_theme)
-	$(call stub,perf)
+	@node tools/perf.mjs --theme $(THEME)
 test-matrix: ## Plugin compatibility matrix (THEME=...)
 	$(call require_theme)
 	@node tools/matrix.mjs $(ARGS)

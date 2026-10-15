@@ -1,0 +1,43 @@
+{
+  "$comment": "Performance budgets checked by `make perf THEME=jooservices` (Lighthouse, mobile emulation, local Docker). LCP is measured with Lighthouse's simulated mobile throttling against a local server. Fonts: Plex Sans (45 KB) and JetBrains Mono (40 KB) are both used above the fold. Pages marked noindex must FAIL the crawlable audit (proof that noindex is sent).",
+  "pages": [
+    {
+      "name": "home",
+      "path": "/"
+    },
+    {
+      "name": "single",
+      "path": "/ai/prompt-caching/"
+    },
+    {
+      "name": "category",
+      "path": "/category/ai/"
+    },
+    {
+      "name": "search",
+      "path": "/?s=docker",
+      "noindex": true
+    },
+    {
+      "name": "about",
+      "path": "/about/"
+    }
+  ],
+  "scores": {
+    "performance": 0.9,
+    "accessibility": 0.95,
+    "best-practices": 0.9,
+    "seo": 0.95
+  },
+  "metrics": {
+    "cumulative-layout-shift": 0.02,
+    "total-blocking-time": 200,
+    "largest-contentful-paint": 2700
+  },
+  "bytes": {
+    "css": 30720,
+    "js": 61440,
+    "fonts": 92160,
+    "html": 61440
+  }
+}
