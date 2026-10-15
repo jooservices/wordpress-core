@@ -62,7 +62,8 @@ final class ImageLazy {
 		if ( 'img' !== $tag ) {
 			return $attrs;
 		}
-		$lcp      = isset( $attr['fetchpriority'] ) && 'high' === $attr['fetchpriority'];
+		// WordPress marks the likely LCP image high priority; such an image must never be lazy (core warns about it).
+		$lcp      = ( isset( $attr['fetchpriority'] ) && 'high' === $attr['fetchpriority'] ) || 'high' === ( $attrs['fetchpriority'] ?? '' );
 		$decision = $this->policy->decide(
 			'image',
 			array(

@@ -17,6 +17,7 @@ use JOOservices\ThemeCore\Assets\AssetRegistry;
 use JOOservices\ThemeCore\Kernel;
 use JOOservices\ThemeCore\Lazy\EmbedFacade;
 use JOOservices\ThemeCore\Lazy\FragmentLazy;
+use JOOservices\ThemeCore\Lazy\ImageLazy;
 use JOOservices\ThemeCore\Lazy\Policy;
 use JOOservices\ThemeCore\Lazy\SectionLazy;
 
@@ -87,6 +88,14 @@ final class LazyTest extends IntegrationTestCase {
 		$this->assertStringNotContainsString( 'loading="lazy"', $tags[0] );
 		$this->assertStringContainsString( 'loading="lazy"', $tags[1] );
 		$this->assertStringContainsString( 'loading="lazy"', $tags[2] );
+	}
+
+	public function test_an_image_core_marks_high_priority_is_never_made_lazy(): void {
+		$this->singular();
+		$service = $this->service( ImageLazy::class );
+		$service->attributes( array( 'loading' => 'lazy' ), 'img', array(), 'the_content' ); // The first image uses the eager slot.
+		$out = $service->attributes( array( 'fetchpriority' => 'high' ), 'img', array(), 'the_content' );
+		$this->assertArrayNotHasKey( 'loading', $out, 'lazy plus high priority makes WordPress log a notice' );
 	}
 
 	public function test_a_larger_eager_count_keeps_more_images_eager(): void {
