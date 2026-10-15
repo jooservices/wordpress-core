@@ -6,29 +6,38 @@ import { fileURLToPath } from 'node:url';
 const TYPES = { xml: /xml/, rss: /rss\+xml|xml/, json: /json/ };
 
 /** Runs one check against fetched data. Returns a list of problems (empty when it passes). */
-export function evaluate(check, response) {
+export function evaluate(check, response, { seoActive = false } = {}) {
   const problems = [];
   if (response.status !== check.status) problems.push(`status ${response.status}, expected ${check.status}`);
   if (check.type) {
     const pattern = TYPES[check.type] ?? new RegExp(check.type.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     if (!pattern.test(response.type)) problems.push(`content-type "${response.type}" does not match ${check.type}`);
   }
-  for (const needle of check.contains ?? []) if (!response.body.includes(needle)) problems.push(`missing "${needle}"`);
+  for (const needle of [...(check.contains ?? []), ...(seoActive ? [] : (check.seoContains ?? []))])
+    if (!response.body.includes(needle)) problems.push(`missing "${needle}"`);
   for (const needle of check.notContains ?? [])
     if (response.body.includes(needle)) problems.push(`unexpected "${needle}"`);
   return problems;
 }
 
-async function get(base, path) {
-  const res = await fetch(new URL(path, base), { redirect: 'manual' });
-  const body = await res.text();
-  return { status: res.status, type: res.headers.get('content-type') ?? '', body, headers: res.headers };
+async function get(base, path, attempts = 3) {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      const res = await fetch(new URL(path, base), { redirect: 'manual' });
+      const body = await res.text();
+      return { status: res.status, type: res.headers.get('content-type') ?? '', body, headers: res.headers };
+    } catch (error) {
+      // A freshly activated plugin can restart workers: retry a dropped connection before reporting it.
+      if (attempt >= attempts) throw error;
+      await new Promise((done) => setTimeout(done, 1000 * attempt));
+    }
+  }
 }
 
 /** Looks up dynamic placeholders through the REST-free route: the home page and WP-CLI-independent public data. */
 async function resolve(base) {
   const values = {};
-  const home = await get(base, '/');
+  const home = await get(base, '/').catch(() => ({ body: '' }));
   const link =
     home.body.match(/href="(https?:\/\/[^"]+\/[a-z0-9-]+\/[a-z0-9-]+\/)"/g)?.map((h) => h.slice(6, -1)) ?? [];
   const own = link.filter(
@@ -38,7 +47,7 @@ async function resolve(base) {
   return values;
 }
 
-export async function run({ base, table, extra = {} }) {
+export async function run({ base, table, extra = {}, seoActive = false }) {
   const values = { ...(await resolve(base)), ...extra };
   const results = [];
   for (const check of table.checks) {
@@ -48,8 +57,14 @@ export async function run({ base, table, extra = {} }) {
       continue;
     }
     try {
-      const problems = evaluate(check, await get(base, path));
-      results.push({ name: check.name, path, ok: problems.length === 0, problems });
+      let problems = [];
+      let used = path;
+      for (const candidate of [path, ...(check.altPaths ?? [])]) {
+        used = candidate;
+        problems = evaluate(check, await get(base, candidate), { seoActive });
+        if (problems.length === 0) break;
+      }
+      results.push({ name: check.name, path: used, ok: problems.length === 0, problems });
     } catch (error) {
       results.push({ name: check.name, path, ok: false, problems: [String(error.message)] });
     }

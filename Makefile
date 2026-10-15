@@ -97,7 +97,12 @@ seed-reset: ## Remove only demo content and import it again (THEME=...)
 	@$(COMPOSE) exec -T -u www-data wordpress bash /scripts/seed.sh $(THEME) --reset
 demo: ## Build, start Docker, install WordPress + theme, seed, health check (THEME=...)
 	$(call require_theme)
-	$(call stub,demo)
+	@node tools/build-assets.mjs --root packages/theme-core
+	@if [ -d themes/$(THEME)/assets/src ]; then node tools/build-assets.mjs --root themes/$(THEME) --src assets/src --out assets/build; fi
+	@$(MAKE) --no-print-directory up THEME=$(THEME)
+	@$(MAKE) --no-print-directory seed THEME=$(THEME)
+	@$(MAKE) --no-print-directory health THEME=$(THEME)
+	@echo "Demo ready: $${E2E_BASE_URL:-http://127.0.0.1:8080} (admin credentials are in .env)"
 health: ## Verify the running demo (THEME=...)
 	$(call require_theme)
 	@values="$$($(COMPOSE) exec -T -u www-data wordpress wp eval-file /scripts/health-values.php </dev/null)"; \
@@ -107,7 +112,7 @@ perf: ## Lighthouse CI and size budgets (THEME=...)
 	$(call stub,perf)
 test-matrix: ## Plugin compatibility matrix (THEME=...)
 	$(call require_theme)
-	$(call stub,test-matrix)
+	@node tools/matrix.mjs $(ARGS)
 package: ## Build the installable theme zip (THEME=...)
 	$(call require_theme)
 	$(call stub,package)

@@ -109,6 +109,9 @@ final class HeadPrinter {
 		/** @var YieldPolicy $policy */
 		$policy = $this->services['policy'];
 		if ( $policy->shouldYield() ) {
+			if ( null !== $policy->plugin() ) {
+				add_action( 'wp_head', array( $this, 'dropCoreTitle' ), 0 );
+			}
 			return;
 		}
 		remove_action( 'wp_head', 'rel_canonical' );
@@ -117,6 +120,13 @@ final class HeadPrinter {
 		add_filter( 'wp_robots', fn( $robots ) => $this->services['robots']->filter( (array) $robots, $this->context() ), 20 );
 		add_action( 'wp_head', array( $this, 'print' ), 1 );
 		add_action( 'template_redirect', array( $this, 'headers' ), 1 );
+	}
+
+	/**
+	 * Block themes print the title through core while SEO plugins print their own: keep only the plugin's.
+	 */
+	public function dropCoreTitle(): void {
+		remove_action( 'wp_head', '_block_template_render_title_tag', 1 );
 	}
 
 	/**

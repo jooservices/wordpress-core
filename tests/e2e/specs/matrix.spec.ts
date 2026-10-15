@@ -1,0 +1,51 @@
+import { test, expect } from '@playwright/test';
+
+// Plugin matrix smoke: run by tools/matrix.mjs with one plugin active (MATRIX_PLUGIN names it).
+// The URL types are fixed; dynamic paths arrive through MATRIX_PATHS (JSON from the runner).
+const plugin = process.env.MATRIX_PLUGIN ?? 'none';
+const paths: Record<string, string> = {
+  home: '/',
+  category: '/category/ai/',
+  tag: '/tag/mcp/',
+  search: '/?s=docker',
+  ...(JSON.parse(process.env.MATRIX_PATHS ?? '{}') as Record<string, string>),
+};
+const CLS_BUDGET = Number(process.env.MATRIX_CLS ?? '0.1');
+// Third-party admin-bar or consent scripts may talk to the network; only first-party failures count.
+const ignorable = /favicon|net::ERR_|Failed to load resource: the server responded with a status of (401|403)/;
+
+for (const [name, path] of Object.entries(paths)) {
+  test(`${plugin}: ${name}`, async ({ page }, info) => {
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
+    page.on('console', (m) => {
+      if (m.type() === 'error' && !ignorable.test(m.text())) errors.push(m.text());
+    });
+    await page.addInitScript(() => {
+      (window as unknown as { __cls: number }).__cls = 0;
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries() as unknown as { hadRecentInput: boolean; value: number }[]) {
+          if (!entry.hadRecentInput) (window as unknown as { __cls: number }).__cls += entry.value;
+        }
+      }).observe({ type: 'layout-shift', buffered: true });
+    });
+    const response = await page.goto(path, { waitUntil: 'load' });
+    expect(response?.status()).toBe(200);
+    await page.waitForTimeout(600);
+
+    const head = await page.evaluate(() => ({
+      titles: document.querySelectorAll('head > title').length,
+      canonicals: document.querySelectorAll('link[rel="canonical"]').length,
+      ogTitles: document.querySelectorAll('meta[property="og:title"]').length,
+      descriptions: document.querySelectorAll('meta[name="description"]').length,
+      cls: (window as unknown as { __cls: number }).__cls,
+    }));
+    await info.attach(`${plugin}-${name}.json`, { body: JSON.stringify(head), contentType: 'application/json' });
+    expect(head.titles, 'one <title>').toBe(1);
+    expect(head.canonicals, 'at most one canonical').toBeLessThanOrEqual(1);
+    expect(head.ogTitles, 'no duplicate og:title').toBeLessThanOrEqual(1);
+    expect(head.descriptions, 'no duplicate meta description').toBeLessThanOrEqual(1);
+    expect(head.cls, 'layout shift budget').toBeLessThanOrEqual(CLS_BUDGET);
+    expect(errors, 'console errors').toEqual([]);
+  });
+}

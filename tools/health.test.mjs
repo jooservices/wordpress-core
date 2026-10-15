@@ -17,3 +17,11 @@ describe('health evaluate', () => {
     expect(evaluate({ status: 200, type: 'json' }, ok)).toHaveLength(1);
   });
 });
+
+describe('seoContains', () => {
+  const check = { status: 200, seoContains: ['application/ld+json'] };
+  it('applies the theme SEO markers only when no SEO plugin is active', () => {
+    expect(evaluate(check, ok)).toHaveLength(1);
+    expect(evaluate(check, ok, { seoActive: true })).toEqual([]);
+  });
+});

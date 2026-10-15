@@ -16,10 +16,15 @@ use JOOservices\ThemeCore\Admin\Notices;
 use JOOservices\ThemeCore\Compat\Detector;
 use JOOservices\ThemeCore\Config\Settings;
 use JOOservices\ThemeCore\Kernel;
+use JOOservices\ThemeCore\Seo\Canonical;
 use JOOservices\ThemeCore\Seo\Context;
+use JOOservices\ThemeCore\Seo\DescriptionBuilder;
 use JOOservices\ThemeCore\Seo\HeadPrinter;
+use JOOservices\ThemeCore\Seo\Hreflang;
 use JOOservices\ThemeCore\Seo\RobotsBuilder;
 use JOOservices\ThemeCore\Seo\SeoModule;
+use JOOservices\ThemeCore\Seo\SocialTags;
+use JOOservices\ThemeCore\Seo\TitleBuilder;
 use JOOservices\ThemeCore\Seo\YieldPolicy;
 
 final class SeoTest extends IntegrationTestCase {
@@ -505,6 +510,28 @@ final class SeoTest extends IntegrationTestCase {
 		$this->assertTrue( $policy->yieldsHreflang() );
 		add_filter( 'joo/settings/value', static fn( $v, $key ) => 'seo.yield_hreflang' === $key ? false : $v, 10, 2 );
 		$this->assertFalse( $policy->yieldsHreflang() );
+	}
+
+	public function test_yielding_to_a_plugin_drops_the_block_theme_title_tag(): void {
+		add_filter( 'joo/seo/yield', '__return_true' );
+		$booted  = $this->boot();
+		$c       = Kernel::container();
+		$active  = new Detector( static fn( string $k, string $n ): ?string => 'WPSEO_VERSION' === $n ? '24.1' : null );
+		$printer = new HeadPrinter(
+			$c->get( TitleBuilder::class ),
+			$c->get( DescriptionBuilder::class ),
+			$c->get( Canonical::class ),
+			$c->get( RobotsBuilder::class ),
+			$c->get( SocialTags::class ),
+			$c->get( Hreflang::class ),
+			new YieldPolicy( $c->get( Settings::class ), $active )
+		);
+		$this->assertInstanceOf( HeadPrinter::class, $booted );
+		$this->go_to( '/' );
+		add_action( 'wp_head', '_block_template_render_title_tag', 1 );
+		$printer->attach();
+		do_action( 'wp_head' );
+		$this->assertFalse( has_action( 'wp_head', '_block_template_render_title_tag' ), 'the plugin prints its own title' );
 	}
 
 	public function test_yielding_removes_every_core_seo_tag_and_keeps_wordpress_defaults(): void {

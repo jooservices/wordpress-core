@@ -84,12 +84,7 @@ export function build(seed = 42) {
     const jitter = int(0, 12);
     media.push({
       name,
-      buffer: gradientPng(
-        w,
-        h,
-        from.map((v) => v + jitter),
-        to
-      ),
+      buffer: gradientPng(w, h, [from[0] + jitter, from[1] + jitter, from[2] + jitter], [to[0], to[1], to[2]]),
     });
     attachments.push({
       id: id(),
@@ -130,6 +125,7 @@ export function build(seed = 42) {
   const table = () =>
     `<!-- wp:table -->\n<figure class="wp-block-table"><table><thead><tr><th>Metric</th><th>Before</th><th>After</th></tr></thead><tbody><tr><td>p95</td><td>${int(200, 900)} ms</td><td>${int(40, 190)} ms</td></tr></tbody></table></figure>\n<!-- /wp:table -->`;
 
+  /** @type {Array<Record<string, any>>} */
   const specs = [];
   data.core.forEach((c, i) =>
     specs.push({ ...c, kind: 'core', featured: i + 1, image: attachments[i % attachments.length] })
