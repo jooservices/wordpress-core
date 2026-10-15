@@ -242,9 +242,10 @@ final class AdminTest extends IntegrationTestCase {
 				'maximum' => 999,
 			)
 		);
-		$payload = $panels->payload();
-		$this->assertCount( 1, $payload );
-		$this->assertSame( array( 'toggle', 'number' ), array_column( $payload[0]['fields'], 'ui' ) );
+		$payload  = $panels->payload();
+		$featured = array_values( array_filter( $payload, static fn( array $panel ) => 'joo-featured' === $panel['id'] ) );
+		$this->assertCount( 1, $featured );
+		$this->assertSame( array( 'toggle', 'number' ), array_column( $featured[0]['fields'], 'ui' ) );
 		$this->assertSame( 999, $panels->sanitize( $panels->fields()['_joo_featured_order'], '5000' ) );
 	}
 

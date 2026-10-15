@@ -120,6 +120,7 @@
     "joo/terminal/commands",
     "joo/terminal/fs",
     "joo/compat/report",
-    "joo/perf/image_formats"
+    "joo/perf/image_formats",
+    "joo/lazy/provider"
   ]
 }

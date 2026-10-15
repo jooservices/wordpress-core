@@ -10,6 +10,7 @@ import {
   prefersReducedMotion,
   ready,
   resetConfig,
+  resetObservers,
   restUrl,
   saveData,
   store,
@@ -30,6 +31,7 @@ function setConfig(json) {
 beforeEach(() => {
   document.body.replaceChildren();
   resetConfig();
+  resetObservers();
 });
 afterEach(() => vi.restoreAllMocks());
 

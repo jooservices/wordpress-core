@@ -84,6 +84,11 @@ export function idle(fn, timeout = 2000) {
 
 const observers = new Map();
 
+/** Forget the shared observers (tests). */
+export function resetObservers() {
+  observers.clear();
+}
+
 /**
  * Call back when an element approaches the viewport. One IntersectionObserver is shared per rootMargin.
  * @param {Element} el Element to watch.

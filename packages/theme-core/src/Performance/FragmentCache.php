@@ -156,6 +156,39 @@ final class FragmentCache {
 	}
 
 	/**
+	 * Stores a value without a producer (used for snapshots taken at render time).
+	 *
+	 * @param string       $key    Entry key.
+	 * @param mixed        $value  Value.
+	 * @param int          $ttl    Seconds.
+	 * @param list<string> $tags   Tags.
+	 * @param string       $module Module id.
+	 */
+	public function put( string $key, $value, int $ttl, array $tags = array(), string $module = 'content' ): void {
+		$this->write(
+			$this->key( $module, $key, $tags ),
+			array(
+				'value'       => $value,
+				'fresh_until' => time() + $ttl,
+			),
+			$ttl * 4
+		);
+	}
+
+	/**
+	 * Reads a stored value (null when missing). Stale values are returned until the hard expiry.
+	 *
+	 * @param string       $key    Entry key.
+	 * @param list<string> $tags   Tags.
+	 * @param string       $module Module id.
+	 * @return mixed
+	 */
+	public function peek( string $key, array $tags = array(), string $module = 'content' ) {
+		$stored = $this->read( $this->key( $module, $key, $tags ) );
+		return is_array( $stored ) && array_key_exists( 'value', $stored ) ? $stored['value'] : null;
+	}
+
+	/**
 	 * Hits and misses of this request.
 	 *
 	 * @return array{hits: int, misses: int}
