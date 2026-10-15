@@ -2,8 +2,10 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
 THEME ?= jooservices
+export JOOWT_PROJECT ?= jooservices-wp-themes
 
-.PHONY: help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
+
+.PHONY: install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -16,24 +18,39 @@ define require_theme
 	@test -d themes/$(THEME) || { echo "theme not found: themes/$(THEME)"; exit 1; }
 endef
 
+COMPOSE := ./docker/scripts/compose.sh
+
 init-env: ## Create .env with random secrets (never overwrites)
-	$(call stub,init-env)
-up: ## Start the Docker stack
-	$(call stub,up)
+	@./docker/scripts/init-env.sh
+up: ## Start the Docker stack and install WordPress + THEME
+	@test -f .env || ./docker/scripts/init-env.sh
+	@p=$${WP_PORT:-$$(grep -E '^WP_PORT=' .env | cut -d= -f2)}; ./docker/scripts/check-port.sh "$${p:-8080}" wordpress
+	@p=$${MAIL_PORT:-$$(grep -E '^MAIL_PORT=' .env | cut -d= -f2)}; ./docker/scripts/check-port.sh "$${p:-8025}" mailpit
+	@$(COMPOSE) up -d --build --wait
+	@$(MAKE) --no-print-directory install-wp THEME=$(THEME)
+install-wp: ## Install WordPress and activate THEME (idempotent)
+	$(call require_theme)
+	@$(MAKE) --no-print-directory link-core THEME=$(THEME)
+	@$(COMPOSE) exec -T -u www-data -e THEME=$(THEME) wordpress bash /scripts/install-wp.sh
 down: ## Stop the Docker stack (keeps data)
-	$(call stub,down)
+	@$(COMPOSE) down
 reset: ## Remove this project's Docker resources (needs CONFIRM=yes)
 	@test "$(CONFIRM)" = "yes" || { echo "reset removes this project's containers and volumes. Re-run with CONFIRM=yes"; exit 1; }
-	$(call stub,reset)
+	@test -f .env || { echo "nothing to reset (.env missing)"; exit 0; }
+	@echo "Removing resources labelled com.joowt.project=$(JOOWT_PROJECT):"
+	@docker ps -a --filter label=com.joowt.project=$(JOOWT_PROJECT) --format '  container {{.Names}}'
+	@docker volume ls --filter label=com.joowt.project=$(JOOWT_PROJECT) --format '  volume {{.Name}}'
+	@$(COMPOSE) down -v --remove-orphans
 shell: ## Shell in the WordPress container
-	$(call stub,shell)
+	@$(COMPOSE) exec -u www-data wordpress bash
 wp: ## Run WP-CLI: make wp ARGS="core version"
-	$(call stub,wp)
+	@$(COMPOSE) exec -T -u www-data wordpress wp $(ARGS)
 logs: ## Follow container logs (SERVICE=wordpress)
-	$(call stub,logs)
+	@$(COMPOSE) logs -f --tail=100 $(SERVICE)
 link-core: ## Link packages/theme-core into themes/$(THEME)/core
 	$(call require_theme)
-	$(call stub,link-core)
+	@ln -sfn ../../packages/theme-core themes/$(THEME)/core
+	@echo "themes/$(THEME)/core -> ../../packages/theme-core"
 lint: ## PHPCS, ESLint, Stylelint, Prettier, header check
 	$(call stub,lint)
 analyse: ## PHPStan, tsc checkJs, deptrac

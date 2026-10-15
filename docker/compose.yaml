@@ -1,0 +1,98 @@
+name: jooservices-wp-themes
+
+x-labels: &labels
+  com.joowt.project: ${COMPOSE_PROJECT_NAME:-jooservices-wp-themes}
+
+services:
+  db:
+    image: mariadb:11
+    labels: *labels
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./mariadb/my.cnf:/etc/mysql/conf.d/joowt.cnf:ro
+      - ./mariadb/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  wordpress:
+    build:
+      context: ./wordpress
+      args:
+        WP_IMAGE_TAG: ${WP_IMAGE_TAG:-php8.3-apache}
+    image: joowt-wordpress:${WP_IMAGE_TAG:-php8.3-apache}
+    labels: *labels
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    ports:
+      - "127.0.0.1:${WP_PORT:-8080}:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WORDPRESS_DEBUG: "1"
+      WORDPRESS_CONFIG_EXTRA: |
+        define( 'WP_ENVIRONMENT_TYPE', 'local' );
+        define( 'WP_DEBUG_LOG', '/var/log/php/wp-debug.log' );
+        define( 'WP_DEBUG_DISPLAY', false );
+        define( 'FS_METHOD', 'direct' );
+        define( 'JOO_DEMO', true );
+        define( 'WP_HOME', '${WP_SITE_URL}' );
+        define( 'WP_SITEURL', '${WP_SITE_URL}' );
+      WP_SITE_URL: ${WP_SITE_URL}
+      WP_ADMIN_USER: ${WP_ADMIN_USER}
+      WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+      MAIL_HOST: mailpit
+      MAIL_PORT_SMTP: "1025"
+    volumes:
+      - wp_data:/var/www/html
+      - php_logs:/var/log/php
+      - wp_tests_lib:/tmp/wordpress-tests-lib
+      - ../themes/starter:/var/www/html/wp-content/themes/starter
+      - ../themes/jooservices:/var/www/html/wp-content/themes/jooservices
+      - ../packages/theme-core:/var/www/html/wp-content/packages/theme-core
+      - ../plugins/jooservices-content:/var/www/html/wp-content/plugins/jooservices-content
+      - ./mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+      - ./scripts:/scripts:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost/wp-login.php || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  mailpit:
+    image: axllent/mailpit:latest
+    labels: *labels
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAIL_PORT:-8025}:8025"
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db_data:
+    labels: *labels
+  wp_data:
+    labels: *labels
+  php_logs:
+    labels: *labels
+  wp_tests_lib:
+    labels: *labels
