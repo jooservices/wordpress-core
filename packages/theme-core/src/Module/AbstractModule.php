@@ -54,9 +54,27 @@ abstract class AbstractModule implements ModuleInterface {
 	}
 
 	/**
-	 * Default: nothing to boot.
+	 * Whether boot() already ran.
+	 *
+	 * @var bool
 	 */
-	public function boot(): void {
+	private bool $booted = false;
+
+	/**
+	 * Boots once: a second call does nothing (so hooks are never added twice).
+	 */
+	final public function boot(): void {
+		if ( $this->booted ) {
+			return;
+		}
+		$this->booted = true;
+		$this->doBoot();
+	}
+
+	/**
+	 * Adds hooks and assets. Default: nothing to boot.
+	 */
+	protected function doBoot(): void {
 	}
 
 	/**

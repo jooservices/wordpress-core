@@ -45,7 +45,7 @@ final class AssetsModule extends AbstractModule {
 	/**
 	 * Adds the front-end hooks.
 	 */
-	public function boot(): void {
+	protected function doBoot(): void {
 		if ( null === $this->container ) {
 			return;
 		}

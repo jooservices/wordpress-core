@@ -19,7 +19,7 @@ final class HealthyModule extends AbstractModule {
 		return 'healthy';
 	}
 
-	public function boot(): void {
+	protected function doBoot(): void {
 		++self::$boots;
 		add_action( 'wp_head', array( $this, 'print_marker' ) );
 	}

@@ -64,7 +64,7 @@ final class ContentModule extends AbstractModule {
 	/**
 	 * Hooks and editor panel.
 	 */
-	public function boot(): void {
+	protected function doBoot(): void {
 		if ( null === $this->container ) {
 			return;
 		}

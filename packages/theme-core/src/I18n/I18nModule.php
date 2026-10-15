@@ -54,7 +54,7 @@ final class I18nModule extends AbstractModule {
 	/**
 	 * Loads translations and hooks the services.
 	 */
-	public function boot(): void {
+	protected function doBoot(): void {
 		if ( null === $this->container ) {
 			return;
 		}

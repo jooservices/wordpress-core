@@ -17,7 +17,7 @@ final class FailingModule extends AbstractModule {
 		return 'failing';
 	}
 
-	public function boot(): void {
+	protected function doBoot(): void {
 		throw new \RuntimeException( 'intentional boot failure' );
 	}
 }

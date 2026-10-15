@@ -113,7 +113,7 @@ final class SeoModule extends AbstractModule {
 	/**
 	 * Adds hooks, editor fields and the Site Health test.
 	 */
-	public function boot(): void {
+	protected function doBoot(): void {
 		if ( null === $this->container ) {
 			return;
 		}

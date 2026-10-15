@@ -58,7 +58,7 @@ final class LazyModule extends AbstractModule {
 	/**
 	 * Adds hooks and assets.
 	 */
-	public function boot(): void {
+	protected function doBoot(): void {
 		if ( null === $this->container ) {
 			return;
 		}

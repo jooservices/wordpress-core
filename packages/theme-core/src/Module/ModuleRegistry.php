@@ -33,6 +33,24 @@ final class ModuleRegistry {
 	private array $modules = array();
 
 	/**
+	 * Module instance by id (null when unknown).
+	 *
+	 * @param string $id Module id.
+	 */
+	public function module( string $id ): ?ModuleInterface {
+		return $this->modules[ $id ] ?? null;
+	}
+
+	/**
+	 * Boot cost per module id (milliseconds and bytes).
+	 *
+	 * @return array<string, array{ms: float, bytes: int}>
+	 */
+	public function timings(): array {
+		return $this->timings;
+	}
+
+	/**
 	 * Status per module id.
 	 *
 	 * @var array<string, string>
@@ -45,6 +63,13 @@ final class ModuleRegistry {
 	 * @var array<string, string>
 	 */
 	private array $messages = array();
+
+	/**
+	 * Boot cost per module id: milliseconds and bytes.
+	 *
+	 * @var array<string, array{ms: float, bytes: int}>
+	 */
+	private array $timings = array();
 
 	/**
 	 * Resolved boot order.
@@ -199,8 +224,14 @@ final class ModuleRegistry {
 				continue;
 			}
 			try {
+				$memory = memory_get_usage();
+				$start  = microtime( true );
 				$this->modules[ $id ]->boot();
-				$this->status[ $id ] = self::STATUS_BOOTED;
+				$this->timings[ $id ] = array(
+					'ms'    => round( ( microtime( true ) - $start ) * 1000, 3 ),
+					'bytes' => max( 0, memory_get_usage() - $memory ),
+				);
+				$this->status[ $id ]  = self::STATUS_BOOTED;
 			} catch ( \Throwable $error ) {
 				$this->fail( $id, 'boot', $error );
 			}

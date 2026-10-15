@@ -39,7 +39,7 @@ abstract class RecordingModule extends AbstractModule {
 		}
 	}
 
-	public function boot(): void {
+	protected function doBoot(): void {
 		self::$events[] = 'boot:' . static::id();
 		if ( isset( self::$fail[ 'boot:' . static::id() ] ) ) {
 			throw new \RuntimeException( 'boot failed' );

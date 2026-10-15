@@ -99,7 +99,7 @@ final class CompatModule extends AbstractModule {
 	/**
 	 * Boots the adapters and connects them to the core hooks.
 	 */
-	public function boot(): void {
+	protected function doBoot(): void {
 		if ( null === $this->container ) {
 			return;
 		}

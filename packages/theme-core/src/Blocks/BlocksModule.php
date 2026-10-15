@@ -60,7 +60,7 @@ final class BlocksModule extends AbstractModule {
 	/**
 	 * Hooks.
 	 */
-	public function boot(): void {
+	protected function doBoot(): void {
 		if ( null === $this->container ) {
 			return;
 		}

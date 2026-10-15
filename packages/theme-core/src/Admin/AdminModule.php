@@ -40,7 +40,7 @@ final class AdminModule extends AbstractModule {
 	/**
 	 * Adds hooks.
 	 */
-	public function boot(): void {
+	protected function doBoot(): void {
 		if ( null === $this->container ) {
 			return;
 		}
