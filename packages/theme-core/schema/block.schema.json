@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jooservices.com/schemas/joo-block.schema.json",
+  "title": "JOOservices block.json (subset of the official schema plus x-joo)",
+  "type": "object",
+  "required": ["apiVersion", "name", "title", "category"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "apiVersion": { "const": 3 },
+    "name": { "type": "string", "pattern": "^joo/[a-z0-9-]+$" },
+    "title": { "type": "string", "minLength": 1 },
+    "category": { "const": "joo" },
+    "description": { "type": "string" },
+    "icon": { "type": "string" },
+    "keywords": { "type": "array", "items": { "type": "string" } },
+    "textdomain": { "type": "string" },
+    "attributes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": { "enum": ["string", "integer", "number", "boolean", "array", "object"] },
+          "default": {},
+          "enum": { "type": "array" }
+        }
+      }
+    },
+    "supports": { "type": "object" },
+    "usesContext": { "type": "array", "items": { "type": "string" } },
+    "providesContext": { "type": "object" },
+    "example": { "type": "object" },
+    "viewScriptModule": { "not": {} },
+    "style": { "not": {} },
+    "x-joo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "controls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["attribute", "type"],
+            "additionalProperties": false,
+            "properties": {
+              "attribute": { "type": "string" },
+              "type": { "enum": ["range", "toggle", "select", "text", "number", "color"] },
+              "label": { "type": "string" },
+              "min": { "type": "integer" },
+              "max": { "type": "integer" },
+              "options": { "type": "array", "items": { "type": "array", "minItems": 2, "maxItems": 2 } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

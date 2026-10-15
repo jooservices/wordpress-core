@@ -99,6 +99,15 @@ final class AssetRegistry {
 	}
 
 	/**
+	 * A registered build manifest (null when unknown).
+	 *
+	 * @param string $name Manifest name.
+	 */
+	public function manifest( string $name = 'core' ): ?AssetManifest {
+		return $this->manifests[ $name ] ?? null;
+	}
+
+	/**
 	 * Queues a script module.
 	 *
 	 * Options: when (context name or callable, default 'any'), manifest (name, default 'core'),

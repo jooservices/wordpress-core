@@ -42,6 +42,34 @@ for (const f of readdirSync(invalidDir)) {
   report(`invalid ${f} is rejected`, ok);
 }
 
+// 2b. block.json files (shipped blocks, fixtures) against the block schema; viewScriptModule/style are wired from the build
+const blockSchema = read(fromRoot('packages/theme-core/schema/block.schema.json'));
+const validateBlock = ajv.compile(blockSchema);
+const blockDirs = [
+  fromRoot('packages/theme-core/resources/blocks'),
+  fromRoot('packages/theme-core/tests/Fixtures/blocks'),
+  ...readdirSync(fromRoot('themes')).map((t) => fromRoot('themes', t, 'blocks')),
+];
+for (const root of blockDirs) {
+  let entries;
+  try {
+    entries = readdirSync(root);
+  } catch {
+    continue;
+  }
+  for (const entry of entries) {
+    const file = join(root, entry, 'block.json');
+    let doc;
+    try {
+      doc = read(file);
+    } catch {
+      continue;
+    }
+    const ok = validateBlock(doc);
+    report(`block   ${file.replace(fromRoot() + '/', '')}`, ok, ok ? '' : ajv.errorsText(validateBlock.errors));
+  }
+}
+
 // 3. settings descriptor: every key complete, defaults match type/enum/range, groups exist
 const groups = new Set(settings.groups.map((g) => g.id));
 const sanitizers = new Set([

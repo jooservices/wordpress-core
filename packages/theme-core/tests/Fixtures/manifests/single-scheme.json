@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "slug": "fixture-theme",
+  "name": "Fixture",
+  "core": "^0.1",
+  "modules": { "blocks": true },
+  "design": { "colorSchemes": ["light"], "defaultScheme": "light" }
+}

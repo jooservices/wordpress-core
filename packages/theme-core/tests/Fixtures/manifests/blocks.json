@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "slug": "fixture-theme",
+  "name": "Fixture",
+  "core": "^0.1",
+  "modules": { "seo": true, "lazy": true, "blocks": true },
+  "design": { "colorSchemes": ["dark", "light"], "defaultScheme": "dark", "followSystem": true },
+  "blocks": { "disabled": ["joo/hidden"] }
+}

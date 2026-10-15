@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/hello",
+  "title": "Hello",
+  "category": "joo",
+  "attributes": {
+    "name": { "type": "string", "default": "World" },
+    "limit": { "type": "integer", "default": 3 },
+    "show": { "type": "boolean", "default": true }
+  },
+  "supports": { "html": false },
+  "x-joo": {
+    "controls": [
+      { "attribute": "limit", "type": "range", "min": 1, "max": 12, "label": "Items" },
+      { "attribute": "show", "type": "toggle", "label": "Show" }
+    ]
+  }
+}
