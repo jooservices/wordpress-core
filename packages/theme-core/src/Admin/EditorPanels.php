@@ -125,10 +125,11 @@ final class EditorPanels {
 			return;
 		}
 		$handle = 'joo-editor-panels';
+		wp_register_script( 'joo-editor-serp', Paths::url( 'resources/editor/serp.js' ), array(), Paths::version( 'resources/editor/serp.js' ), true );
 		wp_enqueue_script(
 			$handle,
 			Paths::url( 'resources/editor/panels.js' ),
-			array( 'wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-core-data', 'wp-i18n' ),
+			array( 'joo-editor-serp', 'wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-core-data', 'wp-i18n' ),
 			Paths::version( 'resources/editor/panels.js' ),
 			true
 		);

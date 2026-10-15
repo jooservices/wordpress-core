@@ -73,6 +73,41 @@
     });
   }
 
+  /** Search result preview with counters (only in the SEO panel, needs serp.js). */
+  function SerpPreview(props) {
+    const serp = window.jooSerp;
+    const link = useSelect(function (select) {
+      return select('core/editor').getPermalink && select('core/editor').getPermalink();
+    }, []);
+    const postTitle = useSelect(function (select) {
+      return select('core/editor').getEditedPostAttribute('title');
+    }, []);
+    const excerpt = useSelect(function (select) {
+      return select('core/editor').getEditedPostAttribute('excerpt');
+    }, []);
+    const meta = props.meta;
+    const r = serp.serp({
+      title: meta._joo_seo_title || postTitle,
+      description: meta._joo_seo_description || excerpt,
+      url: link || '',
+    });
+    const states = { ok: '#188038', long: '#b06000', over: '#b3261e', short: '#b06000', empty: '#757575' };
+    return el(
+      'div',
+      { className: 'joo-serp', style: { marginTop: '12px', fontFamily: 'Arial, sans-serif' } },
+      el('div', { style: { color: '#4d5156', fontSize: '12px' } }, r.url),
+      el('div', { style: { color: '#1a0dab', fontSize: '18px', lineHeight: '1.3' } }, r.title),
+      el('div', { style: { color: '#4d5156', fontSize: '13px' } }, r.description),
+      el(
+        'div',
+        { style: { fontSize: '11px', marginTop: '6px' } },
+        el('span', { style: { color: states[r.titleState] } }, 'Title ' + r.titleCount + '/70'),
+        ' \u00b7 ',
+        el('span', { style: { color: states[r.descState] } }, 'Description ' + r.descCount + '/160')
+      )
+    );
+  }
+
   /** One sidebar panel. */
   function Panel(props) {
     const panel = props.panel;
@@ -92,16 +127,18 @@
     return el(
       wp.editPost.PluginDocumentSettingPanel,
       { name: 'joo-' + panel.id, title: panel.title, className: 'joo-panel joo-panel-' + panel.id },
-      fields.map(function (field) {
-        return el(Field, {
-          key: field.key,
-          field: field,
-          meta: meta,
-          onChange: function (change) {
-            editPost({ meta: change });
-          },
-        });
-      })
+      fields
+        .map(function (field) {
+          return el(Field, {
+            key: field.key,
+            field: field,
+            meta: meta,
+            onChange: function (change) {
+              editPost({ meta: change });
+            },
+          });
+        })
+        .concat(panel.id === 'joo-seo' && window.jooSerp ? [el(SerpPreview, { key: 'serp', meta: meta })] : [])
     );
   }
 

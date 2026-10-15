@@ -121,6 +121,9 @@
     "joo/terminal/fs",
     "joo/compat/report",
     "joo/perf/image_formats",
-    "joo/lazy/provider"
+    "joo/lazy/provider",
+    "joo/seo/alternates",
+    "joo/seo/allow_external_canonical",
+    "joo/seo/head_end"
   ]
 }
