@@ -23,5 +23,12 @@ fi
 export WP_PHPUNIT__TESTS_CONFIG=/workspace/tests/wp-tests-config.php
 mkdir -p /workspace/artifacts/reports/integration
 echo "WordPress ${WP_VER} (tests lib ${WP_TESTS_DIR})"
-exec php -d error_reporting=24575 /workspace/vendor/bin/phpunit -c /workspace/phpunit-integration.xml.dist \
-  --log-junit "/workspace/artifacts/reports/integration/junit-${WP_VER}.xml" "$@"
+PHP_FLAGS=(-d error_reporting=24575)
+EXTRA=()
+if [ "${COVERAGE:-0}" = "1" ]; then
+  PHP_FLAGS+=(-d pcov.enabled=1 -d pcov.directory=/workspace)
+  mkdir -p /workspace/artifacts/reports/cov
+  EXTRA+=(--coverage-php "/workspace/artifacts/reports/cov/integration-${WP_VER}.cov")
+fi
+exec php "${PHP_FLAGS[@]}" /workspace/vendor/bin/phpunit -c /workspace/phpunit-integration.xml.dist \
+  --log-junit "/workspace/artifacts/reports/integration/junit-${WP_VER}.xml" ${EXTRA[@]+"${EXTRA[@]}"} "$@"

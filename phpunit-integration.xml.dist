@@ -6,6 +6,14 @@
          failOnWarning="true"
          failOnRisky="false"
          cacheResult="false">
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">packages/theme-core/src</directory>
+      <directory suffix=".php">plugins/jooservices-content/src</directory>
+      <directory suffix=".php">themes/jooservices/inc</directory>
+      <directory suffix=".php">themes/starter/inc</directory>
+    </include>
+  </coverage>
   <testsuites>
     <testsuite name="kit-integration"><directory>packages/test-kit/tests/Integration</directory></testsuite>
     <testsuite name="core-integration"><directory>packages/theme-core/tests/Integration</directory></testsuite>

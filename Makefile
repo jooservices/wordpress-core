@@ -74,9 +74,11 @@ test-tooling: ## Prove that every quality tool fails on a violation
 	@tests/tooling/hooks-test.sh
 test-unit: ## PHPUnit unit suites and Vitest (COVERAGE=1: coverage with thresholds, PHP part runs in Docker with pcov)
 	@if [ "$(COVERAGE)" = "1" ]; then $(MAKE) --no-print-directory coverage; else $(PHP) vendor/bin/phpunit && npx --no-install vitest run; fi
-coverage: ## Unit coverage (pcov in Docker) and threshold gate
-	@mkdir -p artifacts/reports/unit
-	@$(COMPOSE) exec -T -u www-data wordpress php -d pcov.enabled=1 -d pcov.directory=/workspace -d error_reporting=24575 /workspace/vendor/bin/phpunit -c /workspace/phpunit.xml.dist --do-not-cache-result --coverage-clover /workspace/artifacts/reports/unit/clover.xml --coverage-html /workspace/artifacts/reports/unit/html --coverage-text=/workspace/artifacts/reports/unit/summary.txt
+coverage: ## Merged unit + integration coverage (pcov in Docker) with the threshold gate
+	@rm -rf artifacts/reports/cov artifacts/reports/unit && mkdir -p artifacts/reports/cov artifacts/reports/unit
+	@$(COMPOSE) exec -T -u www-data wordpress php -d pcov.enabled=1 -d pcov.directory=/workspace -d error_reporting=24575 /workspace/vendor/bin/phpunit -c /workspace/phpunit.xml.dist --do-not-cache-result --coverage-php /workspace/artifacts/reports/cov/unit.cov
+	@$(COMPOSE) exec -T -u www-data -e COVERAGE=1 -e JOO_TEST_THEME=$(THEME) wordpress bash /scripts/phpunit-integration.sh >/dev/null
+	@$(COMPOSE) exec -T -u www-data wordpress php -d error_reporting=24575 /workspace/vendor/bin/phpcov merge --clover /workspace/artifacts/reports/unit/clover.xml --html /workspace/artifacts/reports/unit/html --text /workspace/artifacts/reports/unit/summary.txt /workspace/artifacts/reports/cov >/dev/null
 	@./tools/coverage-gate.sh artifacts/reports/unit/clover.xml
 	@npx --no-install vitest run --coverage
 test-integration: ## wp-phpunit in Docker (WP_VERSION=6.6 for the minimum version on an isolated stack)
