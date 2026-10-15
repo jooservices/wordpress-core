@@ -37,4 +37,4 @@ WordPress 6.6 or newer (tested on 6.6 and the latest release), PHP 8.1 or newer.
 4. Tag the commit `jooservices-<version>`. Nothing is pushed by the tooling.
 
 ## Rollback
-Re-install the previous zip (`wp theme install previous.zip --force`). Settings are stored in the `joo_settings_jooservices` option and are forward and backward compatible within a minor version; content is not touched by the theme.
+Re-install the previous zip (`wp theme install previous.zip --force`). Settings are stored in the `joo_jooservices_settings` option and are forward and backward compatible within a minor version; content is not touched by the theme.

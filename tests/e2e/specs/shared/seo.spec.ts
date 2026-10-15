@@ -1,12 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+import { count, expectConnectedGraph, expectHead, parseJsonLd } from '../../../../packages/test-kit/e2e/seo';
+
 // Theme-agnostic SEO assertions against the running Docker WordPress (real HTTP, real headers).
-const jsonLd = (html: string): any => {
-  const blocks = [...html.matchAll(/<script type="application\/ld\+json" class="joo-schema">([\s\S]*?)<\/script>/g)];
-  expect(blocks, 'exactly one JSON-LD block').toHaveLength(1);
-  return JSON.parse(blocks[0][1]);
-};
-const count = (html: string, needle: RegExp) => (html.match(needle) ?? []).length;
+const jsonLd = parseJsonLd;
 
 test.describe('seo over HTTP', () => {
   test('home has one title, description, canonical, robots and a valid graph', async ({ request }) => {
@@ -33,18 +30,7 @@ test.describe('seo over HTTP', () => {
       expect(html, tag).toContain(tag);
     }
     const doc = jsonLd(html);
-    const ids = new Set(doc['@graph'].map((n: any) => n['@id']));
-    expect(ids.size).toBe(doc['@graph'].length);
-    const refs: string[] = [];
-    const walk = (v: any) => {
-      if (Array.isArray(v)) return v.forEach(walk);
-      if (v && typeof v === 'object') {
-        if (Object.keys(v).length === 1 && v['@id']) refs.push(v['@id']);
-        else Object.entries(v).forEach(([k, x]) => k !== '@id' && walk(x));
-      }
-    };
-    walk(doc['@graph']);
-    for (const ref of refs) expect(ids.has(ref), `dangling ${ref}`).toBe(true);
+    expectConnectedGraph(doc);
     const article = doc['@graph'].find((n: any) => n['@type'] === 'BlogPosting');
     expect(article).toBeTruthy();
     expect(article.headline).toBeTruthy();

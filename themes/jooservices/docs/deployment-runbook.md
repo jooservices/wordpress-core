@@ -24,7 +24,7 @@ Nothing in the repository pushes or deploys; these are the manual steps.
 - The terminal opens and lists the posts.
 
 ## Rollback
-`wp theme install previous.zip --force`, then flush rewrites and the cache. Settings live in the `joo_settings_jooservices` option and are not changed by a theme update. If the site cannot load at all, rename `wp-content/themes/jooservices` over SFTP: WordPress falls back to a default theme.
+`wp theme install previous.zip --force`, then flush rewrites and the cache. Settings live in the `joo_jooservices_settings` option and are not changed by a theme update. If the site cannot load at all, rename `wp-content/themes/jooservices` over SFTP: WordPress falls back to a default theme.
 
 ## Caching notes
 Static files have content-hashed names and can be cached for a year. REST responses under `joo/v1` carry `Cache-Control` and `ETag`. Do not cache `/wp-json/joo/v1/fragment/comments` for logged-in users.

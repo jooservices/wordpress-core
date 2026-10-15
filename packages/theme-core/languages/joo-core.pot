@@ -7,7 +7,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-15T15:29:06+00:00\n"
+"POT-Creation-Date: 2026-10-15T17:11:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: joo-core\n"
@@ -394,7 +394,7 @@ msgstr ""
 msgid "Copy"
 msgstr ""
 
-#: src/Blocks/HeadingAnchors.php:141
+#: src/Blocks/HeadingAnchors.php:161
 msgid "Link to section"
 msgstr ""
 
@@ -493,23 +493,23 @@ msgstr ""
 msgid "Tier 3: use the Canvas page template; core content filters skip builder pages."
 msgstr ""
 
-#: src/Content/ContentModule.php:97
+#: src/Content/ContentModule.php:117
 msgid "Featured"
 msgstr ""
 
-#: src/Content/ContentModule.php:102
+#: src/Content/ContentModule.php:122
 msgid "Featured post"
 msgstr ""
 
-#: src/Content/ContentModule.php:103
+#: src/Content/ContentModule.php:123
 msgid "Shown in the featured slider on the home page."
 msgstr ""
 
-#: src/Content/ContentModule.php:113
+#: src/Content/ContentModule.php:133
 msgid "Featured order"
 msgstr ""
 
-#: src/Content/ContentModule.php:114
+#: src/Content/ContentModule.php:134
 msgid "Lower numbers come first."
 msgstr ""
 
@@ -595,7 +595,7 @@ msgid "default follows the site settings; off loads everything immediately; on f
 msgstr ""
 
 #. translators: %d: number of comments.
-#: src/Lazy/SectionLazy.php:139
+#: src/Lazy/SectionLazy.php:144
 #, php-format
 msgid "Show %d comment"
 msgid_plural "Show %d comments"
@@ -603,7 +603,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of comments.
-#: src/Lazy/SectionLazy.php:140
+#: src/Lazy/SectionLazy.php:145
 msgid "Leave a comment"
 msgstr ""
 

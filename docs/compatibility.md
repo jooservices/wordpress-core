@@ -12,33 +12,33 @@ To ask for support for another plugin, open a Jira issue in the JOOWT project wi
 
 | Plugin | Group | Source | Tested version | Date | Result | Notes |
 |---|---|---|---|---|---|---|
-| Yoast SEO | SEO | wporg |  |  | NOT RUN |  |
+| Yoast SEO | SEO | wporg | 28.7 | 2026-10-15 | PASS |  |
 | Rank Math SEO | SEO | wporg |  |  | NOT RUN |  |
 | All in One SEO | SEO | wporg |  |  | NOT RUN |  |
-| SEOPress | SEO | wporg |  |  | NOT RUN |  |
+| SEOPress | SEO | wporg | 10.3 | 2026-10-15 | PASS |  |
 | LiteSpeed Cache | Cache | wporg |  |  | NOT RUN |  |
 | WP Rocket | Cache | manual |  |  | SKIPPED | Commercial plugin: needs a licensed copy supplied by the owner (tests/matrix/README). |
 | W3 Total Cache | Cache | wporg |  |  | NOT RUN |  |
-| Autoptimize | Cache | wporg |  |  | NOT RUN |  |
+| Autoptimize | Cache | wporg | 3.1.16 | 2026-10-15 | PASS |  |
 | Polylang | Multilingual | wporg |  |  | NOT RUN |  |
 | WPML | Multilingual | manual |  |  | SKIPPED | Commercial plugin: needs a licensed copy supplied by the owner (tests/matrix/README). |
-| TranslatePress | Multilingual | wporg |  |  | NOT RUN |  |
+| TranslatePress | Multilingual | wporg | 3.3.8 | 2026-10-15 | PASS |  |
 | Contact Form 7 | Forms | wporg |  |  | NOT RUN |  |
-| WPForms Lite | Forms | wporg |  |  | NOT RUN |  |
-| Fluent Forms | Forms | wporg |  |  | NOT RUN |  |
-| Jetpack | Other | wporg |  |  | NOT RUN |  |
-| Site Kit by Google | Other | wporg |  |  | NOT RUN |  |
-| Smush | Images | wporg |  |  | NOT RUN |  |
-| ShortPixel Image Optimizer | Images | wporg |  |  | NOT RUN |  |
-| EWWW Image Optimizer | Images | wporg |  |  | NOT RUN |  |
-| TablePress | Other | wporg |  |  | NOT RUN |  |
-| Advanced Custom Fields | Other | wporg |  |  | NOT RUN |  |
-| Akismet | Other | wporg |  |  | NOT RUN |  |
-| Wordfence | Security | wporg |  |  | NOT RUN |  |
+| WPForms Lite | Forms | wporg | 2.0.2.2 | 2026-10-15 | PASS |  |
+| Fluent Forms | Forms | wporg | 6.2.15 | 2026-10-15 | PASS |  |
+| Jetpack | Other | wporg | 16.3.1 | 2026-10-15 | PASS |  |
+| Site Kit by Google | Other | wporg | 1.189.0 | 2026-10-15 | PASS |  |
+| Smush | Images | wporg | 4.3.4 | 2026-10-15 | PASS |  |
+| ShortPixel Image Optimizer | Images | wporg | 6.6.1 | 2026-10-15 | PASS |  |
+| EWWW Image Optimizer | Images | wporg | 8.9.0 | 2026-10-15 | PASS |  |
+| TablePress | Other | wporg | 3.4.1 | 2026-10-15 | PASS |  |
+| Advanced Custom Fields | Other | wporg | 6.8.10 | 2026-10-15 | PASS |  |
+| Akismet | Other | wporg | 5.7.2 | 2026-10-15 | PASS |  |
+| Wordfence | Security | wporg | 9.0.2 | 2026-10-15 | PASS |  |
 
 ## Tier 3: basic support
 
 | Plugin | Group | Source | Tested version | Date | Result | Notes |
 |---|---|---|---|---|---|---|
-| WooCommerce | Shop | wporg |  |  | NOT RUN |  |
-| Elementor | Page builder | wporg |  |  | NOT RUN |  |
+| WooCommerce | Shop | wporg | 11.2.1 | 2026-10-15 | PASS |  |
+| Elementor | Page builder | wporg | 4.3.5 | 2026-10-15 | PASS |  |
