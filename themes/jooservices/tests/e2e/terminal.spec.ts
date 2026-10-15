@@ -72,7 +72,10 @@ test.describe('terminal dock', () => {
   test('the terminal makes no extra requests, writes no storage and sets no cookies', async ({ page, context }) => {
     await open(page);
     const requests: string[] = [];
-    page.on('request', (r) => requests.push(r.url()));
+    page.on('request', (r) => {
+      // Lazy images may load while the page scrolls; the terminal itself must not fetch anything.
+      if (['fetch', 'xhr', 'document', 'script', 'websocket'].includes(r.resourceType())) requests.push(r.url());
+    });
     for (const cmd of [
       'ls',
       'tree',
@@ -88,7 +91,7 @@ test.describe('terminal dock', () => {
     ]) {
       await run(page, cmd);
     }
-    expect(requests.filter((u) => !u.endsWith('.woff2'))).toEqual([]);
+    expect(requests).toEqual([]);
     expect(await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('joo-term')))).toEqual([]);
     const cookies = await context.cookies();
     expect(cookies.filter((c) => /term/i.test(c.name))).toEqual([]);

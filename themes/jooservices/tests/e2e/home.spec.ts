@@ -1,12 +1,18 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 test.skip(process.env.E2E_THEME !== 'jooservices', 'jooservices theme specs');
 // Autoplay would move the slider under the assertions.
 test.use({ reducedMotion: 'reduce' });
 
+const openRail = async (page: Page) => {
+  const button = page.locator('.joo-rail-btn');
+  if (await button.isVisible()) await button.click();
+};
+
 test.describe('home', () => {
   test('the rail shows profile, companies, categories, topics and tags in order', async ({ page }) => {
     await page.goto('/');
+    await openRail(page);
     const rail = page.locator('#joo-rail');
     for (const name of ['companies', 'category-tree', 'top-topics', 'tag-list']) {
       await page.locator(`joo-lazy[name="${name}"]`).scrollIntoViewIfNeeded();
@@ -32,10 +38,13 @@ test.describe('home', () => {
     await expect(slides.nth(1).locator('img')).toHaveAttribute('loading', 'lazy');
     const track = page.locator('.joo-slider__track');
     const before = await track.evaluate((n) => n.scrollLeft);
-    await page.getByRole('button', { name: 'Next slide' }).click();
-    await expect.poll(() => track.evaluate((n) => n.scrollLeft)).toBeGreaterThan(before);
-    await page.getByRole('button', { name: 'Previous slide' }).click();
-    await expect.poll(() => track.evaluate((n) => n.scrollLeft)).toBeLessThanOrEqual(before + 1);
+    // The arrows are hidden on narrow containers: the dots remain.
+    if (await page.getByRole('button', { name: 'Next slide' }).isVisible()) {
+      await page.getByRole('button', { name: 'Next slide' }).click();
+      await expect.poll(() => track.evaluate((n) => n.scrollLeft)).toBeGreaterThan(before);
+      await page.getByRole('button', { name: 'Previous slide' }).click();
+      await expect.poll(() => track.evaluate((n) => n.scrollLeft)).toBeLessThanOrEqual(before + 1);
+    }
     await page.getByRole('button', { name: 'Go to slide 3' }).click();
     await expect(page.getByRole('button', { name: 'Go to slide 3' })).toHaveAttribute('aria-current', 'true');
   });
@@ -89,6 +98,7 @@ test.describe('home', () => {
 
   test('companies paginate in place without leaving the page', async ({ page }) => {
     await page.goto('/');
+    await openRail(page);
     await page.locator('joo-lazy[name="companies"]').scrollIntoViewIfNeeded();
     await expect(page.locator('.joo-companies__list')).toBeVisible();
     const first = await page.locator('.joo-companies__list .joo-company__name').first().innerText();
@@ -101,6 +111,7 @@ test.describe('home', () => {
 
   test('the category tree toggles children', async ({ page }) => {
     await page.goto('/');
+    await openRail(page);
     await page.locator('joo-lazy[name="category-tree"]').scrollIntoViewIfNeeded();
     const toggle = page.locator('.joo-tree__toggle').first();
     await expect(toggle).toBeVisible();
