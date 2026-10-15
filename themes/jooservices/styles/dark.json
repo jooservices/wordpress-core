@@ -1,0 +1,81 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "title": "Dark",
+  "settings": {
+    "color": {
+      "palette": [
+        {
+          "slug": "background",
+          "name": "Background",
+          "color": "#0a0e13"
+        },
+        {
+          "slug": "surface",
+          "name": "Surface",
+          "color": "#10161d"
+        },
+        {
+          "slug": "raised",
+          "name": "Raised",
+          "color": "#161e28"
+        },
+        {
+          "slug": "ink",
+          "name": "Ink",
+          "color": "#d9e3ef"
+        },
+        {
+          "slug": "muted",
+          "name": "Muted",
+          "color": "#7f90a6"
+        },
+        {
+          "slug": "line",
+          "name": "Line",
+          "color": "#1e2935"
+        },
+        {
+          "slug": "accent",
+          "name": "Accent",
+          "color": "#5cc8ff"
+        },
+        {
+          "slug": "accent-ink",
+          "name": "Accent ink",
+          "color": "#04121c"
+        },
+        {
+          "slug": "pin",
+          "name": "Pinned",
+          "color": "#f2b84b"
+        },
+        {
+          "slug": "ok",
+          "name": "OK",
+          "color": "#4fd1a1"
+        },
+        {
+          "slug": "err",
+          "name": "Error",
+          "color": "#ff6b6b"
+        },
+        {
+          "slug": "chip",
+          "name": "Chip",
+          "color": "#15202c"
+        },
+        {
+          "slug": "code",
+          "name": "Code",
+          "color": "#06090d"
+        },
+        {
+          "slug": "border",
+          "name": "Border",
+          "color": "#1e2935"
+        }
+      ]
+    }
+  }
+}

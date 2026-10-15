@@ -1,0 +1,64 @@
+/* Frame = page content (shell) + terminal dock. Shell is the size container so breakpoints follow the space left
+   for content, whether or not the dock is open. */
+.joo-frame {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1480px;
+  margin-inline: auto;
+}
+
+.joo-shell {
+  flex: 1 1 0;
+  min-width: 0;
+  container: shell / inline-size;
+  padding-block: 8px 32px;
+}
+
+.joo-layout {
+  display: grid;
+  grid-template-columns: var(--joo-rail-width) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+  margin-top: 22px;
+}
+
+.joo-layout--full {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.joo-layout--full .joo-rail {
+  display: none;
+}
+
+.joo-main {
+  min-width: 0;
+}
+
+.joo-canvas .joo-main {
+  max-width: none;
+}
+
+@container shell (max-width: 1080px) {
+  .joo-layout {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 20px;
+  }
+}
+
+@container shell (max-width: 900px) {
+  .joo-layout,
+  .joo-layout--full {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .joo-layout:not(.joo-layout--full) .joo-rail {
+    display: none;
+  }
+
+  .joo-layout:not(.joo-layout--full) .joo-rail[data-open='true'] {
+    display: flex;
+  }
+}

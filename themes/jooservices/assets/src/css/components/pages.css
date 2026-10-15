@@ -1,0 +1,85 @@
+/* page and author views */
+.joo-page h1 {
+  margin: 0 0 14px;
+  font-size: clamp(26px, 4.4cqi, 38px);
+  line-height: 1.15;
+}
+
+.joo-banner--author .joo-profile {
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.joo-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-top: 10px;
+  font: 12px/1.6 var(--joo-mono);
+  color: var(--joo-muted);
+}
+
+.joo-stats b {
+  font-weight: 500;
+  color: var(--joo-ink);
+}
+
+/* timeline (About) */
+.joo-timeline {
+  margin: 8px 0 0;
+  padding: 0 0 0 18px;
+  list-style: none;
+  border-left: 1px solid var(--joo-line);
+}
+
+.joo-timeline > li {
+  position: relative;
+  padding: 0 0 16px 6px;
+}
+
+.joo-timeline > li::before {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: -24px;
+  width: 11px;
+  height: 11px;
+  background: var(--joo-surface);
+  border: 2px solid var(--joo-accent);
+  border-radius: 50%;
+}
+
+.joo-timeline > li.is-current::before {
+  background: var(--joo-pin);
+  border-color: var(--joo-pin);
+}
+
+.joo-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.joo-cards > * {
+  padding: 12px;
+  background: var(--joo-surface);
+  border: 1px solid var(--joo-line);
+  border-radius: var(--joo-radius-m);
+}
+
+.joo-section {
+  margin-top: 22px;
+}
+
+.joo-section h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+/* Gutenberg buttons in patterns */
+.wp-block-button__link {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+}

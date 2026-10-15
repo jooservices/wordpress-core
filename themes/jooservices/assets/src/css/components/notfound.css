@@ -1,0 +1,124 @@
+/* Real 404, drawn as a terminal session. */
+.joo-404 {
+  display: block;
+  max-width: 880px;
+  margin: 10px auto 0;
+  overflow: hidden;
+  color: rgb(205 217 232);
+  background: var(--joo-code);
+  border: 1px solid rgb(36 50 68);
+  border-radius: var(--joo-radius-l);
+  box-shadow:
+    0 0 0 1px rgb(92 200 255 / 4%),
+    0 20px 50px rgb(0 0 0 / 35%);
+}
+
+.joo-404::before {
+  content: '';
+  display: block;
+  height: 34px;
+  background:
+    radial-gradient(circle at 18px 17px, rgb(42 58 79) 5px, transparent 6px),
+    radial-gradient(circle at 36px 17px, rgb(42 58 79) 5px, transparent 6px),
+    radial-gradient(circle at 54px 17px, rgb(42 58 79) 5px, transparent 6px);
+  border-bottom: 1px solid rgb(30 41 53);
+}
+
+.joo-404 > * {
+  margin-inline: 18px;
+}
+
+.joo-404__title {
+  margin-block: 18px 6px;
+  font: 700 clamp(48px, 14cqi, 112px) / 1 var(--joo-mono);
+  letter-spacing: -0.04em;
+  color: rgb(255 107 107);
+  text-shadow: 0 0 28px rgb(255 107 107 / 40%);
+}
+
+.joo-404__transcript {
+  margin-block: 8px;
+  padding: 0;
+  font: 13px/1.65 var(--joo-mono);
+  color: rgb(127 144 166);
+  background: transparent;
+  border: 0;
+}
+
+.joo-404__ps {
+  color: rgb(79 209 161);
+}
+
+.joo-404__err {
+  color: rgb(255 107 107);
+}
+
+.joo-404__search,
+.joo-404__retry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block: 12px;
+}
+
+.joo-404 input {
+  flex: 1;
+  min-width: 140px;
+  min-height: 2.75rem;
+  padding: 6px 10px;
+  font: 13px/1.4 var(--joo-mono);
+  color: rgb(230 237 245);
+  background: rgb(11 17 24);
+  border: 1px solid rgb(36 50 68);
+  border-radius: 6px;
+}
+
+.joo-404 button {
+  min-height: 2.75rem;
+  padding: 6px 14px;
+  font: 13px/1 var(--joo-mono);
+  color: rgb(230 237 245);
+  cursor: pointer;
+  background: rgb(27 42 61);
+  border: 1px solid rgb(47 69 96);
+  border-radius: 6px;
+}
+
+.joo-404 button:hover {
+  border-color: var(--joo-accent);
+}
+
+.joo-404 label {
+  flex: 1 1 100%;
+  font: 12px/1.6 var(--joo-mono);
+  color: rgb(127 144 166);
+}
+
+.joo-404__suggest {
+  margin-block: 12px 18px;
+}
+
+.joo-404__suggest h2 {
+  margin: 0 0 6px;
+  font: 500 12px/1.4 var(--joo-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(127 144 166);
+}
+
+.joo-404__suggest ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.joo-404__suggest a {
+  color: var(--joo-accent);
+}
+
+.joo-404__result {
+  flex: 1 1 100%;
+  margin: 0;
+  font: 13px/1.6 var(--joo-mono);
+  color: rgb(205 217 232);
+}

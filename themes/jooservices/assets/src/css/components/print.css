@@ -1,0 +1,12 @@
+@media print {
+  .joo-rail,
+  .joo-term,
+  .joo-header__tools {
+    display: none;
+  }
+
+  body {
+    padding-inline: 0;
+    background: transparent;
+  }
+}

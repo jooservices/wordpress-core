@@ -1,0 +1,4285 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>JOO Blog Theme Demo</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <style>
+      /* Layout: dark-first technical blog. All theme views (home, article, category, topic, author, search, about, 404) share one shell inside .stage, a size container, so the device buttons preview real breakpoints. Rail left, view right. Below 900px the rail folds behind a toggle. */
+      :root {
+        --bg: #0a0e13;
+        --surface: #10161d;
+        --raise: #161e28;
+        --ink: #d9e3ef;
+        --muted: #7f90a6;
+        --line: #1e2935;
+        --accent: #5cc8ff;
+        --accent-ink: #04121c;
+        --pin: #f2b84b;
+        --ok: #4fd1a1;
+        --err: #ff6b6b;
+        --chip: #15202c;
+        --code: #06090d;
+        --f-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --f-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+        color-scheme: dark;
+      }
+      @media (prefers-color-scheme: light) {
+        :root:not([data-theme='dark']) {
+          --bg: #eef2f6;
+          --surface: #ffffff;
+          --raise: #f6f8fb;
+          --ink: #0f1c2b;
+          --muted: #566879;
+          --line: #d5dde6;
+          --accent: #0a6bb0;
+          --accent-ink: #ffffff;
+          --pin: #a96a00;
+          --ok: #0a7a57;
+          --err: #c0392b;
+          --chip: #e6edf5;
+          --code: #0b1520;
+          color-scheme: light;
+        }
+      }
+      :root[data-theme='light'] {
+        --bg: #eef2f6;
+        --surface: #ffffff;
+        --raise: #f6f8fb;
+        --ink: #0f1c2b;
+        --muted: #566879;
+        --line: #d5dde6;
+        --accent: #0a6bb0;
+        --accent-ink: #ffffff;
+        --pin: #a96a00;
+        --ok: #0a7a57;
+        --err: #c0392b;
+        --chip: #e6edf5;
+        --code: #0b1520;
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--f-body);
+        font-size: 15px;
+        line-height: 1.6;
+        padding-inline: 16px;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+        color: inherit;
+      }
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      summary:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+      .bar {
+        max-width: 1240px;
+        margin: 0 auto 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: #06090d;
+        color: #d9e3ef;
+        border: 1px solid #1e2935;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font: 12px var(--f-mono);
+      }
+      .bar .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 12px;
+        align-items: center;
+      }
+      .bar b {
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        opacity: 0.65;
+        margin-right: 4px;
+      }
+      .bar button {
+        background: transparent;
+        border: 1px solid #33465c;
+        border-radius: 4px;
+        padding: 3px 10px;
+        cursor: pointer;
+        font: 12px var(--f-mono);
+        color: #d9e3ef;
+      }
+      .bar button[aria-pressed='true'],
+      .bar button[aria-selected='true'] {
+        background: #d9e3ef;
+        color: #0a0e13;
+        border-color: #d9e3ef;
+      }
+      .bar .sep {
+        width: 1px;
+        height: 18px;
+        background: #33465c;
+      }
+      .bar output {
+        opacity: 0.65;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .stage {
+        container-type: inline-size;
+        container-name: stage;
+        width: 100%;
+        max-width: 1480px;
+        margin: 0 auto;
+        transition: max-width 0.25s;
+      }
+      .shellwrap {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .col {
+        flex: 1 1 0;
+        min-width: 0;
+        container-type: inline-size;
+      }
+      .stage.dev {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 14px 8px;
+        background: var(--bg);
+      }
+      .stage[data-w='phone'] {
+        max-width: 390px;
+      }
+      .stage[data-w='tablet'] {
+        max-width: 820px;
+      }
+      .stage[data-w='laptop'] {
+        max-width: 1240px;
+      }
+      .site-in {
+        padding-block: 8px 32px;
+      }
+
+      /* header */
+      header.site {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 22px;
+        align-items: center;
+        padding-block: 14px;
+        border-bottom: 1px solid var(--line);
+      }
+      .logo {
+        font: 600 22px/1 var(--f-mono);
+        letter-spacing: -0.02em;
+        cursor: pointer;
+      }
+      .logo span {
+        color: var(--accent);
+      }
+      .logo i {
+        font-style: normal;
+        color: var(--muted);
+      }
+      nav.main {
+        display: flex;
+        gap: 4px 18px;
+        font-size: 14px;
+        color: var(--muted);
+        overflow-x: auto;
+        scrollbar-width: none;
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+      nav.main a {
+        white-space: nowrap;
+        padding-block: 2px;
+        cursor: pointer;
+      }
+      nav.main a:hover {
+        color: var(--ink);
+      }
+      nav.main .cur {
+        color: var(--ink);
+        box-shadow: 0 2px 0 var(--accent);
+      }
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font: 13px var(--f-mono);
+        color: var(--muted);
+        border: 1px solid var(--line);
+        background: var(--surface);
+        border-radius: 5px;
+        padding: 5px 10px;
+        min-width: 0;
+        cursor: pointer;
+      }
+      .search kbd {
+        font: 11px var(--f-mono);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        padding: 0 5px;
+        color: var(--muted);
+      }
+      .railBtn {
+        display: none;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        padding: 5px 12px;
+        font: 13px var(--f-mono);
+        cursor: pointer;
+      }
+      .progress {
+        position: sticky;
+        top: 0;
+        height: 3px;
+        background: transparent;
+        z-index: 5;
+      }
+      .progress i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--accent);
+      }
+
+      /* grid */
+      .grid {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 28px;
+        margin-top: 22px;
+        align-items: start;
+      }
+      .grid.full {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .grid.full .rail {
+        display: none;
+      }
+      .rail {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        min-width: 0;
+      }
+      .block {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        min-width: 0;
+      }
+      .block > h3 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 0 12px;
+        font: 500 11px var(--f-mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .block > h3 small {
+        font: inherit;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+      .small {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .bio {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+      .avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        flex: none;
+        display: grid;
+        place-items: center;
+        font: 600 24px var(--f-mono);
+        color: var(--accent-ink);
+        background: conic-gradient(from 210deg, var(--accent), #7b6cff, var(--ok), var(--accent));
+        box-shadow:
+          0 0 0 3px var(--surface),
+          0 0 0 4px var(--line);
+      }
+      .avatar.sm {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+      }
+      .avatar.lg {
+        width: 96px;
+        height: 96px;
+        font-size: 34px;
+      }
+      .bio strong {
+        display: block;
+        font-size: 18px;
+        line-height: 1.2;
+      }
+      .bio a.who:hover strong {
+        color: var(--accent);
+      }
+      .block p {
+        margin: 10px 0 0;
+      }
+      .lnk {
+        display: inline-flex;
+        gap: 6px;
+        margin-top: 10px;
+        font: 500 13px var(--f-mono);
+        color: var(--accent);
+        cursor: pointer;
+        background: none;
+        border: 0;
+        padding: 0;
+      }
+      .lnk:hover {
+        text-decoration: underline;
+      }
+      .co-pin {
+        border: 1px solid color-mix(in srgb, var(--pin) 45%, var(--line));
+        background: color-mix(in srgb, var(--pin) 7%, var(--surface));
+        border-radius: 6px;
+        padding: 12px;
+      }
+      .co-pin .lbl {
+        font: 500 10px var(--f-mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--pin);
+        margin-bottom: 4px;
+      }
+      .co-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .co-row a {
+        font-weight: 600;
+      }
+      .co-row a:hover {
+        color: var(--accent);
+      }
+      .role {
+        font: 12px var(--f-mono);
+        color: var(--accent);
+        text-align: right;
+      }
+      .co-sub {
+        margin: 14px 0 8px;
+        font: 500 11px var(--f-mono);
+        color: var(--muted);
+      }
+      .co-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .co-list li {
+        padding-block: 10px;
+        border-top: 1px solid var(--line);
+      }
+      .co-list li:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+      .range {
+        font: 12px var(--f-mono);
+        color: var(--muted);
+      }
+      .co-list .small {
+        margin-top: 2px;
+      }
+      .pg {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin-top: 10px;
+        font: 12px var(--f-mono);
+      }
+      .pg button {
+        background: var(--raise);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        min-width: 28px;
+        padding: 2px 8px;
+        cursor: pointer;
+      }
+      .pg button[aria-current='true'] {
+        background: var(--accent);
+        color: var(--accent-ink);
+        border-color: var(--accent);
+      }
+      .pg button:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+      .pg .sp {
+        flex: 1;
+      }
+      .cats {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .cats ul {
+        list-style: none;
+        margin: 0;
+        padding: 0 0 4px 14px;
+        border-left: 1px solid var(--line);
+        margin-left: 9px;
+      }
+      .cat-h {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        padding-block: 5px;
+      }
+      .tgl {
+        flex: none;
+        width: 20px;
+        height: 20px;
+        border: 1px solid var(--line);
+        background: var(--raise);
+        border-radius: 4px;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        font: 12px/1 var(--f-mono);
+        margin-top: 1px;
+      }
+      .tgl[aria-expanded='true']::before {
+        content: '–';
+      }
+      .tgl[aria-expanded='false']::before {
+        content: '+';
+      }
+      .tgl.none {
+        visibility: hidden;
+      }
+      .cat-t {
+        flex: 1;
+        min-width: 0;
+      }
+      .cat-t a {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        font-weight: 500;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .cat-t a:hover {
+        color: var(--accent);
+      }
+      .cat-t i {
+        font: normal 12px var(--f-mono);
+        color: var(--muted);
+      }
+      .cat-t .small {
+        display: block;
+        font-size: 12.5px;
+        line-height: 1.45;
+      }
+      .tp {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .tp a {
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+        cursor: pointer;
+      }
+      .tp .th {
+        width: 44px;
+        height: 44px;
+        border-radius: 6px;
+      }
+      .tp strong {
+        display: flex;
+        justify-content: space-between;
+        gap: 6px;
+        font-size: 14px;
+        line-height: 1.3;
+      }
+      .tp strong i {
+        font: normal 11px var(--f-mono);
+        color: var(--accent);
+      }
+      .tp a:hover strong {
+        color: var(--accent);
+      }
+      .tp .small {
+        font-size: 12.5px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .tags a {
+        font: 12px var(--f-mono);
+        border: 1px solid var(--line);
+        background: var(--chip);
+        border-radius: 4px;
+        padding: 1px 8px;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .tags a:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .tags a sup {
+        color: var(--muted);
+        margin-left: 3px;
+      }
+      .th {
+        position: relative;
+        overflow: hidden;
+        display: block;
+      }
+      .th::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+        background-size: 14px 14px;
+      }
+      .g1 {
+        background: linear-gradient(135deg, #0b2447, #1f6fd6 60%, #2fc4c4);
+      }
+      .g2 {
+        background: linear-gradient(135deg, #1d1a3a, #5b4bd6);
+      }
+      .g3 {
+        background: linear-gradient(135deg, #093d3d, #3fb98b);
+      }
+      .g4 {
+        background: linear-gradient(135deg, #40210b, #d69a2f);
+      }
+      .g5 {
+        background: linear-gradient(135deg, #3a0f24, #d6406f);
+      }
+
+      /* main and shared view parts */
+      .main {
+        min-width: 0;
+      }
+      .crumbs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 6px;
+        font: 12px var(--f-mono);
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
+      .crumbs a {
+        cursor: pointer;
+      }
+      .crumbs a:hover {
+        color: var(--accent);
+      }
+      .crumbs span[aria-current] {
+        color: var(--ink);
+      }
+      .sec-h {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+        margin: 0 0 10px;
+      }
+      .sec-h h2 {
+        margin: 0;
+        font: 500 12px var(--f-mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .sec-h h2 b {
+        color: var(--pin);
+        font-weight: 500;
+      }
+      .banner {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 16px;
+        position: relative;
+        overflow: hidden;
+      }
+      .banner::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+        background-size: 28px 28px;
+        opacity: 0.35;
+        mask-image: linear-gradient(90deg, transparent, #000);
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+      }
+      .banner > * {
+        position: relative;
+      }
+      .eyebrow {
+        font: 500 11px var(--f-mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 6px;
+      }
+      .banner h1,
+      .vt {
+        margin: 0 0 6px;
+        font-size: clamp(24px, 4cqi, 34px);
+        line-height: 1.15;
+        font-weight: 600;
+        text-wrap: balance;
+      }
+      .banner p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 60ch;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 14px;
+      }
+      .chip {
+        font: 12px var(--f-mono);
+        border: 1px solid var(--line);
+        background: var(--chip);
+        border-radius: 999px;
+        padding: 2px 12px;
+        cursor: pointer;
+      }
+      .chip.on,
+      .chip:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 14px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font: 12px var(--f-mono);
+        color: var(--muted);
+      }
+      .toolbar select {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 2px 8px;
+        font: 12px var(--f-mono);
+      }
+
+      /* slider */
+      .slider {
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--surface);
+        overflow: hidden;
+        margin-bottom: 26px;
+      }
+      .track {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        scroll-behavior: smooth;
+      }
+      .track::-webkit-scrollbar {
+        display: none;
+      }
+      .slide {
+        flex: 0 0 100%;
+        scroll-snap-align: start;
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+        min-width: 0;
+      }
+      .slide .th {
+        min-height: 260px;
+      }
+      .slide .th span,
+      .post .th span {
+        position: absolute;
+        z-index: 1;
+        font: 500 11px var(--f-mono);
+        background: rgba(0, 0, 0, 0.55);
+        color: #fff;
+        padding: 1px 8px;
+        border-radius: 3px;
+        left: 10px;
+        bottom: 8px;
+      }
+      .slide .tx {
+        padding: 22px 22px 52px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+      }
+      .pill {
+        align-self: flex-start;
+        font: 500 11px var(--f-mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--pin);
+        border: 1px solid color-mix(in srgb, var(--pin) 50%, transparent);
+        border-radius: 999px;
+        padding: 1px 10px;
+      }
+      .slide h3 {
+        margin: 0;
+        font-size: clamp(20px, 3.2cqi, 28px);
+        line-height: 1.2;
+        font-weight: 600;
+        text-wrap: balance;
+      }
+      .slide h3 a {
+        cursor: pointer;
+      }
+      .slide h3 a:hover {
+        color: var(--accent);
+      }
+      .slide p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .ctrl {
+        position: absolute;
+        right: 14px;
+        bottom: 12px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .dots {
+        display: flex;
+        gap: 6px;
+      }
+      .dots button {
+        width: 9px;
+        height: 9px;
+        padding: 0;
+        border-radius: 50%;
+        border: 1px solid var(--muted);
+        background: transparent;
+        cursor: pointer;
+      }
+      .dots button[aria-current='true'] {
+        background: var(--accent);
+        border-color: var(--accent);
+        width: 22px;
+        border-radius: 5px;
+      }
+      .arrow {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: var(--raise);
+        cursor: pointer;
+        font: 15px var(--f-mono);
+      }
+      .arrow:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      /* posts */
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px 14px;
+        font: 12px var(--f-mono);
+        color: var(--muted);
+      }
+      .meta .cat {
+        color: var(--accent);
+        cursor: pointer;
+      }
+      .feed {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .post {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        gap: 18px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+        transition: border-color 0.15s;
+      }
+      .post:hover {
+        border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+      }
+      .post .th {
+        aspect-ratio: 4/3;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .post h3 {
+        margin: 4px 0 6px;
+        font-size: 19px;
+        line-height: 1.3;
+        font-weight: 600;
+        text-wrap: balance;
+      }
+      .post h3 a {
+        cursor: pointer;
+      }
+      .post h3 a:hover {
+        color: var(--accent);
+      }
+      .post p {
+        margin: 6px 0 10px;
+        color: var(--muted);
+      }
+      .more {
+        font: 500 13px var(--f-mono);
+        color: var(--accent);
+        cursor: pointer;
+      }
+      .pager {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 18px;
+        font: 13px var(--f-mono);
+      }
+      .pager a {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        padding: 3px 11px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .pager a.on {
+        background: var(--accent);
+        color: var(--accent-ink);
+        border-color: var(--accent);
+      }
+      .dense .post {
+        grid-template-columns: 88px minmax(0, 1fr);
+        gap: 14px;
+      }
+      .dense .post p,
+      .dense .post .tags {
+        display: none;
+      }
+      .dense .post h3 {
+        font-size: 16px;
+        margin-top: 0;
+      }
+      mark {
+        background: color-mix(in srgb, var(--pin) 35%, transparent);
+        color: inherit;
+        border-radius: 2px;
+      }
+
+      /* article */
+      .art-h h1 {
+        margin: 6px 0 8px;
+        font-size: clamp(26px, 4.4cqi, 38px);
+        line-height: 1.15;
+        font-weight: 600;
+        text-wrap: balance;
+      }
+      .deck {
+        color: var(--muted);
+        font-size: 17px;
+        margin: 0 0 14px;
+        max-width: 62ch;
+      }
+      .byline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 16px;
+        align-items: center;
+        padding-block: 12px;
+        border-block: 1px solid var(--line);
+        margin-bottom: 18px;
+      }
+      .byline a.au {
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .byline a.au:hover {
+        color: var(--accent);
+      }
+      .byline .meta {
+        flex: 1;
+      }
+      .cover {
+        aspect-ratio: 21/9;
+        border-radius: 10px;
+        margin-bottom: 18px;
+        max-width: 100%;
+      }
+      .toc {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-bottom: 18px;
+      }
+      .toc summary {
+        cursor: pointer;
+        font: 500 12px var(--f-mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .toc ol {
+        margin: 8px 0 2px;
+        padding-left: 20px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .toc a {
+        cursor: pointer;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .prose {
+        max-width: 70ch;
+        min-width: 0;
+      }
+      .prose h2 {
+        font-size: 22px;
+        line-height: 1.3;
+        margin: 28px 0 8px;
+        font-weight: 600;
+      }
+      .prose p {
+        margin: 0 0 14px;
+      }
+      .prose code.i {
+        font: 13px var(--f-mono);
+        background: var(--chip);
+        border-radius: 3px;
+        padding: 1px 5px;
+      }
+      .callout {
+        border-left: 3px solid var(--accent);
+        background: var(--surface);
+        border-radius: 0 6px 6px 0;
+        padding: 10px 14px;
+        margin: 16px 0;
+        color: var(--muted);
+      }
+      .callout b {
+        color: var(--ink);
+      }
+      .codebox {
+        background: var(--code);
+        border: 1px solid #1e2935;
+        border-radius: 8px;
+        margin: 16px 0;
+        overflow: hidden;
+      }
+      .codebox .hd {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 12px;
+        border-bottom: 1px solid #1e2935;
+        font: 12px var(--f-mono);
+        color: #7f90a6;
+      }
+      .codebox button {
+        background: transparent;
+        border: 1px solid #33465c;
+        color: #cdd9e8;
+        border-radius: 4px;
+        padding: 1px 8px;
+        font: 12px var(--f-mono);
+        cursor: pointer;
+      }
+      .codebox pre {
+        margin: 0;
+        padding: 12px;
+        overflow-x: auto;
+        font: 13px/1.6 var(--f-mono);
+        color: #cdd9e8;
+      }
+      .k {
+        color: #7fc6ff;
+      }
+      .s {
+        color: #8fe3b5;
+      }
+      .c {
+        color: #6b7c93;
+      }
+      .snav {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 26px 0;
+      }
+      .snav a {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        border-radius: 8px;
+        padding: 10px 14px;
+        cursor: pointer;
+        min-width: 0;
+      }
+      .snav a:hover {
+        border-color: var(--accent);
+      }
+      .snav small {
+        display: block;
+        font: 11px var(--f-mono);
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .snav a:last-child {
+        text-align: right;
+      }
+      .abox {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 22px;
+      }
+      .abox strong {
+        display: block;
+      }
+
+      /* author / about */
+      .hero {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        align-items: center;
+      }
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 22px;
+        font: 12px var(--f-mono);
+        color: var(--muted);
+        margin-top: 10px;
+      }
+      .stats b {
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .sect {
+        margin-top: 22px;
+      }
+      .sect h2 {
+        font-size: 20px;
+        margin: 0 0 8px;
+        font-weight: 600;
+      }
+      .tl {
+        list-style: none;
+        margin: 8px 0 0;
+        padding: 0 0 0 18px;
+        border-left: 1px solid var(--line);
+      }
+      .tl li {
+        position: relative;
+        padding: 0 0 16px 6px;
+      }
+      .tl li::before {
+        content: '';
+        position: absolute;
+        left: -24px;
+        top: 7px;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--surface);
+        border: 2px solid var(--accent);
+      }
+      .tl li.now::before {
+        background: var(--pin);
+        border-color: var(--pin);
+      }
+      .cgrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+      }
+      .cc {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        border-radius: 8px;
+        padding: 12px;
+      }
+      .cc strong {
+        display: block;
+      }
+
+      /* search */
+      .sbox {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .sbox input {
+        flex: 1;
+        min-width: 0;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px 14px;
+        font: 15px var(--f-mono);
+      }
+      .sbox button {
+        background: var(--accent);
+        color: var(--accent-ink);
+        border: 0;
+        border-radius: 6px;
+        padding: 0 18px;
+        font: 500 13px var(--f-mono);
+        cursor: pointer;
+      }
+
+      /* 404 */
+      .err {
+        max-width: 880px;
+        margin: 10px auto 0;
+      }
+      .term {
+        background: var(--code);
+        border: 1px solid #243244;
+        border-radius: 10px;
+        overflow: hidden;
+        color: #cdd9e8;
+        box-shadow:
+          0 0 0 1px rgba(92, 200, 255, 0.04),
+          0 20px 50px rgba(0, 0, 0, 0.35);
+      }
+      .term .tb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-bottom: 1px solid #1e2935;
+        font: 12px var(--f-mono);
+        color: #7f90a6;
+      }
+      .term .tb i {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #2a3a4f;
+      }
+      .term .tb span {
+        margin-left: 8px;
+      }
+      .tbody {
+        padding: 16px 18px;
+        font: 13px/1.65 var(--f-mono);
+        overflow-x: auto;
+      }
+      .tbody .ps {
+        color: #4fd1a1;
+      }
+      .tbody .cmd {
+        color: #e6edf5;
+      }
+      .big {
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin: 6px 0 2px;
+      }
+      .big strong {
+        font: 700 clamp(64px, 16cqi, 132px)/1 var(--f-mono);
+        letter-spacing: -0.04em;
+        color: var(--err);
+        text-shadow: 0 0 28px color-mix(in srgb, var(--err) 40%, transparent);
+      }
+      .big span {
+        font: 500 clamp(16px, 3cqi, 24px) var(--f-mono);
+        color: #e6edf5;
+      }
+      .hdrs {
+        margin: 8px 0;
+        color: #7f90a6;
+      }
+      .hdrs b {
+        color: #9fb3cc;
+        font-weight: 500;
+      }
+      .hdrs .bad {
+        color: var(--err);
+      }
+      .json {
+        margin: 8px 0;
+        white-space: pre;
+        color: #cdd9e8;
+      }
+      .json .jk {
+        color: #7fc6ff;
+      }
+      .json .js {
+        color: #8fe3b5;
+      }
+      .json .jn {
+        color: var(--pin);
+      }
+      .sug {
+        list-style: none;
+        margin: 6px 0 0;
+        padding: 0;
+      }
+      .sug li {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+        padding: 4px 0;
+      }
+      .sug a {
+        color: var(--accent);
+        cursor: pointer;
+      }
+      .sug a:hover {
+        text-decoration: underline;
+      }
+      .sug em {
+        font-style: normal;
+        color: #7f90a6;
+      }
+      .caret {
+        display: inline-block;
+        width: 8px;
+        height: 15px;
+        background: #cdd9e8;
+        vertical-align: -2px;
+        animation: bl 1.1s steps(1) infinite;
+      }
+      @keyframes bl {
+        50% {
+          opacity: 0;
+        }
+      }
+      .rq {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 10px 0 0;
+      }
+      .rq input {
+        flex: 1;
+        min-width: 140px;
+        background: #0b1118;
+        border: 1px solid #243244;
+        border-radius: 6px;
+        color: #e6edf5;
+        padding: 6px 10px;
+        font: 13px var(--f-mono);
+      }
+      .rq button {
+        background: #1b2a3d;
+        border: 1px solid #2f4560;
+        color: #e6edf5;
+        border-radius: 6px;
+        padding: 6px 14px;
+        font: 13px var(--f-mono);
+        cursor: pointer;
+      }
+      .rq button:hover {
+        border-color: var(--accent);
+      }
+      .codes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 12px 0 0;
+      }
+      .codes button {
+        background: transparent;
+        border: 1px solid #2f4560;
+        color: #9fb3cc;
+        border-radius: 4px;
+        padding: 1px 10px;
+        font: 12px var(--f-mono);
+        cursor: pointer;
+      }
+      .codes button[aria-pressed='true'] {
+        border-color: var(--err);
+        color: var(--err);
+      }
+      .note {
+        margin-top: 14px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      /* footer */
+      footer.site {
+        margin-top: 34px;
+        border-top: 1px solid var(--line);
+        padding-top: 22px;
+        display: grid;
+        grid-template-columns: 1.4fr repeat(3, 1fr);
+        gap: 22px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      footer.site h4 {
+        margin: 0 0 8px;
+        font: 500 11px var(--f-mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink);
+      }
+      footer.site ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      footer.site a {
+        cursor: pointer;
+      }
+      footer.site a:hover {
+        color: var(--accent);
+      }
+      footer.site p {
+        margin: 0;
+      }
+      .copy {
+        grid-column: 1/-1;
+        font: 12px var(--f-mono);
+        border-top: 1px solid var(--line);
+        padding-top: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 18px;
+        justify-content: space-between;
+      }
+      .seo {
+        margin-top: 26px;
+        background: var(--code);
+        color: #cdd9e8;
+        border: 1px solid #1e2935;
+        border-radius: 8px;
+        padding: 16px;
+        min-width: 0;
+      }
+      .seo h3 {
+        margin: 0 0 4px;
+        font: 500 11px var(--f-mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #7f90a6;
+      }
+      .seo p {
+        margin: 0 0 10px;
+        font-size: 13px;
+        color: #7f90a6;
+      }
+      .seo pre {
+        margin: 0;
+        overflow-x: auto;
+        font: 12px/1.55 var(--f-mono);
+        white-space: pre;
+        max-height: 300px;
+      }
+
+      /* responsive (container based so the device buttons preview it) */
+      @container (max-width:1080px) {
+        .grid {
+          grid-template-columns: 280px minmax(0, 1fr);
+          gap: 20px;
+        }
+        .post {
+          grid-template-columns: 180px minmax(0, 1fr);
+        }
+      }
+      @container (max-width:900px) {
+        .grid,
+        .grid.full {
+          display: flex;
+          flex-direction: column;
+        }
+        .railBtn {
+          display: inline-block;
+          margin-left: auto;
+        }
+        .grid:not(.full) .rail {
+          display: none;
+        }
+        .grid:not(.full) .rail.open {
+          display: flex;
+        }
+        .search {
+          order: 5;
+          flex: 1 1 100%;
+        }
+        footer.site {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @container (max-width:640px) {
+        .slide {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .slide .th {
+          min-height: 0;
+          aspect-ratio: 16/8;
+        }
+        .slide .tx {
+          padding: 16px 16px 56px;
+        }
+        .post {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .post .th {
+          aspect-ratio: 16/8;
+        }
+        .dense .post {
+          grid-template-columns: 84px minmax(0, 1fr);
+        }
+        .dense .post .th {
+          aspect-ratio: 1;
+        }
+        .copy {
+          flex-direction: column;
+        }
+        .snav {
+          grid-template-columns: 1fr;
+        }
+        .snav a:last-child {
+          text-align: left;
+        }
+        .cover {
+          aspect-ratio: 16/8;
+        }
+      }
+      @container (max-width:420px) {
+        footer.site {
+          grid-template-columns: 1fr;
+        }
+        .block,
+        .banner {
+          padding: 14px;
+        }
+        .co-row {
+          flex-direction: column;
+          gap: 2px;
+        }
+        .role {
+          text-align: left;
+        }
+        .arrow {
+          display: none;
+        }
+        .tbody {
+          padding: 12px;
+        }
+        .sug li {
+          flex-direction: column;
+          gap: 0;
+        }
+      }
+
+      /* terminal dock (right) */
+      .termdock {
+        flex: none;
+        position: sticky;
+        top: 0;
+        align-self: flex-start;
+        height: min(100vh, 780px);
+        display: flex;
+        z-index: 30;
+        margin-top: 8px;
+      }
+      .tdtab {
+        width: 40px;
+        height: 100%;
+        background: #06090d;
+        border: 1px solid #243244;
+        border-radius: 10px;
+        color: #9fb3cc;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 14px;
+        padding-top: 14px;
+        font: 500 13px var(--f-mono);
+      }
+      .tdtab:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .tdtab span {
+        font-size: 15px;
+        color: #4fd1a1;
+      }
+      .tdtab em {
+        font-style: normal;
+        writing-mode: vertical-rl;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-size: 11px;
+      }
+      .tpanel {
+        width: 390px;
+        height: 100%;
+        background: #06090d;
+        border: 1px solid #243244;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        color: #cdd9e8;
+        font: 13px/1.55 var(--f-mono);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      }
+      .termdock[data-open='false'] .tpanel {
+        display: none;
+      }
+      .termdock[data-open='true'] .tdtab {
+        display: none;
+      }
+      .tb2 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-bottom: 1px solid #1e2935;
+        color: #7f90a6;
+        font: 12px var(--f-mono);
+        flex: none;
+      }
+      .tb2 b {
+        font-weight: 500;
+        color: #9fb3cc;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .tb2 button {
+        background: transparent;
+        border: 1px solid #33465c;
+        color: #cdd9e8;
+        border-radius: 4px;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        line-height: 1;
+      }
+      .tchips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 8px 12px 0;
+        flex: none;
+      }
+      .tchips button {
+        background: transparent;
+        border: 1px solid #2f4560;
+        color: #9fb3cc;
+        border-radius: 4px;
+        padding: 0 8px;
+        font: 12px var(--f-mono);
+        cursor: pointer;
+      }
+      .tchips button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .tout {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 10px 12px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        overscroll-behavior: contain;
+      }
+      .tout .ln {
+        margin-top: 6px;
+      }
+      .tout .ps {
+        color: #4fd1a1;
+      }
+      .tout .dim {
+        color: #6b7c93;
+      }
+      .tout .er {
+        color: #ff8080;
+      }
+      .tout .d {
+        color: #6ab7ff;
+        font-weight: 700;
+      }
+      .tout .l {
+        color: #5fe0e0;
+      }
+      .tout .f {
+        color: #e6edf5;
+      }
+      .tout a,
+      .tout .cl {
+        color: inherit;
+        cursor: pointer;
+        text-decoration: none;
+        border-radius: 2px;
+      }
+      .tout a:hover,
+      .tout .cl:hover {
+        text-decoration: underline;
+        background: rgba(92, 200, 255, 0.12);
+      }
+      .tout .lsw {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px 16px;
+      }
+      .tout mark {
+        background: rgba(242, 184, 75, 0.3);
+        color: #ffd88a;
+      }
+      .tin {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-top: 1px solid #1e2935;
+        flex: none;
+      }
+      .tin label {
+        color: #4fd1a1;
+        white-space: nowrap;
+        max-width: 55%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .tin input {
+        flex: 1;
+        min-width: 0;
+        background: transparent;
+        border: 0;
+        color: #e6edf5;
+        font: 13px var(--f-mono);
+        padding: 2px 0;
+        caret-color: #cdd9e8;
+      }
+      .tin input:focus-visible {
+        outline: 0;
+      }
+      .tpanel:focus-within {
+        border-color: color-mix(in srgb, var(--accent) 60%, #243244);
+      }
+      @container stage (max-width:900px) {
+        .shellwrap {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .termdock {
+          position: sticky;
+          top: auto;
+          bottom: 0;
+          height: auto;
+          width: 100%;
+          margin-top: 0;
+          padding-bottom: 6px;
+        }
+        .tdtab {
+          width: 100%;
+          height: 40px;
+          flex-direction: row;
+          justify-content: center;
+          padding: 0;
+          gap: 10px;
+        }
+        .tdtab em {
+          writing-mode: horizontal-tb;
+        }
+        .tpanel {
+          width: 100%;
+          height: min(62vh, 480px);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          scroll-behavior: auto !important;
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bar" role="toolbar" aria-label="Demo controls">
+      <div class="row">
+        <b>Views</b>
+        <div class="tabs" role="tablist" id="tabs"></div>
+      </div>
+      <div class="row">
+        <b>Demo</b>
+        <button id="bTheme" aria-pressed="false">Light</button>
+        <button id="bLang" aria-pressed="false">VI</button>
+        <button id="bDens" aria-pressed="false">Compact list</button>
+        <span class="sep"></span>
+        <button data-w="phone" aria-pressed="false">Phone 390</button>
+        <button data-w="tablet" aria-pressed="false">Tablet 820</button>
+        <button data-w="laptop" aria-pressed="false">Laptop 1240</button>
+        <button data-w="full" aria-pressed="true">Fit</button>
+        <output id="wOut"></output>
+      </div>
+    </div>
+
+    <div class="stage" id="stage" data-w="full">
+      <div class="shellwrap">
+        <div class="col">
+          <div class="site-in" id="siteIn">
+            <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+            <header class="site">
+              <a class="logo" data-go="home">joo<span>services</span><i>.com</i></a>
+              <nav class="main" aria-label="Primary">
+                <a data-go="home" id="nHome">Blog</a><a data-go="category" data-cat="AI">AI</a
+                ><a data-go="category" data-cat="Research &amp; Development">R&amp;D</a
+                ><a data-go="about" data-i="nAbout">About</a
+                ><a data-go="notfound" title="Opens the 404 view">/old-page</a>
+              </nav>
+              <button class="railBtn" id="railBtn" aria-expanded="false" aria-controls="rail" data-i="side">
+                ☰ Sidebar
+              </button>
+              <div class="search" data-go="search">
+                <span>⌕</span><span data-i="search">Search articles…</span><kbd>/</kbd>
+              </div>
+            </header>
+
+            <div class="grid" id="grid">
+              <aside class="rail" id="rail" aria-label="Sidebar">
+                <section class="block">
+                  <h3 data-i="aboutH">About me</h3>
+                  <div class="bio">
+                    <div class="avatar" aria-hidden="true">V</div>
+                    <a class="who" data-go="author"
+                      ><strong>Viet VU</strong><span class="small" data-i="role">Software engineer · Founder</span></a
+                    >
+                  </div>
+                  <p class="small" data-i="bio">
+                    Writing about AI, backend engineering and homelab experiments. Building tools that make daily work
+                    simpler.
+                  </p>
+                  <button class="lnk" data-go="about"><span data-i="prof">View full profile</span> →</button>
+                </section>
+                <section class="block" aria-labelledby="coH">
+                  <h3 id="coH"><span data-i="coH">Companies</span><small id="coCount"></small></h3>
+                  <div class="co-pin">
+                    <div class="lbl" data-i="pinned">★ Current company</div>
+                    <div class="co-row">
+                      <a data-go="about">JOOservices Ltd</a
+                      ><span class="role" data-i="roleFounder">Founder &amp; CTO</span>
+                    </div>
+                    <div class="small" data-i="pinDesc">Software, automation and AI tooling for small teams.</div>
+                  </div>
+                  <div class="co-sub" data-i="prev">Companies I have worked on</div>
+                  <ul class="co-list" id="coList"></ul>
+                  <div class="pg" id="coPg"></div>
+                </section>
+                <section class="block">
+                  <h3 data-i="catH">Categories</h3>
+                  <ul class="cats" id="cats"></ul>
+                </section>
+                <section class="block">
+                  <h3 data-i="topH">Top topics</h3>
+                  <ul class="tp" id="tp"></ul>
+                </section>
+                <section class="block">
+                  <h3 data-i="tagH">Tags</h3>
+                  <div class="tags" id="tags"></div>
+                </section>
+              </aside>
+
+              <main class="main" id="main" tabindex="-1"></main>
+            </div>
+
+            <footer class="site">
+              <div>
+                <h4>joo services</h4>
+                <p data-i="fAbout">Technical notes on AI, engineering and R&amp;D.</p>
+              </div>
+              <div>
+                <h4 data-i="fExplore">Explore</h4>
+                <ul>
+                  <li><a data-go="category" data-cat="AI">AI</a></li>
+                  <li><a data-go="category" data-cat="Homelab">Homelab</a></li>
+                  <li><a data-go="category" data-cat="Study cases">Study cases</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 data-i="fConn">Connect</h4>
+                <ul>
+                  <li><a>GitHub</a></li>
+                  <li><a>LinkedIn</a></li>
+                  <li><a>RSS</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4>Legal</h4>
+                <ul>
+                  <li><a>Privacy</a></li>
+                  <li><a data-go="about">Contact</a></li>
+                  <li><a>Sitemap</a></li>
+                </ul>
+              </div>
+              <div class="copy">
+                <span>© 2026 JOOservices Ltd</span><span data-i="fBuilt">Block theme · built for speed and SEO</span>
+              </div>
+            </footer>
+          </div>
+        </div>
+        <aside class="termdock" id="dock" data-open="false" aria-label="Terminal">
+          <button class="tdtab" id="tdTab" aria-expanded="false" aria-controls="tpanel" title="Open terminal ( ` )">
+            <span>$_</span><em>terminal</em>
+          </button>
+          <div class="tpanel" id="tpanel" role="region" aria-label="Read-only terminal">
+            <div class="tb2">
+              <b id="tTitle">viet@jooservices: ~</b
+              ><button id="tdClose" type="button" aria-label="Close terminal">×</button>
+            </div>
+            <div class="tchips" id="tchips"></div>
+            <div class="tout" id="tout" role="log" aria-live="polite"></div>
+            <form class="tin" id="tform" autocomplete="off">
+              <label for="tcmd" id="tps">viet@jooservices:~$</label
+              ><input
+                id="tcmd"
+                spellcheck="false"
+                autocapitalize="off"
+                autocomplete="off"
+                aria-label="Terminal command"
+              />
+            </form>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <script>
+      var L10 = {
+        en: {
+          lang: 'en',
+          nAbout: 'About',
+          side: '☰ Sidebar',
+          search: 'Search articles…',
+          aboutH: 'About me',
+          role: 'Software engineer · Founder',
+          bio: 'Writing about AI, backend engineering and homelab experiments. Building tools that make daily work simpler.',
+          prof: 'View full profile',
+          coH: 'Companies',
+          pinned: '★ Current company',
+          roleFounder: 'Founder & CTO',
+          pinDesc: 'Software, automation and AI tooling for small teams.',
+          prev: 'Companies I have worked on',
+          catH: 'Categories',
+          topH: 'Top topics',
+          tagH: 'Tags',
+          home: 'Home',
+          all: 'All articles',
+          featH: 'Featured',
+          latestH: 'Latest articles',
+          next: 'Next →',
+          fAbout: 'Technical notes on AI, engineering and R&D.',
+          fExplore: 'Explore',
+          fConn: 'Connect',
+          fBuilt: 'Block theme · built for speed and SEO',
+          read: 'Read article →',
+          picked: 'Picked',
+          of: 'of',
+          min: 'min read',
+          upd: 'Updated',
+          onpage: 'On this page',
+          copy: 'Copy',
+          copied: 'Copied',
+          prevP: 'Previous',
+          nextP: 'Next',
+          related: 'Related articles',
+          articles: 'articles',
+          sort: 'Sort',
+          newest: 'Newest',
+          oldest: 'Oldest',
+          results: 'results',
+          seoNote: 'Head markup for this view. If Yoast or Rank Math is active, the theme turns its own output off.',
+        },
+        vi: {
+          lang: 'vi',
+          nAbout: 'Giới thiệu',
+          side: '☰ Thanh bên',
+          search: 'Tìm bài viết…',
+          aboutH: 'Về tôi',
+          role: 'Kỹ sư phần mềm · Nhà sáng lập',
+          bio: 'Viết về AI, backend và các thử nghiệm homelab. Xây công cụ giúp công việc hằng ngày đơn giản hơn.',
+          prof: 'Xem hồ sơ đầy đủ',
+          coH: 'Công ty',
+          pinned: '★ Công ty hiện tại',
+          roleFounder: 'Sáng lập & CTO',
+          pinDesc: 'Phần mềm, tự động hoá và công cụ AI cho đội nhóm nhỏ.',
+          prev: 'Các công ty tôi đã làm việc',
+          catH: 'Chuyên mục',
+          topH: 'Chủ đề nổi bật',
+          tagH: 'Thẻ',
+          home: 'Trang chủ',
+          all: 'Tất cả bài viết',
+          featH: 'Bài nổi bật',
+          latestH: 'Bài viết mới nhất',
+          next: 'Sau →',
+          fAbout: 'Ghi chú kỹ thuật về AI, kỹ thuật phần mềm và R&D.',
+          fExplore: 'Khám phá',
+          fConn: 'Kết nối',
+          fBuilt: 'Block theme · tối ưu tốc độ và SEO',
+          read: 'Đọc bài →',
+          picked: 'Chọn lọc',
+          of: '/',
+          min: 'phút đọc',
+          upd: 'Cập nhật',
+          onpage: 'Nội dung bài',
+          copy: 'Sao chép',
+          copied: 'Đã chép',
+          prevP: 'Trước',
+          nextP: 'Sau',
+          related: 'Bài liên quan',
+          articles: 'bài',
+          sort: 'Sắp xếp',
+          newest: 'Mới nhất',
+          oldest: 'Cũ nhất',
+          results: 'kết quả',
+          seoNote: 'Phần head của view này. Nếu Yoast hoặc Rank Math đang bật, theme tự tắt phần SEO của mình.',
+        },
+      };
+      var VIEWS = [
+        ['home', 'Home'],
+        ['article', 'Article'],
+        ['category', 'Category'],
+        ['topic', 'Topic / tag'],
+        ['author', 'Author'],
+        ['search', 'Search'],
+        ['about', 'About'],
+        ['notfound', '404'],
+      ];
+      var S = {
+        lang: 'en',
+        view: 'home',
+        coPage: 0,
+        slide: 0,
+        timer: null,
+        cat: 'AI',
+        topic: 'laravel',
+        q: '',
+        code: 404,
+        path: '/blog/wordpress-mpc-v1',
+      };
+      var COS = [
+        {
+          n: 'SGCarmart',
+          r: 'Senior Engineer',
+          f: '2022',
+          t: '2025',
+          d: 'Marketplace platform: search, listings and integrations.',
+        },
+        {
+          n: 'Fintech Startup',
+          r: 'Backend Lead',
+          f: '2020',
+          t: '2022',
+          d: 'Payments API and reconciliation services.',
+        },
+        {
+          n: 'Digital Agency',
+          r: 'Full-stack Developer',
+          f: '2018',
+          t: '2020',
+          d: 'WordPress and Laravel builds for 30+ clients.',
+        },
+        {
+          n: 'Outsourcing Co.',
+          r: 'PHP Developer',
+          f: '2015',
+          t: '2018',
+          d: 'E-commerce and CMS projects for overseas clients.',
+        },
+        { n: 'Freelance', r: 'Developer', f: '2013', t: '2015', d: 'Small business sites and custom plugins.' },
+      ];
+      var CATS = [
+        { n: 'AI', c: 14, d: 'LLMs, agents, MCP and practical automation.', k: [] },
+        {
+          n: 'Blog',
+          c: 22,
+          d: 'Company updates and general writing.',
+          k: [
+            { n: 'Companies', c: 6, d: 'What the teams are building.' },
+            { n: 'News', c: 9, d: 'Releases and announcements.' },
+          ],
+        },
+        {
+          n: 'Research & Development',
+          c: 31,
+          d: 'Experiments, setups and lessons learned.',
+          k: [
+            { n: 'Homelab', c: 12, d: 'Servers, Docker and self-hosting.' },
+            { n: 'Study cases', c: 8, d: 'Real problems, step-by-step.' },
+            { n: 'Tips & Tricks', c: 11, d: 'Short, useful snippets.' },
+          ],
+        },
+      ];
+      var TOPICS = [
+        { n: 'LLM & agents', k: 'llm', c: 18, d: 'Prompting, tool use and evaluation in real projects.', g: 'g1' },
+        { n: 'MCP', k: 'mcp', c: 12, d: 'Building and securing Model Context Protocol servers.', g: 'g2' },
+        { n: 'Laravel', k: 'laravel', c: 11, d: 'Architecture, queues and testing patterns.', g: 'g5' },
+        { n: 'Docker & homelab', k: 'docker', c: 9, d: 'Shared stacks and reproducible local setups.', g: 'g3' },
+      ];
+      var TAGS = [
+        ['mcp', 12],
+        ['llm', 18],
+        ['laravel', 11],
+        ['docker', 9],
+        ['wordpress', 7],
+        ['homelab', 7],
+        ['go', 5],
+        ['zsh', 4],
+        ['queues', 4],
+        ['seo', 3],
+        ['agents', 8],
+        ['testing', 6],
+      ];
+      var POSTS = [
+        {
+          id: 'wp-mcp',
+          slug: '/ai/wordpress-mcp-v1',
+          t: 'WordPress MCP v1.0.0: let an AI agent manage your site',
+          x: 'A small MCP server that exposes posts, media and settings to an agent, with scoped credentials and an audit trail. What it does, how it is secured, and where it still falls short.',
+          c: 'AI',
+          d: '2026-09-05',
+          u: '2026-09-08',
+          m: 8,
+          g: 'g1',
+          s: 'WordPress · MCP',
+          tg: ['mcp', 'wordpress', 'agents'],
+          feat: 1,
+        },
+        {
+          id: 'skills',
+          slug: '/ai/read-only-skills-server',
+          t: 'Designing a read-only skills server for coding agents',
+          x: 'One canonical skill store, many clients. How discovery, loading and scope boundaries work without giving agents write access.',
+          c: 'AI',
+          d: '2026-09-20',
+          u: '2026-09-20',
+          m: 7,
+          g: 'g2',
+          s: 'Agents',
+          tg: ['agents', 'mcp', 'llm'],
+          feat: 1,
+        },
+        {
+          id: 'docker',
+          slug: '/homelab/shared-docker-stack',
+          t: 'A shared Docker stack for every project on one workstation',
+          x: 'Redis, RabbitMQ, Elasticsearch and databases behind loopback ports, one compose file, namespaced per project.',
+          c: 'Homelab',
+          d: '2026-08-18',
+          u: '2026-08-18',
+          m: 6,
+          g: 'g3',
+          s: 'Docker',
+          tg: ['docker', 'homelab'],
+          feat: 1,
+        },
+        {
+          id: 'hooks',
+          slug: '/study-cases/idempotent-webhooks-laravel',
+          t: 'Idempotent webhooks in Laravel without a lock table',
+          x: 'Accept the same event twice and still process it once, with a unique key and a small state machine.',
+          c: 'Study cases',
+          d: '2026-07-02',
+          u: '2026-07-02',
+          m: 11,
+          g: 'g5',
+          s: 'Laravel',
+          tg: ['laravel', 'queues'],
+          feat: 1,
+        },
+        {
+          id: 'elastic',
+          slug: '/homelab/local-elasticsearch-kibana',
+          t: 'Running a local Elasticsearch and Kibana pair safely',
+          x: 'Health checks, memory limits and a read-only MCP window into your indices.',
+          c: 'Homelab',
+          d: '2026-09-12',
+          u: '2026-09-14',
+          m: 9,
+          g: 'g3',
+          s: 'Elastic',
+          tg: ['docker', 'homelab'],
+        },
+        {
+          id: 'cache',
+          slug: '/ai/prompt-caching',
+          t: 'Prompt caching: what actually saves money',
+          x: 'Where the cache hits, where it silently misses, and how to measure it in production traffic.',
+          c: 'AI',
+          d: '2026-08-30',
+          u: '2026-08-30',
+          m: 7,
+          g: 'g1',
+          s: 'LLM',
+          tg: ['llm', 'agents'],
+        },
+        {
+          id: 'zsh',
+          slug: '/tips/shell-habits',
+          t: 'Five shell habits that save an hour a week',
+          x: 'Small, boring defaults for history, aliases and project switching that add up.',
+          c: 'Tips & Tricks',
+          d: '2026-05-21',
+          u: '2026-06-01',
+          m: 3,
+          g: 'g4',
+          s: 'zsh',
+          tg: ['zsh'],
+        },
+        {
+          id: 'bt',
+          slug: '/study-cases/block-theme',
+          t: 'Why my WordPress theme is a block theme',
+          x: 'theme.json, patterns and style variations versus a pile of PHP templates.',
+          c: 'Study cases',
+          d: '2026-04-09',
+          u: '2026-04-09',
+          m: 10,
+          g: 'g2',
+          s: 'WP',
+          tg: ['wordpress', 'seo'],
+        },
+      ];
+      var $ = function (s) {
+        return document.querySelector(s);
+      };
+      var T = function (k) {
+        return L10[S.lang][k];
+      };
+      function esc(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+      }
+      function postBy(id) {
+        return POSTS.filter(function (p) {
+          return p.id === id;
+        })[0];
+      }
+      function tr() {
+        document.querySelectorAll('[data-i]').forEach(function (n) {
+          var k = n.getAttribute('data-i');
+          if (L10[S.lang][k] !== undefined) n.textContent = T(k);
+        });
+        document.documentElement.lang = T('lang');
+      }
+
+      /* shared render helpers */
+      function crumbs(list) {
+        return (
+          '<nav class="crumbs" aria-label="Breadcrumb">' +
+          list
+            .map(function (c, i) {
+              var last = i === list.length - 1;
+              return (
+                (i ? '<span>/</span>' : '') +
+                (last
+                  ? '<span aria-current="page">' + esc(c[0]) + '</span>'
+                  : '<a data-go="' +
+                    c[1] +
+                    '"' +
+                    (c[2] ? ' data-cat="' + esc(c[2]) + '"' : '') +
+                    '>' +
+                    esc(c[0]) +
+                    '</a>')
+              );
+            })
+            .join('') +
+          '</nav>'
+        );
+      }
+      function card(p, hl) {
+        var title = esc(p.t),
+          ex = esc(p.x);
+        if (hl) {
+          var re = new RegExp('(' + hl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+          title = title.replace(re, '<mark>$1</mark>');
+          ex = ex.replace(re, '<mark>$1</mark>');
+        }
+        return (
+          '<article class="post"><a class="th ' +
+          p.g +
+          '" data-go="article" data-id="' +
+          p.id +
+          '" tabindex="-1" aria-hidden="true"><span>' +
+          esc(p.s) +
+          '</span></a><div><div class="meta"><span class="cat" data-go="category" data-cat="' +
+          esc(p.c) +
+          '">' +
+          esc(p.c) +
+          '</span><time>' +
+          p.d +
+          '</time>' +
+          (p.u !== p.d ? '<span>' + T('upd') + ' ' + p.u + '</span>' : '') +
+          '<span>' +
+          p.m +
+          ' ' +
+          T('min') +
+          '</span></div><h3><a data-go="article" data-id="' +
+          p.id +
+          '">' +
+          title +
+          '</a></h3><p>' +
+          ex +
+          '</p><div class="tags">' +
+          p.tg
+            .map(function (t) {
+              return '<a data-go="topic" data-topic="' + t + '">#' + t + '</a>';
+            })
+            .join('') +
+          '</div></div></article>'
+        );
+      }
+      function list(arr, hl) {
+        return (
+          '<div class="feed">' +
+          arr
+            .map(function (p) {
+              return card(p, hl);
+            })
+            .join('') +
+          '</div>'
+        );
+      }
+      function pager(n) {
+        var h = '<nav class="pager" aria-label="Pagination"><a class="on">1</a>';
+        for (var i = 2; i <= n; i++) h += '<a>' + i + '</a>';
+        return h + '<a>' + T('next') + '</a></nav>';
+      }
+      function sorted(arr, dir) {
+        return arr.slice().sort(function (a, b) {
+          return dir === 'old' ? (a.d < b.d ? -1 : 1) : a.d < b.d ? 1 : -1;
+        });
+      }
+      function toolbar(count, label) {
+        return (
+          '<div class="toolbar"><span>' +
+          count +
+          ' ' +
+          label +
+          '</span><label>' +
+          T('sort') +
+          ' <select id="sortSel" aria-label="Sort"><option value="new">' +
+          T('newest') +
+          '</option><option value="old">' +
+          T('oldest') +
+          '</option></select></label></div>'
+        );
+      }
+
+      /* views */
+      var V = {};
+      V.home = function () {
+        var feat = POSTS.filter(function (p) {
+          return p.feat;
+        });
+        var rest = POSTS.filter(function (p) {
+          return !p.feat;
+        });
+        return (
+          crumbs([
+            [T('home'), 'home'],
+            ['Blog', 'home'],
+            [T('all'), ''],
+          ]) +
+          '<div class="sec-h"><h2><b>★</b> ' +
+          T('featH') +
+          '</h2></div>' +
+          '<section class="slider" aria-roledescription="carousel" aria-label="Featured articles" id="slider"><div class="track" id="track" tabindex="0">' +
+          feat
+            .map(function (f, i) {
+              return (
+                '<article class="slide" role="group" aria-roledescription="slide" aria-label="' +
+                (i + 1) +
+                ' / ' +
+                feat.length +
+                '"><a class="th ' +
+                f.g +
+                '" data-go="article" data-id="' +
+                f.id +
+                '" tabindex="-1" aria-hidden="true"><span>' +
+                esc(f.s) +
+                '</span></a><div class="tx"><span class="pill">' +
+                T('picked') +
+                '</span><div class="meta"><span class="cat" data-go="category" data-cat="' +
+                esc(f.c) +
+                '">' +
+                esc(f.c) +
+                '</span><time>' +
+                f.d +
+                '</time><span>' +
+                f.m +
+                ' ' +
+                T('min') +
+                '</span></div><h3><a data-go="article" data-id="' +
+                f.id +
+                '">' +
+                esc(f.t) +
+                '</a></h3><p>' +
+                esc(f.x) +
+                '</p><a class="more" data-go="article" data-id="' +
+                f.id +
+                '">' +
+                T('read') +
+                '</a></div></article>'
+              );
+            })
+            .join('') +
+          '</div><div class="ctrl"><button class="arrow" id="prev" aria-label="Previous">←</button><div class="dots" id="dots">' +
+          feat
+            .map(function (f, i) {
+              return (
+                '<button data-s="' +
+                i +
+                '" aria-label="Slide ' +
+                (i + 1) +
+                '"' +
+                (i === S.slide ? ' aria-current="true"' : '') +
+                '></button>'
+              );
+            })
+            .join('') +
+          '</div><button class="arrow" id="next" aria-label="Next">→</button></div></section>' +
+          '<div class="sec-h"><h2>' +
+          T('latestH') +
+          '</h2></div>' +
+          list(sorted(rest)) +
+          pager(3)
+        );
+      };
+      V.article = function () {
+        var p = postBy(S.id || 'wp-mcp'),
+          i = POSTS.indexOf(p),
+          pr = POSTS[(i + POSTS.length - 1) % POSTS.length],
+          nx = POSTS[(i + 1) % POSTS.length];
+        var rel = POSTS.filter(function (x) {
+          return (
+            x !== p &&
+            x.tg.some(function (t) {
+              return p.tg.indexOf(t) > -1;
+            })
+          );
+        }).slice(0, 2);
+        return (
+          crumbs([
+            [T('home'), 'home'],
+            [p.c, 'category', p.c],
+            [p.t.length > 38 ? p.t.slice(0, 38) + '…' : p.t, ''],
+          ]) +
+          '<header class="art-h"><span class="pill" style="color:var(--accent);border-color:var(--accent)">' +
+          esc(p.c) +
+          '</span><h1>' +
+          esc(p.t) +
+          '</h1><p class="deck">' +
+          esc(p.x) +
+          '</p></header>' +
+          '<div class="byline"><span class="avatar sm" aria-hidden="true">V</span><a class="au" data-go="author">Viet VU</a><div class="meta"><time>' +
+          p.d +
+          '</time><span>' +
+          T('upd') +
+          ' ' +
+          p.u +
+          '</span><span>' +
+          p.m +
+          ' ' +
+          T('min') +
+          '</span></div></div>' +
+          '<div class="cover th ' +
+          p.g +
+          '" role="img" aria-label="Cover"></div>' +
+          '<details class="toc" open><summary>' +
+          T('onpage') +
+          '</summary><ol><li><a data-scroll="s1">Why an MCP server</a></li><li><a data-scroll="s2">Scoped credentials</a></li><li><a data-scroll="s3">Audit trail</a></li><li><a data-scroll="s4">Limits</a></li></ol></details>' +
+          '<div class="prose">' +
+          '<p>An agent that can edit a site is useful only if you can bound what it touches. This post walks through a small server that exposes posts, media and settings through the <code class="i">Model Context Protocol</code>.</p>' +
+          '<h2 id="s1">Why an MCP server</h2><p>A tool contract is easier to review than a pile of prompts. Each action has a name, an input schema and a clear effect on the site.</p>' +
+          '<div class="callout"><b>Scope first.</b> Start read-only. Enable write tools one at a time and log every call.</div>' +
+          '<h2 id="s2">Scoped credentials</h2><p>Use an application password limited to one role and rotate it on a schedule.</p>' +
+          '<div class="codebox"><div class="hd"><span>bash</span><button type="button" data-copy="curl">' +
+          T('copy') +
+          '</button></div><pre id="curl"><span class="c"># list drafts as the agent would</span>\n<span class="k">curl</span> -s -u agent:<span class="s">"$WP_APP_PASSWORD"</span> \\\n  <span class="s">"https://jooservices.com/wp-json/wp/v2/posts?status=draft"</span></pre></div>' +
+          '<h2 id="s3">Audit trail</h2><p>Every tool call is written with the actor, tool name, arguments hash and result status, so you can replay what happened.</p>' +
+          '<h2 id="s4">Limits</h2><p>No multi-site support yet, and media uploads are capped. Both are tracked on the roadmap.</p></div>' +
+          '<div class="tags" style="margin-top:14px">' +
+          p.tg
+            .map(function (t) {
+              return '<a data-go="topic" data-topic="' + t + '">#' + t + '</a>';
+            })
+            .join('') +
+          '</div>' +
+          '<div class="snav"><a data-go="article" data-id="' +
+          pr.id +
+          '"><small>← ' +
+          T('prevP') +
+          '</small>' +
+          esc(pr.t) +
+          '</a><a data-go="article" data-id="' +
+          nx.id +
+          '"><small>' +
+          T('nextP') +
+          ' →</small>' +
+          esc(nx.t) +
+          '</a></div>' +
+          '<div class="abox"><span class="avatar" aria-hidden="true">V</span><div><strong>Viet VU</strong><span class="small">' +
+          T('role') +
+          '</span><p class="small" style="margin-top:6px">' +
+          T('bio') +
+          '</p><button class="lnk" data-go="author">' +
+          T('prof') +
+          ' →</button></div></div>' +
+          '<div class="sec-h"><h2>' +
+          T('related') +
+          '</h2></div>' +
+          list(rel)
+        );
+      };
+      V.category = function () {
+        var cat = S.cat,
+          arr = POSTS.filter(function (p) {
+            return (
+              p.c === cat ||
+              (cat === 'Research & Development' && ['Homelab', 'Study cases', 'Tips & Tricks'].indexOf(p.c) > -1) ||
+              (cat === 'Blog' && false)
+            );
+          });
+        if (!arr.length) arr = POSTS.slice(0, 3);
+        var info = null;
+        CATS.forEach(function (c) {
+          if (c.n === cat) info = c;
+          c.k.forEach(function (k) {
+            if (k.n === cat) info = k;
+          });
+        });
+        var kids = (
+          CATS.filter(function (c) {
+            return c.n === cat;
+          })[0] || { k: [] }
+        ).k;
+        return (
+          crumbs([
+            [T('home'), 'home'],
+            [cat, ''],
+          ]) +
+          '<div class="banner"><p class="eyebrow">Category</p><h1>' +
+          esc(cat) +
+          '</h1><p>' +
+          esc(info ? info.d : '') +
+          '</p></div>' +
+          (kids.length
+            ? '<div class="chips">' +
+              kids
+                .map(function (k) {
+                  return (
+                    '<a class="chip" data-go="category" data-cat="' + esc(k.n) + '">' + esc(k.n) + ' · ' + k.c + '</a>'
+                  );
+                })
+                .join('') +
+              '</div>'
+            : '') +
+          toolbar(arr.length, T('articles')) +
+          '<div id="catList">' +
+          list(sorted(arr)) +
+          '</div>' +
+          pager(4)
+        );
+      };
+      V.topic = function () {
+        var k = S.topic,
+          arr = POSTS.filter(function (p) {
+            return p.tg.indexOf(k) > -1;
+          });
+        if (!arr.length) arr = POSTS.slice(0, 2);
+        var rel = TAGS.filter(function (t) {
+          return t[0] !== k;
+        }).slice(0, 6);
+        return (
+          crumbs([
+            [T('home'), 'home'],
+            ['Tags', 'home'],
+            ['#' + k, ''],
+          ]) +
+          '<div class="banner"><p class="eyebrow">Tag</p><h1>#' +
+          esc(k) +
+          '</h1><p>' +
+          arr.length +
+          ' ' +
+          T('articles') +
+          '</p></div>' +
+          '<div class="chips">' +
+          rel
+            .map(function (t) {
+              return '<a class="chip" data-go="topic" data-topic="' + t[0] + '">#' + t[0] + '</a>';
+            })
+            .join('') +
+          '</div>' +
+          list(sorted(arr)) +
+          pager(2)
+        );
+      };
+      V.author = function () {
+        return (
+          crumbs([
+            [T('home'), 'home'],
+            ['Authors', 'home'],
+            ['Viet VU', ''],
+          ]) +
+          '<div class="banner"><div class="hero"><span class="avatar lg" aria-hidden="true">V</span><div><p class="eyebrow">Author</p><h1>Viet VU</h1><p>' +
+          T('role') +
+          '</p><div class="stats"><span><b>128</b> posts</span><span><b>14</b> AI</span><span><b>31</b> R&amp;D</span><span><b>since</b> 2013</span></div></div></div></div>' +
+          '<p style="max-width:62ch">' +
+          T('bio') +
+          '</p><div class="sec-h" style="margin-top:20px"><h2>' +
+          T('latestH') +
+          '</h2><button class="lnk" data-go="about" style="margin:0">' +
+          T('prof') +
+          ' →</button></div>' +
+          list(sorted(POSTS).slice(0, 3)) +
+          pager(5)
+        );
+      };
+      V.search = function () {
+        return (
+          crumbs([
+            [T('home'), 'home'],
+            ['Search', ''],
+          ]) +
+          '<div class="banner"><p class="eyebrow">Search</p><h1>' +
+          (S.lang === 'en' ? 'Find a note' : 'Tìm một ghi chú') +
+          '</h1><p>' +
+          (S.lang === 'en'
+            ? 'Searches titles, excerpts and tags. Press / anywhere to focus.'
+            : 'Tìm trong tiêu đề, mô tả và thẻ. Nhấn / để tập trung ô tìm kiếm.') +
+          '</p></div>' +
+          '<form class="sbox" id="sform" role="search"><label class="sr" for="sq">Search</label><input id="sq" type="search" placeholder="mcp, laravel, docker…" autocomplete="off" value="' +
+          esc(S.q) +
+          '"><button type="submit">Search</button></form>' +
+          '<div class="chips">' +
+          ['mcp', 'laravel', 'docker', 'seo']
+            .map(function (k) {
+              return '<a class="chip" data-q="' + k + '">' + k + '</a>';
+            })
+            .join('') +
+          '</div>' +
+          '<div id="sres" aria-live="polite"></div>'
+        );
+      };
+      function searchRes() {
+        var q = S.q.trim().toLowerCase(),
+          el = $('#sres');
+        if (!el) return;
+        if (!q) {
+          el.innerHTML =
+            '<p class="small">' +
+            (S.lang === 'en'
+              ? 'Type to filter the ' + POSTS.length + ' sample posts.'
+              : 'Gõ để lọc ' + POSTS.length + ' bài mẫu.') +
+            '</p>' +
+            list(sorted(POSTS).slice(0, 2));
+          return;
+        }
+        var arr = POSTS.filter(function (p) {
+          return (p.t + ' ' + p.x + ' ' + p.tg.join(' ') + ' ' + p.c).toLowerCase().indexOf(q) > -1;
+        });
+        el.innerHTML = arr.length
+          ? '<div class="toolbar"><span>' +
+            arr.length +
+            ' ' +
+            T('results') +
+            ' · "' +
+            esc(q) +
+            '"</span></div>' +
+            list(arr, q)
+          : '<div class="banner"><p class="eyebrow">0 ' +
+            T('results') +
+            '</p><h1 style="font-size:22px">' +
+            (S.lang === 'en' ? 'Nothing for' : 'Không có kết quả cho') +
+            ' "' +
+            esc(q) +
+            '"</h1><p>' +
+            (S.lang === 'en'
+              ? 'Try a tag such as mcp, laravel or docker, or browse the categories.'
+              : 'Thử một thẻ như mcp, laravel hoặc docker, hoặc duyệt theo chuyên mục.') +
+            '</p></div>';
+      }
+      V.about = function () {
+        var all = [{ n: 'JOOservices Ltd', r: T('roleFounder'), f: '2025', t: 'now', d: T('pinDesc'), now: 1 }].concat(
+          COS
+        );
+        return (
+          crumbs([
+            [T('home'), 'home'],
+            [T('nAbout'), ''],
+          ]) +
+          '<div class="banner"><div class="hero"><span class="avatar lg" aria-hidden="true">V</span><div><p class="eyebrow">' +
+          T('nAbout') +
+          '</p><h1>Viet VU</h1><p>' +
+          T('role') +
+          '</p></div></div></div>' +
+          '<div class="prose"><p>' +
+          T('bio') +
+          '</p><p>' +
+          (S.lang === 'en'
+            ? 'I work across software development, technical leadership and hands-on problem solving. This blog keeps the details worth remembering: what changed, why it mattered and how to reproduce it.'
+            : 'Mình làm việc ở nhiều mảng: phát triển phần mềm, dẫn dắt kỹ thuật và giải quyết vấn đề thực tế. Blog này lưu lại những chi tiết đáng nhớ: điều gì đã thay đổi, vì sao quan trọng và cách tái hiện.') +
+          '</p></div>' +
+          '<section class="sect"><h2>' +
+          T('coH') +
+          '</h2><ol class="tl">' +
+          all
+            .map(function (c) {
+              return (
+                '<li' +
+                (c.now ? ' class="now"' : '') +
+                '><div class="co-row"><strong>' +
+                esc(c.n) +
+                '</strong><span class="role">' +
+                esc(c.r) +
+                '</span></div><div class="range">' +
+                c.f +
+                ' – ' +
+                c.t +
+                '</div><div class="small">' +
+                esc(c.d) +
+                '</div></li>'
+              );
+            })
+            .join('') +
+          '</ol></section>' +
+          '<section class="sect"><h2>' +
+          (S.lang === 'en' ? 'What I write about' : 'Mình viết về') +
+          '</h2><div class="tags">' +
+          TAGS.slice(0, 8)
+            .map(function (t) {
+              return '<a data-go="topic" data-topic="' + t[0] + '">#' + t[0] + '<sup>' + t[1] + '</sup></a>';
+            })
+            .join('') +
+          '</div></section>' +
+          '<section class="sect"><h2>' +
+          (S.lang === 'en' ? 'Contact' : 'Liên hệ') +
+          '</h2><div class="cgrid"><div class="cc"><strong>Email</strong><span class="small">hello@jooservices.com</span></div><div class="cc"><strong>GitHub</strong><span class="small">github.com/jooservices</span></div><div class="cc"><strong>LinkedIn</strong><span class="small">linkedin.com/in/…</span></div></div></section>'
+        );
+      };
+
+      /* 404 */
+      var CODES = {
+        404: { t: 'Not Found', m: 'No post, page, category or tag matches this path.', cc: 'no-store', rb: 'noindex' },
+        410: {
+          t: 'Gone',
+          m: 'This content existed and was removed on purpose.',
+          cc: 'public, max-age=86400',
+          rb: 'noindex',
+        },
+        403: {
+          t: 'Forbidden',
+          m: 'You do not have access to this resource.',
+          cc: 'private, no-store',
+          rb: 'noindex, nofollow',
+        },
+        500: {
+          t: 'Internal Server Error',
+          m: 'Something failed while rendering this page. It has been logged.',
+          cc: 'no-store',
+          rb: 'noindex',
+        },
+      };
+      function bigrams(s) {
+        s = s.toLowerCase().replace(/[^a-z0-9]/g, '');
+        var r = {};
+        for (var i = 0; i < s.length - 1; i++) r[s.substr(i, 2)] = 1;
+        return r;
+      }
+      function sim(a, b) {
+        var A = bigrams(a),
+          B = bigrams(b),
+          i = 0,
+          n = 0,
+          k;
+        for (k in A) {
+          n++;
+          if (B[k]) i++;
+        }
+        for (k in B) n++;
+        return n ? (2 * i) / n : 0;
+      }
+      function suggest(path) {
+        var seg = path.split('/').filter(Boolean).pop() || '';
+        return POSTS.map(function (p) {
+          return { p: p, s: Math.max(sim(seg, p.slug.split('/').pop()), sim(seg, p.t)) };
+        })
+          .sort(function (a, b) {
+            return b.s - a.s;
+          })
+          .slice(0, 3);
+      }
+      V.notfound = function () {
+        var c = CODES[S.code],
+          sg = suggest(S.path),
+          exact = POSTS.filter(function (p) {
+            return p.slug === S.path;
+          })[0];
+        var rid = ((S.path.length * 2654435761) >>> 0).toString(16).slice(0, 8);
+        var status = exact ? 200 : S.code,
+          txt = exact ? 'OK' : c.t;
+        var json =
+          '{\n  <span class="jk">"status"</span>: <span class="jn">' +
+          status +
+          '</span>,\n  <span class="jk">"error"</span>: <span class="js">"' +
+          txt +
+          '"</span>,\n  <span class="jk">"path"</span>: <span class="js">"' +
+          esc(S.path) +
+          '"</span>,\n  <span class="jk">"message"</span>: <span class="js">"' +
+          (exact ? 'Resource found.' : c.m) +
+          '"</span>\n}';
+        return (
+          '<div class="err"><div class="term"><div class="tb"><i></i><i></i><i></i><span>joo@jooservices.com — zsh</span></div><div class="tbody">' +
+          '<div><span class="ps">$</span> <span class="cmd">curl -i https://jooservices.com' +
+          esc(S.path) +
+          '</span></div>' +
+          '<div class="big"><strong style="' +
+          (exact ? 'color:var(--ok);text-shadow:none' : '') +
+          '">' +
+          status +
+          '</strong><span>' +
+          txt +
+          '</span></div>' +
+          '<div class="hdrs">HTTP/2 <b' +
+          (exact ? '' : ' class="bad"') +
+          '>' +
+          status +
+          ' ' +
+          txt.toUpperCase() +
+          '</b>\n<br><b>content-type:</b> text/html; charset=utf-8\n<br><b>cache-control:</b> ' +
+          c.cc +
+          '\n<br><b>x-robots-tag:</b> ' +
+          c.rb +
+          '\n<br><b>x-request-id:</b> ' +
+          rid +
+          '-joo\n<br><b>x-theme:</b> joo-blog/1.0</div>' +
+          '<div class="json">' +
+          json +
+          '</div>' +
+          (exact
+            ? '<div><span class="ps">→</span> <a style="color:var(--accent);cursor:pointer" data-go="article" data-id="' +
+              exact.id +
+              '">open ' +
+              esc(exact.slug) +
+              '</a></div>'
+            : '<div><span class="ps">$</span> <span class="cmd">search --similar "' +
+              esc(S.path.split('/').filter(Boolean).pop() || '') +
+              '"</span></div><ul class="sug">' +
+              sg
+                .map(function (x) {
+                  return (
+                    '<li><a data-go="article" data-id="' +
+                    x.p.id +
+                    '">' +
+                    esc(x.p.slug) +
+                    '</a><em>' +
+                    Math.round(x.s * 100) +
+                    '% match</em></li>'
+                  );
+                })
+                .join('') +
+              '</ul>') +
+          '<form class="rq" id="rform"><label class="sr" for="rp">Path</label><input id="rp" value="' +
+          esc(S.path) +
+          '" spellcheck="false" autocomplete="off"><button type="submit">GET</button><button type="button" data-go="home">cd ~/blog</button></form>' +
+          '<div class="codes" role="group" aria-label="Status code">' +
+          [404, 410, 403, 500]
+            .map(function (k) {
+              return (
+                '<button type="button" data-code="' + k + '" aria-pressed="' + (k === S.code) + '">' + k + '</button>'
+              );
+            })
+            .join('') +
+          '</div>' +
+          '<div style="margin-top:12px"><span class="ps">$</span> <span class="caret"></span></div></div></div>' +
+          '<p class="note">' +
+          (S.lang === 'en'
+            ? 'Behaviour built into the theme: real HTTP status (no soft 404), noindex header, similar-post suggestions, a retry form and no tracking of the typed path. Try /ai/wordpress-mcp-v1 to see a 200.'
+            : 'Hành vi có sẵn trong theme: trả đúng mã HTTP (không soft 404), header noindex, gợi ý bài tương tự, form thử lại và không lưu đường dẫn đã gõ. Thử /ai/wordpress-mcp-v1 để thấy mã 200.') +
+          '</p></div>'
+        );
+      };
+
+      /* sidebar */
+      var PER = 2;
+      function companies() {
+        var pages = Math.ceil(COS.length / PER),
+          p = S.coPage,
+          from = p * PER,
+          items = COS.slice(from, from + PER);
+        $('#coList').innerHTML = items
+          .map(function (c) {
+            return (
+              '<li><div class="co-row"><a data-go="about">' +
+              esc(c.n) +
+              '</a><span class="role">' +
+              esc(c.r) +
+              '</span></div><div class="range">' +
+              c.f +
+              ' – ' +
+              c.t +
+              '</div><div class="small">' +
+              esc(c.d) +
+              '</div></li>'
+            );
+          })
+          .join('');
+        var b = '<button id="coPrev" aria-label="Previous page"' + (p === 0 ? ' disabled' : '') + '>←</button>';
+        for (var i = 0; i < pages; i++)
+          b += '<button data-p="' + i + '"' + (i === p ? ' aria-current="true"' : '') + '>' + (i + 1) + '</button>';
+        b +=
+          '<button id="coNext" aria-label="Next page"' +
+          (p === pages - 1 ? ' disabled' : '') +
+          '>→</button><span class="sp"></span><span class="range">' +
+          (from + 1) +
+          '–' +
+          (from + items.length) +
+          ' ' +
+          T('of') +
+          ' ' +
+          COS.length +
+          '</span>';
+        $('#coPg').innerHTML = b;
+        $('#coCount').textContent = COS.length + 1 + '';
+      }
+      function catItem(c, id, open) {
+        var has = c.k && c.k.length;
+        return (
+          '<li><div class="cat-h"><button class="tgl' +
+          (has ? '' : ' none') +
+          '" aria-expanded="' +
+          (open ? 'true' : 'false') +
+          '" aria-controls="' +
+          id +
+          '" aria-label="Toggle ' +
+          esc(c.n) +
+          '"></button><div class="cat-t"><a data-go="category" data-cat="' +
+          esc(c.n) +
+          '"><span>' +
+          esc(c.n) +
+          '</span><i>' +
+          c.c +
+          '</i></a><span class="small">' +
+          esc(c.d) +
+          '</span></div></div>' +
+          (has
+            ? '<ul id="' +
+              id +
+              '"' +
+              (open ? '' : ' hidden') +
+              '>' +
+              c.k
+                .map(function (k, j) {
+                  return catItem(k, id + '-' + j, false);
+                })
+                .join('') +
+              '</ul>'
+            : '') +
+          '</li>'
+        );
+      }
+      function side() {
+        companies();
+        $('#cats').innerHTML = CATS.map(function (c, i) {
+          return catItem(c, 'cat' + i, i === 2);
+        }).join('');
+        $('#tp').innerHTML = TOPICS.map(function (t) {
+          return (
+            '<li><a data-go="topic" data-topic="' +
+            t.k +
+            '"><span class="th ' +
+            t.g +
+            '"></span><span><strong><span>' +
+            esc(t.n) +
+            '</span><i>' +
+            t.c +
+            '</i></strong><span class="small">' +
+            esc(t.d) +
+            '</span></span></a></li>'
+          );
+        }).join('');
+        $('#tags').innerHTML = TAGS.map(function (t) {
+          return '<a data-go="topic" data-topic="' + t[0] + '">#' + t[0] + '<sup>' + t[1] + '</sup></a>';
+        }).join('');
+      }
+
+      /* slider */
+      function go(i) {
+        var n = document.querySelectorAll('.slide').length;
+        if (!n) return;
+        S.slide = (i + n) % n;
+        var t = $('#track');
+        t.scrollTo({ left: S.slide * t.clientWidth, behavior: 'smooth' });
+        dots();
+      }
+      function dots() {
+        document.querySelectorAll('#dots button').forEach(function (b, i) {
+          b.setAttribute('aria-current', i === S.slide ? 'true' : 'false');
+        });
+      }
+      function auto() {
+        clearInterval(S.timer);
+        if (S.view !== 'home' || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+        S.timer = setInterval(function () {
+          go(S.slide + 1);
+        }, 6500);
+      }
+      function bindSlider() {
+        var sl = $('#slider');
+        if (!sl) return;
+        $('#prev').onclick = function () {
+          go(S.slide - 1);
+        };
+        $('#next').onclick = function () {
+          go(S.slide + 1);
+        };
+        $('#dots').onclick = function (e) {
+          var b = e.target.closest('button');
+          if (b) go(+b.dataset.s);
+        };
+        $('#track').addEventListener('scroll', function () {
+          var t = $('#track');
+          var i = Math.round(t.scrollLeft / Math.max(1, t.clientWidth));
+          if (i !== S.slide) {
+            S.slide = i;
+            dots();
+          }
+        });
+        $('#track').addEventListener('keydown', function (e) {
+          if (e.key === 'ArrowRight') go(S.slide + 1);
+          if (e.key === 'ArrowLeft') go(S.slide - 1);
+        });
+        ['mouseenter', 'focusin', 'touchstart'].forEach(function (ev) {
+          sl.addEventListener(ev, function () {
+            clearInterval(S.timer);
+          });
+        });
+        ['mouseleave', 'focusout'].forEach(function (ev) {
+          sl.addEventListener(ev, auto);
+        });
+      }
+
+      /* SEO */
+      function seo() {
+        var base = 'https://jooservices.com',
+          p = postBy(S.id || 'wp-mcp'),
+          h = '',
+          L = T('lang'),
+          v = S.view;
+        var title,
+          desc,
+          canon,
+          type = 'website',
+          robots = 'index,follow,max-image-preview:large',
+          ld;
+        if (v === 'article') {
+          title = p.t;
+          desc = p.x.slice(0, 150) + '…';
+          canon = base + p.slug;
+          type = 'article';
+          ld = {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'BlogPosting',
+                headline: p.t,
+                datePublished: p.d,
+                dateModified: p.u,
+                inLanguage: L,
+                author: { '@id': base + '/#person' },
+                publisher: { '@id': base + '/#org' },
+                mainEntityOfPage: canon,
+              },
+              { '@type': 'Person', '@id': base + '/#person', name: 'Viet VU' },
+              { '@type': 'Organization', '@id': base + '/#org', name: 'JOOservices Ltd', url: base },
+              {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  { '@type': 'ListItem', position: 1, name: 'Home', item: base },
+                  { '@type': 'ListItem', position: 2, name: p.c },
+                  { '@type': 'ListItem', position: 3, name: p.t },
+                ],
+              },
+            ],
+          };
+        } else if (v === 'category') {
+          title = S.cat + ' articles';
+          desc = 'Articles in ' + S.cat + ' on JOOservices.';
+          canon = base + '/category/' + S.cat.toLowerCase().replace(/[^a-z]+/g, '-');
+          ld = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: S.cat, url: canon };
+        } else if (v === 'topic') {
+          title = '#' + S.topic;
+          desc = 'Articles tagged ' + S.topic + '.';
+          canon = base + '/tag/' + S.topic;
+          ld = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '#' + S.topic, url: canon };
+        } else if (v === 'author' || v === 'about') {
+          title = 'Viet VU';
+          desc = T('bio');
+          canon = base + (v === 'about' ? '/about/' : '/author/viet/');
+          type = 'profile';
+          ld = {
+            '@context': 'https://schema.org',
+            '@type': 'ProfilePage',
+            mainEntity: {
+              '@type': 'Person',
+              name: 'Viet VU',
+              jobTitle: 'Founder',
+              worksFor: { '@type': 'Organization', name: 'JOOservices Ltd' },
+            },
+          };
+        } else if (v === 'search') {
+          title = 'Search';
+          desc = 'Search JOOservices.';
+          canon = base + '/search/';
+          robots = 'noindex,follow';
+          ld = null;
+        } else if (v === 'notfound') {
+          title = S.code + ' ' + CODES[S.code].t;
+          desc = CODES[S.code].m;
+          canon = '(none)';
+          robots = 'noindex,nofollow';
+          ld = null;
+        } else {
+          title = 'JOOservices';
+          desc = 'Technical notes on AI, engineering and R&D.';
+          canon = base + '/';
+          ld = { '@context': 'https://schema.org', '@type': 'Blog', name: 'JOOservices', url: base, inLanguage: L };
+        }
+        h +=
+          '<html lang="' +
+          L +
+          '">\n<title>' +
+          title +
+          ' | JOOservices</title>\n<meta name="description" content="' +
+          desc +
+          '">\n';
+        if (canon !== '(none)')
+          h +=
+            '<link rel="canonical" href="' +
+            canon +
+            '">\n<link rel="alternate" hreflang="en" href="' +
+            canon +
+            '">\n<link rel="alternate" hreflang="vi" href="' +
+            canon.replace(base, base + '/vi') +
+            '">\n';
+        h +=
+          '<meta property="og:type" content="' +
+          type +
+          '">\n<meta property="og:title" content="' +
+          title +
+          '">\n<meta name="twitter:card" content="summary_large_image">\n<meta name="robots" content="' +
+          robots +
+          '">\n';
+        if (v === 'notfound') h += '<!-- HTTP status sent: ' + S.code + ' -->';
+        if (ld) h += '<script type="application/ld+json">\n' + JSON.stringify(ld, null, 2) + '\n<\/script>';
+        return h;
+      }
+      function seoBox() {
+        return (
+          '<section class="seo" aria-label="SEO output"><h3>SEO output (generated by the theme)</h3><p>' +
+          T('seoNote') +
+          '</p><pre id="seoPre"></pre></section>'
+        );
+      }
+
+      /* router */
+      function show(view, opts) {
+        opts = opts || {};
+        for (var k in opts) S[k] = opts[k];
+        S.view = view;
+        $('#main').innerHTML = V[view]() + (view === 'notfound' ? '' : seoBox());
+        if (view === 'notfound') $('#main').insertAdjacentHTML('beforeend', seoBox());
+        var sp = $('#seoPre');
+        if (sp) sp.textContent = seo();
+        $('#grid').classList.toggle('full', view === 'notfound');
+        document.querySelectorAll('#tabs button').forEach(function (b) {
+          var on = b.dataset.v === view;
+          b.setAttribute('aria-selected', on);
+          b.setAttribute('aria-pressed', on);
+        });
+        document.querySelectorAll('nav.main a').forEach(function (a) {
+          a.classList.toggle(
+            'cur',
+            (view === 'home' && a.id === 'nHome') || (view === 'about' && a.dataset.go === 'about')
+          );
+        });
+        if (view === 'search') {
+          searchRes();
+          var q = $('#sq');
+          if (q && !opts.noFocus) q.focus();
+        }
+        bindSlider();
+        auto();
+        tr();
+        var sel = $('#sortSel');
+        if (sel)
+          sel.onchange = function () {
+            var cat = S.cat;
+            var arr = POSTS.filter(function (p) {
+              return (
+                p.c === cat ||
+                (cat === 'Research & Development' && ['Homelab', 'Study cases', 'Tips & Tricks'].indexOf(p.c) > -1)
+              );
+            });
+            if (!arr.length) arr = POSTS.slice(0, 3);
+            $('#catList').innerHTML = list(sorted(arr, sel.value));
+          };
+        $('#rail').classList.remove('open');
+        $('#railBtn').setAttribute('aria-expanded', 'false');
+        $('#prog').style.width = '0';
+        termSync(view);
+        document.documentElement.scrollTop = 0;
+      }
+
+      /* events */
+      document.addEventListener('click', function (e) {
+        var g = e.target.closest('[data-go]');
+        if (g && document.getElementById('stage').contains(g)) {
+          e.preventDefault();
+          var o = {};
+          if (g.dataset.cat) o.cat = g.dataset.cat;
+          if (g.dataset.topic) o.topic = g.dataset.topic;
+          if (g.dataset.id) o.id = g.dataset.id;
+          if (g.dataset.go === 'notfound') o.path = '/blog/old-page';
+          if (g.dataset.go === 'article' && !g.dataset.id) o.id = 'wp-mcp';
+          show(g.dataset.go, o);
+          return;
+        }
+        var q = e.target.closest('[data-q]');
+        if (q) {
+          S.q = q.dataset.q;
+          $('#sq').value = S.q;
+          searchRes();
+          return;
+        }
+        var cd = e.target.closest('[data-code]');
+        if (cd) {
+          S.code = +cd.dataset.code;
+          show('notfound');
+          return;
+        }
+        var sc = e.target.closest('[data-scroll]');
+        if (sc) {
+          var t = document.getElementById(sc.dataset.scroll);
+          if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+        var cp = e.target.closest('[data-copy]');
+        if (cp) {
+          var tx = document.getElementById(cp.dataset.copy).innerText;
+          try {
+            navigator.clipboard.writeText(tx).then(
+              function () {
+                cp.textContent = T('copied');
+              },
+              function () {
+                cp.textContent = T('copied');
+              }
+            );
+          } catch (_) {
+            cp.textContent = T('copied');
+          }
+          setTimeout(function () {
+            cp.textContent = T('copy');
+          }, 1500);
+          return;
+        }
+        var tg = e.target.closest('.tgl');
+        if (tg && !tg.classList.contains('none')) {
+          var open = tg.getAttribute('aria-expanded') === 'true';
+          tg.setAttribute('aria-expanded', open ? 'false' : 'true');
+          document.getElementById(tg.getAttribute('aria-controls')).hidden = open;
+          return;
+        }
+        var pb = e.target.closest('#coPg button');
+        if (pb && !pb.disabled) {
+          if (pb.id === 'coPrev') S.coPage--;
+          else if (pb.id === 'coNext') S.coPage++;
+          else S.coPage = +pb.dataset.p;
+          companies();
+          return;
+        }
+        var a = e.target.closest('.pager a, .logo, footer a, .crumbs a');
+        if (a && !a.dataset.go) e.preventDefault();
+      });
+      document.addEventListener('submit', function (e) {
+        if (e.target.id === 'sform') {
+          e.preventDefault();
+          S.q = $('#sq').value;
+          searchRes();
+        }
+        if (e.target.id === 'rform') {
+          e.preventDefault();
+          var v = $('#rp').value.trim();
+          S.path = v.charAt(0) === '/' ? v : '/' + v;
+          show('notfound');
+        }
+      });
+      document.addEventListener('input', function (e) {
+        if (e.target.id === 'sq') {
+          S.q = e.target.value;
+          searchRes();
+        }
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) {
+          e.preventDefault();
+          show('search');
+        }
+      });
+      window.addEventListener(
+        'scroll',
+        function () {
+          if (S.view !== 'article') return;
+          var m = $('#main'),
+            r = m.getBoundingClientRect(),
+            h = r.height - window.innerHeight;
+          $('#prog').style.width = Math.max(0, Math.min(100, (-r.top / Math.max(1, h)) * 100)) + '%';
+        },
+        { passive: true }
+      );
+
+      /* demo controls */
+      function pressed(b, v) {
+        b.setAttribute('aria-pressed', v ? 'true' : 'false');
+      }
+      $('#tabs').innerHTML = VIEWS.map(function (v) {
+        return '<button type="button" role="tab" data-v="' + v[0] + '" aria-selected="false">' + v[1] + '</button>';
+      }).join('');
+      $('#tabs').onclick = function (e) {
+        var b = e.target.closest('button');
+        if (!b) return;
+        var o = {};
+        if (b.dataset.v === 'notfound') o.path = '/blog/wordpress-mpc-v1';
+        show(b.dataset.v, o);
+      };
+      var root = document.documentElement,
+        isLight = window.matchMedia('(prefers-color-scheme:light)').matches;
+      $('#bTheme').textContent = isLight ? 'Dark' : 'Light';
+      function setTheme(light) {
+        isLight = light;
+        root.setAttribute('data-theme', isLight ? 'light' : 'dark');
+        $('#bTheme').textContent = isLight ? 'Dark' : 'Light';
+      }
+      function setLang(l) {
+        S.lang = l;
+        var b = $('#bLang');
+        pressed(b, l === 'vi');
+        b.textContent = l === 'en' ? 'VI' : 'EN';
+        side();
+        show(S.view, { noFocus: 1 });
+      }
+      $('#bTheme').onclick = function () {
+        setTheme(!isLight);
+      };
+      $('#bLang').onclick = function () {
+        setLang(S.lang === 'en' ? 'vi' : 'en');
+      };
+      $('#bDens').onclick = function (e) {
+        var d = $('#siteIn').classList.toggle('dense');
+        pressed(e.target, d);
+        e.target.textContent = d ? 'Card list' : 'Compact list';
+      };
+      document.querySelectorAll('.bar button[data-w]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          document.querySelectorAll('.bar button[data-w]').forEach(function (x) {
+            pressed(x, x === b);
+          });
+          var st = $('#stage');
+          st.dataset.w = b.dataset.w;
+          st.classList.toggle('dev', b.dataset.w === 'phone' || b.dataset.w === 'tablet');
+          setTimeout(function () {
+            go(S.slide);
+            size();
+          }, 300);
+        });
+      });
+      $('#railBtn').onclick = function () {
+        var o = $('#rail').classList.toggle('open');
+        $('#railBtn').setAttribute('aria-expanded', o ? 'true' : 'false');
+      };
+      function size() {
+        $('#wOut').textContent = Math.round($('#stage').getBoundingClientRect().width) + 'px';
+      }
+      window.addEventListener('resize', size);
+      /* ---------- read-only terminal (client side only, sends nothing) ---------- */
+      var CATPATH = {
+        AI: '/ai',
+        Homelab: '/research-and-development/homelab',
+        'Study cases': '/research-and-development/study-cases',
+        'Tips & Tricks': '/research-and-development/tips-and-tricks',
+      };
+      POSTS.forEach(function (p) {
+        var last = p.slug.split('/').pop();
+        p.file = last + '.md';
+        p.slug = CATPATH[p.c] + '/' + last;
+        p.path = p.slug + '.md';
+      });
+      POSTS[0].alt = ['/blog/news'];
+      var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      var termNav = false,
+        FS = null,
+        cwd = null,
+        prevDir = null,
+        HIST = [],
+        hpos = 0,
+        booted = false;
+      var README =
+        'jooservices.com — technical notes on AI, engineering and R&D.\n\nThis is a read-only shell. Categories are directories, posts are .md files,\ntags are virtual directories of symlinks. Nothing you type leaves this page.\n\nCommands: help, ls, cd, cat, tree, find, grep, open, curl, theme, lang';
+      function buildFS() {
+        var root = { t: 'd', n: '', k: {}, meta: { home: 1 } };
+        root.parent = root;
+        function dir(par, name, meta) {
+          var d = { t: 'd', n: name, k: {}, meta: meta || {}, parent: par };
+          par.k[name] = d;
+          return d;
+        }
+        function file(par, name, o) {
+          var f = { t: 'f', n: name, parent: par };
+          for (var k in o) f[k] = o[k];
+          par.k[name] = f;
+          return f;
+        }
+        var by = {};
+        by['/ai'] = dir(root, 'ai', { cat: 'AI' });
+        var blog = dir(root, 'blog', { cat: 'Blog' });
+        by['/blog'] = blog;
+        by['/blog/companies'] = dir(blog, 'companies', { cat: 'Companies' });
+        by['/blog/news'] = dir(blog, 'news', { cat: 'News' });
+        var rd = dir(root, 'research-and-development', { cat: 'Research & Development' });
+        by['/research-and-development'] = rd;
+        by['/research-and-development/homelab'] = dir(rd, 'homelab', { cat: 'Homelab' });
+        by['/research-and-development/study-cases'] = dir(rd, 'study-cases', { cat: 'Study cases' });
+        by['/research-and-development/tips-and-tricks'] = dir(rd, 'tips-and-tricks', { cat: 'Tips & Tricks' });
+        POSTS.forEach(function (p) {
+          var par = by[p.path.replace(/\/[^\/]+$/, '')];
+          file(par, p.file, { post: p });
+          (p.alt || []).forEach(function (a) {
+            by[a].k[p.file] = { t: 'l', n: p.file, target: p.path, post: p, parent: by[a] };
+          });
+        });
+        var tags = dir(root, 'tags', { virtual: 1 });
+        TAGS.forEach(function (t) {
+          var td = dir(tags, t[0], { tag: t[0] });
+          POSTS.forEach(function (p) {
+            if (p.tg.indexOf(t[0]) > -1) td.k[p.file] = { t: 'l', n: p.file, target: p.path, post: p, parent: td };
+          });
+        });
+        var pages = dir(root, 'pages', {});
+        file(pages, 'about.md', { page: 'about', text: T('bio') });
+        file(pages, 'contact.md', { page: 'about', text: 'hello@jooservices.com\ngithub.com/jooservices' });
+        file(pages, 'privacy.md', { text: 'No cookies are set by this terminal. Nothing you type is sent anywhere.' });
+        var au = dir(root, 'authors', {});
+        file(au, 'viet.md', { page: 'author', text: 'Viet VU — ' + T('role') + '\n' + T('bio') });
+        file(root, 'README.md', { text: README });
+        file(root, '.config', {
+          hidden: 1,
+          text: 'theme=' + (isLight ? 'light' : 'dark') + '\nlang=' + S.lang + '\nreadonly=true',
+        });
+        return root;
+      }
+      function pathOf(n) {
+        var a = [];
+        while (n && n !== FS && n.parent) {
+          a.unshift(n.n);
+          n = n.parent;
+        }
+        return '/' + a.join('/');
+      }
+      function disp(n) {
+        var p = pathOf(n);
+        return p === '/' ? '~' : '~' + p;
+      }
+      function lookup(path, from) {
+        var node = from || cwd;
+        if (path == null || path === '' || path === '~') {
+          return FS;
+        }
+        if (path[0] === '/' || path[0] === '~') {
+          node = FS;
+          path = path.replace(/^~?\/?/, '');
+        }
+        var segs = path.split('/').filter(Boolean);
+        for (var i = 0; i < segs.length; i++) {
+          var sg = segs[i];
+          if (sg === '.') continue;
+          if (sg === '..') {
+            node = node.parent || FS;
+            continue;
+          }
+          if (node.t !== 'd') return null;
+          var nx = node.k[sg];
+          if (!nx) return null;
+          if (nx.t === 'l') {
+            nx = lookup(nx.target, FS);
+          }
+          node = nx;
+        }
+        return node;
+      }
+      function resolveLink(n) {
+        return n.t === 'l' ? lookup(n.target, FS) : n;
+      }
+      function entries(d, all) {
+        return Object.keys(d.k)
+          .filter(function (k) {
+            return all || k[0] !== '.';
+          })
+          .sort(function (a, b) {
+            return a.toLowerCase() < b.toLowerCase() ? -1 : 1;
+          })
+          .map(function (k) {
+            return d.k[k];
+          });
+      }
+      function walk(n, fn, depth) {
+        fn(n, depth || 0);
+        if (n.t === 'd')
+          entries(n, false).forEach(function (c) {
+            if (c.t === 'l') fn(c, (depth || 0) + 1);
+            else walk(c, fn, (depth || 0) + 1);
+          });
+      }
+      function tparse(line) {
+        var out = [],
+          re = /"([^"]*)"|'([^']*)'|(\S+)/g,
+          m;
+        while ((m = re.exec(line))) out.push(m[1] !== undefined ? m[1] : m[2] !== undefined ? m[2] : m[3]);
+        return out;
+      }
+      function tflags(args) {
+        var f = {},
+          rest = [];
+        args.forEach(function (a) {
+          if (a.length > 1 && a[0] === '-' && isNaN(a)) {
+            a.slice(1)
+              .split('')
+              .forEach(function (c) {
+                f[c] = 1;
+              });
+          } else rest.push(a);
+        });
+        return { f: f, a: rest };
+      }
+
+      /* output helpers */
+      var out = function () {
+        return document.getElementById('tout');
+      };
+      function tprint(html, cls) {
+        var d = document.createElement('div');
+        if (cls) d.className = cls;
+        d.innerHTML = html;
+        out().appendChild(d);
+        out().scrollTop = out().scrollHeight;
+      }
+      function ps1() {
+        return 'viet@jooservices:' + disp(cwd) + '$';
+      }
+      function setPrompt() {
+        var p = ps1();
+        document.getElementById('tps').textContent = p;
+        document.getElementById('tTitle').textContent = 'viet@jooservices: ' + disp(cwd);
+      }
+      function cmdLink(label, cmd, cls) {
+        return '<a class="' + (cls || '') + '" data-cmd="' + esc(cmd) + '">' + esc(label) + '</a>';
+      }
+      function nameHtml(n, lbl) {
+        var name = lbl || n.n,
+          t = n.t === 'l' ? 'l' : n.t === 'd' ? 'd' : 'f';
+        var tgt = n.t === 'l' ? resolveLink(n) : n;
+        var cmd = n.t === 'd' ? 'cd ' + pathOf(n) : 'cat ' + pathOf(tgt || n);
+        return cmdLink(n.t === 'd' ? name + '/' : name, cmd, t);
+      }
+      function fmtSize(n) {
+        if (n.t === 'd') return '4.0K';
+        var b = n.post ? n.post.m * 1180 : n.text ? n.text.length : 120;
+        return b >= 1024 ? (b / 1024).toFixed(1) + 'K' : String(b);
+      }
+      function fmtDate(n) {
+        var d = n.post ? n.post.d : '2026-01-01';
+        var x = d.split('-');
+        var day = String(+x[2]);
+        return MON[+x[1] - 1] + ' ' + (day.length < 2 ? ' ' + day : day);
+      }
+      function longLine(n) {
+        var tgt = resolveLink(n),
+          perm = n.t === 'd' ? 'drwxr-xr-x' : n.t === 'l' ? 'lrwxrwxrwx' : '-r--r--r--';
+        var cnt = n.t === 'd' ? String(Object.keys(n.k).length + 2) : '1';
+        var sz = fmtSize(n);
+        while (sz.length < 5) sz = ' ' + sz;
+        var s = perm + ' ' + cnt + ' viet joo ' + sz + ' ' + fmtDate(n) + ' ' + nameHtml(n);
+        if (n.t === 'l') s += ' <span class="dim">-> ' + esc(n.target) + '</span>';
+        return s;
+      }
+      function notFoundErr(cmd, arg) {
+        tprint(esc(cmd + ": cannot access '" + arg + "': No such file or directory"), 'er');
+      }
+
+      /* commands */
+      var CMDS = {};
+      var CMD_HELP = {
+        ls: 'ls [-lat S r] [path]   list directory (categories) and posts',
+        cd: 'cd [path]   change directory (cd .., cd ~, cd -)',
+        pwd: 'pwd   print working directory',
+        cat: 'cat <file>   show a post summary or page',
+        head: 'head <file>   first lines of a file',
+        open: 'open [path]   go to that view on the site (post, category, tag, page)',
+        tree: 'tree [-L n] [path]   directory tree',
+        find: 'find [path] -name <glob> [-type f|d]',
+        grep: 'grep [-rin] <text> [path]   search titles, excerpts and tags',
+        curl: 'curl [-I] <path>   fake HTTP response for a path (no network)',
+        theme: 'theme dark|light   change the site theme',
+        lang: 'lang en|vi   change the site language',
+        whoami: 'whoami   who writes here',
+        neofetch: 'neofetch   about this site',
+        history: 'history   commands typed in this tab',
+        clear: 'clear   clear the screen (Ctrl+L)',
+        echo: 'echo <text>',
+        date: 'date',
+        uname: 'uname [-a]',
+        exit: 'exit   close the terminal',
+      };
+      CMDS.help = function () {
+        var rows = Object.keys(CMD_HELP).map(function (k) {
+          return '  ' + esc(CMD_HELP[k]);
+        });
+        tprint(
+          '<span class="dim">Read-only shell. Categories are directories, posts are files. Nothing is sent anywhere.</span>\n' +
+            rows.join('\n') +
+            '\n<span class="dim">Tab completes · ↑/↓ history · click names to run them</span>'
+        );
+      };
+      CMDS.pwd = function () {
+        tprint(esc(pathOf(cwd)));
+      };
+      CMDS.whoami = function () {
+        tprint('viet');
+      };
+      CMDS.hostname = function () {
+        tprint('jooservices');
+      };
+      CMDS.id = function () {
+        tprint('uid=1000(viet) gid=1000(joo) groups=1000(joo),27(readers)');
+      };
+      CMDS.date = function () {
+        tprint(esc(new Date().toString()));
+      };
+      CMDS.uname = function (a) {
+        tprint(a.indexOf('-a') > -1 ? 'Linux jooservices 6.8.0-joo #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux' : 'Linux');
+      };
+      CMDS.echo = function (a) {
+        tprint(esc(a.join(' ')));
+      };
+      CMDS.clear = function () {
+        out().innerHTML = '';
+      };
+      CMDS.history = function () {
+        tprint(
+          HIST.map(function (h, i) {
+            return ('    ' + (i + 1)).slice(-5) + '  ' + esc(h);
+          }).join('\n') || ''
+        );
+      };
+      CMDS.exit = function () {
+        setDock(false);
+      };
+      CMDS.logout = CMDS.exit;
+      CMDS.neofetch = function () {
+        tprint(
+          '<span class="l">   __  ___   ___ \n  |_  |/ _ \\ / _ \\  </span><span class="f">viet@jooservices</span>\n<span class="l">    | | (_) | (_) | </span>--------------\n<span class="l">  __/ |\\___/ \\___/  </span>OS: WordPress 7.1 · block theme\n<span class="l"> |___/              </span>Theme: joo-blog 1.0\n                    Posts: ' +
+            POSTS.length +
+            ' · Categories: 8 · Tags: ' +
+            TAGS.length +
+            '\n                    Shell: joo-sh 0.1 (read-only)\n                    Lang: ' +
+            S.lang +
+            ' · Theme: ' +
+            (isLight ? 'light' : 'dark') +
+            '\n                    Uptime: since 2013'
+        );
+      };
+      CMDS.ls = function (args) {
+        var p = tflags(args),
+          path = p.a[0],
+          node = path ? lookup(path) : cwd;
+        if (!node) {
+          notFoundErr('ls', path);
+          return;
+        }
+        if (node.t !== 'd') {
+          tprint(p.f.l ? longLine(node) : nameHtml(node));
+          return;
+        }
+        var list = entries(node, p.f.a);
+        if (p.f.t)
+          list.sort(function (a, b) {
+            var x = a.post ? a.post.d : '',
+              y = b.post ? b.post.d : '';
+            return x < y ? 1 : x > y ? -1 : 0;
+          });
+        if (p.f.S)
+          list.sort(function (a, b) {
+            return (b.post ? b.post.m : 0) - (a.post ? a.post.m : 0);
+          });
+        if (p.f.r) list.reverse();
+        if (!list.length) {
+          tprint('<span class="dim">(empty)</span>');
+          return;
+        }
+        if (p.f.l) {
+          tprint('<span class="dim">total ' + list.length + '</span>\n' + list.map(longLine).join('\n'));
+          return;
+        }
+        tprint(
+          '<div class="lsw">' +
+            list
+              .map(function (n) {
+                return nameHtml(n);
+              })
+              .join('') +
+            '</div>'
+        );
+      };
+      CMDS.cd = function (args) {
+        var a = args[0];
+        if (a === '-') {
+          var t = prevDir || FS;
+          prevDir = cwd;
+          cwd = t;
+          setPrompt();
+          tprint(esc(pathOf(cwd)), 'dim');
+          return;
+        }
+        var n = a ? lookup(a) : FS;
+        if (!n) {
+          tprint(esc('bash: cd: ' + a + ': No such file or directory'), 'er');
+          return;
+        }
+        if (n.t !== 'd') {
+          tprint(esc('bash: cd: ' + a + ': Not a directory'), 'er');
+          return;
+        }
+        prevDir = cwd;
+        cwd = n;
+        setPrompt();
+      };
+      function fileText(n) {
+        var f = resolveLink(n);
+        if (f.post) {
+          var p = f.post;
+          return (
+            '<span class="d"># ' +
+            esc(p.t) +
+            '</span>\n<span class="dim">category:</span> ' +
+            esc(pathOf(f.parent)) +
+            '  <span class="dim">date:</span> ' +
+            p.d +
+            '  <span class="dim">read:</span> ' +
+            p.m +
+            ' min\n<span class="dim">tags:</span> ' +
+            p.tg
+              .map(function (t) {
+                return cmdLink('#' + t, 'cd /tags/' + t, 'l');
+              })
+              .join(' ') +
+            '\n\n' +
+            esc(p.x) +
+            '\n\n' +
+            cmdLink('→ open ' + f.n, 'open ' + pathOf(f), 'cl')
+          );
+        }
+        return esc(f.text || '') + (f.page ? '\n\n' + cmdLink('→ open ' + f.n, 'open ' + pathOf(f), 'cl') : '');
+      }
+      CMDS.cat = function (args) {
+        if (!args.length) {
+          tprint('<span class="dim">cat: missing file operand</span>');
+          return;
+        }
+        args.forEach(function (a) {
+          var n = lookup(a);
+          if (!n) {
+            tprint(esc('cat: ' + a + ': No such file or directory'), 'er');
+            return;
+          }
+          if (n.t === 'd') {
+            tprint(esc('cat: ' + a + ': Is a directory'), 'er');
+            return;
+          }
+          tprint(fileText(n));
+        });
+      };
+      CMDS.head = function (args) {
+        var p = tflags(args),
+          n = lookup(p.a[0]);
+        if (!p.a[0]) {
+          tprint('<span class="dim">head: missing file operand</span>');
+          return;
+        }
+        if (!n) {
+          tprint(esc("head: cannot open '" + p.a[0] + "' for reading: No such file or directory"), 'er');
+          return;
+        }
+        if (n.t === 'd') {
+          tprint(esc("head: error reading '" + p.a[0] + "': Is a directory"), 'er');
+          return;
+        }
+        var f = resolveLink(n);
+        tprint(
+          f.post
+            ? '<span class="d"># ' + esc(f.post.t) + '</span>\n' + esc(f.post.x.slice(0, 120)) + '…'
+            : esc((f.text || '').split('\n').slice(0, 3).join('\n'))
+        );
+      };
+      CMDS.tree = function (args) {
+        var p = tflags(args),
+          lv = 9,
+          a = [];
+        for (var i = 0; i < args.length; i++) {
+          if (args[i] === '-L' && args[i + 1]) {
+            lv = +args[i + 1];
+            i++;
+          } else if (args[i][0] !== '-') a.push(args[i]);
+        }
+        var node = a[0] ? lookup(a[0]) : cwd;
+        if (!node) {
+          tprint(esc(a[0] + ' [error opening dir]'), 'er');
+          return;
+        }
+        var dirs = 0,
+          files = 0,
+          lines = [cmdLink(a[0] || '.', node === FS ? 'cd ~' : 'cd ' + pathOf(node), 'd')];
+        (function rec(n, pre, depth) {
+          if (depth >= lv) return;
+          var kids = entries(n, false);
+          kids.forEach(function (k, i) {
+            var last = i === kids.length - 1,
+              br = last ? '└── ' : '├── ';
+            var label = nameHtml(k) + (k.t === 'l' ? ' <span class="dim">-> ' + esc(k.target) + '</span>' : '');
+            lines.push('<span class="dim">' + pre + br + '</span>' + label);
+            if (k.t === 'd') {
+              dirs++;
+              rec(k, pre + (last ? '    ' : '│   '), depth + 1);
+            } else files++;
+          });
+        })(node.t === 'd' ? node : { k: {} }, '', 0);
+        tprint(lines.join('\n') + '\n\n<span class="dim">' + dirs + ' directories, ' + files + ' files</span>');
+      };
+      function globRe(g) {
+        return new RegExp(
+          '^' +
+            g
+              .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+              .replace(/\*/g, '.*')
+              .replace(/\?/g, '.') +
+            '$',
+          'i'
+        );
+      }
+      CMDS.find = function (args) {
+        var path = '.',
+          name = null,
+          type = null;
+        for (var i = 0; i < args.length; i++) {
+          if (args[i] === '-name' || args[i] === '-iname') {
+            name = globRe(args[++i] || '*');
+          } else if (args[i] === '-type') {
+            type = args[++i];
+          } else if (args[i][0] !== '-') path = args[i];
+        }
+        var node = lookup(path);
+        if (!node) {
+          tprint(esc("find: '" + path + "': No such file or directory"), 'er');
+          return;
+        }
+        var res = [];
+        walk(node, function (n) {
+          if (n === node && node.t === 'd' && (name || type)) return;
+          if (name && !name.test(n.n)) return;
+          if (type === 'd' && n.t !== 'd') return;
+          if (type === 'f' && n.t === 'd') return;
+          var pth = n.t === 'l' ? pathOf(n.parent) + '/' + n.n : pathOf(n);
+          var shown =
+            path === '.' || path === './'
+              ? '.' + (pth === pathOf(cwd) ? '' : pth.slice(pathOf(cwd) === '/' ? 0 : pathOf(cwd).length))
+              : pth;
+          res.push(cmdLink(shown, n.t === 'd' ? 'cd ' + pth : 'cat ' + pth, n.t === 'd' ? 'd' : 'f'));
+        });
+        tprint(res.length ? res.join('\n') : '<span class="dim">(no matches)</span>');
+      };
+      CMDS.grep = function (args) {
+        var p = tflags(args);
+        if (!p.a.length) {
+          tprint('Usage: grep [OPTION]... PATTERN [FILE]...', 'dim');
+          return;
+        }
+        var pat = p.a[0],
+          node = p.a[1] ? lookup(p.a[1]) : cwd;
+        if (!node) {
+          tprint(esc('grep: ' + p.a[1] + ': No such file or directory'), 'er');
+          return;
+        }
+        var flags = p.f.i ? 'i' : '',
+          re;
+        try {
+          re = new RegExp(pat.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), flags);
+        } catch (e) {
+          tprint('grep: bad pattern', 'er');
+          return;
+        }
+        var res = [],
+          seen = {};
+        walk(node, function (n) {
+          var f = resolveLink(n);
+          if (!f || f.t === 'd' || seen[pathOf(f)]) return;
+          var txt = f.post ? [f.post.t, f.post.x, f.post.tg.join(' ')] : [f.text || ''];
+          var hit = txt.filter(function (t) {
+            return re.test(t);
+          })[0];
+          if (!hit) return;
+          seen[pathOf(f)] = 1;
+          var pth = pathOf(f),
+            line = esc(hit.length > 90 ? hit.slice(0, 90) + '…' : hit).replace(
+              new RegExp(pat.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), flags + 'g'),
+              function (m) {
+                return '<mark>' + m + '</mark>';
+              }
+            );
+          res.push(cmdLink(pth.replace(/^\//, ''), 'cat ' + pth, 'f') + '<span class="dim">:</span> ' + line);
+        });
+        if (!res.length && !p.f.i) res.push('<span class="dim">(no match. grep is case-sensitive, try -i)</span>');
+        else if (!res.length) res.push('<span class="dim">(no match)</span>');
+        tprint(res.join('\n'));
+      };
+      function openNode(n, raw) {
+        if (n === FS) {
+          show('home');
+          return true;
+        }
+        var f = resolveLink(n);
+        if (f.post) {
+          show('article', { id: f.post.id });
+          return true;
+        }
+        if (f.t === 'd') {
+          if (f.meta.cat) {
+            show('category', { cat: f.meta.cat });
+            return true;
+          }
+          if (f.meta.tag) {
+            show('topic', { topic: f.meta.tag });
+            return true;
+          }
+          if (f.n === 'tags') {
+            show('topic', { topic: 'mcp' });
+            return true;
+          }
+          show('home');
+          return true;
+        }
+        if (f.page) {
+          show(f.page);
+          return true;
+        }
+        tprint('<span class="dim">no viewer for ' + esc(f.n) + '; use cat</span>');
+        return false;
+      }
+      CMDS.open = function (args) {
+        termNav = true;
+        try {
+          openCmd(args);
+        } finally {
+          termNav = false;
+        }
+      };
+      function openCmd(args) {
+        var a = args[0],
+          n = a ? lookup(a) || lookup(a + '.md') : cwd;
+        if (!n) {
+          var pth =
+            '/' +
+            String(a)
+              .replace(/^~?\/+/, '')
+              .replace(/\.md$/, '');
+          tprint(esc('xdg-open: ' + a + ': No such file or directory → 404'), 'er');
+          show('notfound', { path: pth, code: 404 });
+          return;
+        }
+        tprint('<span class="dim">opening ' + esc(pathOf(n)) + ' …</span>');
+        openNode(n, a);
+      }
+      CMDS['xdg-open'] = CMDS.open;
+      CMDS.go = CMDS.open;
+      CMDS.curl = function (args) {
+        var p = tflags(args),
+          a = p.a[0];
+        if (!a) {
+          tprint("curl: try 'curl --help' for more information", 'dim');
+          return;
+        }
+        var path = a.replace(/^https?:\/\/[^\/]+/, '');
+        if (path[0] !== '/') path = '/' + path;
+        var n = lookup(path) || lookup(path + '.md'),
+          f = n && resolveLink(n),
+          ok = !!n;
+        var lines = [
+          'HTTP/2 ' + (ok ? '200' : '404'),
+          'content-type: text/html; charset=utf-8',
+          'cache-control: ' + (ok ? 'public, max-age=300' : 'no-store'),
+          'x-robots-tag: ' + (ok ? 'index,follow' : 'noindex'),
+          'x-theme: joo-blog/1.0',
+        ];
+        tprint(
+          '<span class="dim">(simulated, no network)</span>\n' +
+            lines
+              .map(function (l, i) {
+                return i === 0 ? (ok ? '<span class="d">' : '<span class="er">') + esc(l) + '</span>' : esc(l);
+              })
+              .join('\n') +
+            (ok ? '' : '\n' + cmdLink('→ open ' + path, 'open ' + path, 'cl'))
+        );
+      };
+      CMDS.ping = function () {
+        tprint('ping: connect: Network is unreachable <span class="dim">(this shell is offline by design)</span>');
+      };
+      CMDS.theme = function (a) {
+        var v = a[0];
+        if (v !== 'dark' && v !== 'light') {
+          tprint('usage: theme dark|light', 'dim');
+          return;
+        }
+        setTheme(v === 'light');
+        tprint('theme → ' + v);
+      };
+      CMDS.lang = function (a) {
+        var v = a[0];
+        if (v !== 'en' && v !== 'vi') {
+          tprint('usage: lang en|vi', 'dim');
+          return;
+        }
+        setLang(v);
+        tprint('lang → ' + v);
+      };
+      CMDS.man = function (a) {
+        var k = a[0];
+        if (!k) {
+          tprint('What manual page do you want?', 'dim');
+          return;
+        }
+        if (CMD_HELP[k]) tprint('<span class="d">' + esc(k.toUpperCase()) + '(1)</span>\n  ' + esc(CMD_HELP[k]));
+        else tprint(esc('No manual entry for ' + k), 'er');
+      };
+      CMDS.sudo = function () {
+        tprint('viet is not in the sudoers file. This incident will be reported to /dev/null.');
+      };
+      CMDS.which = function (a) {
+        tprint(a[0] && CMDS[a[0]] ? '/usr/bin/' + esc(a[0]) : '', 'dim');
+      };
+      ['rm', 'rmdir', 'mv', 'cp', 'touch', 'mkdir', 'chmod', 'chown', 'ln', 'tee'].forEach(function (c) {
+        CMDS[c] = function (a) {
+          var t = tflags(a).a[0] || '';
+          tprint(esc(c + ": cannot modify '" + t + "': Read-only file system"), 'er');
+        };
+      });
+      CMDS.vim =
+        CMDS.nano =
+        CMDS.vi =
+          function () {
+            tprint('The file system is read-only. Try cat.', 'dim');
+          };
+
+      function runCmd(line) {
+        var raw = line.trim();
+        tprint('<span class="ps">' + esc(ps1()) + '</span> ' + esc(raw), 'ln');
+        if (!raw) return;
+        HIST.push(raw);
+        hpos = HIST.length;
+        var toks = tparse(raw),
+          cmd = toks.shift();
+        if (cmd === 'll') {
+          cmd = 'ls';
+          toks.unshift('-l');
+        }
+        if (CMDS[cmd]) {
+          try {
+            CMDS[cmd](toks);
+          } catch (e) {
+            tprint('error: ' + esc(e.message), 'er');
+          }
+          return;
+        }
+        var best = Object.keys(CMDS)
+          .map(function (k) {
+            return { k: k, s: sim(cmd, k) };
+          })
+          .sort(function (a, b) {
+            return b.s - a.s;
+          })[0];
+        tprint(
+          esc("Command '" + cmd + "' not found") +
+            (best && best.s > 0.4 ? ', did you mean ' + "'" + best.k + "'?" : ". Try 'help'."),
+          'er'
+        );
+      }
+      function setDock(open) {
+        var d = document.getElementById('dock');
+        d.dataset.open = open ? 'true' : 'false';
+        document.getElementById('tdTab').setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (open) {
+          if (!booted) {
+            booted = true;
+            tprint(
+              '<span class="d">jooservices.com</span> <span class="dim">read-only shell · nothing is sent anywhere</span>\n<span class="dim">Last login: ' +
+                new Date().toDateString() +
+                ' on tty1</span>\nType <a data-cmd="help">help</a>, or try <a data-cmd="ls">ls</a> · <a data-cmd="tree">tree</a> · <a data-cmd="cat README.md">cat README.md</a>'
+            );
+          }
+          setPrompt();
+          setTimeout(function () {
+            document.getElementById('tcmd').focus();
+          }, 0);
+        } else {
+          document.getElementById('tdTab').focus();
+        }
+      }
+      function complete() {
+        var inp = document.getElementById('tcmd'),
+          v = inp.value,
+          parts = v.split(/\s+/),
+          last = parts[parts.length - 1],
+          cands,
+          prefix;
+        if (parts.length === 1) {
+          cands = Object.keys(CMDS).filter(function (k) {
+            return k.indexOf(last) === 0;
+          });
+          prefix = '';
+        } else {
+          var i = last.lastIndexOf('/'),
+            dpart = i > -1 ? last.slice(0, i + 1) : '',
+            base = last.slice(i + 1);
+          var d = lookup(dpart || '.');
+          if (!d || d.t !== 'd') return;
+          cands = entries(d, base[0] === '.')
+            .filter(function (n) {
+              return n.n.toLowerCase().indexOf(base.toLowerCase()) === 0;
+            })
+            .map(function (n) {
+              return n.n + (n.t === 'd' ? '/' : '');
+            });
+          prefix = dpart;
+          last = base;
+        }
+        if (!cands.length) return;
+        var common = cands[0];
+        cands.forEach(function (c) {
+          while (c.toLowerCase().indexOf(common.toLowerCase()) !== 0) common = common.slice(0, -1);
+        });
+        var head = parts.slice(0, -1).join(' ');
+        inp.value =
+          (head ? head + ' ' : '') + prefix + common + (cands.length === 1 && common.slice(-1) !== '/' ? ' ' : '');
+        if (cands.length > 1) {
+          tprint('<span class="ps">' + esc(ps1()) + '</span> ' + esc(v), 'ln');
+          tprint(
+            '<div class="lsw">' +
+              cands
+                .map(function (c) {
+                  return '<span class="dim">' + esc(c) + '</span>';
+                })
+                .join('') +
+              '</div>'
+          );
+        }
+      }
+      function termSync(view) {
+        if (!FS || termNav) return;
+        var n = null;
+        if (view === 'category') {
+          walk(FS, function (x) {
+            if (x.t === 'd' && x.meta && x.meta.cat === S.cat) n = x;
+          });
+        } else if (view === 'article') {
+          var p = postBy(S.id || 'wp-mcp');
+          n = lookup(p.path.replace(/\/[^\/]+$/, ''), FS);
+        } else if (view === 'topic') {
+          n = lookup('/tags/' + S.topic, FS);
+        } else if (view === 'home') {
+          n = FS;
+        }
+        if (n && n !== cwd) {
+          prevDir = cwd;
+          cwd = n;
+          setPrompt();
+        }
+      }
+      function initTerm() {
+        FS = buildFS();
+        cwd = FS;
+        setPrompt();
+        document.getElementById('tchips').innerHTML = ['ls', 'tree', 'help', 'grep -ri docker .', 'open .']
+          .map(function (c) {
+            return '<button type="button" data-cmd="' + esc(c) + '">' + esc(c) + '</button>';
+          })
+          .join('');
+        document.getElementById('tdTab').onclick = function () {
+          setDock(true);
+        };
+        document.getElementById('tdClose').onclick = function () {
+          setDock(false);
+        };
+        document.getElementById('tform').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var i = document.getElementById('tcmd');
+          var v = i.value;
+          i.value = '';
+          runCmd(v);
+        });
+        document.getElementById('tcmd').addEventListener('keydown', function (e) {
+          var i = e.target;
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            complete();
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (hpos > 0) {
+              hpos--;
+              i.value = HIST[hpos] || '';
+            }
+          } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (hpos < HIST.length) {
+              hpos++;
+              i.value = HIST[hpos] || '';
+            }
+          } else if (e.key === 'l' && e.ctrlKey) {
+            e.preventDefault();
+            CMDS.clear();
+          } else if (e.key === 'c' && e.ctrlKey) {
+            e.preventDefault();
+            tprint('<span class="ps">' + esc(ps1()) + '</span> ' + esc(i.value) + '^C', 'ln');
+            i.value = '';
+          } else if (e.key === 'Escape') {
+            setDock(false);
+          }
+        });
+        document.getElementById('dock').addEventListener('click', function (e) {
+          var c = e.target.closest('[data-cmd]');
+          if (c) {
+            e.preventDefault();
+            runCmd(c.dataset.cmd);
+            document.getElementById('tcmd').focus();
+          }
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === '`' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) {
+            e.preventDefault();
+            setDock(document.getElementById('dock').dataset.open !== 'true');
+          }
+        });
+      }
+
+      side();
+      show('home', { noFocus: 1 });
+      initTerm();
+      size();
+    </script>
+  </body>
+</html>

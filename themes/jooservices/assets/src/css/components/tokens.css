@@ -1,0 +1,44 @@
+/* Aliases used by every component file. Palette values come from theme.json (dark) and styles/light.json (light);
+   the light block below is kept identical to styles/light.json by tests/tokens.test.mjs. */
+:root {
+  --joo-bg: var(--wp--preset--color--background);
+  --joo-surface: var(--wp--preset--color--surface);
+  --joo-raised: var(--wp--preset--color--raised);
+  --joo-ink: var(--wp--preset--color--ink);
+  --joo-muted: var(--wp--preset--color--muted);
+  --joo-line: var(--wp--preset--color--line);
+  --joo-accent: var(--wp--preset--color--accent);
+  --joo-accent-ink: var(--wp--preset--color--accent-ink);
+  --joo-pin: var(--wp--preset--color--pin);
+  --joo-ok: var(--wp--preset--color--ok);
+  --joo-err: var(--wp--preset--color--err);
+  --joo-chip: var(--wp--preset--color--chip);
+  --joo-code: var(--wp--preset--color--code);
+  --joo-mono: var(--wp--preset--font-family--mono);
+  --joo-rail-width: var(--wp--custom--joo--rail-width, 320px);
+  --joo-dock-width: var(--wp--custom--joo--dock-width, 390px);
+  --joo-radius-s: var(--wp--custom--joo--radius-s, 4px);
+  --joo-radius-m: var(--wp--custom--joo--radius-m, 8px);
+  --joo-radius-l: var(--wp--custom--joo--radius-l, 10px);
+
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --wp--preset--color--background: rgb(238 242 246);
+  --wp--preset--color--surface: rgb(255 255 255);
+  --wp--preset--color--raised: rgb(246 248 251);
+  --wp--preset--color--ink: rgb(15 28 43);
+  --wp--preset--color--muted: rgb(86 104 121);
+  --wp--preset--color--line: rgb(213 221 230);
+  --wp--preset--color--border: rgb(213 221 230);
+  --wp--preset--color--accent: rgb(10 107 176);
+  --wp--preset--color--accent-ink: rgb(255 255 255);
+  --wp--preset--color--pin: rgb(154 96 0);
+  --wp--preset--color--ok: rgb(10 122 87);
+  --wp--preset--color--err: rgb(192 57 43);
+  --wp--preset--color--chip: rgb(230 237 245);
+  --wp--preset--color--code: rgb(11 21 32);
+
+  color-scheme: light;
+}

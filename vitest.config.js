@@ -12,6 +12,7 @@ export default defineConfig({
       'themes/**/assets/src/js/**/*.test.js',
       'tools/**/*.test.mjs',
       'tests/tools/**/*.test.mjs',
+      'themes/*/tests/**/*.test.mjs',
     ],
     exclude: ['**/node_modules/**', '**/build/**', 'themes/*/core/**'],
     passWithNoTests: false,

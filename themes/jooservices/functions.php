@@ -33,3 +33,28 @@ add_action(
 		add_theme_support( 'html5', array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script' ) );
 	}
 );
+
+// Theme styles: the built CSS is registered with the core asset registry (hashed file names, conditional enqueue).
+add_action(
+	'joo/assets/register',
+	static function ( $registry ): void {
+		$registry->addManifest( 'theme', \JOOservices\ThemeCore\Assets\AssetManifest::fromFile( get_theme_file_path( 'assets/build/assets.json' ), get_theme_file_uri( 'assets/build' ) ) );
+		$registry->style(
+			'jooservices-theme',
+			'theme',
+			array(
+				'manifest' => 'theme',
+				'late'     => true,
+			)
+		);
+		$registry->module( 'jooservices-rail', 'rail', array( 'manifest' => 'theme' ) );
+	}
+);
+
+// Block editor: same look as the front end.
+add_action(
+	'after_setup_theme',
+	static function (): void {
+		add_editor_style( 'assets/src/css/editor.css' );
+	}
+);

@@ -380,7 +380,11 @@ ${(o.comments ?? []).map((c) => `<wp:comment><wp:comment_id>${c.id}</wp:comment_
     if (p.cat2) counts.twoCategories += 1;
   }
   const pages = [
-    { slug: 'about', title: 'About', content: `${heading('About me')}\n\n${para(3)}` },
+    {
+      slug: 'about',
+      title: 'About',
+      content: `${heading('About me')}\n\n<!-- wp:joo/profile-card {"titleLevel":3} /-->\n\n${para(2)}\n\n${heading('What I work on')}\n\n${list()}\n\n${heading('Where I have worked')}\n\n<!-- wp:joo/companies {"perPage":6} /-->\n\n${heading('Get in touch')}\n\n<!-- wp:paragraph -->\n<p>The best way to reach me is the contact page, or the links in the profile card.</p>\n<!-- /wp:paragraph -->`,
+    },
     {
       slug: 'contact',
       title: 'Contact',
@@ -402,7 +406,7 @@ ${(o.comments ?? []).map((c) => `<wp:comment><wp:comment_id>${c.id}</wp:comment_
         content: pg.content,
         excerpt: '',
         date: START + i * 86400e3,
-        meta: [['_joo_demo', '1']],
+        meta: [['_joo_demo', '1'], ...(pg.slug === 'about' ? [['_wp_page_template', 'page-full']] : [])],
       })
     );
     counts.pages += 1;

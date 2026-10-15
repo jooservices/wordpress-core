@@ -1,0 +1,46 @@
+<!-- wp:group {"className":"joo-frame"} -->
+<div class="wp-block-group joo-frame">
+  <!-- wp:group {"className":"joo-shell"} -->
+  <div class="wp-block-group joo-shell">
+    <!-- wp:template-part {"slug":"header","tagName":"div"} /-->
+    <!-- wp:group {"className":"joo-layout"} -->
+    <div class="wp-block-group joo-layout">
+      <!-- wp:template-part {"slug":"rail","tagName":"div"} /-->
+      <!-- wp:group {"tagName":"main","className":"joo-main"} -->
+      <main class="wp-block-group joo-main">
+        <!-- wp:group {"className":"joo-banner joo-banner--author"} -->
+        <div class="wp-block-group joo-banner joo-banner--author">
+          <!-- wp:paragraph {"className":"joo-eyebrow"} -->
+          <p class="joo-eyebrow">Author</p>
+          <!-- /wp:paragraph -->
+          <!-- wp:query-title {"type":"archive","showPrefix":false,"level":1} /-->
+          <!-- wp:joo/profile-card {"titleLevel":2,"linkTo":"about"} /-->
+        </div>
+        <!-- /wp:group -->
+        <!-- wp:query {"queryId":0,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":true},"className":"joo-feed"} -->
+        <div class="wp-block-query joo-feed">
+          <!-- wp:post-template -->
+          <!-- wp:template-part {"slug":"post-card","tagName":"div"} /-->
+          <!-- /wp:post-template -->
+          <!-- wp:query-pagination {"className":"joo-pager","layout":{"type":"flex","justifyContent":"left"}} -->
+          <!-- wp:query-pagination-previous /-->
+          <!-- wp:query-pagination-numbers /-->
+          <!-- wp:query-pagination-next /-->
+          <!-- /wp:query-pagination -->
+          <!-- wp:query-no-results -->
+          <!-- wp:paragraph -->
+          <p>Nothing here yet.</p>
+          <!-- /wp:paragraph -->
+          <!-- /wp:query-no-results -->
+        </div>
+        <!-- /wp:query -->
+      </main>
+      <!-- /wp:group -->
+    </div>
+    <!-- /wp:group -->
+    <!-- wp:template-part {"slug":"footer","tagName":"div"} /-->
+  </div>
+  <!-- /wp:group -->
+  <!-- wp:joo/terminal-dock /-->
+</div>
+<!-- /wp:group -->

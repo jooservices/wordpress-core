@@ -1,0 +1,183 @@
+/* Right dock: a sticky column next to the shell (core ships a fixed overlay; the theme turns it into a column so the
+   content reflows instead of being covered). */
+.joo-term {
+  --joo-term-bg: rgb(6 9 13);
+  --joo-term-fg: rgb(205 217 232);
+  --joo-term-dim: rgb(107 124 147);
+  --joo-term-accent: rgb(79 209 161);
+  --joo-term-err: rgb(255 128 128);
+
+  font: 13px/1.55 var(--joo-mono);
+}
+
+.joo-term__tab,
+.joo-term__panel {
+  border-color: rgb(36 50 68);
+  border-radius: var(--joo-radius-l);
+}
+
+.joo-term__tab {
+  color: rgb(159 179 204);
+}
+
+.joo-term__tab:hover {
+  color: var(--joo-accent);
+  border-color: var(--joo-accent);
+}
+
+.joo-term__tab span {
+  font-size: 15px;
+  color: var(--joo-term-accent);
+}
+
+.joo-term__tab em {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.joo-term[data-state='open'] .joo-term__tab {
+  display: none;
+}
+
+.joo-term__panel {
+  box-shadow: 0 20px 50px rgb(0 0 0 / 35%);
+}
+
+.joo-term__panel:focus-within {
+  border-color: color-mix(in srgb, var(--joo-accent) 60%, rgb(36 50 68));
+}
+
+.joo-term__bar {
+  padding: 7px 12px;
+  color: rgb(127 144 166);
+  font: 12px/1.5 var(--joo-mono);
+  border-bottom-color: rgb(30 41 53);
+}
+
+.joo-term__title {
+  overflow: hidden;
+  font-weight: 500;
+  color: rgb(159 179 204);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.joo-term__close {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  margin-block: -10px;
+  color: rgb(205 217 232);
+}
+
+.joo-term__chips {
+  padding: 8px 12px 0;
+}
+
+.joo-term__chip {
+  min-height: 1.75rem;
+  color: rgb(159 179 204);
+  border: 1px solid rgb(47 69 96);
+  border-radius: var(--joo-radius-s);
+  font: 12px/1 var(--joo-mono);
+}
+
+.joo-term__chip:hover {
+  color: var(--joo-accent);
+  border-color: var(--joo-accent);
+}
+
+.joo-term__log {
+  padding: 10px 12px;
+  overscroll-behavior: contain;
+  overflow-wrap: anywhere;
+}
+
+.joo-term__form {
+  border-top-color: rgb(30 41 53);
+}
+
+.joo-term__prompt {
+  max-width: 55%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.joo-term__input {
+  color: rgb(230 237 245);
+  caret-color: rgb(205 217 232);
+}
+
+.joo-term__cmd,
+.joo-term__log a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.joo-term__cmd:hover,
+.joo-term__log a:hover {
+  text-decoration: underline;
+  background: rgb(92 200 255 / 12%);
+}
+
+@media (min-width: 901px) {
+  .joo-term {
+    position: sticky;
+    top: 0;
+    flex: none;
+    flex-direction: row-reverse;
+    align-self: flex-start;
+    height: min(100vh, 780px);
+    margin-top: 8px;
+    pointer-events: auto;
+  }
+
+  .joo-term__tab {
+    width: 40px;
+    height: 100%;
+    margin-top: 0;
+    padding: 14px 0 0;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 14px;
+    border-radius: var(--joo-radius-l);
+  }
+
+  .joo-term__tab em {
+    writing-mode: vertical-rl;
+  }
+
+  .joo-term__panel {
+    width: var(--joo-dock-width);
+    height: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .joo-frame {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .joo-term {
+    position: sticky;
+    bottom: 0;
+    z-index: 40;
+    width: 100%;
+    padding-bottom: 6px;
+  }
+
+  .joo-term__tab {
+    width: 100%;
+    height: 44px;
+    justify-content: center;
+    border-radius: var(--joo-radius-l);
+  }
+
+  .joo-term__panel {
+    width: 100%;
+    height: min(62dvh, 480px);
+    border-radius: var(--joo-radius-l);
+  }
+}
