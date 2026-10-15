@@ -17,6 +17,7 @@ const REQUIRED_HEADERS = [
   'License URI',
   'Text Domain',
 ];
+/** @type {Array<[RegExp, string]>} */
 const FORBIDDEN = [
   [/\beval\s*\(/, 'eval()'],
   [/\bbase64_decode\s*\(/, 'base64_decode()'],
