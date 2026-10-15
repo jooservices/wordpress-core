@@ -4,7 +4,7 @@ set -euo pipefail
 cd /var/www/html
 THEME="${1:?theme slug}"
 shift || true
-DIR="/workspace/artifacts/demo/${THEME}"
+DIR="/workspace/artifacts/demo/${DEMO_SET:-${THEME}}"
 [ -f "${DIR}/content.xml" ] || { echo "ERROR: ${DIR}/content.xml missing (run the generator on the host first)" >&2; exit 1; }
 RESET=0
 [ "${1:-}" = "--reset" ] && RESET=1

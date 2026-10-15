@@ -411,3 +411,8 @@
     display: none;
   }
 }
+
+/* Real posts can carry many tags: the card shows the first six. */
+.joo-card .joo-tags a:nth-of-type(n + 7) {
+  display: none;
+}
