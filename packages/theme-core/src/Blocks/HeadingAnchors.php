@@ -121,7 +121,7 @@ final class HeadingAnchors {
 	public function filter( $html, $block = array() ): string {
 		$html = (string) $html;
 		$post = get_the_ID();
-		if ( ! is_singular() || ! $post || 1 !== preg_match( '#^<h([2-4])\b([^>]*)>(.*)</h\1>\s*$#is', $html, $m ) ) {
+		if ( ! is_singular() || ! $post || 1 !== preg_match( '#^\s*<h([2-4])\b([^>]*)>(.*)</h\1>\s*$#is', $html, $m ) ) {
 			return $html;
 		}
 		$level  = (int) $m[1];

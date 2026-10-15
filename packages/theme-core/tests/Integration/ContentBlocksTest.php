@@ -280,6 +280,16 @@ final class ContentBlocksTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'href="#custom"', $out );
 	}
 
+	public function test_headings_rendered_with_surrounding_newlines_still_get_an_anchor(): void {
+		$this->boot();
+		$post = self::factory()->post->create();
+		$this->visit( $post );
+		// WordPress 7 renders the heading block with a leading newline.
+		$out = ( new HeadingAnchors() )->filter( "\n<h2 class=\"wp-block-heading\">Spaced out</h2>\n", array() );
+		$this->assertStringContainsString( 'id="spaced-out"', $out );
+		$this->assertStringContainsString( 'href="#spaced-out"', $out );
+	}
+
 	public function test_code_blocks_get_a_copy_button_and_the_module_loads_only_then(): void {
 		$this->boot();
 		$post = self::factory()->post->create();
