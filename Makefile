@@ -117,6 +117,7 @@ test-matrix: ## Plugin compatibility matrix (THEME=...)
 	@node tools/matrix.mjs $(ARGS)
 package: ## Build the installable theme zip (THEME=...)
 	$(call require_theme)
+	@node tools/theme-check.mjs --theme $(THEME)
 	@node tools/build-theme.mjs --theme $(THEME)
 i18n: ## Make POT files (WP-CLI in Docker), build the Vietnamese .po/.mo and fail on untranslated strings
 	@mkdir -p artifacts/i18n

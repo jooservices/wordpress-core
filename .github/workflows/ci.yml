@@ -1,0 +1,113 @@
+# Continuous integration. The repository has no remote yet: this file is kept ready and is not run by any local tool.
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: composer install --no-interaction --prefer-dist
+      - run: npm ci
+      - run: make lint
+      - run: make analyse
+      - run: node tools/check-registry.mjs
+      - run: node tools/validate-schemas.mjs
+      - run: node tools/docs-reference.mjs --check
+      - run: make test-tooling
+  unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: composer install --no-interaction --prefer-dist
+      - run: npm ci
+      - run: make test-unit
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        wp: ['latest', '6.6']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: make init-env
+      - run: WP_VERSION=${{ matrix.wp }} make up THEME=jooservices
+      - run: WP_VERSION=${{ matrix.wp }} make test-integration THEME=jooservices
+      - run: WP_VERSION=${{ matrix.wp }} make test-integration THEME=jooservices TEST_THEME=jooservices ARGS="--testsuite theme-integration"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-${{ matrix.wp }}
+          path: artifacts/reports/integration
+  e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - run: make init-env
+      - run: make demo THEME=jooservices
+      - run: E2E_ENGINES=webkit E2E_THEME=jooservices make test-e2e THEME=jooservices
+      - run: make perf THEME=jooservices
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-reports
+          path: |
+            artifacts/reports/e2e
+            artifacts/reports/perf
+  package:
+    needs: [static, unit, integration, e2e]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - run: npm ci
+      - run: node tools/theme-check.mjs --theme jooservices
+      - run: make package THEME=jooservices
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jooservices-theme
+          path: artifacts/package/*.zip

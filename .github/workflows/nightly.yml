@@ -1,0 +1,41 @@
+# Nightly: the plugin compatibility matrix and a scaffolded theme smoke test. Not run by any local tool.
+name: nightly
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  matrix:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: make init-env
+      - run: make demo THEME=jooservices
+      - run: E2E_THEME=jooservices make test-matrix THEME=jooservices
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-matrix
+          path: artifacts/reports/matrix
+  scaffold:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: make init-env
+      - run: make new-theme NAME=acme
+      - run: make demo THEME=acme
