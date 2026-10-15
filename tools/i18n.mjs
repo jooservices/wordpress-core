@@ -9,6 +9,7 @@ import { fromRoot } from './lib/paths.mjs';
 const targets = [
   { name: 'joo-core', dir: 'packages/theme-core/languages' },
   { name: 'jooservices-content', dir: 'plugins/jooservices-content/languages' },
+  { name: 'starter', dir: 'themes/starter/languages' },
 ];
 
 /** Reads the msgids of a POT file: list of {id, plural}. */

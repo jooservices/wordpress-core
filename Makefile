@@ -106,6 +106,7 @@ i18n: ## Make POT files (WP-CLI in Docker), build the Vietnamese .po/.mo and fai
 	@mkdir -p artifacts/i18n
 	@$(COMPOSE) exec -T -u www-data wordpress wp i18n make-pot /workspace/packages/theme-core /workspace/artifacts/i18n/joo-core.pot --domain=joo-core --exclude=tests,node_modules,resources/build,languages --skip-js --quiet
 	@$(COMPOSE) exec -T -u www-data wordpress wp i18n make-pot /workspace/plugins/jooservices-content /workspace/artifacts/i18n/jooservices-content.pot --domain=jooservices-content --exclude=tests,node_modules,languages --skip-js --quiet
+	@$(COMPOSE) exec -T -u www-data wordpress wp i18n make-pot /workspace/themes/starter /workspace/artifacts/i18n/starter.pot --domain=starter --exclude=tests,node_modules,core,languages --skip-js --quiet
 	@node tools/i18n.mjs
 docs: ## Generate reference docs (compatibility matrix; more generators land with their stories)
 	@node tools/docs-compat.mjs

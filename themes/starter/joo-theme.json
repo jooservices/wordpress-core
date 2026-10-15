@@ -26,12 +26,26 @@
       "name": "joo-card",
       "w": 640,
       "h": 480,
-      "crop": true
+      "crop": true,
+      "retina": true
     },
     {
       "name": "joo-cover",
-      "w": 1600,
-      "h": 686,
+      "w": 900,
+      "h": 386,
+      "crop": true,
+      "retina": true
+    },
+    {
+      "name": "joo-thumb",
+      "w": 88,
+      "h": 88,
+      "crop": true
+    },
+    {
+      "name": "joo-avatar",
+      "w": 128,
+      "h": 128,
       "crop": true
     }
   ],
@@ -43,6 +57,19 @@
   },
   "i18n": {
     "default": "en",
-    "languages": ["en"]
+    "languages": ["en", "vi"]
+  },
+  "images": {
+    "sizesPresets": {
+      "card": "(min-width: 900px) 220px, 100vw",
+      "cover": "(min-width: 1240px) 900px, 100vw",
+      "thumb": "44px"
+    }
+  },
+  "features": {
+    "terminal": true,
+    "slider": true,
+    "theme_toggle": true,
+    "reading_progress": true
   }
 }

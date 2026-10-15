@@ -1,0 +1,168 @@
+# Copyright (C) 2026 JOOservices Ltd
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Starter 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/starter\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-15T15:29:07+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: starter\n"
+
+#. Theme Name of the theme
+#: style.css
+msgid "Starter"
+msgstr ""
+
+#. Theme URI of the theme
+#. Author URI of the theme
+#: style.css
+msgid "https://jooservices.com"
+msgstr ""
+
+#. Description of the theme
+#: style.css
+msgid "Starter block theme built on the JOOservices theme core."
+msgstr ""
+
+#. Author of the theme
+#: style.css
+msgid "JOOservices Ltd"
+msgstr ""
+
+#: functions.php:16
+msgid "JOOservices core is missing from this theme. Reinstall the theme package or run \"make link-core\"."
+msgstr ""
+
+#: functions.php:36
+msgid "Primary menu"
+msgstr ""
+
+#: functions.php:37
+msgid "Footer menu"
+msgstr ""
+
+#: patterns/hero.php
+msgctxt "Pattern title"
+msgid "Hero"
+msgstr ""
+
+#: patterns/hero.php
+msgctxt "Pattern description"
+msgid "A short introduction with a heading and a call to action."
+msgstr ""
+
+#: patterns/hero.php:16
+msgid "Notes on building things"
+msgstr ""
+
+#: patterns/hero.php:17
+msgid "Short, practical write-ups."
+msgstr ""
+
+#: theme.json
+#: styles/dark.json
+#: styles/light.json
+msgctxt "Color name"
+msgid "Background"
+msgstr ""
+
+#: theme.json
+#: styles/dark.json
+#: styles/light.json
+msgctxt "Color name"
+msgid "Surface"
+msgstr ""
+
+#: theme.json
+#: styles/dark.json
+#: styles/light.json
+msgctxt "Color name"
+msgid "Ink"
+msgstr ""
+
+#: theme.json
+#: styles/dark.json
+#: styles/light.json
+msgctxt "Color name"
+msgid "Muted"
+msgstr ""
+
+#: theme.json
+#: styles/dark.json
+#: styles/light.json
+msgctxt "Color name"
+msgid "Accent"
+msgstr ""
+
+#: theme.json
+#: styles/dark.json
+#: styles/light.json
+msgctxt "Color name"
+msgid "Border"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "System"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Monospace"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Small"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Base"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Large"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Extra large"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Small"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Medium"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Large"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "XL"
+msgstr ""
+
+#: styles/dark.json
+msgctxt "Style variation name"
+msgid "Dark"
+msgstr ""
+
+#: styles/light.json
+msgctxt "Style variation name"
+msgid "Light"
+msgstr ""
