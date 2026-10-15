@@ -1,0 +1,74 @@
+// Verifies a running demo: status, content type and key markers for each view in tests/matrix/urls.json.
+// Usage: node tools/health.mjs [--base http://127.0.0.1:8080] [--values '{"draft-id":1}'] (`make health` fills the values from WP-CLI)
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+const TYPES = { xml: /xml/, rss: /rss\+xml|xml/, json: /json/ };
+
+/** Runs one check against fetched data. Returns a list of problems (empty when it passes). */
+export function evaluate(check, response) {
+  const problems = [];
+  if (response.status !== check.status) problems.push(`status ${response.status}, expected ${check.status}`);
+  if (check.type) {
+    const pattern = TYPES[check.type] ?? new RegExp(check.type.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    if (!pattern.test(response.type)) problems.push(`content-type "${response.type}" does not match ${check.type}`);
+  }
+  for (const needle of check.contains ?? []) if (!response.body.includes(needle)) problems.push(`missing "${needle}"`);
+  for (const needle of check.notContains ?? [])
+    if (response.body.includes(needle)) problems.push(`unexpected "${needle}"`);
+  return problems;
+}
+
+async function get(base, path) {
+  const res = await fetch(new URL(path, base), { redirect: 'manual' });
+  const body = await res.text();
+  return { status: res.status, type: res.headers.get('content-type') ?? '', body, headers: res.headers };
+}
+
+/** Looks up dynamic placeholders through the REST-free route: the home page and WP-CLI-independent public data. */
+async function resolve(base) {
+  const values = {};
+  const home = await get(base, '/');
+  const link =
+    home.body.match(/href="(https?:\/\/[^"]+\/[a-z0-9-]+\/[a-z0-9-]+\/)"/g)?.map((h) => h.slice(6, -1)) ?? [];
+  const own = link.filter(
+    (u) => u.startsWith(base.replace(/\/$/, '')) && !/\/(category|tag|author|page|feed|wp-[a-z]+)\//.test(u)
+  );
+  values['first-post'] = own[0] ? new URL(own[0]).pathname : '/';
+  return values;
+}
+
+export async function run({ base, table, extra = {} }) {
+  const values = { ...(await resolve(base)), ...extra };
+  const results = [];
+  for (const check of table.checks) {
+    const path = check.path.replace(/\{([a-z-]+)\}/g, (_, k) => values[k] ?? '');
+    if (path === '' || /\{/.test(path)) {
+      results.push({ name: check.name, ok: false, problems: [`unresolved placeholder in ${check.path}`] });
+      continue;
+    }
+    try {
+      const problems = evaluate(check, await get(base, path));
+      results.push({ name: check.name, path, ok: problems.length === 0, problems });
+    } catch (error) {
+      results.push({ name: check.name, path, ok: false, problems: [String(error.message)] });
+    }
+  }
+  return results;
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const args = process.argv.slice(2);
+  const flag = (n, d) => (args.includes(n) ? args[args.indexOf(n) + 1] : d);
+  const base = flag('--base', process.env.E2E_BASE_URL ?? 'http://127.0.0.1:8080');
+  const table = JSON.parse(readFileSync(fileURLToPath(new URL('../tests/matrix/urls.json', import.meta.url)), 'utf8'));
+  const extra = JSON.parse(flag('--values', '{}'));
+  const results = await run({ base, table, extra });
+  for (const r of results)
+    console.log(
+      `${r.ok ? 'ok  ' : 'FAIL'} ${r.name}${r.path ? ` (${r.path})` : ''}${r.ok ? '' : ` — ${r.problems.join('; ')}`}`
+    );
+  const failed = results.filter((r) => !r.ok);
+  console.log(`${results.length - failed.length}/${results.length} checks passed`);
+  process.exit(failed.length === 0 ? 0 : 1);
+}

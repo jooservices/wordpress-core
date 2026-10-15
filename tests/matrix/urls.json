@@ -1,0 +1,22 @@
+{
+  "$comment": "Health check table: every view must answer with the expected status and markers. {first-post} and friends are resolved from the live site.",
+  "checks": [
+    { "name": "home", "path": "/", "status": 200, "contains": ["<title>", "rel=\"canonical\"", "application/ld+json"] },
+    { "name": "category", "path": "/category/ai/", "status": 200, "contains": ["<title>"] },
+    { "name": "tag", "path": "/tag/mcp/", "status": 200, "contains": ["<title>"] },
+    { "name": "page", "path": "/about/", "status": 200, "contains": ["<title>"] },
+    { "name": "search", "path": "/?s=docker", "status": 200, "contains": ["noindex"] },
+    { "name": "search-empty", "path": "/?s=zzzzqqqq", "status": 200, "contains": ["noindex"] },
+    { "name": "single", "path": "{first-post}", "status": 200, "contains": ["<title>", "rel=\"canonical\"", "\"@type\": \"BlogPosting\"", "BreadcrumbList"] },
+    { "name": "not-found", "path": "/definitely-not-here/", "status": 404, "contains": ["noindex"] },
+    { "name": "draft-hidden", "path": "/?p={draft-id}", "status": 404 },
+    { "name": "private-hidden", "path": "/?p={private-id}", "status": 404 },
+    { "name": "protected-form", "path": "{protected-post}", "status": 200, "contains": ["post_password"] },
+    { "name": "sitemap", "path": "/wp-sitemap.xml", "status": 200, "type": "xml" },
+    { "name": "robots", "path": "/robots.txt", "status": 200, "type": "text/plain", "contains": ["Sitemap:"] },
+    { "name": "feed", "path": "/feed/", "status": 200, "type": "rss" },
+    { "name": "rest-fs", "path": "/wp-json/joo/v1/terminal/fs", "status": 200, "type": "json" },
+    { "name": "rest-company-hidden", "path": "/?post_type=joo_company", "status": 404 },
+    { "name": "no-php-notices", "path": "/", "status": 200, "notContains": ["Fatal error", "Warning:", "Notice:", "Deprecated:", "Stack trace"] }
+  ]
+}

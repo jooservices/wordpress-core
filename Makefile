@@ -100,7 +100,8 @@ demo: ## Build, start Docker, install WordPress + theme, seed, health check (THE
 	$(call stub,demo)
 health: ## Verify the running demo (THEME=...)
 	$(call require_theme)
-	$(call stub,health)
+	@values="$$($(COMPOSE) exec -T -u www-data wordpress wp eval-file /scripts/health-values.php </dev/null)"; \
+		node tools/health.mjs --base $${E2E_BASE_URL:-http://127.0.0.1:8080} --values "$$values"
 perf: ## Lighthouse CI and size budgets (THEME=...)
 	$(call require_theme)
 	$(call stub,perf)
