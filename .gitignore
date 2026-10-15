@@ -1,0 +1,22 @@
+# dependencies
+/vendor/
+node_modules/
+# secrets and local config
+.env
+.env.*
+!.env.example
+# reports and build output
+/artifacts/
+*.log
+.DS_Store
+/themes/*/core
+/themes/*/assets/build/
+/packages/*/resources/build/
+.phpunit.result.cache
+coverage/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+/test-results/
+/playwright-report/
+.lighthouseci/

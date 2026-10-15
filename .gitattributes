@@ -1,0 +1,10 @@
+* text=auto eol=lf
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.webp binary
+/tests export-ignore
+/docs export-ignore
+/tools export-ignore
+/docker export-ignore
+/.github export-ignore
