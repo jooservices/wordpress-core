@@ -46,7 +46,9 @@ export async function onClick(button) {
   }, FEEDBACK_MS);
 }
 
-document.querySelectorAll('.joo-code__copy').forEach((button) => (button.hidden = false));
+document.querySelectorAll('.joo-code__copy').forEach((button) => {
+  if (button instanceof HTMLElement) button.hidden = false;
+});
 document.addEventListener('click', (event) => {
   const button = event.target instanceof Element ? event.target.closest('.joo-code__copy') : null;
   if (button) onClick(button);

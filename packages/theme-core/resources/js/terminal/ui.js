@@ -145,7 +145,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
   });
   panel.addEventListener('click', (event) => {
     const target = event.target instanceof Element ? event.target.closest('[data-cmd]') : null;
-    if (target) {
+    if (target instanceof HTMLElement) {
       event.preventDefault();
       run(target.dataset.cmd);
       input.focus();

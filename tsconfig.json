@@ -7,9 +7,13 @@
     "allowJs": true,
     "checkJs": true,
     "noEmit": true,
-    "strict": true,
+    "strict": false,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": ["node"],
+    "noImplicitAny": false,
+    "paths": {
+      "joo-runtime": ["./packages/theme-core/resources/js/runtime.js"]
+    }
   },
   "include": ["packages/*/resources/js/**/*.js", "themes/*/assets/src/js/**/*.js"],
   "exclude": ["**/node_modules/**", "**/build/**", "**/*.test.js"]

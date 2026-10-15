@@ -1,7 +1,7 @@
 // Theme behaviour: rail toggle on narrow containers. Everything else is CSS or core blocks.
 const rail = document.getElementById('joo-rail');
 const button = document.querySelector('.joo-rail-btn');
-if (rail && button) {
+if (rail && button instanceof HTMLElement) {
   button.hidden = false;
   const set = (open) => {
     rail.dataset.open = open ? 'true' : 'false';

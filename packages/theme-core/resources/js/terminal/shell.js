@@ -4,9 +4,20 @@
 //   { kind: 'cols', items: [span, ...] }
 import { display, list, pathOf, resolve } from './fs.js';
 
-/** Plain text span. */
+/**
+ * Plain text span.
+ * @param {*} value Text.
+ * @param {string} [style] Style name.
+ * @returns {{ text: string, style?: string, cmd?: string }} Span.
+ */
 export const text = (value, style) => ({ text: String(value), ...(style ? { style } : {}) });
-/** Clickable span that runs a command. */
+/**
+ * Clickable span that runs a command.
+ * @param {*} label Text.
+ * @param {string} cmd Command to run.
+ * @param {string} [style] Style name.
+ * @returns {{ text: string, style?: string, cmd?: string }} Span.
+ */
 export const link = (label, cmd, style) => ({ text: String(label), cmd, ...(style ? { style } : {}) });
 /** Single-line output block. */
 export const line = (...spans) => ({ kind: 'lines', lines: [spans] });
