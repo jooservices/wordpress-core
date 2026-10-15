@@ -127,3 +127,15 @@ msgstr "Cột trái"
 
 msgid "Post card"
 msgstr "Thẻ bài viết"
+
+msgid "Canvas (no header or footer)"
+msgstr "Canvas (không đầu trang và chân trang)"
+
+msgid "Full width (no rail)"
+msgstr "Toàn chiều rộng (không cột trái)"
+
+msgid "Dark"
+msgstr "Tối"
+
+msgid "Light"
+msgstr "Sáng"

@@ -38,5 +38,9 @@
   "S": "S",
   "Small": "Nhỏ",
   "XL": "XL",
-  "XS": "XS"
+  "XS": "XS",
+  "Light": "Sáng",
+  "Dark": "Tối",
+  "Canvas (no header or footer)": "Canvas (không đầu trang và chân trang)",
+  "Full width (no rail)": "Toàn chiều rộng (không cột trái)"
 }
