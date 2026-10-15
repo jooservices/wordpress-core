@@ -6,6 +6,9 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { fromRoot } from './lib/paths.mjs';
 import { build } from './wxr-generator/generate.mjs';
+import { audit, render as renderAudit } from './content-audit.mjs';
+import { optimize } from './content-optimize.mjs';
+import { renderCards } from './social-cards.mjs';
 
 const MEDIA = '__MEDIA_BASE__';
 const ENTITIES = {
@@ -100,7 +103,7 @@ ${(o.meta ?? []).map(([k, v]) => meta(k, v)).join('\n')}
  * Pure transformation of the fetched data. `download(url)` is called for every image that is used and must return
  * true when the file is available locally under localName(url).
  */
-export function transform(data, { companies, settings, profile, survey = null }) {
+export function transform(data, { companies, settings, profile, survey = null, allMedia = true }) {
   const catById = new Map(data.categories.map((c) => [c.id, c]));
   const tagById = new Map(data.tags.map((t) => [t.id, t]));
   const mediaById = new Map(data.media.map((m) => [m.id, m]));
@@ -170,7 +173,7 @@ export function transform(data, { companies, settings, profile, survey = null })
     return entry;
   });
 
-  for (const m of data.media) useImage(m.source_url); // every image of the media library, used or not
+  if (allMedia) for (const m of data.media) useImage(m.source_url); // every image of the media library, used or not
   const media = [];
   for (const [url, name] of images) {
     const mid = (id += 1);
@@ -324,7 +327,22 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.error(`missing ${source}: fetch the public REST data first (see docs/guides/live-content.md)`);
     process.exit(1);
   }
-  const data = JSON.parse(readFileSync(source, 'utf8'));
+  const original = JSON.parse(readFileSync(source, 'utf8'));
+  const optimized = !process.argv.includes('--keep-as-is');
+  mkdirSync(fromRoot('artifacts/live/media'), { recursive: true });
+  let data = original;
+  if (optimized) {
+    const result = optimize(original);
+    data = result.data;
+    await renderCards(result.cards, fromRoot('artifacts/live/media'));
+    mkdirSync(fromRoot('artifacts/reports/content'), { recursive: true });
+    writeFileSync(
+      fromRoot('artifacts/reports/content/audit-after.md'),
+      renderAudit('jooservices.com (as imported into the demo)', data, audit(data), null)
+    );
+    writeFileSync(fromRoot('artifacts/reports/content/fixes.json'), JSON.stringify(result.log, null, 2));
+    console.log(`optimized: ${result.log.map((l) => `${l.count} ${l.key}`).join('; ')}`);
+  }
   const base = build(42);
   const topics = JSON.parse(readFileSync(fromRoot('tools/wxr-generator/data/topics.json'), 'utf8'));
   const surveyFile = fromRoot('artifacts/live/survey.json');
