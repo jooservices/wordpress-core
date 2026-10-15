@@ -28,9 +28,14 @@ deptrac:
       collectors:
         - type: classLike
           value: ^\\?(WP_|wpdb$|Walker|IXR_|PHPMailer|SimplePie|Requests|WpOrg)
+    - name: ThirdParty
+      collectors:
+        - type: classLike
+          value: ^\\?(WPSEO_|autoptimizeCache$|Jetpack$|TRP_|LiteSpeed\\|WooCommerce$|ACF$)
   ruleset:
     Core:
       - WordPress
+      - ThirdParty
     Plugin:
       - WordPress
     Theme:
