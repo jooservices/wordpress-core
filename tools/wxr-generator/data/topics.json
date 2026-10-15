@@ -1,0 +1,176 @@
+{
+  "categories": [
+    { "slug": "ai", "name": "AI", "parent": "", "description": "Agents, LLMs and the tooling around them." },
+    { "slug": "blog", "name": "Blog", "parent": "", "description": "Company notes, news and general posts." },
+    { "slug": "companies", "name": "Companies", "parent": "blog", "description": "Places I have worked and what I learned there." },
+    { "slug": "news", "name": "News", "parent": "blog", "description": "Releases and announcements." },
+    { "slug": "research-and-development", "name": "Research & Development", "parent": "", "description": "Experiments, setups and lessons learned." },
+    { "slug": "homelab", "name": "Homelab", "parent": "research-and-development", "description": "Servers, networks and containers at home." },
+    { "slug": "study-cases", "name": "Study cases", "parent": "research-and-development", "description": "Problems solved end to end." },
+    { "slug": "tips-and-tricks", "name": "Tips & Tricks", "parent": "research-and-development", "description": "Small habits that add up." }
+  ],
+  "tags": ["mcp", "llm", "laravel", "docker", "wordpress", "homelab", "go", "zsh", "queues", "seo", "agents", "testing", "php", "redis"],
+  "core": [
+    {
+      "slug": "wordpress-mcp-v1",
+      "cat": "ai",
+      "title": "WordPress MCP v1.0.0: let an AI agent manage your site",
+      "excerpt": "A small MCP server that exposes posts, media and settings to an agent, with scoped credentials and an audit trail. What it does, how it is secured, and where it still falls short.",
+      "tags": ["mcp", "wordpress", "agents"]
+    },
+    {
+      "slug": "read-only-skills-server",
+      "cat": "ai",
+      "title": "Designing a read-only skills server for coding agents",
+      "excerpt": "One canonical skill store, many clients. How discovery, loading and scope boundaries work without giving agents write access.",
+      "tags": ["agents", "mcp", "llm"]
+    },
+    {
+      "slug": "shared-docker-stack",
+      "cat": "homelab",
+      "title": "A shared Docker stack for every project on one workstation",
+      "excerpt": "Redis, RabbitMQ, Elasticsearch and databases behind loopback ports, one compose file, namespaced per project.",
+      "tags": ["docker", "homelab"]
+    },
+    {
+      "slug": "idempotent-webhooks-laravel",
+      "cat": "study-cases",
+      "title": "Idempotent webhooks in Laravel without a lock table",
+      "excerpt": "Accept the same event twice and still process it once, with a unique key and a small state machine.",
+      "tags": ["laravel", "queues"]
+    },
+    {
+      "slug": "local-elasticsearch-kibana",
+      "cat": "homelab",
+      "title": "Running a local Elasticsearch and Kibana pair safely",
+      "excerpt": "Health checks, memory limits and a read-only MCP window into your indices.",
+      "tags": ["docker", "homelab"]
+    },
+    {
+      "slug": "prompt-caching",
+      "cat": "ai",
+      "title": "Prompt caching: what actually saves money",
+      "excerpt": "Where the cache hits, where it silently misses, and how to measure it in production traffic.",
+      "tags": ["llm", "agents"]
+    },
+    {
+      "slug": "shell-habits",
+      "cat": "tips-and-tricks",
+      "title": "Five shell habits that save an hour a week",
+      "excerpt": "Small, boring defaults for history, aliases and project switching that add up.",
+      "tags": ["zsh"]
+    },
+    {
+      "slug": "block-theme",
+      "cat": "study-cases",
+      "title": "Why my WordPress theme is a block theme",
+      "excerpt": "theme.json, patterns and style variations versus a pile of PHP templates.",
+      "tags": ["wordpress", "seo"]
+    }
+  ],
+  "verbs": ["Shipping", "Debugging", "Measuring", "Taming", "Rebuilding", "Testing", "Profiling", "Automating"],
+  "nouns": ["queues", "caches", "migrations", "webhooks", "containers", "pipelines", "search indexes", "cron jobs", "feature flags", "backups"],
+  "tools": ["Laravel", "Docker", "Redis", "Go", "WordPress", "zsh", "Elasticsearch", "RabbitMQ"],
+  "sentences": [
+    "The first version worked on my machine, which is exactly why it needed a second look.",
+    "A small, boring change removed most of the noise and made the failures easy to reproduce.",
+    "Measure first: the slowest part was never the part I would have guessed.",
+    "Keep the happy path short and give every failure a name you can search for.",
+    "Defaults matter more than options, because most people never change them.",
+    "Write the test that fails for the right reason before touching the code.",
+    "The cheapest monitoring is a health endpoint that checks the one thing that breaks.",
+    "Logs are for people at 3 a.m.: say what happened, to what, and what to try next.",
+    "Prefer a plain table and a clear index over a clever abstraction you must explain.",
+    "Ship the smallest slice that proves the idea, then widen it with evidence."
+  ],
+  "vi": [
+    {
+      "slug": "toi-uu-hieu-nang-wordpress",
+      "title": "Tối ưu hiệu năng WordPress từ gốc",
+      "excerpt": "Những thay đổi nhỏ nhưng đo được: ảnh, phông chữ, bộ nhớ đệm và JavaScript.",
+      "translationOf": "block-theme",
+      "tags": ["wordpress", "seo"],
+      "cat": "study-cases"
+    },
+    {
+      "slug": "hang-doi-va-webhook-an-toan",
+      "title": "Hàng đợi và webhook an toàn với Laravel",
+      "excerpt": "Xử lý sự kiện đúng một lần dù nhận nhiều lần, với khóa duy nhất và máy trạng thái nhỏ.",
+      "translationOf": "idempotent-webhooks-laravel",
+      "tags": ["laravel", "queues"],
+      "cat": "study-cases"
+    },
+    {
+      "slug": "thoi-quen-dong-lenh",
+      "title": "Năm thói quen dòng lệnh tiết kiệm một giờ mỗi tuần",
+      "excerpt": "Mặc định đơn giản cho lịch sử lệnh, alias và chuyển dự án.",
+      "translationOf": "shell-habits",
+      "tags": ["zsh"],
+      "cat": "tips-and-tricks"
+    },
+    {
+      "slug": "homelab-cho-nguoi-moi",
+      "title": "Homelab cho người mới bắt đầu",
+      "excerpt": "Bắt đầu từ một máy, một tệp compose và vài quy tắc đặt tên.",
+      "translationOf": "",
+      "tags": ["homelab", "docker"],
+      "cat": "homelab"
+    }
+  ],
+  "companies": [
+    {
+      "name": "JOOservices Ltd",
+      "role": "Founder & CTO",
+      "from": "2022-03",
+      "to": "",
+      "pinned": true,
+      "description": "Building developer tooling, AI agents and WordPress products.",
+      "url": "https://jooservices.com"
+    },
+    {
+      "name": "SGCarmart",
+      "role": "Senior Engineer",
+      "from": "2019-04",
+      "to": "2022-02",
+      "pinned": false,
+      "description": "Marketplace platform: search, listings and payments.",
+      "url": "https://www.sgcarmart.com"
+    },
+    {
+      "name": "Acme Labs",
+      "role": "Backend Engineer",
+      "from": "2017-01",
+      "to": "2019-03",
+      "pinned": false,
+      "description": "APIs and queues for a logistics start-up.",
+      "url": ""
+    },
+    {
+      "name": "Northwind",
+      "role": "Web Developer",
+      "from": "2015-06",
+      "to": "2016-12",
+      "pinned": false,
+      "description": "Agency work in PHP and JavaScript.",
+      "url": ""
+    },
+    {
+      "name": "Contoso",
+      "role": "Junior Developer",
+      "from": "2013-09",
+      "to": "2015-05",
+      "pinned": false,
+      "description": "First professional role: maintenance and support.",
+      "url": ""
+    },
+    { "name": "Freelance", "role": "Developer", "from": "2012-01", "to": "2013-08", "pinned": false, "description": "Small business websites.", "url": "" }
+  ],
+  "comments": [
+    "Great write-up, this saved me an afternoon.",
+    "Do you have numbers for the cold start?",
+    "I hit the same problem last week.",
+    "Thanks! Link to the repo?",
+    "One question about the retry policy.",
+    "Agreed, defaults matter."
+  ]
+}
