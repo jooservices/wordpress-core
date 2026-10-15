@@ -1,0 +1,14 @@
+/* Core base styles shared by every theme (tokens come from the theme). */
+.joo-cv {
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--joo-cv-h, 400px);
+}
+
+.joo-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

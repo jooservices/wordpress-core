@@ -1,6 +1,9 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  resolve: {
+    alias: { 'joo-runtime': new URL('./packages/theme-core/resources/js/runtime.js', import.meta.url).pathname },
+  },
   test: {
     environment: 'jsdom',
     include: [

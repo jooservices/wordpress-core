@@ -77,12 +77,12 @@ test-unit: ## PHPUnit unit suites and Vitest (COVERAGE=1: coverage with threshol
 coverage: ## Merged unit + integration coverage (pcov in Docker) with the threshold gate
 	@rm -rf artifacts/reports/cov artifacts/reports/unit && mkdir -p artifacts/reports/cov artifacts/reports/unit
 	@$(COMPOSE) exec -T -u www-data wordpress php -d pcov.enabled=1 -d pcov.directory=/workspace -d error_reporting=24575 /workspace/vendor/bin/phpunit -c /workspace/phpunit.xml.dist --do-not-cache-result --coverage-php /workspace/artifacts/reports/cov/unit.cov
-	@$(COMPOSE) exec -T -u www-data -e COVERAGE=1 -e JOO_TEST_THEME=$(THEME) wordpress bash /scripts/phpunit-integration.sh >/dev/null
+	@$(COMPOSE) exec -T -u www-data -e COVERAGE=1 -e JOO_TEST_THEME=$(TEST_THEME) wordpress bash /scripts/phpunit-integration.sh >/dev/null
 	@$(COMPOSE) exec -T -u www-data wordpress php -d error_reporting=24575 /workspace/vendor/bin/phpcov merge --clover /workspace/artifacts/reports/unit/clover.xml --html /workspace/artifacts/reports/unit/html --text /workspace/artifacts/reports/unit/summary.txt /workspace/artifacts/reports/cov >/dev/null
 	@./tools/coverage-gate.sh artifacts/reports/unit/clover.xml
 	@npx --no-install vitest run --coverage
 test-integration: ## wp-phpunit in Docker (WP_VERSION=6.6 for the minimum version on an isolated stack)
-	@$(COMPOSE) exec -T -u www-data -e JOO_TEST_THEME=$(THEME) wordpress bash /scripts/phpunit-integration.sh $(ARGS)
+	@$(COMPOSE) exec -T -u www-data -e JOO_TEST_THEME=$(TEST_THEME) wordpress bash /scripts/phpunit-integration.sh $(ARGS)
 test-e2e: ## Playwright e2e against the running demo (THEME=..., ARGS="specs/shared")
 	$(call require_theme)
 	@curl -fsS -o /dev/null $${E2E_BASE_URL:-http://127.0.0.1:8080}/ || { echo "demo not reachable: run make up first"; exit 1; }
