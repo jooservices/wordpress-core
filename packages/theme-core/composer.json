@@ -2,6 +2,7 @@
   "name": "jooservices/wp-theme-core",
   "description": "Reusable engine for JOOservices WordPress block themes (SEO, performance, lazy loading, settings, compatibility, blocks, terminal)",
   "type": "library",
+  "version": "0.1.0",
   "license": "GPL-2.0-or-later",
   "require": {
     "php": ">=8.1",

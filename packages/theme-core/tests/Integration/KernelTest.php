@@ -99,6 +99,11 @@ final class KernelTest extends IntegrationTestCase {
 		Kernel::boot( self::FIXTURES . 'incompatible.json' );
 		$this->assertNull( Kernel::container() );
 		$this->assertArrayHasKey( 'core-incompatible', Notices::all() );
+		$tests = apply_filters( 'site_status_tests', array() );
+		$this->assertArrayHasKey( 'joo_core_incompatible', $tests['direct'] );
+		$result = ( $tests['direct']['joo_core_incompatible']['test'] )();
+		$this->assertSame( 'critical', $result['status'] );
+		$this->assertStringContainsString( 'requires JOOservices core', $result['description'] );
 	}
 
 	public function test_a_missing_manifest_is_reported(): void {

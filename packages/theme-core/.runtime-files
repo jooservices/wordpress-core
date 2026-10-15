@@ -1,0 +1,15 @@
+# Files of the core that ship inside a theme zip (one glob per line; ** matches any depth, * a name part).
+# Everything else (tests, docs, JS sources, node_modules, source maps) is excluded.
+core.php
+composer.json
+LICENSE
+src/**
+schema/**
+languages/*.mo
+resources/build/**
+resources/editor/*.js
+resources/admin/*.js
+resources/admin/*.css
+resources/critical/**
+resources/blocks/**/block.json
+resources/blocks/**/render.php

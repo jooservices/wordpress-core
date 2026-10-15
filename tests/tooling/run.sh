@@ -48,6 +48,16 @@ expect_fail "deptrac" php -d error_reporting=24575 vendor/bin/deptrac analyse --
 rm -rf packages/theme-core/src/ToolingFixture themes/jooservices/inc/ToolingFixture.php
 expect_pass "deptrac" php -d error_reporting=24575 vendor/bin/deptrac analyse --no-progress --fail-on-uncovered
 bash tests/tooling/docs-compat.sh || fail=1
+# core version: single source of truth
+php tools/check-version.php >/dev/null 2>&1 && echo "ok:   check-version passes for the real core" || { echo "FAIL: check-version"; fail=1; }
+mkdir -p "$TMP/ver" && cp packages/theme-core/composer.json packages/theme-core/core.php packages/theme-core/CHANGELOG.md "$TMP/ver/"
+sed -i.bak 's/^## 0\.1\.0/## 0.2.0/' "$TMP/ver/CHANGELOG.md"
+expect_fail "check-version" php tools/check-version.php "$TMP/ver"
+# runtime bundle: an unexpected file in a core copy is rejected, the allowed set passes
+mkdir -p "$TMP/bundle" && node tools/runtime-bundle.mjs list 2>/dev/null | while read -r f; do mkdir -p "$TMP/bundle/$(dirname "$f")"; cp "packages/theme-core/$f" "$TMP/bundle/$f"; done
+node tools/runtime-bundle.mjs check "$TMP/bundle" >/dev/null 2>&1 && echo "ok:   runtime bundle accepts the allowed files" || { echo "FAIL: runtime bundle (clean)"; fail=1; }
+mkdir -p "$TMP/bundle/tests" && echo x > "$TMP/bundle/tests/leak.php"
+expect_fail "runtime bundle" node tools/runtime-bundle.mjs check "$TMP/bundle"
 # i18n check: passes with a complete dictionary, fails when a string has no translation
 node tools/i18n.mjs --check >/dev/null 2>&1 && echo "ok:   i18n check passes with a complete dictionary" || { echo "FAIL: i18n check"; fail=1; }
 cp packages/theme-core/languages/vi.json "$TMP/vi.json.bak"

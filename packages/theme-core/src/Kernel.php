@@ -172,7 +172,30 @@ final class Kernel {
 		if ( ! $manifest->isValid() ) {
 			Notices::add( 'error', 'The theme manifest is invalid: ' . implode( '; ', array_slice( $manifest->errors(), 0, 3 ) ), 'manifest-invalid' );
 		} elseif ( ! Version::satisfies( Version::core(), $manifest->coreRange() ) ) {
-			Notices::add( 'error', sprintf( 'Theme "%1$s" requires JOOservices core %2$s; the bundled version is %3$s.', $manifest->name(), $manifest->coreRange(), Version::core() ), 'core-incompatible' );
+			$message = sprintf( 'Theme "%1$s" requires JOOservices core %2$s; the bundled version is %3$s.', $manifest->name(), $manifest->coreRange(), Version::core() );
+			Notices::add( 'error', $message, 'core-incompatible' );
+			// Site Health shows it as a critical entry (the kernel did not boot, so the Site Health service does not exist).
+			add_filter(
+				'site_status_tests',
+				static function ( $tests ) use ( $message ) {
+					$tests                                    = is_array( $tests ) ? $tests : array();
+					$tests['direct']['joo_core_incompatible'] = array(
+						'label' => 'JOOservices core version',
+						'test'  => static fn(): array => array(
+							'label'       => 'The theme needs a newer JOOservices core',
+							'status'      => 'critical',
+							'badge'       => array(
+								'label' => 'JOOservices',
+								'color' => 'red',
+							),
+							'description' => '<p>' . esc_html( $message ) . '</p>',
+							'actions'     => '',
+							'test'        => 'joo_core_incompatible',
+						),
+					);
+					return $tests;
+				}
+			);
 			return;
 		}
 
