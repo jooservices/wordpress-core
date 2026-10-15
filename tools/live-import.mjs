@@ -100,7 +100,7 @@ ${(o.meta ?? []).map(([k, v]) => meta(k, v)).join('\n')}
  * Pure transformation of the fetched data. `download(url)` is called for every image that is used and must return
  * true when the file is available locally under localName(url).
  */
-export function transform(data, { companies, settings, profile }) {
+export function transform(data, { companies, settings, profile, survey = null }) {
   const catById = new Map(data.categories.map((c) => [c.id, c]));
   const tagById = new Map(data.tags.map((t) => [t.id, t]));
   const mediaById = new Map(data.media.map((m) => [m.id, m]));
@@ -138,7 +138,7 @@ export function transform(data, { companies, settings, profile }) {
 
   const attachmentId = new Map(); // media id -> wxr id
   const postItems = posts.map((p) => {
-    const cats = p.categories.map((c) => catById.get(c)).filter((c) => c && c.slug !== 'featured');
+    const cats = p.categories.map((c) => catById.get(c)).filter(Boolean);
     const thumb = p.featured_media ? mediaById.get(p.featured_media) : null;
     const thumbName = thumb ? useImage(thumb.source_url) : null;
     const text = plain(p.title.rendered) + ' ' + plain(p.excerpt.rendered);
@@ -146,6 +146,8 @@ export function transform(data, { companies, settings, profile }) {
       ['_joo_demo', '1'],
       ['_joo_lang', isVietnamese(text) ? 'vi' : 'en'],
       ['_joo_live_source', p.link],
+      ...(p.yoast_head_json?.title ? [['_yoast_wpseo_title', p.yoast_head_json.title.replace(/%/g, '%%')]] : []),
+      ...(p.yoast_head_json?.description ? [['_yoast_wpseo_metadesc', p.yoast_head_json.description]] : []),
     ];
     const order = featuredIds.indexOf(p.id);
     if (order >= 0) m.push(['_joo_featured', '1'], ['_joo_featured_order', String(order + 1)]);
@@ -153,6 +155,7 @@ export function transform(data, { companies, settings, profile }) {
       id: (id += 1),
       title: decode(p.title.rendered),
       slug: p.slug,
+      link: p.link,
       date: p.date,
       content: rewrite(p.content.raw ?? p.content.rendered),
       status: p.status,
@@ -167,6 +170,7 @@ export function transform(data, { companies, settings, profile }) {
     return entry;
   });
 
+  for (const m of data.media) useImage(m.source_url); // every image of the media library, used or not
   const media = [];
   for (const [url, name] of images) {
     const mid = (id += 1);
@@ -176,7 +180,9 @@ export function transform(data, { companies, settings, profile }) {
   for (const p of postItems) {
     if (p.thumbName && mediaByName.has(p.thumbName))
       p.meta.push(['_thumbnail_id', String(mediaByName.get(p.thumbName).id)]);
-    if (p.cats[0]) p.meta.push(['_joo_primary_category_slug', p.cats[0].slug]);
+    const lead = new URL(p.link).pathname.split('/')[1];
+    const primary = p.cats.find((c) => c.slug === lead) ?? p.cats[0];
+    if (primary) p.meta.push(['_joo_primary_category_slug', primary.slug]);
   }
   void attachmentId;
 
@@ -228,7 +234,7 @@ export function transform(data, { companies, settings, profile }) {
   }));
   for (const c of companyItems) c.type = 'joo_company';
 
-  const cats = data.categories.filter((c) => c.slug !== 'featured');
+  const cats = data.categories;
   const ordered = [...cats.filter((c) => c.parent === 0), ...cats.filter((c) => c.parent !== 0)];
   const xml = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0" xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:wp="http://wordpress.org/export/1.2/">
@@ -248,20 +254,46 @@ ${[...postItems, ...pages, ...companyItems].map((o) => item(o)).join('\n')}
 </channel>
 </rss>
 `;
+  const slugOf = (url) => new URL(url).pathname.replace(/\/$/, '').split('/').pop();
+  const buildMenu = (menuId) => {
+    const rows = (survey?.menuItems ?? [])
+      .filter((i) => i.menus === menuId)
+      .sort((a, b) => a.menu_order - b.menu_order);
+    const toNode = (i) => ({
+      title: decode(i.title.rendered),
+      type: i.type === 'taxonomy' ? 'category' : 'page',
+      slug: slugOf(i.url),
+      children: rows.filter((c) => c.parent === i.id).map(toNode),
+    });
+    return rows.filter((i) => i.parent === 0).map(toNode);
+  };
+  const livePrimary = survey?.menus?.find((m) => m.slug === 'primary');
   const topLevel = ordered
     .filter((c) => c.parent === 0 && c.count > 0 && !['uncategorized', 'xcrawler'].includes(c.slug))
     .slice(0, 4);
   const menus = {
-    primary: [
-      ...topLevel.map((c) => ({
-        title: decode(c.name).replace(/Developmment/, 'Development'),
-        type: 'category',
-        slug: c.slug,
-      })),
-      { title: 'About', type: 'page', slug: 'about' },
-    ],
+    primary: livePrimary
+      ? [...buildMenu(livePrimary.id), { title: 'About', type: 'page', slug: 'about', children: [] }]
+      : [
+          ...topLevel.map((c) => ({ title: decode(c.name), type: 'category', slug: c.slug })),
+          { title: 'About', type: 'page', slug: 'about' },
+        ],
     footer: pages.filter((p) => p.slug !== 'about').map((p) => ({ title: p.title, type: 'page', slug: p.slug })),
   };
+  if (survey?.settings) {
+    const live = survey.settings;
+    Object.assign(settings.options, {
+      blogname: live.title,
+      blogdescription: live.description,
+      date_format: live.date_format,
+      time_format: live.time_format,
+      start_of_week: String(live.start_of_week),
+      posts_per_page: String(live.posts_per_page),
+      default_comment_status: live.default_comment_status,
+      gmt_offset: '7',
+      timezone_string: '',
+    });
+  }
   const manifest = {
     source: 'live',
     counts: {
@@ -295,10 +327,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const data = JSON.parse(readFileSync(source, 'utf8'));
   const base = build(42);
   const topics = JSON.parse(readFileSync(fromRoot('tools/wxr-generator/data/topics.json'), 'utf8'));
+  const surveyFile = fromRoot('artifacts/live/survey.json');
+  const survey = existsSync(surveyFile) ? JSON.parse(readFileSync(surveyFile, 'utf8')) : null;
   const result = transform(data, {
     companies: topics.companies,
     settings: base.settings,
     profile: base.settings.profile,
+    survey,
   });
   mkdirSync(join(out, 'media'), { recursive: true });
   mkdirSync(cache, { recursive: true });

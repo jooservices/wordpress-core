@@ -157,3 +157,28 @@
     justify-content: flex-start;
   }
 }
+
+/* submenus (categories with children) */
+.joo-nav .wp-block-navigation__submenu-container.wp-block-navigation__submenu-container {
+  min-width: 12rem;
+  padding: 4px;
+  color: var(--joo-ink);
+  background: var(--joo-surface);
+  border: 1px solid var(--joo-line);
+  border-radius: var(--joo-radius-m);
+}
+
+.joo-nav .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
+  padding: 6px 10px;
+  color: var(--joo-ink);
+  border-radius: var(--joo-radius-s);
+}
+
+.joo-nav .wp-block-navigation__submenu-container .wp-block-navigation-item__content:hover {
+  background: var(--joo-raised);
+  box-shadow: none;
+}
+
+.joo-nav .wp-block-navigation__submenu-icon {
+  color: var(--joo-muted);
+}

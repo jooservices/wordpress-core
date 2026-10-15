@@ -5,7 +5,7 @@ THEME ?= jooservices
 export JOOWT_PROJECT ?= jooservices-wp-themes
 
 
-.PHONY: seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
+.PHONY: demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -101,6 +101,8 @@ seed-live: ## Replace the demo with the public content of a live site (needs art
 	$(call require_theme)
 	@node tools/live-import.mjs --source $(or $(SOURCE),artifacts/live/jooservices.com.json) --out artifacts/demo/live
 	@$(COMPOSE) exec -T -u www-data -e DEMO_SET=live wordpress bash /scripts/seed.sh $(THEME) --reset
+demo-plugins: ## Install the plugins jooservices.com uses (docker/demo-plugins.json)
+	@$(COMPOSE) exec -T -u www-data wordpress bash /scripts/demo-plugins.sh
 demo: ## Build, start Docker, install WordPress + theme, seed, health check (THEME=...)
 	$(call require_theme)
 	@node tools/build-assets.mjs --root packages/theme-core

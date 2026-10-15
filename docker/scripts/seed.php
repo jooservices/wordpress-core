@@ -251,6 +251,8 @@ foreach ( $items as $item ) {
 			$deferred[] = array( $id, 'translation', $v );
 		} elseif ( '_joo_primary_category_slug' === $k ) {
 			update_post_meta( $id, '_joo_primary_category', $term_ids[ 'category:' . $v ] ?? 0 );
+			// Yoast (when active) builds the %category% part of the permalink from its own primary category.
+			update_post_meta( $id, '_yoast_wpseo_primary_category', $term_ids[ 'category:' . $v ] ?? 0 );
 		} elseif ( '_joo_company_pinned' === $k ) {
 			update_post_meta( $id, $k, '1' === $v );
 		} else {
@@ -296,20 +298,27 @@ foreach ( array( 'primary' => 'joo-primary', 'footer' => 'joo-footer' ) as $key 
 	if ( is_wp_error( $menu_id ) ) {
 		WP_CLI::error( $menu_id->get_error_message() );
 	}
-	foreach ( $menus[ $key ] ?? array() as $entry ) {
-		$args = array(
-			'menu-item-title'  => $entry['title'],
-			'menu-item-status' => 'publish',
-		);
-		if ( 'category' === $entry['type'] && isset( $term_ids[ 'category:' . $entry['slug'] ] ) ) {
-			$args += array( 'menu-item-type' => 'taxonomy', 'menu-item-object' => 'category', 'menu-item-object-id' => $term_ids[ 'category:' . $entry['slug'] ] );
-		} elseif ( 'page' === $entry['type'] && isset( $by_slug[ 'page:' . $entry['slug'] ] ) ) {
-			$args += array( 'menu-item-type' => 'post_type', 'menu-item-object' => 'page', 'menu-item-object-id' => $by_slug[ 'page:' . $entry['slug'] ] );
-		} else {
-			continue;
+	$add_items = static function ( array $entries, int $parent ) use ( &$add_items, $menu_id, $term_ids, $by_slug ): void {
+		foreach ( $entries as $entry ) {
+			$args = array(
+				'menu-item-title'     => $entry['title'],
+				'menu-item-status'    => 'publish',
+				'menu-item-parent-id' => $parent,
+			);
+			if ( 'category' === $entry['type'] && isset( $term_ids[ 'category:' . $entry['slug'] ] ) ) {
+				$args += array( 'menu-item-type' => 'taxonomy', 'menu-item-object' => 'category', 'menu-item-object-id' => $term_ids[ 'category:' . $entry['slug'] ] );
+			} elseif ( 'page' === $entry['type'] && isset( $by_slug[ 'page:' . $entry['slug'] ] ) ) {
+				$args += array( 'menu-item-type' => 'post_type', 'menu-item-object' => 'page', 'menu-item-object-id' => $by_slug[ 'page:' . $entry['slug'] ] );
+			} else {
+				continue;
+			}
+			$item_id = wp_update_nav_menu_item( $menu_id, 0, $args );
+			if ( ! is_wp_error( $item_id ) && ! empty( $entry['children'] ) ) {
+				$add_items( $entry['children'], (int) $item_id );
+			}
 		}
-		wp_update_nav_menu_item( $menu_id, 0, $args );
-	}
+	};
+	$add_items( $menus[ $key ] ?? array(), 0 );
 	$locations[ $key ] = $menu_id;
 }
 $registered = array_keys( get_registered_nav_menus() );
@@ -340,16 +349,27 @@ foreach ( $settings['topics']['images'] as $slug => $file ) {
 	}
 }
 // Navigation block: the primary menu as a wp_navigation post (the header uses the most recent one).
-$links = array();
-foreach ( $menus['primary'] ?? array() as $entry ) {
-	if ( 'category' === $entry['type'] && isset( $term_ids[ 'category:' . $entry['slug'] ] ) ) {
-		$id      = $term_ids[ 'category:' . $entry['slug'] ];
-		$links[] = sprintf( '<!-- wp:navigation-link {"label":%1$s,"type":"category","id":%2$d,"url":%3$s,"kind":"taxonomy","isTopLevelLink":true} /-->', wp_json_encode( $entry['title'] ), $id, wp_json_encode( get_term_link( $id ) ) );
-	} elseif ( 'page' === $entry['type'] && isset( $by_slug[ 'page:' . $entry['slug'] ] ) ) {
-		$id      = $by_slug[ 'page:' . $entry['slug'] ];
-		$links[] = sprintf( '<!-- wp:navigation-link {"label":%1$s,"type":"page","id":%2$d,"url":%3$s,"kind":"post-type","isTopLevelLink":true} /-->', wp_json_encode( $entry['title'] ), $id, wp_json_encode( get_permalink( $id ) ) );
+$nav_blocks = static function ( array $entries ) use ( &$nav_blocks, $term_ids, $by_slug ): string {
+	$out = array();
+	foreach ( $entries as $entry ) {
+		if ( 'category' === $entry['type'] && isset( $term_ids[ 'category:' . $entry['slug'] ] ) ) {
+			$id    = $term_ids[ 'category:' . $entry['slug'] ];
+			$attrs = sprintf( '{"label":%1$s,"type":"category","id":%2$d,"url":%3$s,"kind":"taxonomy","isTopLevelLink":true}', wp_json_encode( $entry['title'] ), $id, wp_json_encode( get_term_link( $id ) ) );
+		} elseif ( 'page' === $entry['type'] && isset( $by_slug[ 'page:' . $entry['slug'] ] ) ) {
+			$id    = $by_slug[ 'page:' . $entry['slug'] ];
+			$attrs = sprintf( '{"label":%1$s,"type":"page","id":%2$d,"url":%3$s,"kind":"post-type","isTopLevelLink":true}', wp_json_encode( $entry['title'] ), $id, wp_json_encode( get_permalink( $id ) ) );
+		} else {
+			continue;
+		}
+		if ( ! empty( $entry['children'] ) ) {
+			$out[] = '<!-- wp:navigation-submenu ' . $attrs . " -->\n" . $nav_blocks( $entry['children'] ) . "\n<!-- /wp:navigation-submenu -->";
+		} else {
+			$out[] = '<!-- wp:navigation-link ' . $attrs . ' /-->';
+		}
 	}
-}
+	return implode( "\n", $out );
+};
+$links = array( $nav_blocks( $menus['primary'] ?? array() ) );
 $nav_post = wp_insert_post( array( 'post_type' => 'wp_navigation', 'post_status' => 'publish', 'post_title' => 'Primary', 'post_name' => 'primary', 'post_content' => implode( "\n", $links ) ) );
 if ( ! is_wp_error( $nav_post ) ) {
 	update_post_meta( $nav_post, '_joo_demo', '1' );

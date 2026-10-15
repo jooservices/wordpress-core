@@ -1,0 +1,36 @@
+{
+  "$comment": "Plugins that jooservices.com runs, installed into the local demo by `make demo-plugins`. optional: true needs an account or keys and is only listed.",
+  "plugins": [
+    {
+      "slug": "syntaxhighlighter",
+      "name": "SyntaxHighlighter Evolved",
+      "why": "73 code blocks in the posts use its block",
+      "setup": ["option patch update syntaxhighlighter_settings theme midnight"]
+    },
+    { "slug": "wordpress-seo", "name": "Yoast SEO", "why": "live site SEO: titles, meta descriptions, schema, sitemap (the theme yields to it)" },
+    { "slug": "akismet", "name": "Akismet", "why": "comment spam filter, as on the live site" },
+    { "slug": "litespeed-cache", "name": "LiteSpeed Cache", "why": "page cache on the live site (limited effect on the local Apache)", "optional": true },
+    { "slug": "health-check", "name": "Health Check & Troubleshooting", "why": "debugging, as on the live site", "optional": true },
+    {
+      "slug": "really-simple-ssl",
+      "name": "Really Simple Security",
+      "why": "two-factor and hardening on the live site",
+      "optional": true,
+      "skipInstall": true
+    },
+    {
+      "slug": "google-site-kit",
+      "name": "Site Kit by Google",
+      "why": "analytics on the live site; needs a Google account",
+      "optional": true,
+      "skipInstall": true
+    },
+    {
+      "slug": "advanced-google-recaptcha",
+      "name": "Advanced Google reCAPTCHA",
+      "why": "comment form protection; needs reCAPTCHA keys",
+      "optional": true,
+      "skipInstall": true
+    }
+  ]
+}
