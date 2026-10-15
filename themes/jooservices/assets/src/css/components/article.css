@@ -140,6 +140,7 @@
 
 /* prose */
 .joo-prose {
+  overflow-wrap: anywhere;
   max-width: 70ch;
   min-width: 0;
 }
@@ -188,6 +189,9 @@
 }
 
 .joo-prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
@@ -473,4 +477,35 @@
   margin-left: 0.25em;
   text-decoration: underline;
   text-underline-offset: 0.18em;
+}
+
+/* Real content: nothing inside the article may push the page sideways. */
+.joo-prose :where(iframe, video, embed, object, canvas, svg) {
+  max-width: 100%;
+}
+
+.joo-prose :where(img) {
+  max-width: 100%;
+  height: auto;
+}
+
+.joo-prose :where(pre, .wp-block-table, .wp-block-embed) {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Classic captions carry a fixed pixel width in an inline style. */
+.joo-prose .wp-caption {
+  max-width: 100%;
+}
+
+.joo-prose .wp-caption img {
+  max-width: 100%;
+  height: auto;
+}
+
+.joo-prose .alignleft,
+.joo-prose .alignright {
+  float: none;
+  margin-inline: 0;
 }
