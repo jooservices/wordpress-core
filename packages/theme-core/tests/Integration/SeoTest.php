@@ -512,26 +512,14 @@ final class SeoTest extends IntegrationTestCase {
 		$this->assertFalse( $policy->yieldsHreflang() );
 	}
 
-	public function test_yielding_to_a_plugin_drops_the_block_theme_title_tag(): void {
-		add_filter( 'joo/seo/yield', '__return_true' );
-		$booted  = $this->boot();
-		$c       = Kernel::container();
-		$active  = new Detector( static fn( string $k, string $n ): ?string => 'WPSEO_VERSION' === $n ? '24.1' : null );
-		$printer = new HeadPrinter(
-			$c->get( TitleBuilder::class ),
-			$c->get( DescriptionBuilder::class ),
-			$c->get( Canonical::class ),
-			$c->get( RobotsBuilder::class ),
-			$c->get( SocialTags::class ),
-			$c->get( Hreflang::class ),
-			new YieldPolicy( $c->get( Settings::class ), $active )
-		);
-		$this->assertInstanceOf( HeadPrinter::class, $booted );
-		$this->go_to( '/' );
-		add_action( 'wp_head', '_block_template_render_title_tag', 1 );
-		$printer->attach();
-		do_action( 'wp_head' );
-		$this->assertFalse( has_action( 'wp_head', '_block_template_render_title_tag' ), 'the plugin prints its own title' );
+	public function test_only_the_first_title_survives_when_a_plugin_prints_its_own(): void {
+		$head = "<meta charset=\"utf-8\">\n<title>Plugin title</title>\n<meta name=\"x\">\n<title>Core title</title>\n<link rel=\"a\">";
+		$out  = HeadPrinter::dedupeTitles( $head );
+		$this->assertSame( 1, substr_count( $out, '<title' ) );
+		$this->assertStringContainsString( 'Plugin title', $out );
+		$this->assertStringNotContainsString( 'Core title', $out );
+		$this->assertStringContainsString( '<link rel="a">', $out );
+		$this->assertSame( 'no title at all', HeadPrinter::dedupeTitles( 'no title at all' ), 'a head without a title is left alone' );
 	}
 
 	public function test_yielding_removes_every_core_seo_tag_and_keeps_wordpress_defaults(): void {

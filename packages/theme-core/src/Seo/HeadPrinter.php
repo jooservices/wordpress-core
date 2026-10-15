@@ -110,7 +110,8 @@ final class HeadPrinter {
 		$policy = $this->services['policy'];
 		if ( $policy->shouldYield() ) {
 			if ( null !== $policy->plugin() ) {
-				add_action( 'wp_head', array( $this, 'dropCoreTitle' ), 0 );
+				add_action( 'wp_head', array( $this, 'collectHead' ), 0 );
+				add_action( 'wp_head', array( $this, 'flushHead' ), 99999 );
 			}
 			return;
 		}
@@ -123,10 +124,40 @@ final class HeadPrinter {
 	}
 
 	/**
-	 * Block themes print the title through core while SEO plugins print their own: keep only the plugin's.
+	 * Starts collecting the head output so a second <title> can be dropped (see {@see self::dedupeTitles()}).
 	 */
-	public function dropCoreTitle(): void {
-		remove_action( 'wp_head', '_block_template_render_title_tag', 1 );
+	public function collectHead(): void {
+		ob_start( array( self::class, 'dedupeTitles' ) );
+	}
+
+	/**
+	 * Ends the collection.
+	 */
+	public function flushHead(): void {
+		if ( ob_get_level() > 0 ) {
+			ob_end_flush();
+		}
+	}
+
+	/**
+	 * Keeps the first <title> of a head. Block themes print one through core and some SEO plugins print their own
+	 * as well, which would leave two.
+	 *
+	 * @param string $html Head output.
+	 */
+	public static function dedupeTitles( string $html ): string {
+		$seen = false;
+		return (string) preg_replace_callback(
+			'#<title\b[^>]*>.*?</title>\s*#is',
+			static function ( array $m ) use ( &$seen ): string {
+				if ( $seen ) {
+					return '';
+				}
+				$seen = true;
+				return $m[0];
+			},
+			$html
+		);
 	}
 
 	/**
