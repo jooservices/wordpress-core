@@ -124,12 +124,17 @@ export function transform(data, { companies, settings, profile }) {
   const keepTag = new Set(tags.map((t) => t.id));
 
   const featuredCat = data.categories.find((c) => c.slug === 'featured');
-  const posts = [...data.posts].sort((a, b) => b.date.localeCompare(a.date));
+  const posts = data.posts
+    .filter((p) => ['publish', 'draft', 'private', 'pending'].includes(p.status))
+    .sort((a, b) => b.date.localeCompare(a.date));
   const featuredIds = [];
+  const published = (p) => p.status === 'publish';
   for (const p of posts)
-    if (featuredCat && p.categories.includes(featuredCat.id) && p.featured_media) featuredIds.push(p.id);
+    if (published(p) && featuredCat && p.categories.includes(featuredCat.id) && p.featured_media)
+      featuredIds.push(p.id);
   for (const p of posts)
-    if (featuredIds.length < 5 && p.featured_media && !featuredIds.includes(p.id)) featuredIds.push(p.id);
+    if (published(p) && featuredIds.length < 5 && p.featured_media && !featuredIds.includes(p.id))
+      featuredIds.push(p.id);
 
   const attachmentId = new Map(); // media id -> wxr id
   const postItems = posts.map((p) => {
@@ -149,7 +154,8 @@ export function transform(data, { companies, settings, profile }) {
       title: decode(p.title.rendered),
       slug: p.slug,
       date: p.date,
-      content: rewrite(p.content.rendered),
+      content: rewrite(p.content.raw ?? p.content.rendered),
+      status: p.status,
       excerpt: plain(p.excerpt.rendered),
       cats,
       tags: p.tags.filter((t) => keepTag.has(t)).map((t) => tagById.get(t)),
@@ -174,16 +180,19 @@ export function transform(data, { companies, settings, profile }) {
   }
   void attachmentId;
 
-  const pages = data.pages.map((p) => ({
-    id: (id += 1),
-    title: decode(p.title.rendered),
-    slug: p.slug,
-    date: p.date,
-    content: rewrite(p.content.rendered),
-    excerpt: '',
-    meta: [['_joo_demo', '1']],
-    type: 'page',
-  }));
+  const pages = data.pages
+    .filter((p) => p.status === 'publish' || p.slug !== 'about-me')
+    .map((p) => ({
+      id: (id += 1),
+      title: decode(p.title.rendered),
+      slug: p.slug,
+      date: p.date,
+      content: rewrite(p.content.raw ?? p.content.rendered),
+      status: p.status,
+      excerpt: '',
+      meta: [['_joo_demo', '1']],
+      type: 'page',
+    }));
   if (!pages.some((p) => p.slug === 'about')) {
     pages.push({
       id: (id += 1),
@@ -257,6 +266,7 @@ ${[...postItems, ...pages, ...companyItems].map((o) => item(o)).join('\n')}
     source: 'live',
     counts: {
       posts: postItems.length,
+      drafts: postItems.filter((p) => p.status !== 'publish').length,
       pages: pages.length,
       categories: ordered.length,
       tags: tags.length,

@@ -27,6 +27,7 @@ describe('live-import', () => {
           slug: 'hello',
           link: 'https://x.test/hello/',
           date: '2026-09-05T08:00:00',
+          status: 'publish',
           title: { rendered: 'Xin chào' },
           excerpt: { rendered: '<p>Tóm tắt</p>' },
           content: {
@@ -43,6 +44,14 @@ describe('live-import', () => {
     expect(out.xml).not.toContain('srcset');
     expect(out.xml).toContain('<wp:category_parent><![CDATA[blog]]>');
     expect(out.xml).toContain('_joo_lang');
+    expect(out.xml).toContain('<wp:status><![CDATA[publish]]></wp:status>');
+    const draft = transform(
+      { ...data, posts: [{ ...data.posts[0], status: 'draft' }] },
+      { companies: [], settings: { profile: {} }, profile: {} }
+    );
+    expect(draft.xml).toContain('<wp:status><![CDATA[draft]]></wp:status>');
+    expect(draft.manifest.counts.drafts).toBe(1);
+    expect(draft.manifest.counts.featured).toBe(0);
     expect(out.manifest.counts).toMatchObject({ posts: 1, vietnamese: 1, featured: 1 });
     expect(out.media.map((m) => m.name)).toContain('2026-09-cover.jpg');
   });
