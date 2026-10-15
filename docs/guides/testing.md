@@ -35,3 +35,21 @@ $me   = UserFactory::owner( array( 'display_name' => 'Viet Vu' ), array( 'joo_ti
 $co   = CompanyFactory::create( array( 'name' => 'ACME', 'pinned' => true, 'from' => '2022-03' ) );
 $img  = AttachmentFactory::image( 800, 600 );
 ```
+
+## Demo, health, matrix and performance (P8, P5)
+| Command | What it does |
+|---|---|
+| `make demo THEME=x` | builds assets, starts Docker, installs WordPress and the theme, seeds the demo, runs the health check |
+| `make seed THEME=x` / `make seed-reset THEME=x` | imports the deterministic demo (`tools/wxr-generator`); `_joo_demo` marks demo content, so a reset removes only that |
+| `make health` | `tests/matrix/urls.json`: status, content type and markers of each view (draft/private/protected, sitemap, robots, feeds, REST) |
+| `make test-matrix THEME=x ARGS="--only yoast,cf7"` | installs each Tier-1 plugin from wordpress.org, runs the health table plus `tests/e2e/specs/matrix.spec.ts` (one title, one canonical, no console errors, CLS), diffs the PHP log, restores the database snapshot. Licensed plugins without a zip in `tests/matrix/vendor/` are listed as SKIPPED with the reason |
+| `make perf THEME=x` | Lighthouse (mobile) per page of `themes/<slug>/budgets.json`: category scores, CLS, TBT, LCP and bytes of CSS, JS and fonts |
+| `make package THEME=x` | builds `artifacts/package/<slug>-<version>.zip` (see the theme README) |
+
+Theme-specific Playwright specs live in `themes/<slug>/tests/e2e` and run when `E2E_THEME=<slug>` (set by `make test-e2e THEME=x`).
+
+### Inverted assertions
+Pages that must not be indexed (search, 404) are expected to FAIL Lighthouse's `is-crawlable` audit: a pass would mean `noindex` is missing. `tools/perf.mjs` asserts this for pages flagged `noindex` in `budgets.json`.
+
+### Writing a theme spec
+Select by role, landmark or `joo-` class of core blocks, never by a theme's private markup. Wait for lazy fragments with `joo-lazy[name="..."]` and `scrollIntoViewIfNeeded()`. On widths below 900px the rail is behind the Sidebar button: open it first.

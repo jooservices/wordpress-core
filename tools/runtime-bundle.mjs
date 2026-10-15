@@ -54,33 +54,35 @@ export function classify(files, patterns) {
   return { allowed, rejected };
 }
 
-const [command, target] = process.argv.slice(2);
-if (command === 'list') {
-  const { allowed } = classify(walk(coreDir), readPatterns());
-  const bytes = allowed.reduce((sum, file) => sum + statSync(join(coreDir, file)).size, 0);
-  console.log(allowed.join('\n'));
-  console.error(`${allowed.length} files, ${(bytes / 1024).toFixed(0)} KB`);
-} else if (command === 'check') {
-  const dir = target ? join(process.cwd(), target) : '';
-  if (!dir || !existsSync(dir)) {
-    console.error('usage: node tools/runtime-bundle.mjs check <dir>');
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const [command, target] = process.argv.slice(2);
+  if (command === 'list') {
+    const { allowed } = classify(walk(coreDir), readPatterns());
+    const bytes = allowed.reduce((sum, file) => sum + statSync(join(coreDir, file)).size, 0);
+    console.log(allowed.join('\n'));
+    console.error(`${allowed.length} files, ${(bytes / 1024).toFixed(0)} KB`);
+  } else if (command === 'check') {
+    const dir = target ? join(process.cwd(), target) : '';
+    if (!dir || !existsSync(dir)) {
+      console.error('usage: node tools/runtime-bundle.mjs check <dir>');
+      process.exit(2);
+    }
+    const files = walk(dir);
+    const { rejected } = classify(files, readPatterns());
+    const bytes = files.reduce((sum, file) => sum + statSync(join(dir, file)).size, 0);
+    let failed = false;
+    if (rejected.length) {
+      failed = true;
+      console.error(`FAIL ${rejected.length} unexpected file(s):\n  ${rejected.slice(0, 20).join('\n  ')}`);
+    }
+    if (bytes > MAX_BYTES) {
+      failed = true;
+      console.error(`FAIL core copy is ${(bytes / 1024).toFixed(0)} KB, limit ${MAX_BYTES / 1024} KB`);
+    }
+    if (!failed) console.log(`ok   ${files.length} files, ${(bytes / 1024).toFixed(0)} KB`);
+    process.exit(failed ? 1 : 0);
+  } else {
+    console.error('usage: node tools/runtime-bundle.mjs list | check <dir>');
     process.exit(2);
   }
-  const files = walk(dir);
-  const { rejected } = classify(files, readPatterns());
-  const bytes = files.reduce((sum, file) => sum + statSync(join(dir, file)).size, 0);
-  let failed = false;
-  if (rejected.length) {
-    failed = true;
-    console.error(`FAIL ${rejected.length} unexpected file(s):\n  ${rejected.slice(0, 20).join('\n  ')}`);
-  }
-  if (bytes > MAX_BYTES) {
-    failed = true;
-    console.error(`FAIL core copy is ${(bytes / 1024).toFixed(0)} KB, limit ${MAX_BYTES / 1024} KB`);
-  }
-  if (!failed) console.log(`ok   ${files.length} files, ${(bytes / 1024).toFixed(0)} KB`);
-  process.exit(failed ? 1 : 0);
-} else {
-  console.error('usage: node tools/runtime-bundle.mjs list | check <dir>');
-  process.exit(2);
 }
