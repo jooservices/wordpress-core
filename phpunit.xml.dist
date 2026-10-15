@@ -6,20 +6,20 @@
          failOnWarning="true"
          failOnRisky="true"
          beStrictAboutOutputDuringTests="true"
-         cacheDirectory=".phpunit.result.cache">
+         cacheResultFile=".phpunit.result.cache">
   <testsuites>
     <testsuite name="core-unit"><directory>packages/theme-core/tests/Unit</directory></testsuite>
-    <testsuite name="kit-unit"><directory>packages/test-kit/tests</directory></testsuite>
+    <testsuite name="kit-unit"><directory>packages/test-kit/tests</directory><exclude>packages/test-kit/tests/Integration</exclude></testsuite>
     <testsuite name="plugin-unit"><directory>plugins/jooservices-content/tests/Unit</directory></testsuite>
     <testsuite name="theme-unit"><directory>themes/jooservices/tests/Unit</directory><directory>themes/starter/tests/Unit</directory></testsuite>
     <testsuite name="tools-unit"><directory>tests/tools</directory></testsuite>
   </testsuites>
-  <source>
+  <coverage processUncoveredFiles="true">
     <include>
-      <directory>packages/theme-core/src</directory>
-      <directory>plugins/jooservices-content/src</directory>
-      <directory>themes/jooservices/inc</directory>
-      <directory>themes/starter/inc</directory>
+      <directory suffix=".php">packages/theme-core/src</directory>
+      <directory suffix=".php">plugins/jooservices-content/src</directory>
+      <directory suffix=".php">themes/jooservices/inc</directory>
+      <directory suffix=".php">themes/starter/inc</directory>
     </include>
-  </source>
+  </coverage>
 </phpunit>

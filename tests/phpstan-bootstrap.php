@@ -5,9 +5,21 @@
  * @package JOOservices
  */
 
-define( 'ABSPATH', '/var/www/html/' );
-define( 'WPINC', 'wp-includes' );
-define( 'JOO_CORE_VERSION', '0.1.0' );
-define( 'JOO_CORE_DIR', dirname( __DIR__ ) . '/packages/theme-core' );
-define( 'JOO_CORE_MIN_PHP', '8.1' );
-define( 'JOO_CORE_MIN_WP', '6.6' );
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', '/var/www/html/' );
+}
+if ( ! defined( 'WPINC' ) ) {
+	define( 'WPINC', 'wp-includes' );
+}
+if ( ! defined( 'JOO_CORE_VERSION' ) ) {
+	define( 'JOO_CORE_VERSION', '0.1.0' );
+}
+if ( ! defined( 'JOO_CORE_DIR' ) ) {
+	define( 'JOO_CORE_DIR', dirname( __DIR__ ) . '/packages/theme-core' );
+}
+if ( ! defined( 'JOO_CORE_MIN_PHP' ) ) {
+	define( 'JOO_CORE_MIN_PHP', '8.1' );
+}
+if ( ! defined( 'JOO_CORE_MIN_WP' ) ) {
+	define( 'JOO_CORE_MIN_WP', '6.6' );
+}

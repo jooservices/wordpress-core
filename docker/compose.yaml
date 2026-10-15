@@ -68,6 +68,8 @@ services:
       - ../plugins/jooservices-content:/var/www/html/wp-content/plugins/jooservices-content
       - ./mu-plugins:/var/www/html/wp-content/mu-plugins:ro
       - ./scripts:/scripts:ro
+      - ../:/workspace:ro
+      - ../artifacts:/workspace/artifacts
     healthcheck:
       test: ['CMD-SHELL', 'curl -fsS -o /dev/null http://localhost/wp-login.php || exit 1']
       interval: 10s

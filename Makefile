@@ -5,7 +5,7 @@ THEME ?= jooservices
 export JOOWT_PROJECT ?= jooservices-wp-themes
 
 
-.PHONY: test-tooling install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
+.PHONY: coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -58,22 +58,32 @@ lint: ## PHPCS, ESLint, Stylelint, Prettier, header check
 	@npx --no-install eslint .
 	@npx --no-install stylelint "**/*.css" --allow-empty-input
 	@npx --no-install prettier --ignore-path .prettierignore --check .
+fix: ## Auto-fix PHP (phpcbf), CSS (stylelint) and formatting (prettier)
+	-@$(PHP) vendor/bin/phpcbf
+	-@npx --no-install stylelint "**/*.css" --fix --allow-empty-input
+	@npx --no-install prettier --ignore-path .prettierignore --write . >/dev/null
 analyse: ## PHPStan (core level 8, others level 6), tsc checkJs, deptrac
-	@$(PHP) vendor/bin/phpstan analyse -c phpstan-core.neon --no-progress
-	@$(PHP) vendor/bin/phpstan analyse -c phpstan-themes.neon --no-progress
+	@$(PHP) vendor/bin/phpstan analyse -c phpstan-core.neon --no-progress --memory-limit=1G
+	@$(PHP) vendor/bin/phpstan analyse -c phpstan-themes.neon --no-progress --memory-limit=1G
 	@npx --no-install tsc -p tsconfig.json
 	@$(PHP) vendor/bin/deptrac analyse --no-progress --fail-on-uncovered
 test-tooling: ## Prove that every quality tool fails on a violation
 	@tests/make-help.sh
 	@tests/tooling/run.sh
 	@tests/tooling/hooks-test.sh
-test-unit: ## PHPUnit unit suites and Vitest
-	$(call stub,test-unit)
-test-integration: ## wp-phpunit in Docker
-	$(call stub,test-integration)
-test-e2e: ## Playwright e2e against the demo (THEME=...)
+test-unit: ## PHPUnit unit suites and Vitest (COVERAGE=1: coverage with thresholds, PHP part runs in Docker with pcov)
+	@if [ "$(COVERAGE)" = "1" ]; then $(MAKE) --no-print-directory coverage; else $(PHP) vendor/bin/phpunit && npx --no-install vitest run; fi
+coverage: ## Unit coverage (pcov in Docker) and threshold gate
+	@mkdir -p artifacts/reports/unit
+	@$(COMPOSE) exec -T -u www-data wordpress php -d pcov.enabled=1 -d pcov.directory=/workspace -d error_reporting=24575 /workspace/vendor/bin/phpunit -c /workspace/phpunit.xml.dist --do-not-cache-result --coverage-clover /workspace/artifacts/reports/unit/clover.xml --coverage-html /workspace/artifacts/reports/unit/html --coverage-text=/workspace/artifacts/reports/unit/summary.txt
+	@./tools/coverage-gate.sh artifacts/reports/unit/clover.xml
+	@npx --no-install vitest run --coverage
+test-integration: ## wp-phpunit in Docker (WP_VERSION=6.6 for the minimum version on an isolated stack)
+	@$(COMPOSE) exec -T -u www-data -e JOO_TEST_THEME=$(THEME) wordpress bash /scripts/phpunit-integration.sh $(ARGS)
+test-e2e: ## Playwright e2e against the running demo (THEME=..., ARGS="specs/shared")
 	$(call require_theme)
-	$(call stub,test-e2e)
+	@curl -fsS -o /dev/null $${E2E_BASE_URL:-http://127.0.0.1:8080}/ || { echo "demo not reachable: run make up first"; exit 1; }
+	@E2E_THEME=$(THEME) E2E_BASE_URL=$${E2E_BASE_URL:-http://127.0.0.1:8080} npx --no-install playwright test -c tests/e2e/playwright.config.ts $(ARGS)
 demo: ## Build, start Docker, install WordPress + theme, seed, health check (THEME=...)
 	$(call require_theme)
 	$(call stub,demo)

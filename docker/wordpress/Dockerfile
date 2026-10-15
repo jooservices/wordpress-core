@@ -13,6 +13,8 @@ RUN set -eux; \
     chmod +x /usr/local/bin/wp; \
     wp --info --allow-root >/dev/null
 
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+
 RUN mkdir -p /var/log/php && chown www-data:www-data /var/log/php
 
 COPY php.ini /usr/local/etc/php/conf.d/zz-joowt.ini

@@ -1,5 +1,6 @@
 # Themes, companion plugin, test kit and tools. A baseline is allowed only with a Jira key per entry.
 parameters:
+  phpVersion: 80100
   level: 6
   paths:
     - themes
@@ -7,11 +8,13 @@ parameters:
     - packages/test-kit/src
     - tools
   excludePaths:
-    analyse:
-      - themes/*/core
-      - themes/*/node_modules
-      - themes/*/assets/build
+    - themes/*/core
+    - themes/*/node_modules
+    - themes/*/assets/build
+    - tools/bc
   bootstrapFiles:
     - tests/phpstan-bootstrap.php
   treatPhpDocTypesAsCertain: false
   reportUnmatchedIgnoredErrors: true
+  scanDirectories:
+    - vendor/wp-phpunit/wp-phpunit/includes

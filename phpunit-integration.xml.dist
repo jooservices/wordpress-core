@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+         bootstrap="tests/bootstrap-integration.php"
+         colors="true"
+         failOnWarning="true"
+         failOnRisky="false"
+         cacheResult="false">
+  <testsuites>
+    <testsuite name="kit-integration"><directory>packages/test-kit/tests/Integration</directory></testsuite>
+    <testsuite name="core-integration"><directory>packages/theme-core/tests/Integration</directory></testsuite>
+    <testsuite name="plugin-integration"><directory>plugins/jooservices-content/tests/Integration</directory></testsuite>
+    <testsuite name="theme-integration"><directory>themes/jooservices/tests/Integration</directory><directory>themes/starter/tests/Integration</directory></testsuite>
+  </testsuites>
+</phpunit>

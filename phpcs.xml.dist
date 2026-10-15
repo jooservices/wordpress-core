@@ -39,6 +39,11 @@
 		<exclude name="Universal.Operators.DisallowShortTernary"/>
 	</rule>
 	<rule ref="PHPCompatibilityWP"/>
+	<rule ref="WordPress.NamingConventions.ValidHookName">
+		<properties>
+			<property name="additionalWordDelimiters" value="/"/>
+		</properties>
+	</rule>
 
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
@@ -64,15 +69,18 @@
 	<!-- Tests, tools and docker helpers are not shipped; relax output/globals rules there. -->
 	<rule ref="WordPress.Security.EscapeOutput">
 		<exclude-pattern>*/tests/*</exclude-pattern>
+		<exclude-pattern>*/test-kit/*</exclude-pattern>
 		<exclude-pattern>*/tools/*</exclude-pattern>
 	</rule>
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<exclude-pattern>*/tests/*</exclude-pattern>
+		<exclude-pattern>*/test-kit/*</exclude-pattern>
 		<exclude-pattern>*/tools/*</exclude-pattern>
 		<exclude-pattern>*/docker/*</exclude-pattern>
 	</rule>
 	<rule ref="WordPress.WP.AlternativeFunctions">
 		<exclude-pattern>*/tests/*</exclude-pattern>
+		<exclude-pattern>*/test-kit/*</exclude-pattern>
 		<exclude-pattern>*/tools/*</exclude-pattern>
 	</rule>
 	<rule ref="WordPress.WP.GlobalVariablesOverride">
@@ -81,6 +89,7 @@
 	</rule>
 	<rule ref="WordPress.PHP.DevelopmentFunctions">
 		<exclude-pattern>*/tests/*</exclude-pattern>
+		<exclude-pattern>*/test-kit/*</exclude-pattern>
 		<exclude-pattern>*/tools/*</exclude-pattern>
 	</rule>
 	<rule ref="WordPress.Security.NonceVerification">
