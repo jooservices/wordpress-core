@@ -116,6 +116,16 @@ final class AssetsTest extends IntegrationTestCase {
 		$this->assertArrayHasKey( 'runtime', $registry->lazyModules() );
 	}
 
+	public function test_a_late_style_is_enqueued_after_the_global_styles(): void {
+		$this->boot();
+		$this->registry()->style( 'joo-late-demo', 'core', array( 'late' => true ) );
+		$this->go_to( '/' );
+		do_action( 'wp_enqueue_scripts' );
+		$this->assertTrue( wp_style_is( 'joo-late-demo', 'enqueued' ) );
+		$queue = array_values( $GLOBALS['wp_styles']->queue );
+		$this->assertGreaterThan( (int) array_search( 'joo-core', $queue, true ), (int) array_search( 'joo-late-demo', $queue, true ), 'late styles come after the other styles' );
+	}
+
 	public function test_an_asset_missing_from_the_build_manifest_is_skipped_not_fatal(): void {
 		$this->boot();
 		$this->registry()->module( 'joo-ghost', 'does-not-exist' );

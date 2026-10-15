@@ -130,7 +130,8 @@ final class AssetRegistry {
 	 * Queues a stylesheet.
 	 *
 	 * Options: when, manifest, deps, preload (bool: print a preload link), defer (bool: print in the footer,
-	 * used when critical CSS is inlined), media.
+	 * used when critical CSS is inlined), late (bool: enqueue after WordPress' global styles so theme rules win
+	 * ties of equal specificity), media.
 	 *
 	 * @param string               $handle  Style handle.
 	 * @param string               $logical Logical asset name.
@@ -196,6 +197,18 @@ final class AssetRegistry {
 			}
 			if ( ! empty( $options['defer'] ) && $critical ) {
 				$this->deferredStyles[] = $handle;
+				continue;
+			}
+			if ( ! empty( $options['late'] ) ) {
+				// After WordPress' global styles (priority 1), so a theme rule wins a tie of equal specificity.
+				add_action(
+					'wp_enqueue_scripts',
+					static function () use ( $handle ): void {
+						wp_enqueue_style( $handle );
+					},
+					20
+				);
+				$this->enqueued['css'][] = $handle;
 				continue;
 			}
 			wp_enqueue_style( $handle );

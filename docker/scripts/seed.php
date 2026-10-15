@@ -25,16 +25,17 @@ require_once ABSPATH . 'wp-admin/includes/image.php';
 require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/taxonomy.php';
 
-$checksum = md5( implode( '|', array_map( static fn( $f ) => md5_file( $dir . '/' . $f ), array( 'content.xml', 'menus.json', 'settings.json' ) ) ) );
+$checksum = md5( implode( '|', array_map( static fn( $f ) => md5_file( $dir . '/' . $f ), array( 'content.xml', 'menus.json', 'settings.json' ) ) ) . '|' . md5_file( __FILE__ ) );
 if ( ! $reset && get_option( 'joo_demo_checksum' ) === $checksum ) {
 	WP_CLI::success( 'Demo content is up to date (checksum ' . substr( $checksum, 0, 8 ) . ').' );
 	return;
 }
 
 // 1. Remove previous demo content (only items carrying the marker).
+// `any` skips post types that are excluded from search (the companion company type), so list the types explicitly.
 $old = get_posts(
 	array(
-		'post_type'        => 'any',
+		'post_type'        => array_values( get_post_types() ),
 		'post_status'      => 'any',
 		'posts_per_page'   => -1,
 		'fields'           => 'ids',
@@ -55,6 +56,10 @@ foreach ( is_array( $old_terms ) ? $old_terms : array() as $term_id ) {
 }
 foreach ( array( 'joo-primary', 'joo-footer' ) as $menu_name ) {
 	wp_delete_nav_menu( $menu_name );
+}
+// Navigation posts (the block theme builds one from the classic menu on first render) are rebuilt below.
+foreach ( get_posts( array( 'post_type' => 'wp_navigation', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids' ) ) as $nav_id ) {
+	wp_delete_post( (int) $nav_id, true );
 }
 // The pristine default content of a fresh install would pollute the demo (counts, feeds, sitemap).
 foreach ( array( 'post:hello-world', 'page:sample-page', 'page:privacy-policy' ) as $default ) {
@@ -333,6 +338,27 @@ foreach ( $settings['topics']['images'] as $slug => $file ) {
 	if ( isset( $term_ids[ 'post_tag:' . $slug ], $media[ $file ]['id'] ) ) {
 		update_term_meta( $term_ids[ 'post_tag:' . $slug ], 'joo_image_id', $media[ $file ]['id'] );
 	}
+}
+// Navigation block: the primary menu as a wp_navigation post (the header uses the most recent one).
+$links = array();
+foreach ( $menus['primary'] ?? array() as $entry ) {
+	if ( 'category' === $entry['type'] && isset( $term_ids[ 'category:' . $entry['slug'] ] ) ) {
+		$id      = $term_ids[ 'category:' . $entry['slug'] ];
+		$links[] = sprintf( '<!-- wp:navigation-link {"label":%1$s,"type":"category","id":%2$d,"url":%3$s,"kind":"taxonomy","isTopLevelLink":true} /-->', wp_json_encode( $entry['title'] ), $id, wp_json_encode( get_term_link( $id ) ) );
+	} elseif ( 'page' === $entry['type'] && isset( $by_slug[ 'page:' . $entry['slug'] ] ) ) {
+		$id      = $by_slug[ 'page:' . $entry['slug'] ];
+		$links[] = sprintf( '<!-- wp:navigation-link {"label":%1$s,"type":"page","id":%2$d,"url":%3$s,"kind":"post-type","isTopLevelLink":true} /-->', wp_json_encode( $entry['title'] ), $id, wp_json_encode( get_permalink( $id ) ) );
+	}
+}
+$nav_post = wp_insert_post( array( 'post_type' => 'wp_navigation', 'post_status' => 'publish', 'post_title' => 'Primary', 'post_name' => 'primary', 'post_content' => implode( "\n", $links ) ) );
+if ( ! is_wp_error( $nav_post ) ) {
+	update_post_meta( $nav_post, '_joo_demo', '1' );
+}
+
+// The owner profile is the demo author, not the Docker administrator.
+$container = class_exists( '\JOOservices\ThemeCore\Kernel' ) ? \JOOservices\ThemeCore\Kernel::container() : null;
+if ( null !== $container ) {
+	$container->get( \JOOservices\ThemeCore\Config\SettingsRepository::class )->save( array( 'content.profile_user_id' => $users[ $profile['user'] ] ) );
 }
 flush_rewrite_rules( true );
 wp_cache_flush();
