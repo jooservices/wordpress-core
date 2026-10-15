@@ -113,7 +113,10 @@
 }
 
 .joo-404__suggest a {
-  color: var(--joo-accent);
+  display: inline-block;
+  min-height: 24px;
+  padding-block: 2px;
+  color: rgb(92 200 255);
 }
 
 .joo-404__result {

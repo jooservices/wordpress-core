@@ -28,6 +28,10 @@
 }
 
 .joo-nav .wp-block-navigation-item__content {
+  display: inline-flex;
+  align-items: center;
+  min-width: 24px;
+  min-height: 24px;
   padding-block: 2px;
   color: var(--joo-muted);
   white-space: nowrap;

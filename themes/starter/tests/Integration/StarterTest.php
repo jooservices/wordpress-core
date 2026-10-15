@@ -19,7 +19,7 @@ final class StarterTest extends IntegrationTestCase {
 
 	public function set_up(): void {
 		parent::set_up();
-		if ( null === Kernel::container() ) {
+		if ( null === Kernel::container() || 'starter' !== Kernel::container()->get( Manifest::class )->slug() ) {
 			$this->markTestSkipped( 'Run with JOO_TEST_THEME=starter (make test-integration TEST_THEME=starter).' );
 		}
 	}

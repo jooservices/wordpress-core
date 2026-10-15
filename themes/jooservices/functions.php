@@ -30,6 +30,12 @@ add_action(
 		add_theme_support( 'post-thumbnails' );
 		add_theme_support( 'responsive-embeds' );
 		add_theme_support( 'automatic-feed-links' );
+		register_nav_menus(
+			array(
+				'primary' => __( 'Primary menu', 'jooservices' ),
+				'footer'  => __( 'Footer menu', 'jooservices' ),
+			)
+		);
 		add_theme_support( 'html5', array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script' ) );
 	}
 );
@@ -38,7 +44,7 @@ add_action(
 add_action(
 	'joo/assets/register',
 	static function ( $registry ): void {
-		$registry->addManifest( 'theme', \JOOservices\ThemeCore\Assets\AssetManifest::fromFile( get_theme_file_path( 'assets/build/assets.json' ), get_theme_file_uri( 'assets/build' ) ) );
+		$registry->addManifest( 'theme', \JOOservices\ThemeCore\Assets\AssetManifest::fromFile( __DIR__ . '/assets/build/assets.json', trailingslashit( get_theme_root_uri() ) . basename( __DIR__ ) . '/assets/build' ) );
 		$registry->style(
 			'jooservices-theme',
 			'theme',

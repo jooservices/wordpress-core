@@ -61,6 +61,9 @@ img {
 
 .joo-tags a,
 .joo-tags__items a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   padding: 1px 8px;
   font: 12px/1.6 var(--joo-mono);
   color: var(--joo-ink);
@@ -111,4 +114,18 @@ img {
   .joo-404__caret {
     animation: none;
   }
+}
+
+/* Core fades secondary text with opacity; the theme uses the muted token instead, whose contrast is tested. */
+.joo-author__bio,
+.joo-tree__count,
+.joo-tree__desc,
+.joo-company__range,
+.joo-company__role,
+.joo-profile__title,
+.joo-tags sup,
+.joo-tags__items sup,
+.joo-topic__text i,
+.joo-topic__intro {
+  opacity: 1;
 }

@@ -1,10 +1,13 @@
 import { defineConfig } from '@playwright/test';
 
 const baseURL = process.env.E2E_BASE_URL ?? 'http://127.0.0.1:8080';
+const theme = process.env.E2E_THEME ?? '';
 const reports = '../../artifacts/reports/e2e';
 
 export default defineConfig({
-  testDir: './specs',
+  // Shared specs plus the specs of the theme under test (themes/<slug>/tests/e2e).
+  testDir: '../..',
+  testMatch: ['tests/e2e/specs/**/*.spec.ts', ...(theme ? [`themes/${theme}/tests/e2e/**/*.spec.ts`] : [])],
   // Admin specs change shared settings and share one WordPress session store: run one test at a time.
   fullyParallel: false,
   retries: process.env.CI ? 2 : 0,

@@ -52,6 +52,7 @@
   .joo-layout--full {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
   }
 
   .joo-layout:not(.joo-layout--full) .joo-rail {
