@@ -23,6 +23,13 @@ EXTRA="docker/.themes.generated.yaml"
     case "$slug" in starter | jooservices) continue ;; esac
     echo "      - ../themes/${slug}:/var/www/html/wp-content/themes/${slug}"
   done
+  # Plugins staged by tools/build-plugin.mjs (the MCP plugin lives in another repository).
+  for dir in artifacts/plugins/*/; do
+    [ -d "$dir" ] || continue
+    slug="$(basename "$dir")"
+    [ -d "plugins/${slug}" ] && continue
+    echo "      - ../artifacts/plugins/${slug}:/var/www/html/wp-content/plugins/${slug}"
+  done
 } >"${EXTRA}.tmp"
 if [ "$(wc -l <"${EXTRA}.tmp")" -le 3 ]; then rm -f "${EXTRA}.tmp" "${EXTRA}"; else mv "${EXTRA}.tmp" "${EXTRA}"; fi
 FILES=(-f docker/compose.yaml)

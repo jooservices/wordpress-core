@@ -5,7 +5,7 @@ THEME ?= jooservices
 export JOOWT_PROJECT ?= jooservices-wp-themes
 
 
-.PHONY: demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
+.PHONY: plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -103,6 +103,18 @@ seed-live: ## Replace the demo with the public content of a live site (needs art
 	@$(COMPOSE) exec -T -u www-data -e DEMO_SET=live wordpress bash /scripts/seed.sh $(THEME) --reset
 demo-plugins: ## Install the plugins jooservices.com uses (docker/demo-plugins.json)
 	@$(COMPOSE) exec -T -u www-data wordpress bash /scripts/demo-plugins.sh
+mcp-env: ## Add the MCP demo secrets to .env (never printed)
+	@./docker/scripts/mcp.sh env
+demo-mcp: ## Stage the MCP and content plugins, connect them and start the MCP server (http://127.0.0.1:3000/mcp)
+	@./docker/scripts/mcp.sh up
+mcp-down: ## Stop the MCP server
+	@./docker/scripts/mcp.sh down
+plugins-package: ## Build the zips of the plugins (artifacts/package)
+	@node tools/build-plugin.mjs --plugin all
+plugins-off: ## Deactivate the mirror plugins (Yoast, SyntaxHighlighter, MCP...): the e2e specs and `make health` assume a plain site
+	@$(COMPOSE) exec -T -u www-data wordpress bash -c 'for p in wordpress-seo syntaxhighlighter akismet litespeed-cache health-check wordpress-chatgpt; do wp plugin is-active $$p 2>/dev/null && wp plugin deactivate $$p; done; true' </dev/null
+plugins-on: ## Activate the mirror plugins again (demo-plugins + MCP plugin)
+	@$(COMPOSE) exec -T -u www-data wordpress bash -c 'for p in wordpress-seo syntaxhighlighter akismet litespeed-cache health-check wordpress-chatgpt; do wp plugin is-installed $$p 2>/dev/null && ! wp plugin is-active $$p 2>/dev/null && wp plugin activate $$p; done; true' </dev/null
 demo: ## Build, start Docker, install WordPress + theme, seed, health check (THEME=...)
 	$(call require_theme)
 	@node tools/build-assets.mjs --root packages/theme-core
