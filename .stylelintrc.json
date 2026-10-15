@@ -14,7 +14,7 @@
     "color-no-hex": true,
     "custom-property-pattern": null,
     "selector-class-pattern": [
-      "^(joo|wp|is|has|screen-reader|align|admin|editor|edit|current|children|comment|submit|post-navigation|page-numbers)[a-z0-9-_]*(__[a-z0-9-]+)?(--[a-z0-9-]+)?$",
+      "^(joo|wp|is|has|screen-reader|align|admin|editor|edit|current|children|comment|submit|post-navigation|post-page-numbers|page-numbers)[a-z0-9-_]*(__[a-z0-9-]+)?(--[a-z0-9-]+)?$",
       {
         "message": "Class names must start with joo-, wp-, is-, has-, or be a WordPress utility or generated class"
       }

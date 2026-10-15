@@ -518,3 +518,35 @@
 .joo-prose .wp-block-table.is-style-stripes {
   border-color: var(--joo-line);
 }
+
+/* pages of a multi-page post */
+.joo-pages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 22px;
+  font: 13px/1.6 var(--joo-mono);
+}
+
+.joo-pages__label {
+  color: var(--joo-muted);
+}
+
+.joo-pages .post-page-numbers {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 3px 11px;
+  color: var(--joo-ink);
+  background: var(--joo-surface);
+  border: 1px solid var(--joo-line);
+  border-radius: var(--joo-radius-s);
+}
+
+.joo-pages .current {
+  color: var(--joo-accent-ink);
+  background: var(--joo-accent);
+  border-color: var(--joo-accent);
+}

@@ -53,6 +53,7 @@ final class BlocksModule extends AbstractModule {
 		$container->singleton( PatternLoader::class, static fn( Container $c ) => new PatternLoader( $c->get( Manifest::class ) ) );
 		$container->singleton( ThemeScheme::class, static fn( Container $c ) => new ThemeScheme( $c->get( Manifest::class ) ) );
 		$container->singleton( HeadingAnchors::class, static fn() => new HeadingAnchors() );
+		$container->singleton( PostPages::class, static fn() => new PostPages() );
 		$container->singleton( CodeEnhancer::class, static fn() => new CodeEnhancer() );
 		$container->singleton( EditorBundle::class, static fn( Container $c ) => new EditorBundle( $c->get( BlockRegistrar::class ) ) );
 	}
@@ -71,6 +72,7 @@ final class BlocksModule extends AbstractModule {
 		$c->get( EditorBundle::class )->hook();
 		$c->get( HeadingAnchors::class )->hook();
 		$c->get( CodeEnhancer::class )->hook();
+		$c->get( PostPages::class )->hook();
 
 		/** @var AssetRegistry $assets */
 		$assets = $c->get( AssetRegistry::class );

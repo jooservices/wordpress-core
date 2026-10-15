@@ -445,4 +445,21 @@ final class ContentBlocksTest extends IntegrationTestCase {
 		$this->assertSame( '', trim( do_blocks( '<!-- wp:joo/theme-toggle /-->' ) ) );
 		$this->assertSame( '', trim( do_blocks( '<!-- wp:joo/lang-switcher /-->' ) ), 'one language: nothing' );
 	}
+
+	public function test_a_multi_page_post_gets_page_links_after_its_content(): void {
+		$this->boot();
+		$post = self::factory()->post->create( array( 'post_content' => "<!-- wp:paragraph --><p>One</p><!-- /wp:paragraph -->\n<!--nextpage-->\n<!-- wp:paragraph --><p>Two</p><!-- /wp:paragraph -->" ) );
+		$this->visit( $post );
+		$GLOBALS['post'] = get_post( $post );
+		setup_postdata( $GLOBALS['post'] );
+		$out = ( new \JOOservices\ThemeCore\Blocks\PostPages() )->append( '<div class="entry">x</div>' );
+		$this->assertStringContainsString( '<nav class="joo-pages"', $out );
+		$this->assertStringContainsString( '/2/', $out );
+		$this->assertSame( $out, ( new \JOOservices\ThemeCore\Blocks\PostPages() )->append( $out ), 'never added twice' );
+		$single = self::factory()->post->create();
+		$this->visit( $single );
+		$GLOBALS['post'] = get_post( $single );
+		setup_postdata( $GLOBALS['post'] );
+		$this->assertStringNotContainsString( 'joo-pages', ( new \JOOservices\ThemeCore\Blocks\PostPages() )->append( '<p>x</p>' ) );
+	}
 }
