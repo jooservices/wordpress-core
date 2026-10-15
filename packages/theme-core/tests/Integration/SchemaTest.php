@@ -448,4 +448,22 @@ final class SchemaTest extends IntegrationTestCase {
 		$this->assertTrue( $http->commentsFeed( true ) );
 		$this->assertInstanceOf( GraphPrinter::class, Kernel::container()->get( GraphPrinter::class ) );
 	}
+
+	public function test_author_id_enumeration_is_blocked_for_visitors_only(): void {
+		$this->graph( '/' );
+		$http           = Kernel::container()->get( HttpSemantics::class );
+		$_GET['author'] = '2';
+		wp_set_current_user( 0 );
+		$this->assertTrue( $http->isAuthorEnumeration() );
+		add_filter( 'joo/seo/block_author_enumeration', '__return_false' );
+		$this->assertFalse( $http->isAuthorEnumeration() );
+		remove_filter( 'joo/seo/block_author_enumeration', '__return_false' );
+		$_GET['author'] = 'viet';
+		$this->assertFalse( $http->isAuthorEnumeration(), 'only numeric ids reveal the login' );
+		$_GET['author'] = '2';
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'editor' ) ) );
+		$this->assertFalse( $http->isAuthorEnumeration(), 'signed-in users are not affected' );
+		unset( $_GET['author'] );
+		wp_set_current_user( 0 );
+	}
 }

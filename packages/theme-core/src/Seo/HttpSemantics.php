@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JOOservices\ThemeCore\Seo;
 
+use JOOservices\ThemeCore\Support\Hooks;
 use JOOservices\ThemeCore\Support\Logger;
 
 /**
@@ -64,9 +65,23 @@ final class HttpSemantics {
 		if ( null !== $target && wp_safe_redirect( $target, 301, 'JOOservices' ) ) {
 			exit;
 		}
+		if ( $this->isAuthorEnumeration() ) {
+			global $wp_query;
+			$wp_query->set_404();
+		}
 		if ( is_404() ) {
 			$this->send404();
 		}
+	}
+
+	/**
+	 * Whether the request is `?author=<id>`: WordPress would redirect it to /author/<login>/ and reveal the login name.
+	 */
+	public function isAuthorEnumeration(): bool {
+		if ( is_user_logged_in() || ! isset( $_GET['author'] ) || ! is_scalar( $_GET['author'] ) || ! ctype_digit( (string) $_GET['author'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			return false;
+		}
+		return (bool) Hooks::filter( 'joo/seo/block_author_enumeration', true );
 	}
 
 	/**
