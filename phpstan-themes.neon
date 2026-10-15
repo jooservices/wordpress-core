@@ -1,0 +1,17 @@
+# Themes, companion plugin, test kit and tools. A baseline is allowed only with a Jira key per entry.
+parameters:
+  level: 6
+  paths:
+    - themes
+    - plugins
+    - packages/test-kit/src
+    - tools
+  excludePaths:
+    analyse:
+      - themes/*/core
+      - themes/*/node_modules
+      - themes/*/assets/build
+  bootstrapFiles:
+    - tests/phpstan-bootstrap.php
+  treatPhpDocTypesAsCertain: false
+  reportUnmatchedIgnoredErrors: true

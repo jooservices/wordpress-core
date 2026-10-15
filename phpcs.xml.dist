@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<ruleset name="JOOservices WP themes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xsd">
+	<description>WordPress-Extra (security, correctness) with deliberate relaxations for PSR-4 object oriented code. See docs/guides/coding-standards.md.</description>
+
+	<file>packages</file>
+	<file>plugins</file>
+	<file>themes</file>
+	<file>tools</file>
+	<file>tests</file>
+	<file>docker</file>
+
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/assets/build/*</exclude-pattern>
+	<exclude-pattern>*/resources/build/*</exclude-pattern>
+	<exclude-pattern>*/themes/*/core/*</exclude-pattern>
+	<exclude-pattern>*/tests/tooling/fixtures/*</exclude-pattern>
+	<exclude-pattern>*/tests/Fixtures/*</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="parallel" value="8"/>
+	<arg name="colors"/>
+	<arg value="ps"/>
+
+	<config name="testVersion" value="8.1-"/>
+	<config name="minimum_wp_version" value="6.6"/>
+
+	<rule ref="WordPress-Extra">
+		<!-- Modern PSR-4 code: class-per-file names, camelCase methods, short arrays, typed code. -->
+		<exclude name="WordPress.Files.FileName"/>
+		<exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid"/>
+		<exclude name="WordPress.NamingConventions.ValidVariableName"/>
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+		<exclude name="Universal.NamingConventions.NoReservedKeywordParameterNames"/>
+		<exclude name="Universal.Files.SeparateFunctionsFromOO"/>
+		<exclude name="Squiz.Commenting.FunctionComment.Missing"/>
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
+		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+		<exclude name="Universal.Operators.DisallowShortTernary"/>
+	</rule>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="joo_"/>
+				<element value="JOO_"/>
+				<element value="JOOservices"/>
+				<element value="jooservices"/>
+			</property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="joo-core"/>
+				<element value="jooservices"/>
+				<element value="starter"/>
+				<element value="jooservices-content"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Tests, tools and docker helpers are not shipped; relax output/globals rules there. -->
+	<rule ref="WordPress.Security.EscapeOutput">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+		<exclude-pattern>*/tools/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+		<exclude-pattern>*/tools/*</exclude-pattern>
+		<exclude-pattern>*/docker/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+		<exclude-pattern>*/tools/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.GlobalVariablesOverride">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+		<exclude-pattern>*/tools/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.PHP.DevelopmentFunctions">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+		<exclude-pattern>*/tools/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Security.NonceVerification">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
+</ruleset>

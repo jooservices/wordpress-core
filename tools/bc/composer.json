@@ -1,0 +1,16 @@
+{
+  "name": "jooservices/wp-themes-bc-tool",
+  "description": "Backward-compatibility checker kept apart from the project dependencies (needs PHP 8.2+).",
+  "type": "project",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "roave/backward-compatibility-check": "^8"
+  },
+  "config": {
+    "platform": {
+      "php": "8.3.0"
+    },
+    "sort-packages": true,
+    "allow-plugins": {}
+  }
+}

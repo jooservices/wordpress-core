@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Lints staged files only, blocks secrets and oversized files. Compatible with macOS bash 3.2.
+set -u
+cd "$(git rev-parse --show-toplevel)" || exit 1
+status=0
+staged="$(git diff --cached --name-only --diff-filter=ACM)"
+[ -z "$staged" ] && exit 0
+
+# 1. forbidden files and size
+while IFS= read -r f; do
+  case "$f" in
+    .env|.env.*) [ "$f" = ".env.example" ] || { echo "ERROR: refusing to commit $f (secrets)" >&2; status=1; } ;;
+    *.pem|*.key|*id_rsa*|*.p12) echo "ERROR: refusing to commit key material: $f" >&2; status=1 ;;
+  esac
+  if [ -f "$f" ] && [ "$(wc -c < "$f")" -gt 5242880 ]; then echo "ERROR: $f is larger than 5MB" >&2; status=1; fi
+done <<< "$staged"
+
+# 2. secrets scan on the staged diff (allow list: tools/githooks/secrets-allow.txt)
+added="$(git diff --cached -U0 --diff-filter=ACM | grep -E '^\+[^+]' || true)"
+hits="$(printf '%s\n' "$added" | grep -Ein "(api[_-]?key|secret|token|passw(or)?d)[A-Za-z_]*[[:space:]]*[:=][[:space:]]*['\"][^'\"\$ ]{8,}['\"]" || true)"
+if [ -n "$hits" ] && [ -f tools/githooks/secrets-allow.txt ]; then
+  hits="$(printf '%s\n' "$hits" | grep -vFf tools/githooks/secrets-allow.txt || true)"
+fi
+if [ -n "$hits" ]; then echo "ERROR: possible secret in staged changes:" >&2; printf '%s\n' "$hits" | head -5 >&2; status=1; fi
+
+# 3. lint staged files by type
+php_files="$(printf '%s\n' "$staged" | grep -E '\.php$' || true)"
+js_files="$(printf '%s\n' "$staged" | grep -E '\.(js|mjs)$' | grep -v '^tests/tooling/fixtures/' || true)"
+css_files="$(printf '%s\n' "$staged" | grep -E '\.css$' | grep -v '^tests/tooling/fixtures/' || true)"
+fmt_files="$(printf '%s\n' "$staged" | grep -E '\.(js|mjs|css|json|ya?ml)$' | grep -v -E '(^tests/tooling/fixtures/|package-lock.json|composer.lock)' || true)"
+if [ -n "$php_files" ]; then
+  printf '%s\n' "$php_files" | xargs php -d error_reporting=24575 vendor/bin/phpcs --standard=phpcs.xml.dist -q || status=1
+fi
+[ -n "$js_files" ] && { printf '%s\n' "$js_files" | xargs npx --no-install eslint || status=1; }
+[ -n "$css_files" ] && { printf '%s\n' "$css_files" | xargs npx --no-install stylelint || status=1; }
+[ -n "$fmt_files" ] && { printf '%s\n' "$fmt_files" | xargs npx --no-install prettier --ignore-path .prettierignore --check >/dev/null || { echo "ERROR: prettier formatting issues (run: npx prettier --write <files>)" >&2; status=1; }; }
+exit $status

@@ -1,0 +1,31 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "ignoreFiles": [
+    "**/node_modules/**",
+    "**/build/**",
+    "**/vendor/**",
+    "artifacts/**",
+    "themes/*/core/**",
+    "tests/tooling/fixtures/**",
+    "themes/*/assets/critical/**"
+  ],
+  "rules": {
+    "declaration-no-important": true,
+    "color-no-hex": true,
+    "custom-property-pattern": null,
+    "selector-class-pattern": [
+      "^(joo|wp|is|has|screen-reader|align|admin)[a-z0-9-_]*(__[a-z0-9-]+)?(--[a-z0-9-]+)?$",
+      { "message": "Class names must start with joo-, wp-, is-, has-, or be a WordPress utility class" }
+    ],
+    "declaration-property-value-disallowed-list": { "width": ["/100vw/"], "max-width": ["/100vw/"], "min-width": ["/100vw/"] },
+    "import-notation": null,
+    "no-descending-specificity": null,
+    "color-function-notation": null,
+    "alpha-value-notation": null,
+    "media-feature-range-notation": null,
+    "property-no-vendor-prefix": null,
+    "value-no-vendor-prefix": null,
+    "declaration-block-no-redundant-longhand-properties": null
+  },
+  "overrides": [{ "files": ["packages/design-tokens/**/*.css"], "rules": { "color-no-hex": null } }]
+}

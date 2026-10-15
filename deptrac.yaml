@@ -1,0 +1,38 @@
+# Architecture rules: Core may depend on WordPress and itself only; Plugin on WordPress only;
+# Theme PHP on Core public code and WordPress. Only class-like dependencies are analysed.
+deptrac:
+  paths:
+    - ./packages/theme-core/src
+    - ./plugins/jooservices-content/src
+    - ./themes/starter/inc
+    - ./themes/jooservices/inc
+  analyser:
+    types:
+      - class
+      - class_superglobal
+      - use
+  layers:
+    - name: Core
+      collectors:
+        - type: directory
+          value: packages/theme-core/src/.*
+    - name: Plugin
+      collectors:
+        - type: directory
+          value: plugins/jooservices-content/src/.*
+    - name: Theme
+      collectors:
+        - type: directory
+          value: themes/.*/inc/.*
+    - name: WordPress
+      collectors:
+        - type: classLike
+          value: ^\\?(WP_|wpdb$|Walker|IXR_|PHPMailer|SimplePie|Requests|WpOrg)
+  ruleset:
+    Core:
+      - WordPress
+    Plugin:
+      - WordPress
+    Theme:
+      - Core
+      - WordPress

@@ -1,0 +1,9 @@
+# Core: strict, no baseline allowed (see docs/guides/static-analysis.md).
+parameters:
+  level: 8
+  paths:
+    - packages/theme-core/src
+  bootstrapFiles:
+    - tests/phpstan-bootstrap.php
+  treatPhpDocTypesAsCertain: false
+  reportUnmatchedIgnoredErrors: true

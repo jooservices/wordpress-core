@@ -5,7 +5,7 @@ THEME ?= jooservices
 export JOOWT_PROJECT ?= jooservices-wp-themes
 
 
-.PHONY: install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
+.PHONY: test-tooling install-wp help up down reset shell wp logs link-core init-env lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -51,10 +51,22 @@ link-core: ## Link packages/theme-core into themes/$(THEME)/core
 	$(call require_theme)
 	@ln -sfn ../../packages/theme-core themes/$(THEME)/core
 	@echo "themes/$(THEME)/core -> ../../packages/theme-core"
+PHP := php -d error_reporting=24575
 lint: ## PHPCS, ESLint, Stylelint, Prettier, header check
-	$(call stub,lint)
-analyse: ## PHPStan, tsc checkJs, deptrac
-	$(call stub,analyse)
+	@php tools/check-headers.php
+	@$(PHP) vendor/bin/phpcs
+	@npx --no-install eslint .
+	@npx --no-install stylelint "**/*.css" --allow-empty-input
+	@npx --no-install prettier --ignore-path .prettierignore --check .
+analyse: ## PHPStan (core level 8, others level 6), tsc checkJs, deptrac
+	@$(PHP) vendor/bin/phpstan analyse -c phpstan-core.neon --no-progress
+	@$(PHP) vendor/bin/phpstan analyse -c phpstan-themes.neon --no-progress
+	@npx --no-install tsc -p tsconfig.json
+	@$(PHP) vendor/bin/deptrac analyse --no-progress --fail-on-uncovered
+test-tooling: ## Prove that every quality tool fails on a violation
+	@tests/make-help.sh
+	@tests/tooling/run.sh
+	@tests/tooling/hooks-test.sh
 test-unit: ## PHPUnit unit suites and Vitest
 	$(call stub,test-unit)
 test-integration: ## wp-phpunit in Docker
@@ -79,8 +91,9 @@ package: ## Build the installable theme zip (THEME=...)
 	$(call stub,package)
 docs: ## Generate reference docs
 	$(call stub,docs)
-hooks: ## Install repository git hooks
-	$(call stub,hooks)
+hooks: ## Install repository git hooks (repo-local config only)
+	@git config --local core.hooksPath tools/githooks
+	@echo "core.hooksPath = $$(git config --local core.hooksPath)"
 clean: ## Remove build output and reports
 	@rm -rf artifacts/reports artifacts/dist
 	@echo "cleaned artifacts/reports and artifacts/dist"

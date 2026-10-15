@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap-unit.php"
+         colors="true"
+         failOnWarning="true"
+         failOnRisky="true"
+         beStrictAboutOutputDuringTests="true"
+         cacheDirectory=".phpunit.result.cache">
+  <testsuites>
+    <testsuite name="core-unit"><directory>packages/theme-core/tests/Unit</directory></testsuite>
+    <testsuite name="kit-unit"><directory>packages/test-kit/tests</directory></testsuite>
+    <testsuite name="plugin-unit"><directory>plugins/jooservices-content/tests/Unit</directory></testsuite>
+    <testsuite name="theme-unit"><directory>themes/jooservices/tests/Unit</directory><directory>themes/starter/tests/Unit</directory></testsuite>
+    <testsuite name="tools-unit"><directory>tests/tools</directory></testsuite>
+  </testsuites>
+  <source>
+    <include>
+      <directory>packages/theme-core/src</directory>
+      <directory>plugins/jooservices-content/src</directory>
+      <directory>themes/jooservices/inc</directory>
+      <directory>themes/starter/inc</directory>
+    </include>
+  </source>
+</phpunit>

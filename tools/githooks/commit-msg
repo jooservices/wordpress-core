@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Enforces: JOOWT-<n>: <imperative summary> (first line <= 72 chars after the prefix).
+first="$(head -1 "$1")"
+case "$first" in Merge\ *|Revert\ *|fixup!*|squash!*) exit 0 ;; esac
+if ! printf '%s' "$first" | grep -Eq '^JOOWT-[0-9]+: .{1,72}$'; then
+  echo "ERROR: commit message must match ^JOOWT-[0-9]+: .{1,72}\$" >&2
+  echo "       example: JOOWT-12: add Docker health checks" >&2
+  exit 1
+fi

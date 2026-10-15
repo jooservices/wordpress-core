@@ -9,6 +9,13 @@ declare(strict_types=1);
 
 $root = rtrim( $argv[1] ?? dirname( __DIR__ ), '/' );
 
+/**
+ * Reads the given header fields from the top of a file.
+ *
+ * @param string   $file   File path.
+ * @param string[] $fields Header field names.
+ * @return array<string,string>
+ */
 function joo_read_header( string $file, array $fields ): array {
 	$data = (string) file_get_contents( $file, false, null, 0, 8192 );
 	$out  = array();

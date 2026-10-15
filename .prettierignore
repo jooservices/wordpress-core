@@ -1,0 +1,10 @@
+node_modules
+vendor
+artifacts
+**/build/**
+themes/*/core
+package-lock.json
+composer.lock
+*.md
+*.php
+tests/tooling/fixtures
