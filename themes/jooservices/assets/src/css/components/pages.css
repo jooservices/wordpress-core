@@ -83,3 +83,46 @@
   display: inline-flex;
   align-items: center;
 }
+
+/* Companies inside the content (About): a timeline instead of the rail card */
+.joo-main .joo-companies {
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.joo-main .joo-companies .joo-block-title {
+  display: none;
+}
+
+.joo-main .joo-companies__list {
+  margin: 8px 0 0;
+  padding: 0 0 0 18px;
+  border-left: 1px solid var(--joo-line);
+}
+
+.joo-main .joo-companies__list .joo-company {
+  position: relative;
+  padding: 0 0 16px 6px;
+  border-top: 0;
+}
+
+.joo-main .joo-companies__list .joo-company:first-child {
+  padding-top: 0;
+}
+
+.joo-main .joo-companies__list .joo-company::before {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: -24px;
+  width: 11px;
+  height: 11px;
+  background: var(--joo-surface);
+  border: 2px solid var(--joo-accent);
+  border-radius: 50%;
+}
+
+.joo-main .joo-company--pinned {
+  margin-bottom: 14px;
+}
