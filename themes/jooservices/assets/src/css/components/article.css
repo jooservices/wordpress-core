@@ -222,22 +222,44 @@
   text-underline-offset: 0.18em;
 }
 
-/* code copy button added by core */
+/* code box: bar with language and copy button, then the scrolling code */
 .joo-code {
-  position: relative;
+  margin-block: 16px;
+  overflow: hidden;
+  background: var(--joo-code);
+  border: 1px solid rgb(30 41 53);
+  border-radius: var(--joo-radius-m);
+}
+
+.joo-code__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  font: 12px/1.6 var(--joo-mono);
+  color: rgb(127 144 166);
+  border-bottom: 1px solid rgb(30 41 53);
 }
 
 .joo-code__copy {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 1px 8px;
+  min-height: 24px;
+  padding: 1px 10px;
   font: 12px/1.6 var(--joo-mono);
   color: rgb(205 217 232);
   cursor: pointer;
   background: transparent;
   border: 1px solid rgb(51 70 92);
   border-radius: var(--joo-radius-s);
+}
+
+.joo-code__copy:hover {
+  border-color: var(--joo-accent);
+}
+
+.joo-code pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
 }
 
 /* tags under the article */

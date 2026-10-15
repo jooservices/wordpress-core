@@ -95,6 +95,7 @@
 
 .joo-lang--dropdown {
   position: relative;
+  flex: none;
 }
 
 .joo-lang--dropdown summary {
