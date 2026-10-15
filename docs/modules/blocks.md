@@ -32,3 +32,14 @@ Optional files: `view.js` (script module) and `style.css`; the build writes hash
 | `joo/theme-toggle`, `joo/lang-switcher`, `joo/search-trigger` | toggle hidden without JS and with one scheme; switcher from `Compat\Multilingual` (nothing with one language); search link opens a `<dialog>` (`/` shortcut) |
 
 Reading time: `Support\ReadingTime::forPost()` (code at 25%, 220 wpm English / 200 Vietnamese) is computed on `save_post`, cached in `_joo_reading_cache` and used by the post-meta block, post cards and JSON-LD `timeRequired`/`wordCount`.
+
+## Sidebar blocks (C13)
+All five render their content on the server and can be deferred as fragments (`companies`, `category-tree`, `top-topics`, `tag-list`) through `Blocks\FragmentBlock`: the fragment endpoint calls the same method as the inline path, so the HTML is identical.
+
+| Block | Notes |
+|---|---|
+| `joo/profile-card` | About me; links to the page with slug `about`, else the author archive (`linkTo`); nothing without the content plugin |
+| `joo/companies` | pinned "current company" card plus a list; pager links are real URLs (`?joo_companies_page=N#companies`, rendered server-side and clamped to the last page); `<joo-companies>` (1.6 KB gzip) swaps pages in place from `/joo/v1/companies`, moves focus to the heading, announces "Page N of M", caches pages, aborts stale requests and offers a retry on errors. The query variable is not part of the canonical URL |
+| `joo/category-tree` | nested list with counts and descriptions; every branch is visible without JS; `<joo-tree>` (0.6 KB gzip) collapses them (the branch with the current page stays open, `expandedDepth` keeps levels open, state in `sessionStorage`) |
+| `joo/top-topics` | image 44x44 (placeholder with initials), count, intro; `strategy` `inherit` uses `content.topics_strategy` / `content.topics_limit` |
+| `joo/tag-list` | chips or cloud (weights 0.85 to 1.15 rem), `rel="tag"`, cached with the `terms` tag |

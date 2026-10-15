@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/profile-card",
+  "title": "Profile card (About me)",
+  "category": "joo",
+  "description": "Avatar, name, title and short bio of the site owner.",
+  "textdomain": "joo-core",
+  "attributes": {
+    "title": { "type": "string", "default": "" },
+    "titleLevel": { "type": "integer", "default": 2 },
+    "showBio": { "type": "boolean", "default": true },
+    "showSocials": { "type": "boolean", "default": true },
+    "linkTo": { "type": "string", "default": "about", "enum": ["about", "author"] },
+    "avatarSize": { "type": "integer", "default": 64 }
+  },
+  "supports": { "html": false, "spacing": { "margin": true, "padding": true } },
+  "x-joo": {
+    "controls": [
+      { "attribute": "title", "type": "text", "label": "Title" },
+      { "attribute": "showBio", "type": "toggle", "label": "Show bio" },
+      { "attribute": "showSocials", "type": "toggle", "label": "Show social links" },
+      {
+        "attribute": "linkTo",
+        "type": "select",
+        "label": "Link to",
+        "options": [
+          ["about", "About page"],
+          ["author", "Author archive"]
+        ]
+      },
+      { "attribute": "avatarSize", "type": "range", "min": 48, "max": 128, "label": "Avatar size" }
+    ]
+  }
+}

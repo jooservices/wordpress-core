@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/companies",
+  "title": "Companies",
+  "category": "joo",
+  "description": "Current company plus a paginated list of previous employers.",
+  "textdomain": "joo-core",
+  "attributes": {
+    "title": { "type": "string", "default": "" },
+    "perPage": { "type": "integer", "default": 2 },
+    "showDescription": { "type": "boolean", "default": true },
+    "pinnedLabel": { "type": "string", "default": "" },
+    "listLabel": { "type": "string", "default": "" }
+  },
+  "supports": { "html": false, "spacing": { "margin": true, "padding": true } },
+  "x-joo": {
+    "controls": [
+      { "attribute": "title", "type": "text", "label": "Title" },
+      { "attribute": "perPage", "type": "range", "min": 1, "max": 10, "label": "Companies per page" },
+      { "attribute": "showDescription", "type": "toggle", "label": "Show description" },
+      { "attribute": "pinnedLabel", "type": "text", "label": "Current company label" },
+      { "attribute": "listLabel", "type": "text", "label": "List label" }
+    ]
+  }
+}

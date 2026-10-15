@@ -540,7 +540,8 @@ final class WpContentProvider implements ContentProviderInterface {
 		$intro = Text::plain( (string) get_term_meta( $term->term_id, 'joo_intro', true ) );
 		$intro = '' !== $intro ? $intro : Text::truncate( Text::plain( $term->description ), 140 );
 		$image = (int) get_term_meta( $term->term_id, 'joo_image_id', true );
-		$ref   = $image > 0 ? $this->image( $image, 'thumbnail' ) : null;
+		$size  = has_image_size( 'joo-thumb' ) ? 'joo-thumb' : 'thumbnail';
+		$ref   = $image > 0 ? $this->image( $image, $size ) : null;
 		if ( null === $ref ) {
 			$newest = $this->postIds(
 				array(
@@ -560,7 +561,7 @@ final class WpContentProvider implements ContentProviderInterface {
 				)
 			);
 			$thumb  = array() === $newest ? 0 : (int) get_post_thumbnail_id( $newest[0] );
-			$ref    = $thumb > 0 ? $this->image( $thumb, 'thumbnail' ) : null;
+			$ref    = $thumb > 0 ? $this->image( $thumb, $size ) : null;
 		}
 		return new Topic( $term->term_id, $term->slug, Text::plain( $term->name ), is_string( $link ) ? $link : '', (int) $term->count, $intro, $ref );
 	}
@@ -653,6 +654,7 @@ final class WpContentProvider implements ContentProviderInterface {
 		if ( ! is_array( $src ) ) {
 			return null;
 		}
-		return new ImageRef( (string) $src[0], (int) $src[1], (int) $src[2], Text::plain( (string) get_post_meta( $id, '_wp_attachment_image_alt', true ) ) );
+		$srcset = wp_get_attachment_image_srcset( $id, $size );
+		return new ImageRef( (string) $src[0], (int) $src[1], (int) $src[2], Text::plain( (string) get_post_meta( $id, '_wp_attachment_image_alt', true ) ), is_string( $srcset ) ? $srcset : '' );
 	}
 }

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/top-topics",
+  "title": "Top topics",
+  "category": "joo",
+  "description": "Topics with a small image, post count and intro.",
+  "textdomain": "joo-core",
+  "attributes": {
+    "title": { "type": "string", "default": "" },
+    "limit": { "type": "integer" },
+    "strategy": { "type": "string", "default": "inherit", "enum": ["inherit", "count", "manual"] },
+    "showImage": { "type": "boolean", "default": true },
+    "showIntro": { "type": "boolean", "default": true }
+  },
+  "supports": { "html": false, "spacing": { "margin": true, "padding": true } },
+  "x-joo": {
+    "controls": [
+      { "attribute": "title", "type": "text", "label": "Title" },
+      { "attribute": "limit", "type": "range", "min": 1, "max": 12, "label": "Topics" },
+      {
+        "attribute": "strategy",
+        "type": "select",
+        "label": "Order",
+        "options": [
+          ["inherit", "Site setting"],
+          ["count", "Most posts"],
+          ["manual", "Curated"]
+        ]
+      },
+      { "attribute": "showImage", "type": "toggle", "label": "Show images" },
+      { "attribute": "showIntro", "type": "toggle", "label": "Show intro" }
+    ]
+  }
+}

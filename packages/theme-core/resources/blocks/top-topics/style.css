@@ -1,0 +1,55 @@
+.joo-topics__list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.joo-topic {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  text-decoration: none;
+}
+
+.joo-topic__img,
+.joo-topic__ph {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, rgb(128 128 128 / 35%), rgb(128 128 128 / 10%));
+  border-radius: 0.5rem;
+}
+
+.joo-topic__img img {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+}
+
+.joo-topic__text {
+  display: grid;
+  min-width: 0;
+}
+
+.joo-topic__text i {
+  font-size: 0.75rem;
+  font-style: normal;
+  opacity: 0.7;
+}
+
+.joo-topic__intro {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.8125rem;
+  opacity: 0.8;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

@@ -1,0 +1,41 @@
+.joo-profile__who {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'avatar name'
+    'avatar title';
+  column-gap: 0.75rem;
+  align-items: center;
+  text-decoration: none;
+}
+
+.joo-profile__avatar {
+  grid-area: avatar;
+  border-radius: 50%;
+}
+
+.joo-profile__name {
+  grid-area: name;
+  font-weight: 700;
+}
+
+.joo-profile__title {
+  grid-area: title;
+  font-size: 0.8125rem;
+  opacity: 0.75;
+}
+
+.joo-profile__bio {
+  margin: 0.75rem 0;
+  font-size: 0.875rem;
+}
+
+.joo-profile__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+}

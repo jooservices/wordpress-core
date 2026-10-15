@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/category-tree",
+  "title": "Category tree",
+  "category": "joo",
+  "description": "Collapsible categories with descriptions and counts.",
+  "textdomain": "joo-core",
+  "attributes": {
+    "title": { "type": "string", "default": "" },
+    "showCounts": { "type": "boolean", "default": true },
+    "showDescriptions": { "type": "boolean", "default": true },
+    "expandedDepth": { "type": "integer", "default": 0 },
+    "hideEmpty": { "type": "boolean", "default": true },
+    "maxDepth": { "type": "integer", "default": 3 }
+  },
+  "supports": { "html": false, "spacing": { "margin": true, "padding": true } },
+  "x-joo": {
+    "controls": [
+      { "attribute": "title", "type": "text", "label": "Title" },
+      { "attribute": "showCounts", "type": "toggle", "label": "Show counts" },
+      { "attribute": "showDescriptions", "type": "toggle", "label": "Show descriptions" },
+      { "attribute": "expandedDepth", "type": "range", "min": 0, "max": 3, "label": "Expanded levels" },
+      { "attribute": "maxDepth", "type": "range", "min": 1, "max": 4, "label": "Maximum depth" },
+      { "attribute": "hideEmpty", "type": "toggle", "label": "Hide empty categories" }
+    ]
+  }
+}

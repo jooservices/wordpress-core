@@ -10,7 +10,11 @@ declare(strict_types=1);
 namespace JOOservices\ThemeCore\Blocks;
 
 use JOOservices\ThemeCore\Assets\AssetRegistry;
+use JOOservices\ThemeCore\Blocks\Blocks\CategoryTree;
+use JOOservices\ThemeCore\Blocks\Blocks\Companies;
 use JOOservices\ThemeCore\Blocks\Blocks\RelatedPosts;
+use JOOservices\ThemeCore\Blocks\Blocks\TagList;
+use JOOservices\ThemeCore\Blocks\Blocks\TopTopics;
 use JOOservices\ThemeCore\Config\Manifest;
 use JOOservices\ThemeCore\Container\Container;
 use JOOservices\ThemeCore\Lazy\FragmentLazy;
@@ -74,6 +78,25 @@ final class BlocksModule extends AbstractModule {
 
 		/** @var FragmentLazy $fragments */
 		$fragments = $c->get( FragmentLazy::class );
+		add_filter(
+			'query_vars',
+			static function ( $vars ) {
+				$vars   = is_array( $vars ) ? $vars : array();
+				$vars[] = Companies::QUERY_VAR;
+				return $vars;
+			}
+		);
+		foreach ( array( Companies::class, CategoryTree::class, TopTopics::class, TagList::class ) as $class ) {
+			$fragments->register(
+				$class::fragment(),
+				static function ( array $args ) use ( $c, $class ): string {
+					$block = $c->get( BlockRegistrar::class )->instance( $class::name() );
+					return $block instanceof FragmentBlock ? $block->html( $args ) : '';
+				},
+				$class::schema(),
+				$class::height()
+			);
+		}
 		$fragments->register(
 			RelatedPosts::FRAGMENT,
 			static function ( array $args ) use ( $c ): string {

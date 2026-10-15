@@ -1,0 +1,24 @@
+.joo-tags__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.joo-tags__items a {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.8125rem;
+  text-decoration: none;
+  border: 1px solid var(--wp--preset--color--border, rgb(128 128 128 / 40%));
+  border-radius: 999px;
+}
+
+.joo-tags--cloud .joo-tags__items a {
+  font-size: calc(var(--joo-tag-weight, 1) * 1rem);
+}
+
+.joo-tags sup {
+  margin-inline-start: 0.125rem;
+  font-size: 0.65em;
+  opacity: 0.7;
+}

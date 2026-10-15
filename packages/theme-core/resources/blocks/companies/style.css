@@ -1,0 +1,73 @@
+.joo-company--pinned {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--wp--preset--color--accent, currentcolor);
+  border-radius: 0.5rem;
+}
+
+.joo-company__label {
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.joo-company__name {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.joo-company__role,
+.joo-company__range {
+  margin: 0;
+  font-size: 0.8125rem;
+  opacity: 0.8;
+}
+
+.joo-company__desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+}
+
+.joo-companies__sub {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.joo-companies__list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.joo-company__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 0.5rem;
+}
+
+.joo-companies__pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+}
+
+.joo-companies__pager a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 1px solid var(--wp--preset--color--border, rgb(128 128 128 / 40%));
+  border-radius: 0.375rem;
+  text-decoration: none;
+}
+
+.joo-companies__pager a[aria-current='page'] {
+  font-weight: 700;
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/tag-list",
+  "title": "Tag list",
+  "category": "joo",
+  "description": "Tags as chips or a weighted cloud.",
+  "textdomain": "joo-core",
+  "attributes": {
+    "title": { "type": "string", "default": "" },
+    "limit": { "type": "integer", "default": 24 },
+    "orderby": { "type": "string", "default": "count", "enum": ["count", "name"] },
+    "showCounts": { "type": "boolean", "default": true },
+    "style": { "type": "string", "default": "chips", "enum": ["chips", "cloud"] }
+  },
+  "supports": { "html": false, "spacing": { "margin": true, "padding": true } },
+  "x-joo": {
+    "controls": [
+      { "attribute": "title", "type": "text", "label": "Title" },
+      { "attribute": "limit", "type": "range", "min": 5, "max": 60, "label": "Tags" },
+      {
+        "attribute": "orderby",
+        "type": "select",
+        "label": "Order",
+        "options": [
+          ["count", "Most used"],
+          ["name", "Name"]
+        ]
+      },
+      {
+        "attribute": "style",
+        "type": "select",
+        "label": "Style",
+        "options": [
+          ["chips", "Chips"],
+          ["cloud", "Cloud"]
+        ]
+      },
+      { "attribute": "showCounts", "type": "toggle", "label": "Show counts" }
+    ]
+  }
+}
