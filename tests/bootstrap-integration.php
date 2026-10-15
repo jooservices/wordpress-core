@@ -16,6 +16,13 @@ if ( ! $joo_tests_dir || ! is_file( $joo_tests_dir . '/includes/functions.php' )
 require_once '/workspace/vendor/autoload.php';
 require_once $joo_tests_dir . '/includes/functions.php';
 
+// Core is loaded exactly like a theme would load it (core.php), before WordPress finishes booting.
+$joo_core = '/workspace/packages/theme-core/core.php';
+if ( is_file( $joo_core ) ) {
+	define( 'JOO_CORE_THROW', true );
+	require_once $joo_core;
+}
+
 tests_add_filter(
 	'muplugins_loaded',
 	static function (): void {
