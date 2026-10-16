@@ -9,7 +9,7 @@ WP_PORT = $(shell bash ./docker/scripts/site-url.sh port "$(WP_SITE_URL)")
 E2E_BASE_URL = $(shell bash ./docker/scripts/site-url.sh internal "$(WP_SITE_URL)")
 export JOOS_TICKET WP_SITE_URL WP_PORT E2E_BASE_URL
 
-.PHONY: plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
+.PHONY: plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-marketplace demo capture-marketplace-preview health perf test-matrix package docs clean hooks
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -99,6 +99,9 @@ test-integration: ## wp-phpunit in the serialized shared WordPress container (WP
 test-e2e: ## Playwright E2E in the shared runner (THEME=..., ARGS="specs/shared")
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh e2e $(THEME) $(ARGS)
+test-marketplace: ## WordPress Theme Check and Plugin Check in the serialized shared test site
+	$(call require_theme)
+	@bash ./docker/scripts/wp-task.sh marketplace $(THEME)
 new-theme: ## Scaffold a theme from the starter: make new-theme NAME=acme [TITLE="Acme"]
 	@$(NODE) tools/new-theme.mjs --name=$(NAME) $(if $(TITLE),--title="$(TITLE)") $(if $(FROM),--from=$(FROM))
 seed: ## Generate and import the deterministic demo content (idempotent; THEME=...)
@@ -127,6 +130,9 @@ plugins-on: ## Activate the mirror plugins again (demo-plugins + MCP plugin)
 demo: ## Build, start Docker, install WordPress + theme, seed, health check (THEME=...)
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh demo $(THEME)
+capture-marketplace-preview: ## Capture the sanitized preview, then remove this ticket's test site/database (THEME=...)
+	$(call require_theme)
+	@CAPTURE_MARKETPLACE_PREVIEW=1 CLEANUP_MARKETPLACE_PREVIEW=1 bash ./docker/scripts/wp-task.sh demo $(THEME)
 health: ## Verify the running demo (THEME=...)
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh health $(THEME)
@@ -139,7 +145,7 @@ test-matrix: ## Plugin compatibility matrix (THEME=...)
 package: ## Build the installable theme zip (THEME=...)
 	$(call require_theme)
 	@$(NODE) tools/theme-check.mjs --theme $(THEME)
-	@$(NODE) tools/build-theme.mjs --theme $(THEME)
+	@$(NODE) tools/build-theme.mjs --theme $(THEME) $(if $(filter jooservices,$(THEME)),--include-plugin jooservices-resume)
 i18n: ## Make POT files (WP-CLI in Docker), build the Vietnamese .po/.mo and fail on untranslated strings
 	@bash ./docker/scripts/wp-task.sh i18n $(THEME)
 docs: ## Generate reference docs (compatibility matrix; more generators land with their stories)

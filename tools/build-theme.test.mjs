@@ -1,6 +1,9 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { EXCLUDED, styleHeader } from './build-theme.mjs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { addBundledPlugin, EXCLUDED, styleHeader } from './build-theme.mjs';
 
 describe('build-theme', () => {
   it('reads the style.css header', () => {
@@ -39,5 +42,33 @@ describe('build-theme', () => {
         EXCLUDED.some((re) => re.test(file)),
         file
       ).toBe(true);
+  });
+
+  it('copies the companion plugin archive into the theme package', () => {
+    const root = mkdtempSync(join(tmpdir(), 'jooservices-theme-package-'));
+    const stage = join(root, 'theme');
+    const pluginZip = join(root, 'jooservices-resume.zip');
+    writeFileSync(pluginZip, 'zip bytes');
+
+    try {
+      const destination = addBundledPlugin(stage, pluginZip, 'jooservices-resume');
+      expect(destination).toBe(join(stage, 'plugins', 'jooservices-resume.zip'));
+      expect(readFileSync(destination, 'utf8')).toBe('zip bytes');
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('fails if the requested companion plugin archive is missing', () => {
+    const root = mkdtempSync(join(tmpdir(), 'jooservices-theme-package-'));
+    const missingPlugin = join(root, 'missing.zip');
+
+    try {
+      expect(() => addBundledPlugin(join(root, 'theme'), missingPlugin, 'jooservices-resume')).toThrow(
+        `bundled plugin archive is missing: ${missingPlugin}`
+      );
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 });

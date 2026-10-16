@@ -5,7 +5,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 ROOT="$(cd "$SCRIPT_DIR/../.." && pwd -P)"
 action="${1:-}"
-[[ -n "$action" ]] || { echo "Usage: wp-task.sh up|install|seed|seed-reset|integration|e2e|health|demo|wp|shell|logs|down|reset|plugins-on|plugins-off [args ...]" >&2; exit 2; }
+[[ -n "$action" ]] || { echo "Usage: wp-task.sh up|install|seed|seed-reset|integration|e2e|marketplace|health|demo|wp|shell|logs|down|reset|plugins-on|plugins-off [args ...]" >&2; exit 2; }
 shift
 theme="${1:-jooservices}"
 if (($# > 0)); then shift; fi
@@ -22,7 +22,41 @@ done
 lock_dir="$workspaces_root/.tmp/jooservices-wp-shared-test.lock"
 mkdir -p "$(dirname "$lock_dir")"
 lock_owned=0
+marketplace_override="$ROOT/.tmp/jooservices-marketplace-compose.yaml"
+restore_theme_source=0
+capture_created_wordpress=0
+capture_created_mailpit=0
+capture_created_uploads=0
+restore_marketplace_mount() {
+  if ((restore_theme_source)); then
+    rm -f "$marketplace_override"
+    if ! "${compose[@]}" up -d --build --wait --force-recreate --renew-anon-volumes wordpress; then
+      echo "ERROR: failed to restore the source theme mount; inspect the shared WordPress container." >&2
+    elif ! "${compose[@]}" exec -T -u www-data -e "THEME=$theme" wordpress bash /scripts/install-wp.sh; then
+      echo "ERROR: failed to verify WordPress after restoring the source theme mount." >&2
+    fi
+    restore_theme_source=0
+  fi
+}
+cleanup_marketplace_preview() {
+  if [[ "${CLEANUP_MARKETPLACE_PREVIEW:-0}" == 1 ]] && ((lock_owned)) && [[ "${ticket:-}" == JOOS-100 ]] && declare -p compose >/dev/null 2>&1; then
+    local services=()
+    if ((capture_created_wordpress)); then services+=(wordpress); fi
+    if ((capture_created_mailpit)); then services+=(mailpit); fi
+    if ((${#services[@]})); then
+      "${compose[@]}" stop "${services[@]}" || echo "ERROR: failed to stop newly created test containers." >&2
+      "${compose[@]}" rm -f "${services[@]}" || echo "ERROR: failed to remove newly created test containers." >&2
+    fi
+    CONFIRM="$ticket" "$ROOT/docker/scripts/shared-db.sh" drop "$ticket" || echo "ERROR: failed to drop the JOOS test database." >&2
+    local uploads_volume="joowt-$(get_env DB_NAME)-uploads"
+    if docker volume inspect "$uploads_volume" >/dev/null 2>&1; then
+      docker volume rm "$uploads_volume" >/dev/null || echo "ERROR: failed to remove the JOOS test uploads volume." >&2
+    fi
+  fi
+}
 release_lock() {
+  restore_marketplace_mount
+  cleanup_marketplace_preview
   if ((lock_owned)) && [[ -f "$lock_dir/pid" ]] && [[ "$(<"$lock_dir/pid")" == "$$" ]]; then
     rm -f "$lock_dir/pid" "$lock_dir/worktree"
     rmdir "$lock_dir" 2>/dev/null || true
@@ -136,13 +170,51 @@ case "$action" in
     base="${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")}"
     E2E_BASE_URL="$base" E2E_THEME="$theme" bash "$ROOT/docker/scripts/runtime.sh" playwright npx --no-install playwright test -c tests/e2e/playwright.config.ts "$@"
     ;;
+  marketplace)
+    ensure_stack
+    bash "$ROOT/docker/scripts/runtime.sh" node tools/theme-check.mjs --theme "$theme"
+    bash "$ROOT/docker/scripts/runtime.sh" php-node tools/build-theme.mjs --theme "$theme" --include-plugin jooservices-resume
+    mkdir -p "$(dirname "$marketplace_override")"
+    cat > "$marketplace_override" <<EOF
+services:
+  wordpress:
+    volumes:
+      - "$ROOT/artifacts/package/$theme:/var/www/html/wp-content/themes/$theme:ro"
+EOF
+    restore_theme_source=1
+    "${compose[@]}" -f "$marketplace_override" up -d --build --wait --force-recreate --renew-anon-volumes wordpress
+    "${compose[@]}" exec -T -u www-data -e "THEME=$theme" wordpress bash /scripts/install-wp.sh
+    for checker in theme-check plugin-check; do
+      if ! "${compose[@]}" exec -T -u www-data wordpress wp plugin is-installed "$checker" </dev/null; then
+        "${compose[@]}" exec -T -u www-data wordpress wp plugin install "$checker" </dev/null
+      fi
+      "${compose[@]}" exec -T -u www-data wordpress wp plugin activate "$checker" </dev/null
+    done
+    "${compose[@]}" exec -T -u www-data wordpress wp theme-check run "$theme" --format=json </dev/null
+    "${compose[@]}" exec -T -u www-data wordpress wp plugin check jooservices-resume --format=json --require=./wp-content/plugins/plugin-check/cli.php </dev/null
+    ;;
   health)
     ensure_stack
     health_check
     ;;
   demo)
+    if [[ "${CLEANUP_MARKETPLACE_PREVIEW:-0}" == 1 ]]; then
+      [[ -n "$("${compose[@]}" ps --all -q wordpress 2>/dev/null)" ]] || capture_created_wordpress=1
+      [[ -n "$("${compose[@]}" ps --all -q mailpit 2>/dev/null)" ]] || capture_created_mailpit=1
+      uploads_volume="joowt-$(get_env DB_NAME)-uploads"
+      docker volume inspect "$uploads_volume" >/dev/null 2>&1 || capture_created_uploads=1
+    fi
     ensure_stack
     seed_demo
+    if [[ "${CAPTURE_MARKETPLACE_PREVIEW:-0}" == 1 ]]; then
+      "${compose[@]}" exec -T -u www-data wordpress wp search-replace 'Viet VU' 'Jordan Sample' --all-tables --precise </dev/null
+      "${compose[@]}" exec -T -u www-data wordpress wp search-replace 'Viet Vu' 'Jordan Sample' --all-tables --precise </dev/null
+      "${compose[@]}" exec -T -u www-data wordpress wp search-replace 'SGCarmart' 'Northstar Demo Co.' --all-tables --precise </dev/null
+      "${compose[@]}" exec -T -u www-data wordpress wp search-replace 'www.sgcarmart.com' 'northstar.example' --all-tables --precise </dev/null
+      "${compose[@]}" exec -T -u www-data wordpress wp search-replace 'Acme Labs' 'Harborview Demo Co.' --all-tables --precise </dev/null
+      E2E_BASE_URL="${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")}" \
+        bash "$ROOT/docker/scripts/runtime.sh" playwright node tools/marketplace-preview.mjs "themes/$theme/screenshot.png"
+    fi
     health_check
     echo "Demo ready at $(bash "$ROOT/docker/scripts/site-url.sh" url "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")."
     ;;
