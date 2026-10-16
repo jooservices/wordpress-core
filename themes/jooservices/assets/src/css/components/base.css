@@ -129,3 +129,26 @@ img {
 .joo-topic__intro {
   opacity: 1;
 }
+
+/* Right to left: code, URLs and keys stay left to right inside RTL text; joined scripts take no letter-spacing. */
+pre,
+code,
+kbd,
+samp {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+:lang(ar),
+:lang(fa),
+:lang(he),
+:lang(ur) {
+  letter-spacing: 0;
+}
+
+:lang(ar) *,
+:lang(fa) *,
+:lang(he) *,
+:lang(ur) * {
+  letter-spacing: 0;
+}
