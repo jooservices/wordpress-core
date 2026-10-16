@@ -32,3 +32,17 @@ Edit a post and use the **Featured** controls to enable it and set its order. Th
 ## If the plugin is unavailable
 
 The theme remains usable for ordinary posts and pages. Resume blocks that require company or profile data hide when there is no data provider. Install and activate `jooservices-resume` to use the resume features; the theme ZIP does not include the plugin.
+
+## Show the resume on a page
+
+Add the shortcode `[joo_resume order="manual" limit="0" current="no"]` to show your company history. Set `order` to `manual` for your own order or `date` for newest first; set `limit` to the number of companies to show (`0` shows all); set `current` to `yes` to show only your current company.
+
+For example, `[joo_resume order="date" limit="3" current="no"]` shows your three newest companies.
+
+You can also add the **Resume timeline** block (`joo/resume`) from the block inserter. It has the same options: `order`, `limit`, and `currentOnly` (choose whether to show only your current company).
+
+The block appears in the inserter on WordPress 7.0 and newer. On older WordPress versions, use the shortcode.
+
+Other tools can use public resume data at `/wp-json/jooservices-resume/v1/resume` or in JSON Resume format at `/wp-json/jooservices-resume/v1/resume/json-resume`; these responses contain only public data and are cached.
+
+Private fields, including compensation, equity, and private custom fields, are never shown to visitors.
