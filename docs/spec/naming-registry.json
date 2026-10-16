@@ -7,7 +7,8 @@
     "joo_demo_checksum",
     "joo_resume_version",
     "joo_resume_flush_rewrite",
-    "joo_settings_schema_version"
+    "joo_settings_schema_version",
+    "joo_resume_custom_fields"
   ],
   "transients": ["joo_manifest_{slug}_{hash}"],
   "postMeta": [
@@ -31,7 +32,21 @@
     "_joo_company_to",
     "_joo_company_pinned",
     "_joo_company_url",
-    "_joo_company_logo_id"
+    "_joo_company_logo_id",
+    "_joo_company_city",
+    "_joo_company_country",
+    "_joo_company_industry",
+    "_joo_company_summary",
+    "_joo_company_employment",
+    "_joo_company_remote",
+    "_joo_company_description",
+    "_joo_company_roles",
+    "_joo_company_achievements",
+    "_joo_company_technologies",
+    "_joo_company_custom",
+    "_joo_company_compensation",
+    "_joo_company_equity",
+    "_joo_company_public_fields"
   ],
   "termMeta": ["joo_short_description", "joo_image_id", "joo_intro", "joo_icon"],
   "userMeta": ["joo_title", "joo_short_bio", "joo_avatar_id", "joo_socials", "joo_dismissed_notices"],

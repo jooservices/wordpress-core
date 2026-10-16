@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JOOservices\Resume;
 
+use JOOservices\Resume\Modules\CompanyDataModel;
 use JOOservices\Resume\Modules\ProfileAndEditorialFields;
 use JOOservices\Resume\PostTypes\Company;
 
@@ -88,6 +89,7 @@ final class Plugin {
 	 */
 	public static function register(): void {
 		( new Company() )->hook();
+		( new CompanyDataModel() )->hook();
 		( new ProfileAndEditorialFields() )->hook();
 	}
 

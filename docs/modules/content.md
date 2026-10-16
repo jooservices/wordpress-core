@@ -13,6 +13,25 @@ Compatibility note: the former lab-only folder and slug `jooservices-content` ha
 | User meta | `joo_title`, `joo_short_bio`, `joo_avatar_id`, `joo_socials` (max 8, https only); avatar override through `get_avatar_data`; email is never exposed |
 | Featured posts | `_joo_featured`, `_joo_featured_order` (0..999); column, sortable order, "featured only" filter, bulk actions (editors) |
 
+### Company data model (JOOS-87)
+
+`Model\CompanyRepository` is the single read path (typed `CompanyRecord`); `Modules\CompanyDataModel` registers the fields, validates REST writes and strips private data from REST responses. Existing companies keep working: every new field is empty. Contract: `plugins/jooservices-resume/schema/company.schema.json` (public projection), validated in CI by `tools/validate-schemas.mjs`.
+
+| Field (meta key) | Rules |
+|---|---|
+| `_joo_company_city`, `_country`, `_industry` | text, 80 |
+| `_joo_company_summary` | card summary, plain text, 200 |
+| `_joo_company_description` | limited rich text (p, br, strong, em, ul, ol, li, https/mailto links) |
+| `_joo_company_employment` | `full_time`, `contract`, `freelance`, `founder` or empty |
+| `_joo_company_remote` | boolean |
+| `_joo_company_roles` | JSON (`{"v":1,"items":[...]}`): title, period, summary; inside the company period, no overlaps, newest first |
+| `_joo_company_achievements` | JSON: text, optional numeric metric, unit, https link |
+| `_joo_company_technologies` | JSON list of unique tags (max 40) |
+| `_joo_company_custom` + option `joo_resume_custom_fields` | owner-defined fields (label, key, type text/number/date/url/list, public or private, order); values validated by type |
+| `_joo_company_compensation`, `_joo_company_equity` | PRIVATE: never in REST for visitors; `_joo_company_public_fields` lists the ones the owner switched to public |
+
+`current` is derived from an empty end month; `CompanyRecord::durationLabel()` gives `2 yrs 3 mos`. Order: pinned first, then `manual` (menu order, newest start) or `date`. REST write errors are 400 with a message per problem. The classic admin box and the repeater screens come with JOOS-88; the front end with JOOS-89.
+
 ## Core side (`Content\`)
 `ContentProviderInterface` (`@api`): `profile()`, `pinnedCompany()`, `companies($page,$perPage,$excludePinned)`, `categoryTree($hideEmpty)`, `topics($limit,$strategy)`, `featured($limit)`, `related($postId,$limit)`; immutable value objects in `Content\Model`.
 

@@ -1,0 +1,15 @@
+{
+  "id": 1,
+  "name": "Bad",
+  "role": "Dev",
+  "from": "2022-13",
+  "to": "",
+  "current": true,
+  "duration": "1 mo",
+  "pinned": false,
+  "location": { "city": "", "country": "" },
+  "roles": [],
+  "achievements": [],
+  "technologies": [],
+  "custom": {}
+}

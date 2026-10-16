@@ -1,0 +1,16 @@
+{
+  "id": 1,
+  "name": "Leaky",
+  "role": "Dev",
+  "from": "2022-03",
+  "to": "",
+  "current": true,
+  "duration": "1 mo",
+  "pinned": false,
+  "location": { "city": "", "country": "" },
+  "roles": [],
+  "achievements": [],
+  "technologies": [],
+  "custom": {},
+  "publicFields": ["compensation"]
+}
