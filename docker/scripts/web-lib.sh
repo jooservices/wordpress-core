@@ -28,6 +28,8 @@ web_write_override() {
     echo "services:"
     echo "  wp-web:"
     echo "    environment:"
+    # Test mode serves this ticket's own WordPress root, not Workspaces/public.
+    echo "      APACHE_DOCUMENT_ROOT: /var/www/html"
     echo "      WORDPRESS_DB_HOST: mariadb:3306"
     echo '      WORDPRESS_DB_NAME: ${WEB_DB_NAME}'
     echo '      WORDPRESS_DB_USER: ${WEB_DB_USER}'
@@ -39,7 +41,7 @@ web_write_override() {
     echo '      WP_VERSION: ${WEB_WP_VERSION}'
     echo "      MAIL_HOST: mailpit"
     echo "      MAIL_PORT_SMTP: '1025'"
-    # Test mode replaces the default web root (the whole Workspaces tree) with this ticket's own WordPress root.
+    # Test mode replaces the default mount (the whole Workspaces tree) with this ticket's own WordPress root.
     echo "    volumes: !override"
     echo "      - wp_web_root:/var/www/html"
     echo "      - wpcli_cache:/cache"
