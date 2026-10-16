@@ -25,6 +25,8 @@ export default defineConfig({
         'packages/theme-core/resources/js/**/*.js',
         'themes/*/assets/src/js/**/*.js',
         'tools/docs-check.mjs',
+        'tools/release-check.mjs',
+        'tools/lib/reproducible.mjs',
         'tools/screenshots.mjs',
       ],
       exclude: ['**/*.test.js'],
