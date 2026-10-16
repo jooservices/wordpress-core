@@ -5,7 +5,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 ROOT="$(cd "$SCRIPT_DIR/../.." && pwd -P)"
 action="${1:-}"
-[[ -n "$action" ]] || { echo "Usage: wp-task.sh up|install|seed|seed-reset|integration|e2e|health|demo|wp|shell|logs|down|reset|plugins-on|plugins-off [args ...]" >&2; exit 2; }
+[[ -n "$action" ]] || { echo "Usage: wp-task.sh up|install|seed|seed-reset|integration|e2e|screenshots|health|demo|wp|shell|logs|down|reset|plugins-on|plugins-off [args ...]" >&2; exit 2; }
 shift
 theme="${1:-jooservices}"
 if (($# > 0)); then shift; fi
@@ -135,6 +135,16 @@ case "$action" in
     ensure_stack
     base="${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")}"
     E2E_BASE_URL="$base" E2E_THEME="$theme" bash "$ROOT/docker/scripts/runtime.sh" playwright npx --no-install playwright test -c tests/e2e/playwright.config.ts "$@"
+    ;;
+  screenshots)
+    ensure_stack
+    base="${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")}"
+    E2E_BASE_URL="$base" bash "$ROOT/docker/scripts/runtime.sh" playwright node tools/screenshots.mjs --theme "$theme" --base "$base" "$@"
+    ;;
+  critical)
+    ensure_stack
+    base="${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")}"
+    bash "$ROOT/docker/scripts/runtime.sh" playwright node tools/critical.mjs --theme "$theme" --base "$base" "$@"
     ;;
   health)
     ensure_stack

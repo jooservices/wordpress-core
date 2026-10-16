@@ -157,4 +157,25 @@ describe('joo-slider', () => {
     vi.advanceTimersByTime(20000);
     expect(el.index).toBe(0);
   });
+
+  it('swaps the arrow keys and the scroll offset in right to left layouts', () => {
+    const el = mount();
+    const key = (name) => {
+      const event = new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true });
+      el.track.dispatchEvent(event);
+    };
+    el.isRtl = () => true;
+    el.track.style.direction = 'rtl';
+    key('ArrowLeft');
+    expect(el.index).toBe(1);
+    key('ArrowRight');
+    expect(el.index).toBe(0);
+    expect(el.track.scrollTo).toHaveBeenLastCalledWith(expect.objectContaining({ left: expect.any(Number) }));
+  });
+
+  it('keeps the left to right arrow keys by default', () => {
+    const el = mount();
+    el.track.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+    expect(el.index).toBe(1);
+  });
 });

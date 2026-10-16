@@ -30,6 +30,7 @@ jobs:
       - run: node tools/check-registry.mjs
       - run: node tools/validate-schemas.mjs
       - run: node tools/docs-reference.mjs --check
+      - run: node tools/docs-check.mjs
       - run: make test-tooling
   unit:
     runs-on: ubuntu-24.04
