@@ -24,6 +24,10 @@
   content: '›';
 }
 
+.joo-breadcrumbs--chevron:dir(rtl) li + li::before {
+  content: '‹';
+}
+
 .joo-breadcrumbs a,
 .joo-breadcrumbs span {
   overflow: hidden;

@@ -22,7 +22,10 @@
     "declaration-property-value-disallowed-list": {
       "width": ["/100vw/"],
       "max-width": ["/100vw/"],
-      "min-width": ["/100vw/"]
+      "min-width": ["/100vw/"],
+      "text-align": ["left", "right"],
+      "float": ["left", "right"],
+      "clear": ["left", "right"]
     },
     "import-notation": null,
     "no-descending-specificity": null,
@@ -31,7 +34,20 @@
     "media-feature-range-notation": null,
     "property-no-vendor-prefix": null,
     "value-no-vendor-prefix": null,
-    "declaration-block-no-redundant-longhand-properties": null
+    "declaration-block-no-redundant-longhand-properties": null,
+    "property-disallowed-list": [
+      [
+        "/^(margin|padding)-(left|right)$/",
+        "/^border-(left|right)(-.+)?$/",
+        "/^border-(top|bottom)-(left|right)-radius$/",
+        "/^scroll-(margin|padding)-(left|right)$/",
+        "left",
+        "right"
+      ],
+      {
+        "message": "Use logical properties (margin-inline-*, padding-inline-*, border-inline-*, inset-inline-*) so the layout mirrors in RTL"
+      }
+    ]
   },
   "overrides": [
     {

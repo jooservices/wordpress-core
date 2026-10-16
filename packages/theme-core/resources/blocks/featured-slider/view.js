@@ -44,9 +44,16 @@ export class JooSlider extends HTMLElement {
   go(i) {
     const count = this.slides.length;
     const next = ((i % count) + count) % count;
-    const left = this.slides[next].offsetLeft - this.track.offsetLeft;
+    const rtl = this.isRtl();
+    const start = this.slides[next].offsetLeft - this.track.offsetLeft;
+    const left = rtl ? start - (this.track.scrollWidth - this.track.clientWidth) : start;
     this.track.scrollTo?.({ left, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
     this.mark(next);
+  }
+
+  /** Whether the track lays out right to left (scrollLeft runs negative there). */
+  isRtl() {
+    return getComputedStyle(this.track).direction === 'rtl';
   }
 
   step(direction) {
@@ -54,9 +61,10 @@ export class JooSlider extends HTMLElement {
   }
 
   onKey(event) {
+    const forward = this.isRtl() ? -1 : 1;
     const keys = {
-      ArrowLeft: () => this.step(-1),
-      ArrowRight: () => this.step(1),
+      ArrowLeft: () => this.step(-forward),
+      ArrowRight: () => this.step(forward),
       Home: () => this.go(0),
       End: () => this.go(this.slides.length - 1),
     };

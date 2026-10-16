@@ -52,7 +52,7 @@
   display: flex;
   gap: 8px;
   align-items: center;
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 .joo-search__link {
@@ -113,7 +113,7 @@
 .joo-lang--dropdown ul {
   position: absolute;
   top: calc(100% + 4px);
-  right: 0;
+  inset-inline-end: 0;
   z-index: 20;
   min-width: 9rem;
   padding: 4px;
@@ -145,7 +145,7 @@
   .joo-header__tools {
     order: 5;
     flex: 1 1 100%;
-    margin-left: 0;
+    margin-inline-start: 0;
   }
 
   .joo-header__tools .joo-search {

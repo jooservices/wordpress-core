@@ -121,7 +121,7 @@
 
 .joo-toc ol {
   margin: 8px 0 2px;
-  padding-left: 20px;
+  padding-inline-start: 20px;
   font-size: 14px;
   color: var(--joo-muted);
 }
@@ -135,7 +135,7 @@
 }
 
 .joo-toc .joo-toc__l3 {
-  margin-left: 16px;
+  margin-inline-start: 16px;
 }
 
 /* prose */
@@ -200,7 +200,7 @@
 .joo-prose th,
 .joo-prose td {
   padding: 6px 10px;
-  text-align: left;
+  text-align: start;
   border: 1px solid var(--joo-line);
 }
 
@@ -210,7 +210,8 @@
 
 .joo-prose blockquote {
   margin-inline: 0;
-  border-radius: 0 6px 6px 0;
+  border-start-end-radius: 6px;
+  border-end-end-radius: 6px;
 }
 
 .joo-prose blockquote p {
@@ -292,7 +293,7 @@
 }
 
 .joo-snav > div:last-child {
-  text-align: right;
+  text-align: end;
 }
 
 .joo-snav .post-navigation-link__label {
@@ -404,14 +405,14 @@
 .joo-comments ol,
 .joo-comments ul {
   margin: 0;
-  padding-left: 0;
+  padding-inline-start: 0;
   list-style: none;
 }
 
 .joo-comments .children {
-  margin-left: 18px;
-  padding-left: 14px;
-  border-left: 1px solid var(--joo-line);
+  margin-inline-start: 18px;
+  padding-inline-start: 14px;
+  border-inline-start: 1px solid var(--joo-line);
 }
 
 .joo-comments .comment-body,
@@ -468,13 +469,13 @@
   }
 
   .joo-snav > div:last-child {
-    text-align: left;
+    text-align: start;
   }
 }
 
 /* heading anchors */
 .joo-anchor {
-  margin-left: 0.25em;
+  margin-inline-start: 0.25em;
   text-decoration: underline;
   text-underline-offset: 0.18em;
 }
