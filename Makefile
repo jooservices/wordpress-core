@@ -7,7 +7,7 @@ JOOS_TICKET ?= $(shell git branch --show-current | sed -nE 's/.*(JOOS-[0-9]+).*/
 WP_SITE_URL ?= $(shell bash ./docker/scripts/site-url.sh url)
 WP_PORT = $(shell bash ./docker/scripts/site-url.sh port "$(WP_SITE_URL)")
 E2E_BASE_URL = $(shell bash ./docker/scripts/site-url.sh internal "$(WP_SITE_URL)")
-export JOOS_TICKET WP_SITE_URL WP_PORT E2E_BASE_URL
+export JOOS_TICKET WP_VERSION WP_PHP_VERSION WP_SITE_URL WP_PORT E2E_BASE_URL MATRIX_VARIANT
 
 .PHONY: test-marketplace critical screenshots plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks release
 
@@ -145,9 +145,9 @@ health: ## Verify the running demo (THEME=...)
 perf: ## Lighthouse CI and size budgets (THEME=...)
 	$(call require_theme)
 	@$(NODE) tools/perf.mjs --theme $(THEME)
-test-matrix: ## Plugin compatibility matrix (THEME=...)
+test-matrix: ## Plugin and runtime compatibility matrix (THEME=..., WP_VERSION=..., WP_PHP_VERSION=...)
 	$(call require_theme)
-	@$(NODE) tools/matrix.mjs $(ARGS)
+	@bash ./docker/scripts/wp-task.sh matrix $(THEME) $(ARGS)
 package: ## Build the installable theme zip (THEME=...)
 	$(call require_theme)
 	@$(NODE) tools/theme-check.mjs --theme $(THEME)

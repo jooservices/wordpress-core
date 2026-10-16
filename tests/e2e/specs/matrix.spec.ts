@@ -10,9 +10,25 @@ const paths: Record<string, string> = {
   search: '/?s=docker',
   ...(JSON.parse(process.env.MATRIX_PATHS ?? '{}') as Record<string, string>),
 };
-const CLS_BUDGET = Number(process.env.MATRIX_CLS ?? '0.1');
+const CLS_BUDGET = Number(process.env.MATRIX_CLS ?? '0.02');
 // Third-party admin-bar or consent scripts may talk to the network; only first-party failures count.
 const ignorable = /favicon|net::ERR_|Failed to load resource: the server responded with a status of (401|403)/;
+
+test(`${plugin}: CSS compatibility baseline`, async ({ page }, info) => {
+  const browser = await page.evaluate(() => ({
+    userAgent: navigator.userAgent,
+    platform: navigator.platform,
+    language: navigator.language,
+  }));
+  expect(browser.userAgent).toMatch(/Mozilla\//);
+  await info.attach('browser-environment.json', { body: JSON.stringify(browser), contentType: 'application/json' });
+  const supported = await page.evaluate(() => ({
+    containerQueries: CSS.supports('container-type', 'inline-size'),
+    relationalSelector: CSS.supports('selector(:has(*))'),
+    colorMix: CSS.supports('background-color', 'color-mix(in srgb, red, blue)'),
+  }));
+  expect(supported).toEqual({ containerQueries: true, relationalSelector: true, colorMix: true });
+});
 
 for (const [name, path] of Object.entries(paths)) {
   test(`${plugin}: ${name}`, async ({ page }, info) => {
