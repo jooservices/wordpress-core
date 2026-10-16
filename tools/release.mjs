@@ -274,7 +274,8 @@ function createPreviewZip({ directory, output }) {
   writeZip(previewRoot, output, { includeRoot: false });
 }
 
-function subjectsSinceRelease() {
+function subjectsSinceRelease(gitContext = null) {
+  if (gitContext) return gitContext.subjects;
   const tags = git(['tag', '--sort=-creatordate', '--list', 'theme-*']).split('\n').filter(Boolean);
   const args = ['log', '--format=%s', '-n', '80'];
   if (tags[0]) args.splice(1, 0, `${tags[0]}..HEAD`);
@@ -375,16 +376,16 @@ function writeEvidence({ outputDir, versions, commit, comparisons, tags, latestW
 }
 
 /** Builds, compares, checksums, and reports the complete release deliverable set. */
-export function buildRelease({ slug = 'jooservices', tag = false, latestWordPress = '' } = {}) {
+export function buildRelease({ slug = 'jooservices', tag = false, latestWordPress = '', gitContext = null } = {}) {
   const problems = checkRelease(ROOT, slug, { latestWordPress });
   if (problems.length) throw new Error(`release blocked:\n  ${problems.join('\n  ')}`);
-  const status = git(['status', '--porcelain', '--untracked-files=all']);
+  const status = gitContext ? gitContext.status : git(['status', '--porcelain', '--untracked-files=all']);
   if (status) throw new Error('release requires a clean committed checkout');
 
   const metadata = readReleaseMetadata(ROOT, slug);
   const themeVersion = metadata.theme.version;
   const pluginVersion = metadata.plugin.version;
-  const commitSubjects = subjectsSinceRelease();
+  const commitSubjects = subjectsSinceRelease(gitContext);
   const tempRoot = fromRoot('artifacts', '.release-work');
   rmSync(tempRoot, { recursive: true, force: true });
   mkdirSync(tempRoot, { recursive: true });
@@ -407,11 +408,15 @@ export function buildRelease({ slug = 'jooservices', tag = false, latestWordPres
       .sort()
       .join('\n') + '\n'
   );
-  const tags = tag ? createLocalTags(themeVersion, pluginVersion) : [];
+  const tags = tag
+    ? gitContext
+      ? [`theme-${themeVersion}`, `plugin-${pluginVersion}`]
+      : createLocalTags(themeVersion, pluginVersion)
+    : [];
   writeEvidence({
     outputDir,
     versions: { theme: themeVersion, plugin: pluginVersion, testedUpTo: metadata.theme.testedUpTo },
-    commit: git(['rev-parse', '--short', 'HEAD']),
+    commit: gitContext ? gitContext.commit : git(['rev-parse', '--short', 'HEAD']),
     comparisons,
     tags,
     latestWordPress,
@@ -425,8 +430,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const slug = args.includes('--theme') ? args[args.indexOf('--theme') + 1] : 'jooservices';
   const latestWordPress = args.includes('--wp') ? args[args.indexOf('--wp') + 1] : '';
+  const gitContextIndex = args.indexOf('--git-context');
+  const gitContext =
+    gitContextIndex >= 0 ? JSON.parse(Buffer.from(args[gitContextIndex + 1], 'base64').toString('utf8')) : null;
   try {
-    const result = buildRelease({ slug, tag: args.includes('--tag'), latestWordPress });
+    const result = buildRelease({ slug, tag: args.includes('--tag'), latestWordPress, gitContext });
     const sizes = result.comparisons
       .map(({ name }) => `${name} ${Math.round(statSync(join(result.outputDir, name)).size / 1024)} KB`)
       .join('\n');

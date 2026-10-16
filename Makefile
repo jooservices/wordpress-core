@@ -142,7 +142,7 @@ package: ## Build the installable theme zip (THEME=...)
 	@$(NODE) tools/build-theme.mjs --theme $(THEME)
 release: ## Build ThemeForest artifacts (THEME=..., WP=..., TAG=1 for local tags)
 	$(call require_theme)
-	@$(PHP_NODE) tools/release.mjs --theme $(THEME) $(if $(WP),--wp $(WP)) $(if $(TAG),--tag)
+	@node tools/release-runner.mjs --theme $(THEME) $(if $(WP),--wp $(WP)) $(if $(TAG),--tag)
 i18n: ## Make POT files (WP-CLI in Docker), build the Vietnamese .po/.mo and fail on untranslated strings
 	@bash ./docker/scripts/wp-task.sh i18n $(THEME)
 docs: ## Generate reference docs (compatibility matrix; more generators land with their stories)
