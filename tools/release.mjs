@@ -107,13 +107,14 @@ export function sanitizeDemoXml(sourceXml, companies) {
       '<wp:author_last_name><![CDATA[VU]]></wp:author_last_name>',
       '<wp:author_last_name><![CDATA[Example]]></wp:author_last_name>'
     )
+    .replaceAll('<dc:creator><![CDATA[viet]]></dc:creator>', '<dc:creator><![CDATA[taylor]]></dc:creator>')
     .replace(/jooservices\.com/gi, 'example.test')
     .replaceAll('https://github.com/jooservices', 'https://example.invalid')
     .replaceAll('https://www.linkedin.com/in/jooservices', 'https://example.invalid');
   return xml;
 }
 
-function createDemoContent(source, target) {
+export function createDemoContent(source, target) {
   const generatorData = JSON.parse(readFileSync(fromRoot('tools/wxr-generator/data/topics.json'), 'utf8'));
   mkdirSync(join(target, 'media'), { recursive: true });
   const xml = sanitizeDemoXml(readFileSync(join(source, 'content.xml'), 'utf8'), generatorData.companies);
@@ -129,20 +130,122 @@ function createDemoContent(source, target) {
   settings.options.blogdescription = 'Synthetic technical posts for the JOOservices theme';
   writeFileSync(join(target, 'menus.json'), readFileSync(join(source, 'menus.json')));
   writeFileSync(join(target, 'settings.json'), `${JSON.stringify(settings, null, 2)}\n`);
-  writeFileSync(join(target, 'manifest.json'), readFileSync(join(source, 'manifest.json')));
+  const sourceManifest = JSON.parse(readFileSync(join(source, 'manifest.json'), 'utf8'));
+  const sourceMenus = JSON.parse(readFileSync(join(source, 'menus.json'), 'utf8'));
+  const manifest = {
+    ...sourceManifest,
+    package: 'jooservices-demo-content',
+    packageVersion: 1,
+    tier: 'B',
+    license: 'CC-BY-4.0',
+    locale: 'en_US',
+    languages: ['en', 'vi'],
+    generatedMedia: true,
+  };
+  writeFileSync(join(target, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
   writeFileSync(
-    join(target, 'README.md'),
+    join(target, 'language.json'),
+    `${JSON.stringify({ locale: 'en_US', content: ['en', 'vi'] }, null, 2)}\n`
+  );
+  writeFileSync(join(target, 'widgets.json'), `${JSON.stringify({ sidebars: [], widgets: [] }, null, 2)}\n`);
+  writeFileSync(
+    join(target, 'patterns.json'),
+    `${JSON.stringify({ source: 'JOOservices theme', registeredWithTheme: true, patterns: [] }, null, 2)}\n`
+  );
+  writeFileSync(
+    join(target, 'theme-options.json'),
+    `${JSON.stringify({ theme_mods: { nav_menu_locations: ['primary', 'footer'] } }, null, 2)}\n`
+  );
+  const posts = {
+    post: {
+      publish: sourceManifest.counts.posts.publish + sourceManifest.counts.posts.protected,
+      draft: sourceManifest.counts.posts.draft,
+      private: sourceManifest.counts.posts.private,
+      inherit: 0,
+    },
+    page: { publish: sourceManifest.counts.pages },
+    joo_company: { publish: sourceManifest.counts.companies },
+    attachment: { inherit: sourceManifest.counts.attachments },
+    wp_navigation: { publish: 1 },
+    nav_menu_item: {
+      publish: Object.values(sourceMenus).reduce((total, entries) => total + countMenuEntries(entries), 0),
+    },
+  };
+  const structure = {
+    postTypes: posts,
+    terms: { category: sourceManifest.counts.categories, post_tag: sourceManifest.counts.tags },
+    comments: sourceManifest.counts.comments,
+    users: { author: 1, editor: 1 },
+    menus: sourceMenus,
+    options: settings.options,
+    themeOptions: {
+      nav_menu_locations: { primary: 'joo-primary', footer: 'joo-footer' },
+      profile_user: settings.profile.user,
+    },
+    language: { locale: 'en_US', content: ['en', 'vi'] },
+  };
+  writeFileSync(join(target, 'structure.json'), `${JSON.stringify(structure, null, 2)}\n`);
+  writeFileSync(
+    join(target, 'LICENSES.md'),
     [
-      '# Demo content',
+      '# Demo content licences',
       '',
-      'This import package uses synthetic sample writing, fictional company names, example.test email addresses, and locally generated gradient images. It contains no live-site export, externally sourced articles, or third-party photographs.',
+      'This is the licence-clean Tier B buyer demo prepared for the JOOservices ThemeForest download.',
       '',
-      'The WXR file references images through the `__MEDIA_BASE__` placeholder. Before importing, upload the files in `media/` to a publicly reachable directory on the target site, then replace every `__MEDIA_BASE__` in `content.xml` with that directory URL. Import `content.xml` with the WordPress importer and enable attachment download.',
+      '- Original sample text in `content.xml` is generated locally from the JOOservices demo generator and is licensed CC BY 4.0. Buyers may copy, adapt, publish, and use it commercially with attribution to “JOOservices Demo Content”.',
+      '- All PNG files in `media/` are locally generated gradient images and are licensed CC BY 4.0. Buyers may reuse them with the same attribution.',
+      '- Names, biographies, company records, email addresses, and links in the package are fictional examples. No owner or employer records are included.',
+      '- No third-party article text, photos, icons, video, or externally hosted media is included.',
+      '- WordPress blocks and the navigation structure are data for the GPL-compatible JOOservices product; see the product licence supplied with the theme and plugin.',
       '',
-      'The accompanying JSON files describe menus, profile defaults, and expected generated-content counts for importer integrations.',
+      'Licence reference: Creative Commons Attribution 4.0 International (CC BY 4.0). Include the attribution statement above when reusing sample text or generated images.',
       '',
     ].join('\n')
   );
+  writeFileSync(
+    join(target, 'ATTRIBUTION.md'),
+    [
+      '# Demo content attribution',
+      '',
+      'The following files contain original material generated for this package by JOOservices. Each is licensed CC BY 4.0; attribution: “JOOservices Demo Content”.',
+      '',
+      '- `content.xml` — synthetic English and Vietnamese posts, pages, fictional company records, and placeholder profile data.',
+      ...(sourceManifest.expected.mediaFiles
+        ? Array.from({ length: sourceManifest.expected.mediaFiles }, (_, index) => {
+            const width = index % 3 === 2 ? 800 : 1600;
+            const height = index % 3 === 2 ? 600 : 900;
+            return `- \`media/demo-${String(index + 1).padStart(2, '0')}-${width}x${height}.png\` — locally generated gradient image.`;
+          })
+        : []),
+      '',
+      'Video: none. Third-party media: none.',
+      '',
+    ].join('\n')
+  );
+  writeFileSync(
+    join(target, 'README.md'),
+    [
+      '# One-click demo import',
+      '',
+      'This package contains generated sample writing, fictional company records, example.test email addresses, and locally generated gradient images. It contains no live-site export, externally sourced articles, or third-party photographs.',
+      '',
+      'Recommended: activate JOOservices Resume and JOOservices, then run `wp joo demo import /path/to/jooservices-demo-content.zip --dry-run` followed by `wp joo demo import /path/to/jooservices-demo-content.zip`. The importer checks package files, shows conflicts, reports progress, and records only items it creates. Use `wp joo demo diff /path/to/jooservices-demo-content.zip` to compare the imported structure and `wp joo demo rollback` to remove this import.',
+      '',
+      'For the WordPress Importer fallback, extract the archive, copy `media/` to a public URL, replace the `__MEDIA_BASE__` placeholder in `content.xml` with that URL, then import the WXR file and enable attachment download. This fallback imports WordPress content only; apply menu and settings data from the JSON files manually.',
+      'You can also import `content.xml` with `wp import` or WordPress Playground’s `importWxr` Blueprint step. Playground imports WXR content into an existing site; it does not restore the complete site from this content ZIP. See the [Playground WXR import guide](https://developer.wordpress.org/playground/handbook/guides/import-content-with-blueprints/).',
+      '',
+      'The package includes WXR, media, menus, settings, theme options, language metadata, widget/pattern declarations, a structural baseline, licence terms, attribution, and checksums. Its compressed archive must remain below 40 MB.',
+      '',
+    ].join('\n')
+  );
+  const checksums = Object.fromEntries(
+    sortedFiles(target).map((file) => [relative(target, file).replaceAll('\\', '/'), sha256(readFileSync(file))])
+  );
+  writeFileSync(join(target, 'checksums.json'), `${JSON.stringify(checksums, null, 2)}\n`);
+}
+
+function countMenuEntries(entries) {
+  return entries.reduce((total, entry) => total + 1 + countMenuEntries(entry.children ?? []), 0);
 }
 
 function writeDependencies(directory, themeVersion, pluginVersion) {
@@ -233,9 +336,9 @@ function createThemeForestPackage({
       '',
       '1. In WordPress, install the zip under Appearance > Themes > Add New > Upload Theme.',
       '2. Install `Plugins/jooservices-resume-*.zip` under Plugins > Add New > Upload Plugin, then activate it.',
-      '3. In Appearance > Editor, set the primary and footer navigation menus. Choose the dark or light style in Styles.',
-      '4. Add company history in Companies and profile details under Users > Profile.',
-      '5. Import the sample content by following `../Demo-Content/README.md`.',
+      '3. To import the included synthetic content, follow `../Demo-Content/README.md` and use the enclosed `jooservices-demo-content.zip` with WP-CLI.',
+      '4. In Appearance > Editor, choose a dark or light style. The imported package assigns the primary and footer menus.',
+      '5. Replace the fictional sample profile and company records with your own information.',
       '',
       '## Requirements and support',
       '',
@@ -253,7 +356,7 @@ function createThemeForestPackage({
       '<!doctype html>',
       '<html lang="en"><head><meta charset="utf-8"><title>JOOservices buyer guide</title></head><body>',
       `<h1>JOOservices buyer guide</h1><p>This download contains JOOservices theme ${themeVersion} and the separate JOOservices Resume plugin ${pluginVersion}.</p>`,
-      '<h2>Install</h2><ol><li>Install the theme zip under Appearance &gt; Themes &gt; Add New &gt; Upload Theme.</li><li>Install and activate the separate Resume zip under Plugins &gt; Add New &gt; Upload Plugin.</li><li>Set navigation menus in Appearance &gt; Editor and choose the dark or light style.</li><li>Add company history under Companies and profile details under Users &gt; Profile.</li><li>Follow the Demo-Content README to import the synthetic sample content.</li></ol>',
+      '<h2>Install</h2><ol><li>Install the theme zip under Appearance &gt; Themes &gt; Add New &gt; Upload Theme.</li><li>Install and activate the separate Resume zip under Plugins &gt; Add New &gt; Upload Plugin.</li><li>Follow the Demo-Content README and use its enclosed demo ZIP with WP-CLI to load the sample site.</li><li>Choose the dark or light style in Appearance &gt; Editor.</li><li>Replace the fictional sample profile and company records with your own information.</li></ol>',
       '<h2>Requirements and support</h2><p>WordPress 6.6 or newer and PHP 8.1 or newer are required. See the included compatibility matrix and deployment runbook. ThemeForest handles marketplace update delivery. The theme makes no external licence or tracking request.</p>',
       '<h2>Customization</h2><p>Use the Site Editor for templates, template parts, navigation, and style variations. Use a child theme for PHP or CSS overrides. The theme supports English and Vietnamese.</p>',
       '</body></html>',
@@ -344,10 +447,13 @@ function buildCandidate({ buildNumber, slug, themeVersion, pluginVersion, commit
     pluginVersion,
     commitSubjects,
   });
-  writeFileSync(join(packageRoot, 'SHA256SUMS'), checksumManifest(packageRoot));
-
   const demoZip = join(workspace, `jooservices-demo-content-${themeVersion}.zip`);
-  writeZip(join(packageRoot, 'Demo-Content'), demoZip);
+  writeZip(join(packageRoot, 'Demo-Content'), demoZip, { includeRoot: false });
+  if (statSync(demoZip).size >= 40 * 1024 * 1024) {
+    throw new Error(`demo content package exceeds the 40 MB limit (${statSync(demoZip).size} bytes)`);
+  }
+  copyFileSync(demoZip, join(packageRoot, 'Demo-Content', 'jooservices-demo-content.zip'));
+  writeFileSync(join(packageRoot, 'SHA256SUMS'), checksumManifest(packageRoot));
   const packageZip = join(workspace, `jooservices-themeforest-${themeVersion}.zip`);
   writeZip(packageRoot, packageZip);
   const previewZip = join(workspace, `jooservices-themeforest-preview-${themeVersion}.zip`);

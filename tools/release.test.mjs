@@ -1,10 +1,19 @@
 // @vitest-environment node
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { checksumManifest, problems, readVersions, releaseNotes, sanitizeDemoXml } from './release.mjs';
-import { compareArtifacts, sha256 } from './lib/reproducible.mjs';
+import {
+  checksumManifest,
+  createDemoContent,
+  problems,
+  readVersions,
+  releaseNotes,
+  sanitizeDemoXml,
+} from './release.mjs';
+import { compareArtifacts, sha256, sortedFiles } from './lib/reproducible.mjs';
+import { build } from './wxr-generator/generate.mjs';
+import { writeGeneratedDemo } from './demo-package.mjs';
 import { checkRelease, releaseProblems, readReleaseMetadata } from './release-check.mjs';
 import { check } from './theme-check.mjs';
 import { render } from './perf-report.mjs';
@@ -84,6 +93,7 @@ describe('release', () => {
       '<url>https://jooservices.com</url><url>https://www.sgcarmart.com</url>',
       '<content:encoded><![CDATA[hello@jooservices.com]]></content:encoded>',
       '<url>https://github.com/jooservices</url>',
+      '<dc:creator><![CDATA[viet]]></dc:creator>',
     ].join('\n');
     const clean = sanitizeDemoXml(xml, [
       { name: 'JOOservices Ltd', url: 'https://jooservices.com' },
@@ -95,9 +105,52 @@ describe('release', () => {
     expect(clean).toContain('<wp:post_name><![CDATA[example-company-2]]></wp:post_name>');
     expect(clean).toContain('hello@example.test');
     expect(clean).not.toContain('Viet VU');
+    expect(clean).toContain('<dc:creator><![CDATA[taylor]]></dc:creator>');
+    expect(clean).not.toContain('<![CDATA[viet]]>');
     expect(clean).not.toContain('SGCarmart');
     expect(clean).not.toContain('jooservices.com');
     expect(clean).not.toContain('sgcarmart.com');
+  });
+
+  it('builds a checked, fictionalized Tier B package with reusable licensed content', () => {
+    const root = tempDirectory();
+    const source = join(root, 'source');
+    const target = join(root, 'Demo-Content');
+    writeGeneratedDemo(build(42), source);
+    createDemoContent(source, target);
+
+    const xml = readFileSync(join(target, 'content.xml'), 'utf8');
+    const manifest = JSON.parse(readFileSync(join(target, 'manifest.json'), 'utf8'));
+    const checksums = JSON.parse(readFileSync(join(target, 'checksums.json'), 'utf8'));
+    const licenses = readFileSync(join(target, 'LICENSES.md'), 'utf8');
+    const attribution = readFileSync(join(target, 'ATTRIBUTION.md'), 'utf8');
+
+    expect(manifest).toMatchObject({ tier: 'B', license: 'CC-BY-4.0', generatedMedia: true, languages: ['en', 'vi'] });
+    expect(xml).toContain('<wp:author_login><![CDATA[taylor]]></wp:author_login>');
+    expect(xml).not.toContain('Viet VU');
+    expect(xml).not.toContain('sgcarmart.com');
+    expect(licenses).toContain('Buyers may copy, adapt, publish, and use it commercially');
+    expect(licenses).toContain('CC BY 4.0');
+    expect(attribution).toContain('media/demo-12-800x600.png');
+    expect(JSON.parse(readFileSync(join(target, 'widgets.json'), 'utf8'))).toEqual({ sidebars: [], widgets: [] });
+    expect(JSON.parse(readFileSync(join(target, 'patterns.json'), 'utf8'))).toMatchObject({
+      registeredWithTheme: true,
+      patterns: [],
+    });
+    expect(JSON.parse(readFileSync(join(target, 'structure.json'), 'utf8')).themeOptions).toEqual({
+      nav_menu_locations: { primary: 'joo-primary', footer: 'joo-footer' },
+      profile_user: 'taylor',
+    });
+    expect(Object.keys(checksums).sort()).toEqual(
+      sortedFiles(target)
+        .filter((file) => !file.endsWith('/checksums.json'))
+        .map((file) => relative(target, file).replaceAll('\\', '/'))
+        .sort()
+    );
+    expect(Object.values(checksums).every((sum) => /^[a-f0-9]{64}$/.test(sum))).toBe(true);
+    expect(sortedFiles(target).reduce((sum, file) => sum + readFileSync(file).length, 0)).toBeLessThan(
+      40 * 1024 * 1024
+    );
   });
 
   it('creates sorted checksum manifests and SHA-256 hashes', () => {
