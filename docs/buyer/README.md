@@ -34,7 +34,7 @@ The files are Markdown so they can be hosted with a ThemeForest item or publishe
 - Supported browsers: Safari 16.4+, Chrome and Edge latest plus previous, Firefox ESR plus latest, iOS Safari 16.4+, and Android Chrome.
 - English and Vietnamese are included. RTL layout is supported in 1.0.
 - WooCommerce is not part of 1.0. The theme should not break when WooCommerce is active, but it does not provide WooCommerce styling.
-- Demo content in the repository is generated for development and is not a buyer-facing importer. The ThemeForest release still needs a licence-clean demo import package. Until that is shipped, use the manual setup in [Getting started](getting-started.md); this guide does not claim the under-15-minute demo-import dry run is complete.
+- The ThemeForest download includes the licence-clean Tier B demo package. Preview it, import it in batches, verify its structural diff, and roll it back with the WP-CLI steps in [Getting started](getting-started.md).
 - Product screenshots in this guide are generated from the running showcase by `tools/screenshots.mjs`. Regenerate them as described in [Getting started](getting-started.md) when updating the examples.
 
 ## Documentation map

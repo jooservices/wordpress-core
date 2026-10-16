@@ -48,7 +48,7 @@ done
 }
 
 compose=(docker compose --project-directory "$workspaces_root" --env-file "$workspaces_root/.env" -f "$workspaces_root/dockers/compose.yaml" -p workspaces-shared --profile runtimes run --rm --no-deps --volume "$ROOT:/workspace" --workdir /workspace --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --env TMPDIR=/tmp)
-for name in E2E_BASE_URL E2E_THEME E2E_ENGINES CI; do
+for name in E2E_BASE_URL E2E_THEME E2E_ENGINES CI WP_VERSION WP_PHP_VERSION MATRIX_VARIANT MATRIX_PLUGIN MATRIX_PATHS MATRIX_CLS PLAYWRIGHT_JSON_OUTPUT_NAME; do
   value="${!name:-}"
   if [[ -n "$value" ]]; then compose+=(--env "$name"); fi
 done

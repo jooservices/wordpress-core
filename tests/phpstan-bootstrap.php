@@ -23,3 +23,5 @@ if ( ! defined( 'JOO_CORE_MIN_PHP' ) ) {
 if ( ! defined( 'JOO_CORE_MIN_WP' ) ) {
 	define( 'JOO_CORE_MIN_WP', '6.6' );
 }
+
+require_once __DIR__ . '/stubs/WP_CLI.php';

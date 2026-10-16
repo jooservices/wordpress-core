@@ -7,9 +7,9 @@ JOOS_TICKET ?= $(shell git branch --show-current | sed -nE 's/.*(JOOS-[0-9]+).*/
 WP_SITE_URL ?= $(shell bash ./docker/scripts/site-url.sh url)
 WP_PORT = $(shell bash ./docker/scripts/site-url.sh port "$(WP_SITE_URL)")
 E2E_BASE_URL = $(shell bash ./docker/scripts/site-url.sh internal "$(WP_SITE_URL)")
-export JOOS_TICKET WP_SITE_URL WP_PORT E2E_BASE_URL
+export JOOS_TICKET WP_VERSION WP_PHP_VERSION WP_SITE_URL WP_PORT E2E_BASE_URL MATRIX_VARIANT
 
-.PHONY: test-marketplace critical screenshots plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks release
+.PHONY: test-marketplace critical screenshots plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-e2e-demo demo-package demo health perf test-matrix package docs clean hooks release
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -99,6 +99,11 @@ test-integration: ## wp-phpunit in the serialized shared WordPress container (WP
 test-e2e: ## Playwright E2E in the shared runner (THEME=..., ARGS="specs/shared")
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh e2e $(THEME) $(ARGS)
+test-e2e-demo: demo-package ## Import, diff, idempotence, and rollback on a clean shared WordPress site
+	$(call require_theme)
+	@bash ./docker/scripts/wp-task.sh e2e-demo $(THEME)
+demo-package: ## Build the licence-clean Tier B buyer demo import ZIP
+	@$(PHP_NODE) tools/demo-package.mjs
 test-marketplace: ## WordPress Theme Check and Plugin Check in the serialized shared test site
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh marketplace $(THEME)
@@ -145,9 +150,9 @@ health: ## Verify the running demo (THEME=...)
 perf: ## Lighthouse CI and size budgets (THEME=...)
 	$(call require_theme)
 	@$(NODE) tools/perf.mjs --theme $(THEME)
-test-matrix: ## Plugin compatibility matrix (THEME=...)
+test-matrix: ## Plugin and runtime compatibility matrix (THEME=..., WP_VERSION=..., WP_PHP_VERSION=...)
 	$(call require_theme)
-	@$(NODE) tools/matrix.mjs $(ARGS)
+	@bash ./docker/scripts/wp-task.sh matrix $(THEME) $(ARGS)
 package: ## Build the installable theme zip (THEME=...)
 	$(call require_theme)
 	@$(NODE) tools/theme-check.mjs --theme $(THEME)

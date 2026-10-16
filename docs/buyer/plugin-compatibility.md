@@ -1,6 +1,8 @@
 # Plugin compatibility
 
-Compatibility is based on the repository's current test matrix and varies by plugin version. Read the [full compatibility table](../compatibility.md) before installing a plugin. **PASS** means the recorded version passed its matrix test; **NOT RUN** means no test result is recorded; **SKIPPED** identifies a manual or licensed test that was not run.
+Compatibility is based on the repository's current test matrix and varies by plugin version. Read the [full compatibility table](../compatibility.md) before installing a plugin. **PASS** means the recorded version passed its matrix test; **NOT RUN** means no test result is recorded; **UNSUPPORTED** identifies an item with no 1.0 support promise.
+
+The [product compatibility matrix](../../themes/jooservices/docs/compatibility-matrix.md) covers WordPress, PHP, databases, hosting, installation modes, browser targets, and the Tier 1 support policy. It also labels cells that are unsupported or still unvalidated for 1.0.
 
 The theme is designed to work alongside SEO, caching, multilingual, forms, security, and image plugins. Avoid enabling two plugins that both generate canonical tags, social metadata, structured data, or sitemaps. After activation, check a post, archive, search page, and the browser console.
 

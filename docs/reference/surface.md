@@ -14,6 +14,8 @@ REST namespace: `joo/v1`.
 - `/profile`
 - `/fragment/(?P<name>[a-z0-9-]+)`
 - `/terminal/fs`
+- `/resume`
+- `/resume/json-resume`
 
 ## Blocks
 
@@ -39,6 +41,7 @@ REST namespace: `joo/v1`.
 - `joo/term-intro`
 - `joo/term-image`
 - `joo/author-stats`
+- `joo/resume`
 
 ## Custom elements
 

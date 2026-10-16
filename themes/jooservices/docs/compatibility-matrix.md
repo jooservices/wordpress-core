@@ -1,29 +1,72 @@
-# Plugin matrix: jooservices (2026-10-15)
+# JOOservices 1.0 compatibility matrix
 
-Tested 21 pass, 0 fail, 2 skipped.
+This matrix describes the JOOservices block theme and the JOOservices Resume companion plugin (`jooservices-resume`) for the ThemeForest release. Evidence is dated; a target version is supported only when the row says **PASS**. **UNVALIDATED** means the release makes no compatibility promise for that cell. **UNSUPPORTED** identifies a deliberate 1.0 boundary.
 
-| Key | Plugin | Version | Result | Notes |
-| --- | --- | --- | --- | --- |
-| yoast | Yoast SEO | 28.7 | PASS |  |
-| rankmath | Rank Math SEO | 1.0.280 | PASS |  |
-| aioseo | All in One SEO | 5.0.3 | PASS |  |
-| seopress | SEOPress | 10.3 | PASS |  |
-| litespeed-cache | LiteSpeed Cache | 7.9.1 | PASS |  |
-| wp-rocket | WP Rocket | - | SKIPPED | licensed plugin: zip not present in tests/matrix/vendor/ (not tested) |
-| w3-total-cache | W3 Total Cache | 2.10.7 | PASS |  |
-| autoptimize | Autoptimize | 3.1.16 | PASS |  |
-| polylang | Polylang | 3.8.11 | PASS |  |
-| wpml | WPML | - | SKIPPED | licensed plugin: zip not present in tests/matrix/vendor/ (not tested) |
-| translatepress | TranslatePress | 3.3.8 | PASS |  |
-| cf7 | Contact Form 7 | 6.2.2 | PASS |  |
-| wpforms | WPForms Lite | 2.0.2.2 | PASS |  |
-| fluentform | Fluent Forms | 6.2.15 | PASS |  |
-| jetpack | Jetpack | 16.3.1 | PASS |  |
-| site-kit | Site Kit by Google | 1.189.0 | PASS |  |
-| smush | Smush | 4.3.4 | PASS |  |
-| shortpixel | ShortPixel Image Optimizer | 6.6.1 | PASS |  |
-| ewww | EWWW Image Optimizer | 8.9.0 | PASS |  |
-| tablepress | TablePress | 3.4.1 | PASS |  |
-| acf | Advanced Custom Fields | 6.8.10 | PASS |  |
-| akismet | Akismet | 5.7.2 | PASS |  |
-| wordfence | Wordfence | 9.0.2 | PASS |  |
+Last reviewed: 2026-10-16. The nightly compatibility workflow refreshes runtime and plugin reports. See the [plugin results](../../../docs/compatibility.md) and [browser target notes](browser-compatibility.md).
+
+## WordPress and PHP
+
+| Dimension | 1.0 target | Evidence/status | Notes |
+| --- | --- | --- | --- |
+| WordPress 6.6 | Supported | PASS — integration suite on WordPress 6.6.2 / PHP 8.3.13 in JOOS-108 | Minimum supported WordPress release. |
+| WordPress 6.7 | Supported | UNVALIDATED in this report | Run `WP_VERSION=6.7 make test-matrix THEME=jooservices ARGS="--runtime-only"`. |
+| WordPress 6.8 | Supported | UNVALIDATED in this report | Run `WP_VERSION=6.8 make test-matrix THEME=jooservices ARGS="--runtime-only"`. |
+| Latest stable WordPress | Supported | PASS — 7.1.3 / PHP 8.3.35 integration suite in JOOS-108 | Nightly job records the exact installed core version. |
+| Next WordPress beta | Evaluation only | Not a 1.0 support promise | Run `WP_VERSION=beta` for early compatibility feedback. A beta failure does not change the stable support range. |
+| PHP 8.1–8.5 | Supported by product code | UNVALIDATED across the full range in this report | Run a runtime variant with `WP_PHP_VERSION=8.1` through `8.5`. PHP 8.1 is end-of-life; PHP 8.3 or newer is recommended by WordPress. |
+
+The product minimum remains WordPress 6.6 and PHP 8.1 as defined by the theme and companion plugin. WordPress currently recommends PHP 8.3+, MariaDB 10.11+, or MySQL 8.0+; PHP 8.1 is outside upstream security support. Review the [WordPress requirements](https://wordpress.org/about/requirements/) and [PHP supported versions](https://www.php.net/supported-versions.php) before choosing a hosting runtime.
+
+## Database and installation modes
+
+| Dimension | 1.0 target | Evidence/status | Notes |
+| --- | --- | --- | --- |
+| MariaDB 12.3.3 | Lab baseline | Current shared Workspaces database; runtime result recorded by the matrix | Each developer worktree uses its own `wp_JOOS_<number>` database. |
+| MariaDB 10.11+ | Candidate minimum | UNVALIDATED below 12.3.3 | WordPress recommendation; the theme has not been tested against every MariaDB patch. |
+| MySQL 8.0+ | Candidate minimum | UNVALIDATED | WordPress recommendation; no MySQL service is part of the shared developer stack. |
+| WordPress multisite | Unsupported in 1.0 | Deliberate product boundary | Multisite-specific behavior is outside the first release. |
+| WordPress installed in a subdirectory | UNVALIDATED | No completed subdirectory-host smoke test | Standard root installations are the supported baseline. |
+| Redis object cache off | Supported baseline | Uses WordPress's normal cache behavior | The theme does not require Redis. |
+| Redis object cache on | UNVALIDATED | No theme-specific Redis object-cache run recorded | Hosting and cache-plugin interaction depends on the selected drop-in and configuration. |
+
+The database floors follow WordPress's current recommendations. The shared development service currently uses MariaDB 12.3.3; this proves the lab baseline only. Database support outside the recorded cell remains unvalidated.
+
+## Plugins and themes
+
+| Area | 1.0 support | Verification |
+| --- | --- | --- |
+| Tier 1 plugins | Supported only for rows marked PASS in the [plugin matrix](compatibility.md) | Install, health checks, PHP log scan, and browser smoke; reports record the installed plugin version and runtime. |
+| WP Rocket and WPML | Unsupported until licensed packages are supplied and tested | No licensed package is included in the lab. |
+| Elementor | Basic compatibility only | Smoke checks non-builder theme routes. Elementor styling and widgets are outside the theme's design support. |
+| WordPress block editor | Supported | The theme is a block theme and uses the Site Editor; no page-builder kit is included. |
+| WooCommerce | Basic compatibility only | The matrix checks non-shop routes for fatal errors and layout regressions. Product, cart, and checkout templates are unstyled and unsupported. |
+| JOOservices Resume | Supported companion plugin | Included in the showcase and activated during plugin-matrix runs. |
+| Child themes | Supported as a customization route | `make test-matrix ARGS="--child-theme"` creates a temporary child theme and repeats the plugin smoke before removing it. Custom child-theme code is outside Tier 1 support. |
+
+`make test-matrix` runs the Tier 1 and Tier 3 plugin list by default. Licensed items without a ZIP are reported as **UNSUPPORTED**. A network failure is **BLOCKED** and makes the command fail so the affected cell must be rerun.
+
+## Hosting requirements
+
+| Requirement | Minimum for 1.0 | Evidence/status |
+| --- | --- | --- |
+| WordPress | 6.6+ | See the supported version table above. |
+| PHP | 8.1+; recommend 8.3+ | PHP 8.1 has reached upstream end-of-life. |
+| Database | MariaDB 10.11+ or MySQL 8.0+ | Candidate minimum based on WordPress recommendations; exact engine/version cells still need validation. |
+| Web server | Apache or Nginx with WordPress rewrite support | No LiteSpeed-specific server behavior is required by the theme. |
+| HTTPS | Required for a public sale/demo site | Standard WordPress hosting requirement. |
+| PHP memory | 128 MB for front-end rendering; 256 MB for admin operations | WordPress's PHP performance guide documents these memory settings; the limited-memory shared-host smoke remains UNVALIDATED. |
+| Shared hosting and LiteSpeed | UNVALIDATED | No hosting account/profile has been run against this release. |
+
+WordPress recommends Apache or Nginx and HTTPS. Its [PHP performance guide](https://developer.wordpress.org/advanced-administration/performance/php/) documents `WP_MEMORY_LIMIT` and the higher admin memory limit. Hosting providers may enforce lower server-level limits that WordPress cannot raise.
+
+## Browsers
+
+The owner-approved 1.0 minimums are Chrome and Edge latest plus previous stable, Firefox ESR and latest stable, Safari 16.4+, iOS Safari 16.4+, and Android Chrome current stable. Current Playwright engine checks are not a substitute for exact browser-version or real-device validation; see the [browser compatibility record](browser-compatibility.md).
+
+The theme uses CSS container queries, `:has()`, and `color-mix()`. Safari 16.4 is the declared Safari cutoff. Browsers below the listed minimums are unsupported. The selected target set is checked for these CSS features by the matrix E2E smoke; exact Safari/iOS/Android release tests are recorded separately. Safari 16.4 feature availability is documented by [Apple's Safari 16.4 release notes](https://developer.apple.com/documentation/safari-release-notes/safari-16_4-release-notes) and the [WebKit 16.4 feature summary](https://webkit.org/blog/13966/webkit-features-in-safari-16-4/).
+
+## Tier 1 support policy
+
+Support covers installation and use of the shipped theme and JOOservices Resume plugin, plus reproducible defects on cells marked supported in this matrix. A support request should include the theme and plugin versions, WordPress and PHP versions, hosting/database versions, active plugins, theme or child-theme details, affected URL, browser and operating system, reproduction steps, and relevant console or PHP log output.
+
+Support does not cover custom development, custom child-theme code, hosting administration, content migration, or defects owned by third-party products. The ThemeForest item must state the selected support entitlement and any response commitment; this product does not promise a separate response-time SLA.

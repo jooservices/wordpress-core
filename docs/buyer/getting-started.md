@@ -18,9 +18,21 @@
 
 ## Import demo content
 
-The current installable theme does not contain a buyer-facing demo importer or downloadable import package. The repository's `make demo` and generated WXR data are developer showcase tools; they are not included in a buyer ZIP. Do not use a developer demo export as sale content. A licence-clean ThemeForest import package and first-time buyer dry run remain release requirements.
+The ThemeForest download includes `Demo-Content/jooservices-demo-content.zip`. Activate the JOOservices theme and JOOservices Resume plugin, upload that ZIP to the server, and use WP-CLI to preview and import it:
 
-Until that package is available, the steps above create a working site with your own content. They do not recreate the populated showcase in under 15 minutes.
+```sh
+wp joo demo import /path/to/jooservices-demo-content.zip --dry-run
+wp joo demo import /path/to/jooservices-demo-content.zip --batch-size=10
+wp joo demo diff /path/to/jooservices-demo-content.zip
+```
+
+The dry run checks the archive, licence files, package checksums, and content conflicts without changing the site. Import reports progress in batches and skips duplicates on an identical rerun. It adds generated posts, pages, company records, media, menus, sample profile data, and selected site options. It never deletes existing posts, media, terms, users, or menus; a clean WordPress install is recommended. If an item conflicts, resolve it or import into a clean site.
+
+To undo the package import, run `wp joo demo rollback`. The importer removes only records it created and restores changed options when they still have the imported value. If you edit an imported option after import, rollback preserves that later edit.
+
+If the JOOservices WP-CLI commands are unavailable, the package includes WXR for the WordPress Importer plugin or `wp import`. WordPress Playground can import the same WXR with its [`importWxr` Blueprint step](https://developer.wordpress.org/playground/handbook/guides/import-content-with-blueprints/). Follow `Demo-Content/README.md` to upload the media files and update the media URL placeholder. These fallback paths import WordPress content only; apply menus and settings from the included JSON files manually.
+
+The package contains synthetic English and Vietnamese writing, fictional profile and company records, and generated gradient images. `LICENSES.md` and `ATTRIBUTION.md` identify every included text and image and grant reuse under CC BY 4.0 with attribution to “JOOservices Demo Content”. There are no third-party articles, photos, icons, videos, or externally hosted media.
 
 ## Screenshots
 

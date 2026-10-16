@@ -13,6 +13,8 @@ use JOOservices\Resume\Admin\CompanyEditor;
 use JOOservices\Resume\Admin\CompanyList;
 use JOOservices\Resume\Admin\ImportExport;
 use JOOservices\Resume\Admin\Settings;
+use JOOservices\Resume\Demo\DemoCommand;
+use JOOservices\Resume\Frontend\Surfaces;
 use JOOservices\Resume\Modules\CompanyDataModel;
 use JOOservices\Resume\Modules\ProfileAndEditorialFields;
 use JOOservices\Resume\PostTypes\Company;
@@ -76,6 +78,9 @@ final class Plugin {
 			return;
 		}
 		self::$booted = true;
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			DemoCommand::register();
+		}
 		add_action( 'init', array( self::class, 'loadTextDomain' ), 1 );
 		add_action( 'init', array( self::class, 'register' ), 5 );
 		add_action( 'init', array( self::class, 'maybeFlushRewrites' ), 99 );
@@ -94,6 +99,7 @@ final class Plugin {
 	public static function register(): void {
 		( new Company() )->hook();
 		( new CompanyDataModel() )->hook();
+		( new Surfaces() )->hook();
 		if ( is_admin() ) {
 			( new CompanyEditor() )->hook();
 			( new CompanyList() )->hook();
