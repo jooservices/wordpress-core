@@ -13,6 +13,7 @@ async function resetTab(page, tab: string) {
 
 test('buyer settings save, affect the front end and reset to defaults', async ({ page }) => {
   await loginAsAdmin(page);
+  let completed = false;
   try {
     await resetTab(page, 'general');
     await resetTab(page, 'content');
@@ -92,10 +93,16 @@ test('buyer settings save, affect the front end and reset to defaults', async ({
     await expect(page.locator('.joo-back-to-top')).toBeVisible();
     await expect(page.locator('#top')).toHaveCount(1);
     await expect(page.locator('.joo-theme-toggle__button')).toHaveCount(1);
+    completed = true;
   } finally {
-    await resetTab(page, 'general');
-    await resetTab(page, 'content');
-    await resetTab(page, 'appearance');
-    await resetTab(page, 'terminal');
+    if (!completed) {
+      for (const tab of ['general', 'content', 'appearance', 'terminal']) {
+        try {
+          await resetTab(page, tab);
+        } catch {
+          // A crashed page cannot reset its options; each viewport starts by resetting every tab.
+        }
+      }
+    }
   }
 });
