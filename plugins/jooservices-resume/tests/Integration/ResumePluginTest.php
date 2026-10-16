@@ -513,6 +513,7 @@ final class ResumePluginTest extends IntegrationTestCase {
 		update_user_meta( $user, 'joo_title', 'Engineer' );
 		update_option( 'joo_resume_version', Plugin::VERSION );
 		update_option( 'joo_resume_flush_rewrite', '1' );
+		update_option( 'joo_resume_custom_fields', '{"v":1,"items":[]}' );
 
 		define( 'WP_UNINSTALL_PLUGIN', 'jooservices-resume/jooservices-resume.php' );
 		include dirname( __DIR__, 2 ) . '/uninstall.php';
@@ -530,5 +531,6 @@ final class ResumePluginTest extends IntegrationTestCase {
 		$this->assertFalse( metadata_exists( 'user', $user, 'joo_title' ) );
 		$this->assertFalse( get_option( 'joo_resume_version' ) );
 		$this->assertFalse( get_option( 'joo_resume_flush_rewrite' ) );
+		$this->assertFalse( get_option( 'joo_resume_custom_fields' ) );
 	}
 }

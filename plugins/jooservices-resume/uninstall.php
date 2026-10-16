@@ -31,4 +31,5 @@ if ( defined( 'JOO_RESUME_DELETE_DATA_ON_UNINSTALL' ) && true === JOO_RESUME_DEL
 	}
 	delete_option( 'joo_resume_version' );
 	delete_option( 'joo_resume_flush_rewrite' );
+	delete_option( 'joo_resume_custom_fields' );
 }
