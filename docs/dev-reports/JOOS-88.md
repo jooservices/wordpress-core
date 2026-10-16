@@ -19,10 +19,13 @@
 | `make lint`, `make analyse` | pass |
 | `make test-unit` | PHPUnit 272 tests (new `MapperTest`), Vitest 247 |
 | Plugin integration (WordPress 7.1.3) | 34 tests / 297 assertions: new `AdminScreensTest` (editor render and save, settings, list, bulk, exports, dry-run import, upload limits, permissions) |
+| Plugin integration (WordPress 6.6.2) | 34 tests pass |
+| Regression Playwright `specs/admin` and `specs/shared` | 130 passed, 11 skipped by design (1.6 min on a quiet host; the same run took 30 min with failures while the Docker VM was out of memory) |
 | Playwright `resume-admin.spec.ts` | 16 passed (phone, tablet, desktop axe and no horizontal scroll on the four screens; desktop keyboard-only flow: custom field, company with 2 roles, reorder, validation message, export, dry run, import, filter, visitor redirect) |
 | Merged coverage of new code | about 94% lines (`Mapper` 100, `CompanyRecord` 100, `CompanyEditor` 96, `CompanyList` 98, `Settings` 94, `ImportExport` and `CompanyWriter` 80 to 82: the redirect and download branches end the request and are covered by the Playwright flow) |
 
 ## Risks and not done
+- The spec cleans its own companies and custom-field definitions through REST (the list bulk-action UI proved unreliable) at the start and the end of the desktop flow.
 - Docker host memory: the Docker VM has 16 GB and was at 13.4 GB used; Chromium crashed several times (`Target crashed`) until retried. Raising the Docker Desktop memory limit (the host has 36 GB) would remove this flakiness; vitest timeouts were raised to 30 s for the same reason.
 - Quick edit of the order in the list is not provided (the order field is on the edit screen and the Order column is sortable).
 - No drag and drop (buttons only). No Arabic/RTL review of these screens (WordPress admin handles `dir`; not verified here).
