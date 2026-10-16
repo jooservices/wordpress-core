@@ -45,7 +45,7 @@ export function rewrite(text, { from, to, title }) {
 /** Adds the theme's text domain to phpcs.xml.dist and its inc/ folder to deptrac.yaml (idempotent). */
 export function registerTooling(slug, { phpcs, deptrac }) {
   const domain = `\t\t\t\t<element value="${slug}"/>\n`;
-  const anchor = '\t\t\t\t<element value="jooservices-content"/>\n';
+  const anchor = '\t\t\t\t<element value="jooservices-resume"/>\n';
   const nextPhpcs = phpcs.includes(`<element value="${slug}"/>`) ? phpcs : phpcs.replace(anchor, domain + anchor);
   const path = `    - ./themes/${slug}/inc\n`;
   const nextDeptrac = deptrac.includes(path) ? deptrac : deptrac.replace('  analyser:', path + '  analyser:');

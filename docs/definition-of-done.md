@@ -5,7 +5,7 @@
 |---|---|---|
 | G1 Lint | `make lint` | PHPCS, ESLint, Stylelint, Prettier check, header check: zero errors |
 | G2 Static | `make analyse` | PHPStan level 8 (core) / 6 (themes, plugin), `tsc --checkJs`, deptrac: zero errors |
-| G3 Unit | `make test-unit` | PHPUnit unit and Vitest pass; coverage: core >= 85%, content plugin >= 80%, themes PHP >= 70% |
+| G3 Unit | `make test-unit` | PHPUnit unit and Vitest pass; coverage: core >= 85%, Resume plugin >= 80%, themes PHP >= 70% |
 | G4 Integration | `make test-integration` | wp-phpunit passes on WordPress 6.6 and latest |
 | G5 E2E | `make test-e2e THEME=<slug>` | Playwright passes at 390/820/1440 and axe finds no serious/critical violations |
 | G6 Demo | `make demo THEME=<slug>` | clean checkout: WordPress installed, theme active, demo seeded, health check OK, all demo URLs as expected |

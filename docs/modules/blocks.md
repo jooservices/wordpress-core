@@ -38,7 +38,7 @@ All five render their content on the server and can be deferred as fragments (`c
 
 | Block | Notes |
 |---|---|
-| `joo/profile-card` | About me; links to the page with slug `about`, else the author archive (`linkTo`); nothing without the content plugin |
+| `joo/profile-card` | About me; links to the page with slug `about`, else the author archive (`linkTo`); nothing without JOOservices Resume |
 | `joo/companies` | pinned "current company" card plus a list; pager links are real URLs (`?joo_companies_page=N#companies`, rendered server-side and clamped to the last page); `<joo-companies>` (1.6 KB gzip) swaps pages in place from `/joo/v1/companies`, moves focus to the heading, announces "Page N of M", caches pages, aborts stale requests and offers a retry on errors. The query variable is not part of the canonical URL |
 | `joo/category-tree` | nested list with counts and descriptions; every branch is visible without JS; `<joo-tree>` (0.6 KB gzip) collapses them (the branch with the current page stays open, `expandedDepth` keeps levels open, state in `sessionStorage`) |
 | `joo/top-topics` | image 44x44 (placeholder with initials), count, intro; `strategy` `inherit` uses `content.topics_strategy` / `content.topics_limit` |

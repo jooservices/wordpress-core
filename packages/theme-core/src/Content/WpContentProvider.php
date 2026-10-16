@@ -24,7 +24,7 @@ use JOOservices\ThemeCore\Support\Hooks;
 use JOOservices\ThemeCore\Support\ReadingTime;
 
 /**
- * Reads the CPT, term, user and post meta of the companion plugin (by key, without importing its classes), so any
+ * Reads the CPT, term, user and post meta of JOOservices Resume (by key, without importing its classes), so any
  * plugin that follows the same meta contract works. Results are cached with tag invalidation.
  *
  * @api

@@ -11,7 +11,7 @@ flowchart LR
   Theme[Theme: templates, patterns, tokens, manifest] --> API[Core public API @api]
   API --> Internals[Core internals @internal]
   Internals --> WP[WordPress]
-  Plugin[Companion plugin: data] -. meta contract / REST .-> Internals
+  Plugin[JOOservices Resume: data] -. meta contract / REST .-> Internals
 ```
 Rule (deptrac): `ThemeCore\*` depends on WordPress and `ThemeCore\*` only; themes (PHP in `inc/`) depend on core and WordPress only; the plugin depends on WordPress only. Modules never call each other directly: they use declared `dependencies()`, the container, or filters.
 

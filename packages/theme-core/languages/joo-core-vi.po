@@ -270,6 +270,12 @@ msgstr "Sao chép"
 msgid "Link to section"
 msgstr "Liên kết tới mục"
 
+msgid "Pages of this post"
+msgstr "Các trang của bài viết này"
+
+msgid "Pages"
+msgstr "Trang"
+
 msgid "Core SEO output yields to All in One SEO. Noindex posts are not removed from the core sitemap automatically (AIOSEO stores them in its own table)."
 msgstr "SEO của theme nhường cho All in One SEO. Bài noindex không tự bị loại khỏi sitemap (AIOSEO lưu chúng trong bảng riêng)."
 

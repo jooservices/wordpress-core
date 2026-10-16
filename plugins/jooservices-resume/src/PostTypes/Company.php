@@ -2,14 +2,14 @@
 /**
  * Company custom post type.
  *
- * @package JOOservices\Content
+ * @package JOOservices\Resume
  */
 
 declare(strict_types=1);
 
-namespace JOOservices\Content\PostTypes;
+namespace JOOservices\Resume\PostTypes;
 
-use JOOservices\Content\Support\Validate;
+use JOOservices\Resume\Support\Validate;
 
 /**
  * Employers with role, period, short description, URL, logo and a single pinned "current" company.
@@ -47,11 +47,11 @@ final class Company {
 			self::TYPE,
 			array(
 				'labels'              => array(
-					'name'          => __( 'Companies', 'jooservices-content' ),
-					'singular_name' => __( 'Company', 'jooservices-content' ),
-					'add_new_item'  => __( 'Add new company', 'jooservices-content' ),
-					'edit_item'     => __( 'Edit company', 'jooservices-content' ),
-					'menu_name'     => __( 'Companies', 'jooservices-content' ),
+					'name'          => __( 'Companies', 'jooservices-resume' ),
+					'singular_name' => __( 'Company', 'jooservices-resume' ),
+					'add_new_item'  => __( 'Add new company', 'jooservices-resume' ),
+					'edit_item'     => __( 'Edit company', 'jooservices-resume' ),
+					'menu_name'     => __( 'Companies', 'jooservices-resume' ),
 				),
 				'public'              => false,
 				'publicly_queryable'  => false,
@@ -128,13 +128,13 @@ final class Company {
 		$from = (string) ( $meta['_joo_company_from'] ?? ( $id > 0 ? get_post_meta( $id, '_joo_company_from', true ) : '' ) );
 		$to   = (string) ( $meta['_joo_company_to'] ?? ( $id > 0 ? get_post_meta( $id, '_joo_company_to', true ) : '' ) );
 		if ( ! Validate::periodIsValid( $from, $to ) ) {
-			return new \WP_Error( 'rest_invalid_param', __( 'The end month cannot be before the start month.', 'jooservices-content' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'rest_invalid_param', __( 'The end month cannot be before the start month.', 'jooservices-resume' ), array( 'status' => 400 ) );
 		}
 		$status = (string) ( $prepared->post_status ?? '' );
 		if ( 'publish' === $status ) {
 			$role = (string) ( $meta['_joo_company_role'] ?? ( $id > 0 ? get_post_meta( $id, '_joo_company_role', true ) : '' ) );
 			if ( '' === trim( $role ) || '' === $from ) {
-				return new \WP_Error( 'rest_invalid_param', __( 'A published company needs a role and a start month.', 'jooservices-content' ), array( 'status' => 400 ) );
+				return new \WP_Error( 'rest_invalid_param', __( 'A published company needs a role and a start month.', 'jooservices-resume' ), array( 'status' => 400 ) );
 			}
 		}
 		return $prepared;
@@ -155,14 +155,12 @@ final class Company {
 		}
 		$others = get_posts(
 			array(
-				'post_type'        => self::TYPE,
-				'post_status'      => 'any',
-				'posts_per_page'   => 50, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- bounded: normally exactly one.
-				'post__not_in'     => array( (int) $postId ),
-				'fields'           => 'ids',
-				'no_found_rows'    => true,
-				'suppress_filters' => true,
-				'meta_query'       => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				'post_type'      => self::TYPE,
+				'post_status'    => 'any',
+				'posts_per_page' => 50, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- bounded: normally exactly one.
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 					array(
 						'key'   => '_joo_company_pinned',
 						'value' => '1',
@@ -171,7 +169,9 @@ final class Company {
 			)
 		);
 		foreach ( $others as $other ) {
-			update_post_meta( (int) $other, '_joo_company_pinned', false );
+			if ( (int) $other !== (int) $postId ) {
+				update_post_meta( (int) $other, '_joo_company_pinned', false );
+			}
 		}
 	}
 
@@ -204,7 +204,7 @@ final class Company {
 	 * Adds the details box (classic fields, no JavaScript needed).
 	 */
 	public function addMetaBox(): void {
-		add_meta_box( 'joo_company_details', __( 'Company details', 'jooservices-content' ), array( $this, 'renderMetaBox' ), self::TYPE, 'normal', 'high' );
+		add_meta_box( 'joo_company_details', __( 'Company details', 'jooservices-resume' ), array( $this, 'renderMetaBox' ), self::TYPE, 'normal', 'high' );
 	}
 
 	/**
@@ -217,11 +217,11 @@ final class Company {
 		$v    = static fn( string $key ) => (string) get_post_meta( $post->ID, $key, true );
 		echo '<table class="form-table" role="presentation"><tbody>';
 		$rows = array(
-			array( '_joo_company_role', __( 'Role', 'jooservices-content' ), 'text', '' ),
-			array( '_joo_company_from', __( 'From (YYYY-MM)', 'jooservices-content' ), 'text', 'pattern="\d{4}-(0[1-9]|1[0-2])" placeholder="2022-03"' ),
-			array( '_joo_company_to', __( 'To (YYYY-MM, empty = present)', 'jooservices-content' ), 'text', 'pattern="(\d{4}-(0[1-9]|1[0-2]))?" placeholder="2025-06"' ),
-			array( '_joo_company_url', __( 'Website (https)', 'jooservices-content' ), 'url', 'placeholder="https://"' ),
-			array( '_joo_company_logo_id', __( 'Logo (attachment id)', 'jooservices-content' ), 'number', 'min="0"' ),
+			array( '_joo_company_role', __( 'Role', 'jooservices-resume' ), 'text', '' ),
+			array( '_joo_company_from', __( 'From (YYYY-MM)', 'jooservices-resume' ), 'text', 'pattern="\d{4}-(0[1-9]|1[0-2])" placeholder="2022-03"' ),
+			array( '_joo_company_to', __( 'To (YYYY-MM, empty = present)', 'jooservices-resume' ), 'text', 'pattern="(\d{4}-(0[1-9]|1[0-2]))?" placeholder="2025-06"' ),
+			array( '_joo_company_url', __( 'Website (https)', 'jooservices-resume' ), 'url', 'placeholder="https://"' ),
+			array( '_joo_company_logo_id', __( 'Logo (attachment id)', 'jooservices-resume' ), 'number', 'min="0"' ),
 		);
 		foreach ( $rows as $row ) {
 			printf(
@@ -235,9 +235,9 @@ final class Company {
 		}
 		printf(
 			'<tr><th scope="row">%1$s</th><td><label><input type="checkbox" name="_joo_company_pinned" value="1" %2$s> %3$s</label></td></tr>',
-			esc_html__( 'Pinned', 'jooservices-content' ),
+			esc_html__( 'Pinned', 'jooservices-resume' ),
 			checked( (bool) $v( '_joo_company_pinned' ), true, false ),
-			esc_html__( 'Show as the current company (only one company can be pinned)', 'jooservices-content' )
+			esc_html__( 'Show as the current company (only one company can be pinned)', 'jooservices-resume' )
 		);
 		echo '</tbody></table>';
 	}
@@ -261,20 +261,20 @@ final class Company {
 		$to    = $input( '_joo_company_to' );
 		$error = array();
 		if ( '' !== $from && ! Validate::month( $from ) ) {
-			$error[] = __( 'The start month must look like 2022-03.', 'jooservices-content' );
+			$error[] = __( 'The start month must look like 2022-03.', 'jooservices-resume' );
 			$from    = '';
 		}
 		if ( '' !== $to && ! Validate::month( $to ) ) {
-			$error[] = __( 'The end month must look like 2025-06.', 'jooservices-content' );
+			$error[] = __( 'The end month must look like 2025-06.', 'jooservices-resume' );
 			$to      = '';
 		}
 		if ( ! Validate::periodIsValid( $from, $to ) ) {
-			$error[] = __( 'The end month cannot be before the start month.', 'jooservices-content' );
+			$error[] = __( 'The end month cannot be before the start month.', 'jooservices-resume' );
 			$to      = '';
 		}
 		$url = $input( '_joo_company_url' );
 		if ( '' !== $url && '' === Validate::httpsUrl( $url ) ) {
-			$error[] = __( 'The website must be an https URL.', 'jooservices-content' );
+			$error[] = __( 'The website must be an https URL.', 'jooservices-resume' );
 			$url     = '';
 		}
 		update_post_meta( $postId, '_joo_company_role', $input( '_joo_company_role' ) );
@@ -284,7 +284,7 @@ final class Company {
 		update_post_meta( $postId, '_joo_company_logo_id', absint( $input( '_joo_company_logo_id' ) ) );
 		update_post_meta( $postId, '_joo_company_pinned', isset( $_POST['_joo_company_pinned'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
 		if ( isset( $_POST['_joo_company_pinned'] ) && '' !== $to ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$error[] = __( 'A pinned company normally has no end month (it is the current one). It was saved anyway.', 'jooservices-content' );
+			$error[] = __( 'A pinned company normally has no end month (it is the current one). It was saved anyway.', 'jooservices-resume' );
 		}
 		unset( $post );
 		if ( array() !== $error ) {
@@ -316,11 +316,11 @@ final class Company {
 	public function columns( $columns ): array {
 		return array(
 			'cb'         => $columns['cb'] ?? '',
-			'title'      => __( 'Company', 'jooservices-content' ),
-			'role'       => __( 'Role', 'jooservices-content' ),
-			'period'     => __( 'Period', 'jooservices-content' ),
-			'pinned'     => __( 'Pinned', 'jooservices-content' ),
-			'menu_order' => __( 'Order', 'jooservices-content' ),
+			'title'      => __( 'Company', 'jooservices-resume' ),
+			'role'       => __( 'Role', 'jooservices-resume' ),
+			'period'     => __( 'Period', 'jooservices-resume' ),
+			'pinned'     => __( 'Pinned', 'jooservices-resume' ),
+			'menu_order' => __( 'Order', 'jooservices-resume' ),
 		);
 	}
 
@@ -340,7 +340,7 @@ final class Company {
 				echo esc_html( Validate::period( (string) get_post_meta( $postId, '_joo_company_from', true ), (string) get_post_meta( $postId, '_joo_company_to', true ) ) );
 				break;
 			case 'pinned':
-				echo (bool) get_post_meta( $postId, '_joo_company_pinned', true ) ? '<span aria-label="' . esc_attr__( 'Pinned', 'jooservices-content' ) . '">★</span>' : '';
+				echo (bool) get_post_meta( $postId, '_joo_company_pinned', true ) ? '<span aria-label="' . esc_attr__( 'Pinned', 'jooservices-resume' ) . '">★</span>' : '';
 				break;
 			case 'menu_order':
 				echo (int) get_post_field( 'menu_order', $postId ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer.

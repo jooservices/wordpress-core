@@ -33,8 +33,8 @@ wp rewrite flush --hard >/dev/null 2>&1 || true
 
 wp language core install vi >/dev/null 2>&1 || echo "warning: could not download the Vietnamese language pack (offline?)"
 
-if [ -d wp-content/plugins/jooservices-content ]; then
-  wp plugin is-active jooservices-content 2>/dev/null || wp plugin activate jooservices-content
+if [ -d wp-content/plugins/jooservices-resume ]; then
+  wp plugin is-active jooservices-resume 2>/dev/null || wp plugin activate jooservices-resume
 fi
 
 wp theme activate "${THEME}" >/dev/null

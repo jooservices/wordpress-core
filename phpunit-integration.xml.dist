@@ -9,7 +9,8 @@
   <coverage processUncoveredFiles="true">
     <include>
       <directory suffix=".php">packages/theme-core/src</directory>
-      <directory suffix=".php">plugins/jooservices-content/src</directory>
+      <directory suffix=".php">plugins/jooservices-resume/src</directory>
+      <file>plugins/jooservices-resume/uninstall.php</file>
       <directory suffix=".php">themes/jooservices/inc</directory>
       <directory suffix=".php">themes/starter/inc</directory>
     </include>
@@ -17,7 +18,7 @@
   <testsuites>
     <testsuite name="kit-integration"><directory>packages/test-kit/tests/Integration</directory></testsuite>
     <testsuite name="core-integration"><directory>packages/theme-core/tests/Integration</directory></testsuite>
-    <testsuite name="plugin-integration"><directory>plugins/jooservices-content/tests/Integration</directory></testsuite>
+    <testsuite name="plugin-integration"><directory>plugins/jooservices-resume/tests/Integration</directory></testsuite>
     <testsuite name="theme-integration"><directory>themes/jooservices/tests/Integration</directory><directory>themes/starter/tests/Integration</directory></testsuite>
   </testsuites>
 </phpunit>

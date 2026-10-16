@@ -66,7 +66,7 @@ services:
       - ../themes/starter:/var/www/html/wp-content/themes/starter
       - ../themes/jooservices:/var/www/html/wp-content/themes/jooservices
       - ../packages/theme-core:/var/www/html/wp-content/packages/theme-core
-      - ../plugins/jooservices-content:/var/www/html/wp-content/plugins/jooservices-content
+      - ../plugins/jooservices-resume:/var/www/html/wp-content/plugins/jooservices-resume
       - ./mu-plugins:/var/www/html/wp-content/mu-plugins:ro
       - ./scripts:/scripts:ro
       - ../:/workspace:ro

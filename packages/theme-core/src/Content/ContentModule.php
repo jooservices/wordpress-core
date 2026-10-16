@@ -55,7 +55,7 @@ final class ContentModule extends AbstractModule {
 			ContentProviderInterface::class,
 			static function ( Container $c ): ContentProviderInterface {
 				$wanted = (string) $c->get( Manifest::class )->get( 'content.provider', 'wp' );
-				return self::wantsWpProvider( $wanted, post_type_exists( 'joo_company' ), (bool) did_action( 'init' ), defined( 'JOO_CONTENT_FILE' ) ) ? $c->get( WpContentProvider::class ) : new NullProvider();
+				return self::wantsWpProvider( $wanted, post_type_exists( 'joo_company' ), (bool) did_action( 'init' ), defined( 'JOO_RESUME_FILE' ) ) ? $c->get( WpContentProvider::class ) : new NullProvider();
 			}
 		);
 		$container->singleton( FeaturedExclusion::class, static fn( Container $c ) => new FeaturedExclusion( $c->get( ContentProviderInterface::class ), $c->get( Settings::class ) ) );
@@ -66,12 +66,12 @@ final class ContentModule extends AbstractModule {
 	 * Whether the WordPress provider is used.
 	 *
 	 * The container resolves the provider while the theme boots, before `init` registers the companion post types, so a
-	 * loaded companion plugin counts as available even when its post type does not exist yet.
+	 * loaded Resume plugin counts as available even when its post type does not exist yet.
 	 *
 	 * @param string $wanted        Configured provider (manifest `content.provider`).
 	 * @param bool   $typeExists    Whether the company post type is registered.
 	 * @param bool   $initDone      Whether `init` has run.
-	 * @param bool   $pluginLoaded  Whether the companion plugin file is loaded.
+	 * @param bool   $pluginLoaded  Whether the Resume plugin file is loaded.
 	 */
 	public static function wantsWpProvider( string $wanted, bool $typeExists, bool $initDone, bool $pluginLoaded ): bool {
 		if ( 'wp' !== $wanted ) {

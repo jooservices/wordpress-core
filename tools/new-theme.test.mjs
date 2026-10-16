@@ -46,7 +46,7 @@ describe('new-theme', () => {
 
   it('registers the text domain and inc path once', () => {
     const files = {
-      phpcs: '\t\t\t\t<element value="starter"/>\n\t\t\t\t<element value="jooservices-content"/>\n',
+      phpcs: '\t\t\t\t<element value="starter"/>\n\t\t\t\t<element value="jooservices-resume"/>\n',
       deptrac: '  paths:\n    - ./themes/starter/inc\n  analyser:\n',
     };
     const once = registerTooling('acme', files);

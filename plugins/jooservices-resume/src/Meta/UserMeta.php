@@ -2,14 +2,14 @@
 /**
  * Owner profile fields.
  *
- * @package JOOservices\Content
+ * @package JOOservices\Resume
  */
 
 declare(strict_types=1);
 
-namespace JOOservices\Content\Meta;
+namespace JOOservices\Resume\Meta;
 
-use JOOservices\Content\Support\Validate;
+use JOOservices\Resume\Support\Validate;
 
 /**
  * Title, short bio, avatar and social links on the user profile.
@@ -141,11 +141,11 @@ final class UserMeta {
 		wp_nonce_field( self::NONCE, self::NONCE . '_nonce' );
 		$socials = get_user_meta( $user->ID, 'joo_socials', true );
 		$socials = is_array( $socials ) ? $socials : array();
-		echo '<h2>' . esc_html__( 'JOOservices profile', 'jooservices-content' ) . '</h2><table class="form-table" role="presentation"><tbody>';
+		echo '<h2>' . esc_html__( 'JOOservices Resume profile', 'jooservices-resume' ) . '</h2><table class="form-table" role="presentation"><tbody>';
 		$rows = array(
-			array( 'joo_title', __( 'Title', 'jooservices-content' ), 'text', 80 ),
-			array( 'joo_short_bio', __( 'Short bio', 'jooservices-content' ), 'text', 240 ),
-			array( 'joo_avatar_id', __( 'Avatar (attachment id)', 'jooservices-content' ), 'number', 0 ),
+			array( 'joo_title', __( 'Title', 'jooservices-resume' ), 'text', 80 ),
+			array( 'joo_short_bio', __( 'Short bio', 'jooservices-resume' ), 'text', 240 ),
+			array( 'joo_avatar_id', __( 'Avatar (attachment id)', 'jooservices-resume' ), 'number', 0 ),
 		);
 		foreach ( $rows as $row ) {
 			printf(
@@ -160,11 +160,11 @@ final class UserMeta {
 		for ( $i = 0; $i < self::MAX_SOCIALS; $i++ ) {
 			printf(
 				'<tr><th>%1$s</th><td><input type="text" name="joo_socials[%2$d][label]" value="%3$s" placeholder="%5$s" class="regular-text"> <input type="url" name="joo_socials[%2$d][url]" value="%4$s" placeholder="https://" class="regular-text"></td></tr>',
-				0 === $i ? esc_html__( 'Social links', 'jooservices-content' ) : '',
+				0 === $i ? esc_html__( 'Social links', 'jooservices-resume' ) : '',
 				(int) $i,
 				esc_attr( (string) ( $socials[ $i ]['label'] ?? '' ) ),
 				esc_attr( (string) ( $socials[ $i ]['url'] ?? '' ) ),
-				esc_attr__( 'Label', 'jooservices-content' )
+				esc_attr__( 'Label', 'jooservices-resume' )
 			);
 		}
 		echo '</tbody></table>';

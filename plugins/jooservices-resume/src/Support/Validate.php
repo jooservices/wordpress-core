@@ -2,12 +2,12 @@
 /**
  * Small validators shared by the components.
  *
- * @package JOOservices\Content
+ * @package JOOservices\Resume
  */
 
 declare(strict_types=1);
 
-namespace JOOservices\Content\Support;
+namespace JOOservices\Resume\Support;
 
 /**
  * Pure helpers.
@@ -72,6 +72,6 @@ final class Validate {
 	 * @param string $to   To month or empty.
 	 */
 	public static function period( string $from, string $to ): string {
-		return $from . ' – ' . ( '' === $to ? __( 'Present', 'jooservices-content' ) : $to );
+		return $from . ' – ' . ( '' === $to ? __( 'Present', 'jooservices-resume' ) : $to );
 	}
 }

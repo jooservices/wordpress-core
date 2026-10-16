@@ -186,5 +186,7 @@
   "Not found (terminal)": "Không tìm thấy (terminal)",
   "A terminal-style 404 view with a transcript, search and suggestions.": "Trang 404 kiểu terminal với nhật ký yêu cầu, tìm kiếm và gợi ý.",
   "Terminal dock": "Dock terminal",
-  "A read-only terminal docked at the side of the page (loads on first open).": "Terminal chỉ đọc gắn bên cạnh trang (tải khi mở lần đầu)."
+  "A read-only terminal docked at the side of the page (loads on first open).": "Terminal chỉ đọc gắn bên cạnh trang (tải khi mở lần đầu).",
+  "Pages of this post": "Các trang của bài viết này",
+  "Pages": "Trang"
 }
