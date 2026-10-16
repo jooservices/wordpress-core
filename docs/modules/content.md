@@ -45,6 +45,20 @@ Decision: classic meta boxes plus a small vanilla script (`assets/company-editor
 
 Mapping lives in `Transfer\Mapper` (pure, unit-tested); `Model\CompanyWriter` is the single write path of the importer. Nonces and capability checks guard every action.
 
+### Resume front end (JOOS-89)
+
+One renderer (`Frontend\Renderer`) feeds every surface, so markup is identical everywhere: semantic `ol` and `li`, `<time datetime>`, a text "Present" marker (never colour only), escaped output, limited kses for descriptions. It only uses the public projection, so private fields and private custom values cannot be printed.
+
+| Surface | Use |
+|---|---|
+| Shortcode `[joo_resume order="manual|date" limit="0" current="no"]` | classic content; server-rendered, no JavaScript |
+| Block `joo/resume` (attributes `order`, `limit`, `currentOnly`) | dynamic block; on WordPress 7.0+ it auto-registers in the inserter (`supports.autoRegister`), on 6.6 to 6.9 use the shortcode |
+| REST `jooservices-resume/v1/resume` | public projection of every published company; `ETag`, `Cache-Control: public, max-age=300`, `304` for a matching `If-None-Match` |
+| REST `jooservices-resume/v1/resume/json-resume` | JSON Resume `work` section (public data only) |
+| Structured data | `worksFor` (and `hasOccupation` for the current role) on the site owner Person node, through `joo/seo/schema/person` (theme graph) and `wpseo_schema_person` (Yoast); the current company everywhere, every company on a page that shows the resume |
+
+Styling: `assets/resume.css`, enqueued only when a resume is rendered; colours come from the theme tokens with neutral fallbacks (dark and light), logical properties (RTL), and an A4 print style with link URLs and no breaks inside a company.
+
 ## Core side (`Content\`)
 `ContentProviderInterface` (`@api`): `profile()`, `pinnedCompany()`, `companies($page,$perPage,$excludePinned)`, `categoryTree($hideEmpty)`, `topics($limit,$strategy)`, `featured($limit)`, `related($postId,$limit)`; immutable value objects in `Content\Model`.
 
