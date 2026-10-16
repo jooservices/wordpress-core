@@ -1,0 +1,29 @@
+JOOservices | Technical Blog and Resume WordPress Theme
+
+JOOservices is a dark-first block theme for technical blogs and personal resume sites. It includes a left profile rail, featured posts, archive and article templates, dark and light styles, a read-only terminal dock, and the JOOservices Resume companion plugin for company history and profile data.
+
+INCLUDED
+- Installable JOOservices WordPress theme
+- JOOservices Resume companion plugin
+- English buyer documentation and demo content
+- Self-hosted IBM Plex Sans and JetBrains Mono fonts, licensed under OFL 1.1
+- Dark and light style variations
+
+REQUIREMENTS
+- WordPress 6.6 or newer
+- PHP 8.1 or newer
+- Tested through WordPress 7.1
+
+COMPATIBILITY
+The release targets Chrome and Edge current and previous versions, Firefox ESR and current, Safari 16.4 or newer, iOS Safari 16.4 or newer, and Android Chrome. WooCommerce is not required and receives no product styling in this release.
+
+INSTALLATION AND UPDATES
+Install the theme zip in Appearance > Themes. Install and activate the separate JOOservices Resume zip in Plugins. ThemeForest and the Envato Market plugin handle marketplace update delivery. The theme makes no purchase-code or licence-server request and remains functional if marketplace update entitlement expires.
+
+LIVE PREVIEW
+Add the approved public showcase URL before submitting this item to ThemeForest.
+
+DEMO CONTENT AND ASSETS
+The included demo posts and images are locally generated sample content. Demo images are original gradient graphics. The included fonts are redistributed under SIL Open Font License 1.1; see Licensing/THIRD-PARTY-NOTICES.md. The archive contains no third-party article text or tracking assets.
+
+Documentation and the complete GPL license are included in the download. Verify the current ThemeForest upload, preview-image, thumbnail, title, and tag requirements before submission.

@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fromRoot } from './lib/paths.mjs';
+import { normalizeTimestamps, sortedRelativeFiles } from './lib/reproducible.mjs';
 import { classify, readPatterns, walk } from './runtime-bundle.mjs';
 
 /** Theme paths that never ship. */
@@ -13,6 +14,7 @@ export const EXCLUDED = [
   /^tests(\/|$)/,
   /^design(\/|$)/,
   /^demo(\/|$)/,
+  /^release-assets(\/|$)/,
   /^assets\/src(\/|$)/,
   /^package\.json$/,
   /^budgets\.json$/,
@@ -95,7 +97,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   const zip = join(out, `${slug}-${version}.zip`);
   rmSync(zip, { force: true });
-  execFileSync('zip', ['-qr', '-X', zip, slug], { cwd: out });
+  normalizeTimestamps(stage);
+  execFileSync('zip', ['-q', '-X', zip, ...sortedRelativeFiles(stage).map((file) => `${slug}/${file}`)], {
+    cwd: out,
+  });
   const files = walk(stage).length;
   const size = statSync(zip).size;
   console.log(

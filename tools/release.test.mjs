@@ -1,17 +1,225 @@
 // @vitest-environment node
-import { describe, expect, it } from 'vitest';
-import { problems } from './release.mjs';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+import { checksumManifest, problems, readVersions, releaseNotes, sanitizeDemoXml } from './release.mjs';
+import { compareArtifacts, sha256 } from './lib/reproducible.mjs';
+import { checkRelease, releaseProblems, readReleaseMetadata } from './release-check.mjs';
 import { check } from './theme-check.mjs';
 import { render } from './perf-report.mjs';
 
+const tempDirectories = [];
+const tempDirectory = () => {
+  const dir = mkdtempSync(join(tmpdir(), 'jooservices-release-'));
+  tempDirectories.push(dir);
+  return dir;
+};
+
+afterEach(() => {
+  for (const dir of tempDirectories.splice(0)) rmSync(dir, { recursive: true, force: true });
+});
+
 describe('release', () => {
-  const ok = { style: '1.2.3', changelog: '1.2.3', testedUpTo: '7.1', coreRange: '^0.1' };
-  it('accepts consistent versions', () => expect(problems(ok, { latestWordPress: '7.1.3' })).toEqual([]));
-  it('blocks a changelog that lags behind style.css', () =>
-    expect(problems({ ...ok, changelog: '1.2.2' })).toHaveLength(1));
-  it('blocks a non-semver version and a stale Tested up to', () => {
-    expect(problems({ ...ok, style: '1.2' }).length).toBeGreaterThan(0);
-    expect(problems({ ...ok, testedUpTo: '6.8' }, { latestWordPress: '7.1.3' })).toHaveLength(1);
+  const ok = {
+    theme: '1.2.3',
+    themeChangelog: '1.2.3',
+    plugin: '2.3.4',
+    pluginConstant: '2.3.4',
+    pluginStableTag: '2.3.4',
+    coreRange: '^0.1',
+  };
+
+  it('reads canonical theme and plugin versions and changelog mirrors', () => {
+    const root = tempDirectory();
+    const theme = join(root, 'theme');
+    mkdirSync(theme);
+    writeFileSync(join(theme, 'style.css'), '/*\nVersion: 1.2.3\n*/\n');
+    writeFileSync(join(theme, 'CHANGELOG.md'), '# Changelog\n\n## 1.2.3\n');
+    writeFileSync(join(theme, 'joo-theme.json'), '{"core":"^0.1"}');
+    const versions = readVersions(
+      theme,
+      '/**\n * Version: 2.3.4\n */',
+      "public const VERSION = '2.3.4';",
+      'Stable tag: 2.3.4'
+    );
+    expect(versions).toEqual({
+      theme: '1.2.3',
+      themeChangelog: '1.2.3',
+      plugin: '2.3.4',
+      pluginConstant: '2.3.4',
+      pluginStableTag: '2.3.4',
+      coreRange: '^0.1',
+    });
+  });
+
+  it('accepts consistent strict SemVer values and rejects stale mirrors', () => {
+    expect(problems(ok)).toEqual([]);
+    expect(problems({ ...ok, theme: '1.2', themeChangelog: '1.2.2', pluginStableTag: '2.3.3', coreRange: '' })).toEqual(
+      [
+        'theme version "1.2" is not strict semver',
+        'theme changelog version differs from style.css',
+        'plugin Stable tag differs from plugin header',
+        'theme manifest has no core compatibility range',
+      ]
+    );
+  });
+
+  it('uses JOOS-keyed commit messages and falls back to the changelog', () => {
+    expect(releaseNotes(['Merge branch foo', 'JOOS-103: add package builder'], '# prior notes')).toBe(
+      '# Release notes\n\n- JOOS-103: add package builder\n'
+    );
+    expect(releaseNotes(['merge only'], '  # prior notes\n')).toBe('# prior notes');
+  });
+
+  it('fictionalizes owner and company data in the sale demo export', () => {
+    const xml = [
+      '<wp:author_login><![CDATA[viet]]></wp:author_login>',
+      '<wp:author_email><![CDATA[viet@example.test]]></wp:author_email>',
+      '<wp:author_display_name><![CDATA[Viet VU]]></wp:author_display_name>',
+      '<wp:author_first_name><![CDATA[Viet]]></wp:author_first_name>',
+      '<wp:author_last_name><![CDATA[VU]]></wp:author_last_name>',
+      '<title>JOOservices Ltd and SGCarmart</title>',
+      '<url>https://jooservices.com</url><url>https://www.sgcarmart.com</url>',
+      '<url>https://github.com/jooservices</url>',
+    ].join('\n');
+    const clean = sanitizeDemoXml(xml, [
+      { name: 'JOOservices Ltd', url: 'https://jooservices.com' },
+      { name: 'SGCarmart', url: 'https://www.sgcarmart.com' },
+    ]);
+    expect(clean).toContain('Example Company 1 and Example Company 2');
+    expect(clean).toContain('Taylor Example');
+    expect(clean).toContain('taylor@example.test');
+    expect(clean).not.toContain('Viet VU');
+    expect(clean).not.toContain('SGCarmart');
+    expect(clean).not.toContain('jooservices.com');
+    expect(clean).not.toContain('sgcarmart.com');
+  });
+
+  it('creates sorted checksum manifests and SHA-256 hashes', () => {
+    const root = tempDirectory();
+    writeFileSync(join(root, 'b.txt'), 'bravo');
+    writeFileSync(join(root, 'a.txt'), 'alpha');
+    const manifest = checksumManifest(root);
+    expect(
+      manifest
+        .split('\n')
+        .slice(0, 2)
+        .map((line) => line.slice(66))
+    ).toEqual(['a.txt', 'b.txt']);
+    expect(sha256(Buffer.from('alpha'))).toBe(manifest.split('\n')[0].slice(0, 64));
+  });
+
+  it('compares all artifacts by content and reports missing or changed outputs', () => {
+    expect(
+      compareArtifacts(
+        { 'theme.zip': Buffer.from('same'), 'plugin.zip': Buffer.from('old') },
+        { 'theme.zip': Buffer.from('same'), 'plugin.zip': Buffer.from('new'), 'demo.zip': Buffer.from('new') }
+      )
+    ).toEqual([
+      { name: 'demo.zip', firstHash: '', secondHash: sha256(Buffer.from('new')), identical: false },
+      {
+        name: 'plugin.zip',
+        firstHash: sha256(Buffer.from('old')),
+        secondHash: sha256(Buffer.from('new')),
+        identical: false,
+      },
+      {
+        name: 'theme.zip',
+        firstHash: sha256(Buffer.from('same')),
+        secondHash: sha256(Buffer.from('same')),
+        identical: true,
+      },
+    ]);
+  });
+});
+
+describe('release metadata validation', () => {
+  const valid = {
+    theme: {
+      version: '0.1.0',
+      changelogVersion: '0.1.0',
+      testedUpTo: '7.1',
+      requiresAtLeast: '6.6',
+      requiresPhp: '8.1',
+      license: 'GPL-2.0-or-later',
+      coreRange: '^0.1',
+      readmeLinksChangelog: true,
+      docsChangelogVersion: '0.1.0',
+    },
+    plugin: {
+      version: '0.1.0',
+      sourceVersion: '0.1.0',
+      stableTag: '0.1.0',
+      changelogVersion: '0.1.0',
+      testedUpTo: '7.1',
+      requiresAtLeast: '6.6',
+      readmeRequiresAtLeast: '6.6',
+      requiresPhp: '8.1',
+      readmeRequiresPhp: '8.1',
+      license: 'GPL-2.0-or-later',
+      readmeLinksChangelog: true,
+      docsChangelogVersion: '0.1.0',
+    },
+    preview: { width: 590, height: 300 },
+  };
+
+  it('accepts the product versions and a matching supported WordPress version', () => {
+    expect(releaseProblems(valid, { latestWordPress: '7.1.3' })).toEqual([]);
+  });
+
+  it('blocks bad requirements, stale metadata, unsupported licensing, and a wrong preview size', () => {
+    const bad = {
+      ...valid,
+      theme: {
+        ...valid.theme,
+        version: '0.1',
+        testedUpTo: '6.5',
+        requiresAtLeast: 'latest',
+        requiresPhp: '8.x',
+        license: 'Proprietary',
+        readmeLinksChangelog: false,
+      },
+      plugin: {
+        ...valid.plugin,
+        sourceVersion: '0.0.9',
+        stableTag: '0.0.9',
+        changelogVersion: '0.0.9',
+        readmeRequiresAtLeast: '6.5',
+        readmeRequiresPhp: '8.0',
+        testedUpTo: '7.0',
+        readmeLinksChangelog: false,
+        docsChangelogVersion: '0.0.9',
+      },
+      preview: { width: 1200, height: 900 },
+    };
+    expect(releaseProblems(bad, { latestWordPress: '7.1.3' })).toEqual(
+      expect.arrayContaining([
+        'theme style.css Version "0.1" is not strict semver',
+        'plugin Plugin::VERSION 0.0.9 does not match 0.1.0',
+        'plugin Stable tag 0.0.9 does not match 0.1.0',
+        'theme minimum WordPress version is invalid',
+        'theme minimum PHP version is invalid',
+        'theme license is not GPL compatible',
+        'plugin readme Requires at least differs from its plugin header',
+        'theme and Resume plugin minimum WordPress versions differ',
+        'theme and Resume plugin Tested up to versions differ',
+        'ThemeForest primary preview must be 590x300, found 1200x900',
+      ])
+    );
+  });
+
+  it('blocks missing or invalid preview files and detects the current release metadata', () => {
+    expect(releaseProblems({ ...valid, preview: {} })).toContain(
+      'ThemeForest primary preview is missing or is not a PNG'
+    );
+    const metadata = readReleaseMetadata(process.cwd());
+    expect(metadata.theme.version).toBe('0.1.0');
+    expect(metadata.plugin.version).toBe('0.1.0');
+    expect(metadata.theme.docsChangelogVersion).toBe('0.1.0');
+    expect(metadata.plugin.docsChangelogVersion).toBe('0.1.0');
+    expect(metadata.preview).toMatchObject({ width: 590, height: 300 });
+    expect(checkRelease(process.cwd())).toEqual([]);
   });
 });
 
