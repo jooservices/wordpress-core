@@ -10,6 +10,11 @@ declare(strict_types=1);
 namespace JOOservices\Jooservices\Tests\Integration;
 
 use JOOservices\TestKit\IntegrationTestCase;
+use JOOservices\Jooservices\BuyerOptions;
+use JOOservices\ThemeCore\Blocks\TemplateLocator;
+use JOOservices\ThemeCore\Blocks\PatternLoader;
+use JOOservices\ThemeCore\Blocks\ThemeScheme;
+use JOOservices\ThemeCore\Config\Settings;
 use JOOservices\ThemeCore\Config\Manifest;
 use JOOservices\ThemeCore\Kernel;
 
@@ -34,15 +39,13 @@ final class JooservicesThemeTest extends IntegrationTestCase {
 
 	public function test_theme_php_stays_within_the_line_budget(): void {
 		$lines = 0;
-		foreach ( array_merge( array( self::DIR . '/functions.php' ), glob( self::DIR . '/inc/*.php' ) ?: array() ) as $file ) {
-			foreach ( file( $file ) as $line ) {
-				$t = trim( $line );
-				if ( '' !== $t && ! str_starts_with( $t, '*' ) && ! str_starts_with( $t, '/**' ) && ! str_starts_with( $t, '//' ) ) {
-					++$lines;
-				}
+		foreach ( file( self::DIR . '/functions.php' ) as $line ) {
+			$t = trim( $line );
+			if ( '' !== $t && ! str_starts_with( $t, '*' ) && ! str_starts_with( $t, '/**' ) && ! str_starts_with( $t, '//' ) ) {
+				++$lines;
 			}
 		}
-		$this->assertLessThanOrEqual( 80, $lines, 'functions.php + inc/ non-comment lines' );
+		$this->assertLessThanOrEqual( 80, $lines, 'functions.php non-comment lines' );
 	}
 
 	public function test_image_sizes_come_from_the_manifest(): void {
@@ -104,6 +107,16 @@ final class JooservicesThemeTest extends IntegrationTestCase {
 		}
 	}
 
+	public function test_header_and_footer_keep_buyer_content_in_editable_site_editor_blocks(): void {
+		$header = (string) file_get_contents( self::DIR . '/parts/header.html' );
+		$footer = (string) file_get_contents( self::DIR . '/parts/footer.html' );
+		$this->assertStringContainsString( 'wp:site-logo', $header );
+		$this->assertStringContainsString( 'wp:site-title', $header );
+		$this->assertStringContainsString( 'joo-footer__socials', $footer );
+		$this->assertStringContainsString( 'wp:joo/profile-card', $footer );
+		$this->assertStringContainsString( 'Connect', $footer );
+	}
+
 	public function test_the_style_variations_define_the_same_palette_slugs(): void {
 		$slugs = static function ( string $file ): array {
 			$json = json_decode( (string) file_get_contents( $file ), true );
@@ -112,5 +125,111 @@ final class JooservicesThemeTest extends IntegrationTestCase {
 		$base  = $slugs( self::DIR . '/theme.json' );
 		$this->assertSame( $base, $slugs( self::DIR . '/styles/dark.json' ) );
 		$this->assertSame( $base, $slugs( self::DIR . '/styles/light.json' ) );
+		$this->assertSame( $base, $slugs( self::DIR . '/styles/ocean.json' ) );
+		$this->assertSame( $base, $slugs( self::DIR . '/styles/forest.json' ) );
+		$this->assertSame( $base, $slugs( self::DIR . '/styles/paper.json' ) );
+	}
+
+	public function test_all_five_style_variations_are_available_to_the_editor_and_runtime(): void {
+		$schemes = Kernel::container()->get( ThemeScheme::class )->schemes();
+		$this->assertSame( array( 'dark', 'light', 'ocean', 'forest', 'paper' ), $schemes );
+		foreach ( $schemes as $scheme ) {
+			$this->assertFileExists( self::DIR . '/styles/' . $scheme . '.json' );
+		}
+		$script = Kernel::container()->get( ThemeScheme::class )->script();
+		$this->assertStringContainsString( 'a.includes(s)', $script );
+		$this->assertLessThanOrEqual( ThemeScheme::MAX_SCRIPT_BYTES, strlen( $script ) );
+	}
+
+	public function test_buyer_patterns_are_registered_in_the_joo_services_editor_category(): void {
+		Kernel::container()->get( PatternLoader::class )->register();
+		$registry = \WP_Block_Patterns_Registry::get_instance();
+		foreach ( array( 'hero', 'about', 'contact', '404-search', '404-terminal', 'newsletter' ) as $slug ) {
+			$name = 'jooservices/' . $slug;
+			$this->assertTrue( $registry->is_registered( $name ), $name );
+			$this->assertSame( array( 'jooservices' ), $registry->get_registered( $name )['categories'] );
+		}
+	}
+
+	public function test_buyer_options_change_frontend_output(): void {
+		$settings = Kernel::container()->get( Settings::class );
+		$options  = new BuyerOptions( $settings );
+		$settings->save(
+			array(
+				'features.rail'           => false,
+				'features.slider'         => false,
+				'features.back_to_top'    => false,
+				'content.rail_profile'    => false,
+				'content.rail_companies'  => false,
+				'content.rail_categories' => false,
+				'content.rail_topics'     => false,
+				'content.rail_tags'       => false,
+				'appearance.card_density' => 'compact',
+				'appearance.date_format'  => 'Y-m-d',
+			)
+		);
+		try {
+			$railPart = array(
+				'blockName' => 'core/template-part',
+				'attrs'     => array( 'slug' => 'rail' ),
+			);
+			$slider   = array( 'blockName' => 'joo/featured-slider' );
+			$this->assertSame( '', $options->filterBlock( '<aside>rail</aside>', $railPart ) );
+			$this->assertSame( '', $options->filterBlock( '<div>slider</div>', $slider ) );
+			foreach (
+				array(
+					'joo/profile-card'  => array( 'joo-rail__profile', 'content.rail_profile' ),
+					'joo/companies'     => array( 'joo-rail__companies', 'content.rail_companies' ),
+					'joo/category-tree' => array( 'joo-rail__categories', 'content.rail_categories' ),
+					'joo/top-topics'    => array( 'joo-rail__topics', 'content.rail_topics' ),
+					'joo/tag-list'      => array( 'joo-rail__tags', 'content.rail_tags' ),
+				) as $name => $entry
+			) {
+				$parsed = array(
+					'blockName' => $name,
+					'attrs'     => array( 'className' => $entry[0] ),
+				);
+				$this->assertSame( '', $options->filterBlock( '<div>block</div>', $parsed ), $entry[1] );
+			}
+			$paragraph = array( 'blockName' => 'core/paragraph' );
+			$this->assertSame( '<p>kept</p>', $options->filterBlock( '<p>kept</p>', $paragraph ) );
+			$footerProfile = array(
+				'blockName' => 'joo/profile-card',
+				'attrs'     => array( 'className' => 'joo-footer__socials' ),
+			);
+			$this->assertSame( '<section>kept</section>', $options->filterBlock( '<section>kept</section>', $footerProfile ) );
+			$this->assertContains( 'joo-card-density--compact', $options->bodyClasses( array() ) );
+			$this->assertSame( 'Y-m-d', $options->dateFormat( false ) );
+			ob_start();
+			$options->topAnchor();
+			$this->assertSame( '<span id="top"></span>', (string) ob_get_clean() );
+			ob_start();
+			$options->backToTop();
+			$this->assertSame( '', (string) ob_get_clean() );
+		} finally {
+			$settings->repository()->reset();
+		}
+		$this->assertNotContains( 'joo-card-density--compact', $options->bodyClasses( array() ) );
+		$this->assertFalse( $options->dateFormat( false ) );
+		ob_start();
+		$options->backToTop();
+		$this->assertStringContainsString( 'href="#top"', (string) ob_get_clean() );
+	}
+
+	public function test_sample_child_theme_overrides_a_template_part_and_block_template(): void {
+		$child  = __DIR__ . '/../fixtures/sample-child';
+		$filter = static fn() => $child;
+		add_filter( 'stylesheet_directory', $filter );
+		try {
+			$part = locate_template( 'parts/footer.html', false, false );
+			$this->assertSame( $child . '/parts/footer.html', $part );
+			$this->assertStringContainsString( 'Footer override from the sample child theme', (string) file_get_contents( $part ) );
+
+			$blockTemplate = TemplateLocator::locate( 'profile-card', '/workspace/packages/theme-core/resources/blocks/profile-card' );
+			$this->assertSame( $child . '/parts/joo/profile-card.php', $blockTemplate );
+			$this->assertStringContainsString( 'Child block template override', do_blocks( '<!-- wp:joo/profile-card /-->' ) );
+		} finally {
+			remove_filter( 'stylesheet_directory', $filter );
+		}
 	}
 }

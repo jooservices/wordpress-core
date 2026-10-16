@@ -428,6 +428,8 @@ final class TerminalTest extends IntegrationTestCase {
 	public function test_the_dock_can_be_disabled_open_by_default_and_hidden_on_404(): void {
 		$this->boot( 'perf.json', array( 'terminal.enabled' => false ) );
 		$this->assertSame( '', trim( do_blocks( '<!-- wp:joo/terminal-dock /-->' ) ) );
+		$runtime = Kernel::container()->get( \JOOservices\ThemeCore\Assets\RuntimeConfig::class )->data();
+		$this->assertFalse( $runtime['features']['terminal'] );
 		Kernel::reset();
 		remove_all_filters( 'joo/settings/value' );
 		$this->boot( 'perf.json', array( 'terminal.open_by_default' => true ) );

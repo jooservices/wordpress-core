@@ -17,6 +17,16 @@
   color: var(--joo-ink);
 }
 
+.joo-header:has(.wp-block-site-logo img) .joo-logo {
+  display: none;
+}
+
+.joo-logo-image img {
+  display: block;
+  width: auto;
+  max-height: 52px;
+}
+
 .joo-nav {
   flex: 1 1 auto;
   min-width: 0;
