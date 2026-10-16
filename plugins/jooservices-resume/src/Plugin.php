@@ -14,6 +14,7 @@ use JOOservices\Resume\Admin\CompanyList;
 use JOOservices\Resume\Admin\ImportExport;
 use JOOservices\Resume\Admin\Settings;
 use JOOservices\Resume\Demo\DemoCommand;
+use JOOservices\Resume\Frontend\Surfaces;
 use JOOservices\Resume\Modules\CompanyDataModel;
 use JOOservices\Resume\Modules\ProfileAndEditorialFields;
 use JOOservices\Resume\PostTypes\Company;
@@ -98,6 +99,7 @@ final class Plugin {
 	public static function register(): void {
 		( new Company() )->hook();
 		( new CompanyDataModel() )->hook();
+		( new Surfaces() )->hook();
 		if ( is_admin() ) {
 			( new CompanyEditor() )->hook();
 			( new CompanyList() )->hook();
