@@ -8,9 +8,16 @@ cd "$ROOT"
 env_value() { grep -E "^$1=" .env | head -1 | cut -d= -f2-; }
 WP_VERSION="${WP_VERSION:-$(env_value WP_VERSION)}"
 WP_VERSION="${WP_VERSION:-latest}"
+WP_SITE_URL="${WP_SITE_URL:-$(env_value WP_SITE_URL)}"
+WP_SITE_URL="${WP_SITE_URL:-http://127.0.0.1:8082}"
+WP_PORT="$(bash "$ROOT/docker/scripts/site-url.sh" port "$WP_SITE_URL")"
 if [ "$WP_VERSION" = "latest" ]; then export WP_IMAGE_TAG="php8.3-apache"; else export WP_IMAGE_TAG="${WP_VERSION}-php8.3-apache"; fi
-export WP_VERSION
-export COMPOSE_PROJECT_NAME="${JOOWT_PROJECT:-jooservices-wp-themes}"
+if [[ -n "${JOOWT_PROJECT:-}" && "$JOOWT_PROJECT" != "joowt-wp-shared-test" ]]; then
+  echo "ERROR: the shared WordPress test container has the fixed Compose project joowt-wp-shared-test." >&2
+  exit 2
+fi
+export WP_VERSION WP_SITE_URL WP_PORT
+export COMPOSE_PROJECT_NAME="joowt-wp-shared-test"
 # Extra themes (scaffolded with make new-theme) are mounted through a generated override file.
 EXTRA="docker/.themes.generated.yaml"
 {

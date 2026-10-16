@@ -4,25 +4,6 @@ x-labels: &labels
   com.joowt.project: ${COMPOSE_PROJECT_NAME:-jooservices-wp-themes}
 
 services:
-  db:
-    image: mariadb:11
-    labels: *labels
-    restart: unless-stopped
-    environment:
-      MARIADB_DATABASE: ${DB_NAME}
-      MARIADB_USER: ${DB_USER}
-      MARIADB_PASSWORD: ${DB_PASSWORD}
-      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-    volumes:
-      - db_data:/var/lib/mysql
-      - ./mariadb/my.cnf:/etc/mysql/conf.d/joowt.cnf:ro
-      - ./mariadb/init:/docker-entrypoint-initdb.d:ro
-    healthcheck:
-      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
-      interval: 5s
-      timeout: 5s
-      retries: 30
-
   wordpress:
     build:
       context: ./wordpress
@@ -32,17 +13,15 @@ services:
     labels: *labels
     restart: unless-stopped
     depends_on:
-      db:
-        condition: service_healthy
       mailpit:
         condition: service_started
     ports:
-      - '127.0.0.1:${WP_PORT:-8080}:80'
+      - '127.0.0.1:${WP_PORT:-8082}:80'
     environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_NAME: ${DB_NAME}
-      WORDPRESS_DB_USER: ${DB_USER}
-      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WORDPRESS_DB_HOST: mariadb:3306
+      WORDPRESS_DB_NAME: ${DB_NAME:?Run make init-env and make shared-db-create}
+      WORDPRESS_DB_USER: ${DB_USER:?Run make init-env and make shared-db-create}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:?Run make init-env and make shared-db-create}
       WORDPRESS_DEBUG: '1'
       WORDPRESS_CONFIG_EXTRA: |
         define( 'WP_ENVIRONMENT_TYPE', 'local' );
@@ -50,9 +29,14 @@ services:
         define( 'WP_DEBUG_DISPLAY', false );
         define( 'FS_METHOD', 'direct' );
         define( 'JOO_DEMO', true );
-        define( 'WP_HOME', '${WP_SITE_URL}' );
-        define( 'WP_SITEURL', '${WP_SITE_URL}' );
-      WP_PORT: ${WP_PORT:-8080}
+        $$joo_site_url = getenv( 'WP_SITE_URL' ) ?: 'http://127.0.0.1:8082';
+        if ( ! empty( $$_SERVER['HTTP_HOST'] ) ) {
+          $$joo_scheme = ( ! empty( $$_SERVER['HTTPS'] ) && 'off' !== $$_SERVER['HTTPS'] ) ? 'https://' : 'http://';
+          $$joo_site_url = $$joo_scheme . $$_SERVER['HTTP_HOST'];
+        }
+        define( 'WP_HOME', $$joo_site_url );
+        define( 'WP_SITEURL', $$joo_site_url );
+      WP_PORT: ${WP_PORT:-8082}
       WP_SITE_URL: ${WP_SITE_URL}
       WP_ADMIN_USER: ${WP_ADMIN_USER}
       WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
@@ -60,7 +44,7 @@ services:
       MAIL_HOST: mailpit
       MAIL_PORT_SMTP: '1025'
     volumes:
-      - wp_data:/var/www/html
+      - wp_uploads:/var/www/html/wp-content/uploads
       - php_logs:/var/log/php
       - wp_tests_lib:/tmp/wordpress-tests-lib
       - ../themes/starter:/var/www/html/wp-content/themes/starter
@@ -113,7 +97,7 @@ services:
     labels: *labels
     restart: unless-stopped
     ports:
-      - '127.0.0.1:${MAIL_PORT:-8025}:8025'
+      - '127.0.0.1:${MAIL_PORT:-8126}:8025'
     healthcheck:
       test: ['CMD', '/mailpit', 'readyz']
       interval: 10s
@@ -121,11 +105,14 @@ services:
       retries: 10
 
 volumes:
-  db_data:
-    labels: *labels
-  wp_data:
-    labels: *labels
+  wp_uploads:
+    name: joowt-${DB_NAME:?Run make init-env}-uploads
   php_logs:
     labels: *labels
   wp_tests_lib:
     labels: *labels
+
+networks:
+  default:
+    name: workspaces-shared
+    external: true

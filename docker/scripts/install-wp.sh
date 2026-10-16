@@ -31,7 +31,9 @@ wp option update default_pingback_flag 0 >/dev/null
 wp rewrite structure '/%category%/%postname%/' --hard >/dev/null 2>&1 || wp rewrite structure '/%category%/%postname%/' >/dev/null
 wp rewrite flush --hard >/dev/null 2>&1 || true
 
-wp language core install vi >/dev/null 2>&1 || echo "warning: could not download the Vietnamese language pack (offline?)"
+if [ ! -s wp-content/languages/admin-vi.mo ]; then
+  wp language core install vi >/dev/null 2>&1 || echo "warning: could not download the Vietnamese language pack (offline?)"
+fi
 
 if [ -d wp-content/plugins/jooservices-content ]; then
   wp plugin is-active jooservices-content 2>/dev/null || wp plugin activate jooservices-content

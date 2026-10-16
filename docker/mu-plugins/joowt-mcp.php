@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: JOOWT MCP demo helpers
- * Description: Local Docker only. The MCP server reaches WordPress as http://wordpress while the site URL is http://127.0.0.1:8080, so the plugin's public-URL check is skipped and its rate limit is relaxed.
+ * Description: Local Docker only. The MCP service reaches WordPress by the in-network `wordpress` host; the loopback site URL and port are configured per worktree.
  *
  * @package JOOservices\Docker
  */

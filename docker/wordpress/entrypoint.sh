@@ -5,4 +5,10 @@ set -e
 if [ -n "${WP_PORT:-}" ] && [ "${WP_PORT}" != "80" ]; then
   echo "Listen ${WP_PORT}" > /etc/apache2/conf-enabled/joowt-port.conf
 fi
+uploads_dir=/var/www/html/wp-content/uploads
+mkdir -p "$uploads_dir"
+www_data_owner="$(id -u www-data):$(id -g www-data)"
+if [ "$(stat -c '%u:%g' "$uploads_dir")" != "$www_data_owner" ]; then
+  chown -R www-data:www-data "$uploads_dir"
+fi
 exec docker-entrypoint.sh "$@"
