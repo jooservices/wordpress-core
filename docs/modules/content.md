@@ -1,7 +1,10 @@
-# Content data layer
+# Company, profile and editorial data
 
-## Companion plugin `plugins/jooservices-content`
-Independent of the theme core (own autoloader, text domain `jooservices-content`, PHP >= 8.1, WP >= 6.6). Data survives deactivation; `uninstall.php` deletes data only when `JOO_CONTENT_DELETE_DATA_ON_UNINSTALL` is true.
+## JOOservices Resume: `plugins/jooservices-resume`
+
+This plugin owns company history and the **Profile and editorial fields** module (author profile, topic/category, and featured-post fields). It is independent of the theme core (own autoloader, text domain `jooservices-resume`, PHP >= 8.1, WP >= 6.6). The `joo_company` post type and `_joo_company_*` meta keys are the stable company data contract shared with theme core and the future bundle. Data survives deactivation and uninstall by default; defining `JOO_RESUME_DELETE_DATA_ON_UNINSTALL` as `true` opts into deleting plugin-owned data.
+
+Compatibility note: the former lab-only folder and slug `jooservices-content` has no public installs. No old-slug alias or data migration is provided.
 
 | Component | What it stores |
 |---|---|

@@ -52,6 +52,7 @@ link-core: ## Link packages/theme-core into themes/$(THEME)/core
 	@ln -sfn ../../packages/theme-core themes/$(THEME)/core
 	@echo "themes/$(THEME)/core -> ../../packages/theme-core"
 PHP := php -d error_reporting=24575
+VITEST_ARGS ?= --configLoader native --no-cache --fsModuleCachePath $${TMPDIR:-/tmp}/jooservices-wp-themes-vitest
 lint: ## PHPCS, ESLint, Stylelint, Prettier, header check
 	@php tools/check-headers.php
 	@$(PHP) vendor/bin/phpcs
@@ -73,14 +74,14 @@ test-tooling: ## Prove that every quality tool fails on a violation
 	@tests/tooling/run.sh
 	@tests/tooling/hooks-test.sh
 test-unit: ## PHPUnit unit suites and Vitest (COVERAGE=1: coverage with thresholds, PHP part runs in Docker with pcov)
-	@if [ "$(COVERAGE)" = "1" ]; then $(MAKE) --no-print-directory coverage; else $(PHP) vendor/bin/phpunit && npx --no-install vitest run; fi
+	@if [ "$(COVERAGE)" = "1" ]; then $(MAKE) --no-print-directory coverage; else $(PHP) vendor/bin/phpunit && npx --no-install vitest run $(VITEST_ARGS); fi
 coverage: ## Merged unit + integration coverage (pcov in Docker) with the threshold gate
 	@rm -rf artifacts/reports/cov artifacts/reports/unit && mkdir -p artifacts/reports/cov artifacts/reports/unit
 	@$(COMPOSE) exec -T -u www-data wordpress php -d pcov.enabled=1 -d pcov.directory=/workspace -d error_reporting=24575 /workspace/vendor/bin/phpunit -c /workspace/phpunit.xml.dist --do-not-cache-result --coverage-php /workspace/artifacts/reports/cov/unit.cov
 	@$(COMPOSE) exec -T -u www-data -e COVERAGE=1 -e JOO_TEST_THEME=$(TEST_THEME) wordpress bash /scripts/phpunit-integration.sh >/dev/null
 	@$(COMPOSE) exec -T -u www-data wordpress php -d error_reporting=24575 /workspace/vendor/bin/phpcov merge --clover /workspace/artifacts/reports/unit/clover.xml --html /workspace/artifacts/reports/unit/html --text /workspace/artifacts/reports/unit/summary.txt /workspace/artifacts/reports/cov >/dev/null
 	@./tools/coverage-gate.sh artifacts/reports/unit/clover.xml
-	@npx --no-install vitest run --coverage
+	@npx --no-install vitest run --coverage $(VITEST_ARGS)
 test-integration: ## wp-phpunit in Docker (WP_VERSION=6.6 for the minimum version on an isolated stack)
 	@$(COMPOSE) exec -T -u www-data -e JOO_TEST_THEME=$(TEST_THEME) wordpress bash /scripts/phpunit-integration.sh $(ARGS)
 test-e2e: ## Playwright e2e against the running demo (THEME=..., ARGS="specs/shared")
@@ -105,7 +106,7 @@ demo-plugins: ## Install the plugins jooservices.com uses (docker/demo-plugins.j
 	@$(COMPOSE) exec -T -u www-data wordpress bash /scripts/demo-plugins.sh
 mcp-env: ## Add the MCP demo secrets to .env (never printed)
 	@./docker/scripts/mcp.sh env
-demo-mcp: ## Stage the MCP and content plugins, connect them and start the MCP server (http://127.0.0.1:3000/mcp)
+demo-mcp: ## Stage the MCP and Resume plugins, connect them and start the MCP server (http://127.0.0.1:3000/mcp)
 	@./docker/scripts/mcp.sh up
 mcp-down: ## Stop the MCP server
 	@./docker/scripts/mcp.sh down
@@ -140,7 +141,7 @@ package: ## Build the installable theme zip (THEME=...)
 i18n: ## Make POT files (WP-CLI in Docker), build the Vietnamese .po/.mo and fail on untranslated strings
 	@mkdir -p artifacts/i18n
 	@$(COMPOSE) exec -T -u www-data wordpress wp i18n make-pot /workspace/packages/theme-core /workspace/artifacts/i18n/joo-core.pot --domain=joo-core --exclude=tests,node_modules,resources/build,languages --skip-js --quiet
-	@$(COMPOSE) exec -T -u www-data wordpress wp i18n make-pot /workspace/plugins/jooservices-content /workspace/artifacts/i18n/jooservices-content.pot --domain=jooservices-content --exclude=tests,node_modules,languages --skip-js --quiet
+	@$(COMPOSE) exec -T -u www-data wordpress wp i18n make-pot /workspace/plugins/jooservices-resume /workspace/artifacts/i18n/jooservices-resume.pot --domain=jooservices-resume --exclude=tests,node_modules,languages --skip-js --quiet
 	@$(COMPOSE) exec -T -u www-data wordpress wp i18n make-pot /workspace/themes/starter /workspace/artifacts/i18n/starter.pot --domain=starter --exclude=tests,node_modules,core,languages --skip-js --quiet
 	@$(COMPOSE) exec -T -u www-data wordpress wp i18n make-pot /workspace/themes/jooservices /workspace/artifacts/i18n/jooservices.pot --domain=jooservices --exclude=tests,node_modules,core,languages,assets/src --skip-js --quiet
 	@node tools/i18n.mjs

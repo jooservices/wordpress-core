@@ -1,10 +1,10 @@
 {
   "$comment": "Plugins that the demo mounts and that are packaged for a server. `source` is relative to the repository root.",
   "plugins": {
-    "jooservices-content": {
-      "name": "JOOservices Content",
-      "source": "plugins/jooservices-content",
-      "mainFile": "jooservices-content.php",
+    "jooservices-resume": {
+      "name": "JOOservices Resume",
+      "source": "plugins/jooservices-resume",
+      "mainFile": "jooservices-resume.php",
       "composer": false,
       "exclude": ["tests/", "node_modules/", ".DS_Store"]
     },

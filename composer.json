@@ -1,6 +1,6 @@
 {
   "name": "jooservices/wp-themes",
-  "description": "Monorepo for JOOservices WordPress block themes, theme core and companion plugin",
+  "description": "Monorepo for JOOservices WordPress block themes, theme core and Resume plugin",
   "type": "project",
   "license": "GPL-2.0-or-later",
   "require-dev": {
@@ -63,8 +63,8 @@
       "JOOservices\\TestKit\\Tests\\": "packages/test-kit/tests/",
       "JOOservices\\ThemeCore\\": "packages/theme-core/src/",
       "JOOservices\\ThemeCore\\Tests\\": "packages/theme-core/tests/",
-      "JOOservices\\Content\\": "plugins/jooservices-content/src/",
-      "JOOservices\\Content\\Tests\\": "plugins/jooservices-content/tests/"
+      "JOOservices\\Resume\\": "plugins/jooservices-resume/src/",
+      "JOOservices\\Resume\\Tests\\": "plugins/jooservices-resume/tests/"
     }
   }
 }

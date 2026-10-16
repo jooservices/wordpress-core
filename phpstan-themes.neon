@@ -1,4 +1,4 @@
-# Themes, companion plugin, test kit and tools. A baseline is allowed only with a Jira key per entry.
+# Themes, JOOservices Resume, test kit and tools. A baseline is allowed only with a Jira key per entry.
 parameters:
   phpVersion: 80100
   level: 6

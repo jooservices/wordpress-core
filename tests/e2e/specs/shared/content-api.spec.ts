@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-// Public content routes over real HTTP against the Docker site (companion plugin active).
+// Public content routes over real HTTP against the Docker site (JOOservices Resume active).
 test.describe('content API', () => {
   for (const route of ['/companies', '/categories/tree', '/topics', '/featured', '/profile']) {
     test(`GET ${route} is public, JSON and cacheable`, async ({ request }) => {

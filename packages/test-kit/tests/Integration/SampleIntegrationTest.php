@@ -30,7 +30,7 @@ final class SampleIntegrationTest extends IntegrationTestCase {
 		$this->assertStringContainsString( '<link', $this->capture( 'wp_head' ) );
 	}
 
-	public function test_content_plugin_file_is_loaded_when_present(): void {
-		$this->assertFileExists( '/workspace/plugins/jooservices-content/jooservices-content.php' );
+	public function test_resume_plugin_file_is_loaded_when_present(): void {
+		$this->assertFileExists( '/workspace/plugins/jooservices-resume/jooservices-resume.php' );
 	}
 }

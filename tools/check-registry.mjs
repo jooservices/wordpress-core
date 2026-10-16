@@ -56,8 +56,8 @@ function walk(dir) {
 const files = [
   ...walk(fromRoot('packages/theme-core/src')),
   ...walk(fromRoot('packages/theme-core/resources')),
-  ...walk(fromRoot('plugins/jooservices-content/src')),
-  ...walk(fromRoot('plugins/jooservices-content')),
+  ...walk(fromRoot('plugins/jooservices-resume/src')),
+  ...walk(fromRoot('plugins/jooservices-resume')),
   ...walk(fromRoot('themes')),
 ].filter(
   (f) =>

@@ -4,7 +4,7 @@ Two plugins are developed and deployed with the themes.
 
 | Plugin | Folder in WordPress | Source | Purpose |
 |---|---|---|---|
-| JOOservices Content (company plugin) | `jooservices-content` | `plugins/jooservices-content` | Companies, profile fields, topic fields and featured posts used by the theme (PHP 8.1+) |
+| JOOservices Resume | `jooservices-resume` | `plugins/jooservices-resume` | Company history and the Profile and editorial fields module (PHP 8.1+) |
 | JOOservices WordPress - MCP | `wordpress-chatgpt` | `../wordpress-mcp/packages/wordpress-plugin` (own repository) | Scoped REST API, connection tokens, audit log and rate limit for the MCP server (PHP 8.3+) |
 
 The MCP server itself is a Node service (`../wordpress-mcp/packages/mcp-server`, Node 24). `../wordpress-sdk` is a PHP 8.5 client library for the WordPress REST API; it is not part of the demo or of a site deployment.
@@ -36,17 +36,17 @@ Use `http://127.0.0.1:3000/mcp` with the header `Authorization: Bearer <MCP_AUTH
 ## Build the zips
 
 ```bash
-make plugins-package            # artifacts/package/jooservices-content-<v>.zip and wordpress-chatgpt-<v>.zip
-node tools/build-plugin.mjs --plugin jooservices-content
+make plugins-package            # artifacts/package/jooservices-resume-<v>.zip and wordpress-chatgpt-<v>.zip
+node tools/build-plugin.mjs --plugin jooservices-resume
 ```
 
 `MCP_PLUGIN_SRC` points the build at another checkout of the MCP plugin. The version comes from the plugin header; the MCP repository releases with its own tags (`make plugin-release` there builds the same zip).
 
 ## Deploy to the server
 
-Order: company plugin, MCP plugin, MCP server. Take a backup first (database and `wp-content`).
+Order: JOOservices Resume, MCP plugin, MCP server. Take a backup first (database and `wp-content`).
 
-1. **Company plugin**: upload `jooservices-content-<v>.zip` (Plugins, Add New, Upload) or `wp plugin install ... --activate`. Add companies and fill your profile. Nothing else to configure. Rollback: deactivate (data stays).
+1. **JOOservices Resume**: upload `jooservices-resume-<v>.zip` (Plugins, Add New, Upload) or `wp plugin install ... --activate`. Add companies and fill your profile. Nothing else to configure. Rollback: deactivate (data stays).
 2. **MCP plugin**: upload `wordpress-chatgpt-<v>.zip` and activate (needs PHP 8.3). In wp-admin open the plugin's connections screen, create a connection for an administrator, pick the scopes (start with read scopes), copy the token once (it is stored hashed). Rollback: deactivate; the connection table stays.
 3. **MCP server**: deploy from the `wordpress-mcp` repository (`docs/DEPLOYMENT.md`): `make mcp-up` asks for the site URL and the token and writes `.env.prod`; `make prod-https` adds Caddy with TLS (set `MCP_DOMAIN` and `ACME_EMAIL`). In production use OAuth 2.1 "Mixed" mode, not the static secret. Set `WORDPRESS_URL` to the public https URL of the site.
 4. **Check**: `curl -s https://<mcp-domain>/health`; in the client call `wordpress_get_site`; in wp-admin the audit log shows the request. Use confirm-gated tools (publish, delete) only after reading the audit log once.

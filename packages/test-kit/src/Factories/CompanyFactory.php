@@ -1,6 +1,6 @@
 <?php
 /**
- * Company factory (companion plugin).
+ * Company factory (JOOservices Resume).
  *
  * @package JOOservices\TestKit
  */

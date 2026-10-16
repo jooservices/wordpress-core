@@ -28,13 +28,13 @@ case "${1:-}" in
     # The WordPress container must exist to run composer, and again to pick up the plugin mount.
     $COMPOSE up -d --wait wordpress >/dev/null
     node tools/build-plugin.mjs --plugin wordpress-chatgpt --no-zip
-    node tools/build-plugin.mjs --plugin jooservices-content --no-zip
+    node tools/build-plugin.mjs --plugin jooservices-resume --no-zip
     # Compose adds the plugin mount on (re)creation; recreate once when the container does not see the plugin yet.
     $COMPOSE up -d --wait wordpress >/dev/null
     if ! $COMPOSE exec -T wordpress test -f /var/www/html/wp-content/plugins/wordpress-chatgpt/wordpress-chatgpt.php </dev/null; then
       $COMPOSE up -d --force-recreate --wait wordpress >/dev/null
     fi
-    $COMPOSE exec -T -u www-data wordpress wp plugin activate wordpress-chatgpt jooservices-content </dev/null
+    $COMPOSE exec -T -u www-data wordpress wp plugin activate wordpress-chatgpt jooservices-resume </dev/null
     $COMPOSE exec -T -u www-data -e MCP_WORDPRESS_TOKEN="$(env_value MCP_WORDPRESS_TOKEN)" wordpress wp eval-file /scripts/mcp-seed.php --use-include </dev/null
     MCP_WORDPRESS_TOKEN="$(env_value MCP_WORDPRESS_TOKEN)" MCP_AUTH_SECRET="$(env_value MCP_AUTH_SECRET)" MCP_PORT="$(env_value MCP_PORT)" \
       $COMPOSE --profile mcp up -d --build --wait mcp

@@ -3,7 +3,7 @@
 deptrac:
   paths:
     - ./packages/theme-core/src
-    - ./plugins/jooservices-content/src
+    - ./plugins/jooservices-resume/src
     - ./themes/starter/inc
     - ./themes/jooservices/inc
   analyser:
@@ -19,7 +19,7 @@ deptrac:
     - name: Plugin
       collectors:
         - type: directory
-          value: plugins/jooservices-content/src/.*
+          value: plugins/jooservices-resume/src/.*
     - name: Theme
       collectors:
         - type: directory

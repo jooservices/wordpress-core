@@ -1,6 +1,6 @@
 <?php
 /**
- * Provider used when the content plugin is not active.
+ * Provider used when JOOservices Resume is not active.
  *
  * @package JOOservices\ThemeCore
  */

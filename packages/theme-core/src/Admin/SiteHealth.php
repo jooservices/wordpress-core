@@ -48,7 +48,7 @@ final class SiteHealth {
 		$this->addTest( 'joo_core_requirements', 'JOOservices core requirements', array( $this, 'testRequirements' ) );
 		$this->addTest( 'joo_manifest_valid', 'JOOservices theme manifest', array( $this, 'testManifest' ) );
 		$this->addTest( 'joo_modules_status', 'JOOservices modules', array( $this, 'testModules' ) );
-		$this->addTest( 'joo_content_plugin', 'JOOservices content plugin', array( $this, 'testContentPlugin' ) );
+		$this->addTest( 'joo_resume_plugin', 'JOOservices Resume plugin', array( $this, 'testResumePlugin' ) );
 	}
 
 	/**
@@ -155,15 +155,15 @@ final class SiteHealth {
 	}
 
 	/**
-	 * Companion plugin test.
+	 * Resume plugin test.
 	 *
 	 * @return array<string, mixed>
 	 */
-	public function testContentPlugin(): array {
+	public function testResumePlugin(): array {
 		if ( post_type_exists( 'joo_company' ) ) {
-			return $this->result( 'good', 'The JOOservices content plugin is active', 'Companies, profile fields and featured posts are available.' );
+			return $this->result( 'good', 'JOOservices Resume is active', 'Company history, profile and editorial fields are available.' );
 		}
-		return $this->result( 'recommended', 'The JOOservices content plugin is not active', 'Install and activate "JOOservices Content" to manage companies, topic images and featured posts. Blocks that need this data stay empty until then.' );
+		return $this->result( 'recommended', 'JOOservices Resume is not active', 'Install and activate JOOservices Resume to manage company history, profile and editorial fields. Blocks that need this data stay empty until then.' );
 	}
 
 	/**

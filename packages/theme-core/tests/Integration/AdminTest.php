@@ -295,7 +295,12 @@ final class AdminTest extends IntegrationTestCase {
 		$this->assertSame( 'good', $health->run( 'joo_manifest_valid' )['status'] );
 		$this->assertSame( 'good', $health->run( 'joo_modules_status' )['status'] );
 		$expected = post_type_exists( 'joo_company' ) ? 'good' : 'recommended';
-		$this->assertSame( $expected, $health->run( 'joo_content_plugin' )['status'] );
+		$this->assertSame( $expected, $health->run( 'joo_resume_plugin' )['status'] );
+		if ( post_type_exists( 'joo_company' ) ) {
+			unregister_post_type( 'joo_company' );
+			$this->assertSame( 'recommended', $health->run( 'joo_resume_plugin' )['status'] );
+			( new \JOOservices\Resume\PostTypes\Company() )->register();
+		}
 		$tests = $health->registerTests( array() );
 		$this->assertArrayHasKey( 'joo_core_requirements', $tests['direct'] );
 	}
