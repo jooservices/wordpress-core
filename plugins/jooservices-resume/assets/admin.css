@@ -1,0 +1,49 @@
+.joo-field {
+  margin: 0 0 12px;
+}
+
+.joo-field label {
+  display: block;
+  margin-block-end: 4px;
+  font-weight: 600;
+}
+
+.joo-field--inline label {
+  font-weight: 400;
+}
+
+.joo-help {
+  display: block;
+  margin-block-start: 4px;
+  color: rgb(80 87 94);
+  font-size: 13px;
+}
+
+.joo-repeater__row {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border: 1px solid rgb(195 196 199);
+  border-radius: 4px;
+  background: white;
+}
+
+.joo-repeater__row legend {
+  padding-inline: 4px;
+  font-weight: 600;
+}
+
+.joo-repeater__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 0 0;
+}
+
+.joo-import-report td,
+.joo-import-report th {
+  vertical-align: top;
+}
+
+.joo-repeater__actions button.joo-remove {
+  color: rgb(138 31 31);
+}

@@ -6,6 +6,8 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    // Slow tools (stylelint, generators) time out at the 5 s default when the shared Docker host is busy.
+    testTimeout: 30000,
     include: [
       'packages/**/resources/**/*.test.js',
       'packages/**/js/**/*.test.js',
