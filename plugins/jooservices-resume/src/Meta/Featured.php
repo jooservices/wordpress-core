@@ -2,12 +2,12 @@
 /**
  * Featured posts.
  *
- * @package JOOservices\Content
+ * @package JOOservices\Resume
  */
 
 declare(strict_types=1);
 
-namespace JOOservices\Content\Meta;
+namespace JOOservices\Resume\Meta;
 
 /**
  * Featured flag and order for posts, with list column, filter and bulk actions.
@@ -72,7 +72,7 @@ final class Featured {
 	 * @return array<string, string>
 	 */
 	public function columns( $columns ): array {
-		$columns['joo_featured'] = __( 'Featured', 'jooservices-content' );
+		$columns['joo_featured'] = __( 'Featured', 'jooservices-resume' );
 		return $columns;
 	}
 
@@ -87,7 +87,7 @@ final class Featured {
 			return;
 		}
 		if ( (bool) get_post_meta( (int) $postId, '_joo_featured', true ) ) {
-			echo '<span aria-label="' . esc_attr__( 'Featured', 'jooservices-content' ) . '">★</span> ' . (int) get_post_meta( (int) $postId, '_joo_featured_order', true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer.
+			echo '<span aria-label="' . esc_attr__( 'Featured', 'jooservices-resume' ) . '">★</span> ' . (int) get_post_meta( (int) $postId, '_joo_featured_order', true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer.
 		}
 	}
 
@@ -143,7 +143,7 @@ final class Featured {
 			return;
 		}
 		$on = isset( $_GET['joo_featured'] ) && '1' === $_GET['joo_featured']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		echo '<select name="joo_featured"><option value="">' . esc_html__( 'All posts', 'jooservices-content' ) . '</option><option value="1"' . selected( $on, true, false ) . '>' . esc_html__( 'Featured only', 'jooservices-content' ) . '</option></select>';
+		echo '<select name="joo_featured"><option value="">' . esc_html__( 'All posts', 'jooservices-resume' ) . '</option><option value="1"' . selected( $on, true, false ) . '>' . esc_html__( 'Featured only', 'jooservices-resume' ) . '</option></select>';
 	}
 
 	/**
@@ -154,8 +154,8 @@ final class Featured {
 	 */
 	public function bulkActions( $actions ): array {
 		if ( current_user_can( 'edit_others_posts' ) ) {
-			$actions['joo_feature']   = __( 'Mark featured', 'jooservices-content' );
-			$actions['joo_unfeature'] = __( 'Unmark featured', 'jooservices-content' );
+			$actions['joo_feature']   = __( 'Mark featured', 'jooservices-resume' );
+			$actions['joo_unfeature'] = __( 'Unmark featured', 'jooservices-resume' );
 		}
 		return $actions;
 	}

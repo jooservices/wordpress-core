@@ -10,7 +10,7 @@ Nothing in the repository pushes or deploys; these are the manual steps.
 ## Deploy
 1. Put the site in maintenance mode if traffic matters (a few seconds).
 2. `wp theme install jooservices-<version>.zip --force` (or Appearance, Themes, Add New, Upload).
-3. If the companion plugin is new or updated: install and activate `jooservices-content`.
+3. If JOOservices Resume is new or updated: install and activate `jooservices-resume`.
 4. `wp theme activate jooservices`.
 5. `wp rewrite flush --hard` and clear the page cache of the host or cache plugin.
 6. Run the checks below.

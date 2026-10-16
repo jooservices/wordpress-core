@@ -88,7 +88,7 @@ final class PersonPiece extends AbstractPiece {
 		}
 		$urls = array();
 		foreach ( (array) $socials as $entry ) {
-			$url = is_array( $entry ) ? ( $entry['url'] ?? '' ) : $entry; // The content plugin stores {label, url} rows.
+			$url = is_array( $entry ) ? ( $entry['url'] ?? '' ) : $entry; // JOOservices Resume stores {label, url} rows.
 			if ( is_string( $url ) && 1 === preg_match( '#^https?://#', $url ) ) {
 				$urls[] = $url;
 			}

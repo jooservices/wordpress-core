@@ -1,6 +1,6 @@
 <?php
 /**
- * Content provider and public content routes (real WordPress, companion plugin loaded).
+ * Content provider and public content routes (real WordPress, JOOservices Resume loaded).
  *
  * @package JOOservices\ThemeCore
  */
@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace JOOservices\ThemeCore\Tests\Integration;
 
-use JOOservices\Content\PostTypes\Company;
+use JOOservices\Resume\PostTypes\Company;
 use JOOservices\TestKit\Factories\AttachmentFactory;
 use JOOservices\TestKit\IntegrationTestCase;
 use JOOservices\ThemeCore\Admin\Notices;

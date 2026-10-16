@@ -8,7 +8,7 @@ import { fromRoot } from './lib/paths.mjs';
 
 const targets = [
   { name: 'joo-core', dir: 'packages/theme-core/languages' },
-  { name: 'jooservices-content', dir: 'plugins/jooservices-content/languages' },
+  { name: 'jooservices-resume', dir: 'plugins/jooservices-resume/languages' },
   { name: 'starter', dir: 'themes/starter/languages' },
   { name: 'jooservices', dir: 'themes/jooservices/languages' },
 ];

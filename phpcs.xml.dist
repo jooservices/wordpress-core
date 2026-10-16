@@ -61,7 +61,7 @@
 				<element value="joo-core"/>
 				<element value="jooservices"/>
 				<element value="starter"/>
-				<element value="jooservices-content"/>
+				<element value="jooservices-resume"/>
 			</property>
 		</properties>
 	</rule>

@@ -62,6 +62,7 @@ link-core: ## Link packages/theme-core into themes/$(THEME)/core
 	$(call require_theme)
 	@ln -sfn ../../packages/theme-core themes/$(THEME)/core
 	@echo "themes/$(THEME)/core -> ../../packages/theme-core"
+VITEST_ARGS ?= --configLoader native --no-cache --fsModuleCachePath $${TMPDIR:-/tmp}/jooservices-wp-themes-vitest
 lint: ## PHPCS, ESLint, Stylelint, Prettier, header check
 	@$(PHP) tools/check-headers.php
 	@$(PHP) vendor/bin/phpcs
@@ -83,14 +84,14 @@ test-tooling: ## Prove that every quality tool fails on a violation
 	@tests/tooling/run.sh
 	@tests/tooling/hooks-test.sh
 test-unit: ## PHPUnit unit suites and Vitest (COVERAGE=1: coverage with thresholds, PHP part runs in Docker with pcov)
-	@if [ "$(COVERAGE)" = "1" ]; then $(MAKE) --no-print-directory coverage; else $(PHP) vendor/bin/phpunit && $(NPX) --no-install vitest run; fi
+	@if [ "$(COVERAGE)" = "1" ]; then $(MAKE) --no-print-directory coverage; else $(PHP) vendor/bin/phpunit && $(NPX) --no-install vitest run $(VITEST_ARGS); fi
 coverage: ## Merged unit + integration coverage (pcov in Docker) with the threshold gate
 	@rm -rf artifacts/reports/cov artifacts/reports/unit && mkdir -p artifacts/reports/cov artifacts/reports/unit
 	@$(PHP) -d pcov.enabled=1 -d pcov.directory=/workspace vendor/bin/phpunit -c phpunit.xml.dist --do-not-cache-result --coverage-php artifacts/reports/cov/unit.cov
 	@COVERAGE=1 TEST_THEME="$(TEST_THEME)" bash ./docker/scripts/wp-task.sh integration $(THEME) >/dev/null
 	@$(PHP) vendor/bin/phpcov merge --clover artifacts/reports/unit/clover.xml --html artifacts/reports/unit/html --text artifacts/reports/unit/summary.txt artifacts/reports/cov >/dev/null
 	@./tools/coverage-gate.sh artifacts/reports/unit/clover.xml
-	@$(NPX) --no-install vitest run --coverage
+	@$(NPX) --no-install vitest run --coverage $(VITEST_ARGS)
 test-integration: ## wp-phpunit in the serialized shared WordPress container (WP_VERSION=6.6 for minimum version)
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh integration $(THEME) $(ARGS)
@@ -112,7 +113,7 @@ demo-plugins: ## Install the plugins jooservices.com uses (docker/demo-plugins.j
 	@bash ./docker/scripts/wp-task.sh demo-plugins $(THEME)
 mcp-env: ## Add the MCP demo secrets to .env (never printed)
 	@./docker/scripts/mcp.sh env
-demo-mcp: ## Stage the MCP and content plugins, connect them and start the MCP server (http://127.0.0.1:3000/mcp)
+demo-mcp: ## Stage the MCP and Resume plugins, connect them and start the MCP server (http://127.0.0.1:3000/mcp)
 	@./docker/scripts/mcp.sh up
 mcp-down: ## Stop the MCP server
 	@./docker/scripts/mcp.sh down

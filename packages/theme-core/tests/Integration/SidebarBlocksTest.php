@@ -1,6 +1,6 @@
 <?php
 /**
- * Sidebar blocks (real WordPress, companion plugin loaded).
+ * Sidebar blocks (real WordPress, JOOservices Resume loaded).
  *
  * @package JOOservices\ThemeCore
  */
@@ -143,11 +143,11 @@ final class SidebarBlocksTest extends IntegrationTestCase {
 		$this->assertStringContainsString( '<h3 class="joo-block-title">About me</h3>', $small );
 	}
 
-	public function test_profile_card_renders_nothing_without_the_content_plugin(): void {
+	public function test_profile_card_renders_nothing_without_the_resume_plugin(): void {
 		unregister_post_type( 'joo_company' );
 		$this->boot();
 		$this->assertSame( '', trim( do_blocks( '<!-- wp:joo/profile-card /-->' ) ) );
-		( new \JOOservices\Content\PostTypes\Company() )->register();
+		( new \JOOservices\Resume\PostTypes\Company() )->register();
 	}
 
 	public function test_companies_show_the_pinned_one_separately_and_page_the_rest(): void {

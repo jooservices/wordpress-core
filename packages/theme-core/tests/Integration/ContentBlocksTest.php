@@ -1,6 +1,6 @@
 <?php
 /**
- * Content blocks (real WordPress, companion plugin loaded).
+ * Content blocks (real WordPress, JOOservices Resume loaded).
  *
  * @package JOOservices\ThemeCore
  */

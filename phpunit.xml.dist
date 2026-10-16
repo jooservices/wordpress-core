@@ -10,14 +10,15 @@
   <testsuites>
     <testsuite name="core-unit"><directory>packages/theme-core/tests/Unit</directory></testsuite>
     <testsuite name="kit-unit"><directory>packages/test-kit/tests</directory><exclude>packages/test-kit/tests/Integration</exclude></testsuite>
-    <testsuite name="plugin-unit"><directory>plugins/jooservices-content/tests/Unit</directory></testsuite>
+    <testsuite name="plugin-unit"><directory>plugins/jooservices-resume/tests/Unit</directory></testsuite>
     <testsuite name="theme-unit"><directory>themes/jooservices/tests/Unit</directory><directory>themes/starter/tests/Unit</directory></testsuite>
     <testsuite name="tools-unit"><directory>tests/tools</directory></testsuite>
   </testsuites>
   <coverage processUncoveredFiles="true">
     <include>
       <directory suffix=".php">packages/theme-core/src</directory>
-      <directory suffix=".php">plugins/jooservices-content/src</directory>
+      <directory suffix=".php">plugins/jooservices-resume/src</directory>
+      <file>plugins/jooservices-resume/uninstall.php</file>
       <directory suffix=".php">themes/jooservices/inc</directory>
       <directory suffix=".php">themes/starter/inc</directory>
     </include>

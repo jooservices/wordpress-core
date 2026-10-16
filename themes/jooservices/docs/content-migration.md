@@ -5,7 +5,7 @@ What the owner enters or maps when moving jooservices.com to this theme.
 | Item | Where | Notes |
 |---|---|---|
 | Profile (name, title, short bio, socials, avatar) | Users, your profile | Feeds the profile card, author box and structured data. Pick the owner under Settings, JOOservices if the first administrator is not the author |
-| Companies | Companies (companion plugin) | Role, start month and end month (empty = present), URL, logo; tick **pinned** on the current company (only one) |
+| Companies | Companies (JOOservices Resume) | Role, start month and end month (empty = present), URL, logo; tick **pinned** on the current company (only one) |
 | Categories | Posts, Categories | Parent categories give the tree; set the short description (160 characters); a primary category (Yoast or Rank Math, or the Primary category field) decides the breadcrumb |
 | Topics (tags) | Posts, Tags | Optional image and a short intro for the Top topics block |
 | Featured posts | Post editor, Featured panel | Tick Featured and set the order; the first five fill the slider |

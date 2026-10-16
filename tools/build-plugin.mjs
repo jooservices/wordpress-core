@@ -1,5 +1,5 @@
 // Stages a plugin (runtime files only, composer autoloader for the ones that need it) and zips it for a server.
-// Usage: node tools/build-plugin.mjs --plugin jooservices-content|wordpress-chatgpt|all [--no-zip]
+// Usage: node tools/build-plugin.mjs --plugin jooservices-resume|wordpress-chatgpt|all [--no-zip]
 // The staged copy in artifacts/plugins/<slug> is what the Docker demo mounts, so the demo runs the same files as the zip.
 import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';

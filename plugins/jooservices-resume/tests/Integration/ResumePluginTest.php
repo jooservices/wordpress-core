@@ -1,24 +1,24 @@
 <?php
 /**
- * Companion plugin (real WordPress).
+ * JOOservices Resume (real WordPress).
  *
- * @package JOOservices\Content
+ * @package JOOservices\Resume
  */
 
 declare(strict_types=1);
 
-namespace JOOservices\Content\Tests\Integration;
+namespace JOOservices\Resume\Tests\Integration;
 
-use JOOservices\Content\Meta\Featured;
-use JOOservices\Content\Meta\TermMeta;
-use JOOservices\Content\Meta\UserMeta;
-use JOOservices\Content\Plugin;
-use JOOservices\Content\PostTypes\Company;
-use JOOservices\Content\Support\Validate;
+use JOOservices\Resume\Meta\Featured;
+use JOOservices\Resume\Meta\TermMeta;
+use JOOservices\Resume\Meta\UserMeta;
+use JOOservices\Resume\Plugin;
+use JOOservices\Resume\PostTypes\Company;
+use JOOservices\Resume\Support\Validate;
 use JOOservices\TestKit\Factories\AttachmentFactory;
 use JOOservices\TestKit\IntegrationTestCase;
 
-final class ContentPluginTest extends IntegrationTestCase {
+final class ResumePluginTest extends IntegrationTestCase {
 
 	public function set_up(): void {
 		parent::set_up();
@@ -58,10 +58,38 @@ final class ContentPluginTest extends IntegrationTestCase {
 		$this->assertFalse( Plugin::meetsRequirements( '8.0.30', '6.6' ) );
 		$this->assertFalse( Plugin::meetsRequirements( '8.3.0', '6.5' ) );
 		Plugin::activate();
-		$this->assertSame( Plugin::VERSION, get_option( 'joo_content_version' ) );
-		$this->assertSame( '1', get_option( 'joo_content_flush_rewrite' ) );
+		$this->assertSame( Plugin::VERSION, get_option( 'joo_resume_version' ) );
+		$this->assertSame( '1', get_option( 'joo_resume_flush_rewrite' ) );
 		Plugin::maybeFlushRewrites();
-		$this->assertFalse( get_option( 'joo_content_flush_rewrite' ), 'the flush happens once' );
+		$this->assertFalse( get_option( 'joo_resume_flush_rewrite' ), 'the flush happens once' );
+	}
+
+	public function test_unsupported_wordpress_gets_a_resume_requirements_notice(): void {
+		global $wp_version, $wp_filter;
+		$original_version = $wp_version;
+		$booted           = new \ReflectionProperty( Plugin::class, 'booted' );
+		$booted->setValue( null, false );
+		$wp_version = '6.5';
+		Plugin::boot();
+		$wp_version = $original_version;
+		$booted->setValue( null, true );
+
+		$callbacks = $wp_filter['admin_notices']->callbacks[10] ?? array();
+		$callback  = end( $callbacks );
+		ob_start();
+		if ( is_array( $callback ) && isset( $callback['function'] ) ) {
+			call_user_func( $callback['function'] );
+		}
+		$notice = (string) ob_get_clean();
+		if ( is_array( $callback ) && isset( $callback['function'] ) ) {
+			remove_action( 'admin_notices', $callback['function'] );
+		}
+		$this->assertStringContainsString( 'JOOservices Resume needs PHP', $notice );
+	}
+
+	public function test_plugin_text_domain_uses_the_resume_catalog(): void {
+		Plugin::loadTextDomain();
+		$this->assertStringEndsWith( 'plugins/jooservices-resume/jooservices-resume.php', plugin_basename( JOO_RESUME_FILE ) );
 	}
 
 	public function test_the_company_type_is_private_and_not_queryable(): void {
@@ -190,6 +218,28 @@ final class ContentPluginTest extends IntegrationTestCase {
 		$this->assertSame( '', get_post_meta( $id, '_joo_company_url', true ), 'non-https URL dropped' );
 		$this->assertNotEmpty( get_transient( 'joo_company_errors_' . $user ) );
 
+		$_POST = array(
+			'joo_company_details_nonce' => wp_create_nonce( Company::NONCE ),
+			'_joo_company_role'         => 'Lead Engineer',
+			'_joo_company_from'         => '2022-13',
+			'_joo_company_to'           => '2025-13',
+		);
+		( new Company() )->saveClassic( $id, get_post( $id ) );
+		$errors = get_transient( 'joo_company_errors_' . $user );
+		$this->assertContains( 'The start month must look like 2022-03.', $errors );
+		$this->assertContains( 'The end month must look like 2025-06.', $errors );
+
+		$_POST = array(
+			'joo_company_details_nonce' => wp_create_nonce( Company::NONCE ),
+			'_joo_company_role'         => 'Lead Engineer',
+			'_joo_company_from'         => '2022-03',
+			'_joo_company_to'           => '2025-06',
+			'_joo_company_url'          => 'https://example.test',
+			'_joo_company_pinned'       => '1',
+		);
+		( new Company() )->saveClassic( $id, get_post( $id ) );
+		$this->assertContains( 'A pinned company normally has no end month (it is the current one). It was saved anyway.', get_transient( 'joo_company_errors_' . $user ) );
+
 		$_POST = array( '_joo_company_role' => 'Hacker' );
 		( new Company() )->saveClassic( $id, get_post( $id ) );
 		$this->assertSame( 'Lead Engineer', get_post_meta( $id, '_joo_company_role', true ), 'no nonce, no save' );
@@ -227,6 +277,25 @@ final class ContentPluginTest extends IntegrationTestCase {
 		$this->assertArrayHasKey( 'period', $company->columns( array( 'cb' => 'x' ) ) );
 		update_post_meta( $id, '_joo_company_to', '2024-05' );
 		$this->assertSame( '2022-03 – 2024-05', $out( 'period' ) );
+	}
+
+	public function test_company_admin_meta_box_uses_the_resume_product_copy_and_keys(): void {
+		$company = new Company();
+		$company->addMetaBox();
+		$post = self::factory()->post->create_and_get( array( 'post_type' => 'joo_company' ) );
+		$this->assertSame( 'Company details', $GLOBALS['wp_meta_boxes']['joo_company']['normal']['high']['joo_company_details']['title'] );
+
+		ob_start();
+		$company->renderMetaBox( $post );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'name="_joo_company_role"', $html );
+		$this->assertStringContainsString( 'From (YYYY-MM)', $html );
+		$this->assertStringContainsString( 'To (YYYY-MM, empty = present)', $html );
+		$this->assertStringContainsString( 'Website (https)', $html );
+		$this->assertStringContainsString( 'Logo (attachment id)', $html );
+		$this->assertStringContainsString( 'Pinned', $html );
+		$this->assertStringContainsString( 'Show as the current company', $html );
 	}
 
 	public function test_validators(): void {
@@ -292,6 +361,10 @@ final class ContentPluginTest extends IntegrationTestCase {
 		update_term_meta( $tag, 'joo_short_description', 'Shown in the column' );
 		$this->assertStringContainsString( 'Shown in the column', $meta->column( '', 'joo_short', $tag ) );
 		$this->assertSame( 'keep', $meta->column( 'keep', 'other', $tag ) );
+		set_current_screen( 'edit-tags.php' );
+		$meta->assets( 'edit-tags.php' );
+		$this->assertTrue( wp_script_is( 'joo-resume-term-meta', 'enqueued' ) );
+		set_current_screen( 'front' );
 	}
 
 	public function test_user_profile_fields_are_validated_and_do_not_leak(): void {
@@ -397,6 +470,16 @@ final class ContentPluginTest extends IntegrationTestCase {
 		$this->assertStringContainsString( '★', (string) ob_get_clean() );
 		$this->assertArrayHasKey( 'joo_featured', $featured->columns( array() ) );
 		$this->assertArrayHasKey( 'joo_featured', $featured->sortable( array() ) );
+		$_GET['joo_featured'] = '1';
+		ob_start();
+		$featured->filterDropdown( 'post' );
+		$dropdown = (string) ob_get_clean();
+		$this->assertStringContainsString( 'name="joo_featured"', $dropdown );
+		$this->assertStringContainsString( "selected='selected'", $dropdown );
+		ob_start();
+		$featured->filterDropdown( 'page' );
+		$this->assertSame( '', (string) ob_get_clean() );
+		unset( $_GET['joo_featured'] );
 	}
 
 	public function test_featured_meta_is_exposed_in_rest_and_checked_for_permission(): void {
@@ -419,10 +502,33 @@ final class ContentPluginTest extends IntegrationTestCase {
 		$this->assertSame( 400, rest_do_request( $bad )->get_status(), 'above the maximum' );
 	}
 
-	public function test_uninstall_keeps_data_unless_the_constant_is_set(): void {
-		$id = self::factory()->post->create( array( 'post_type' => 'joo_company' ) );
-		define( 'WP_UNINSTALL_PLUGIN', 'jooservices-content/jooservices-content.php' );
+	public function test_uninstall_keeps_data_by_default_and_deletes_owned_data_when_opted_in(): void {
+		$company = self::factory()->post->create( array( 'post_type' => 'joo_company' ) );
+		update_post_meta( $company, '_joo_company_role', 'Developer' );
+		$post = self::factory()->post->create();
+		update_post_meta( $post, '_joo_featured', true );
+		$term = self::factory()->term->create( array( 'taxonomy' => 'category' ) );
+		update_term_meta( $term, 'joo_short_description', 'Engineering team' );
+		$user = self::factory()->user->create();
+		update_user_meta( $user, 'joo_title', 'Engineer' );
+		update_option( 'joo_resume_version', Plugin::VERSION );
+		update_option( 'joo_resume_flush_rewrite', '1' );
+
+		define( 'WP_UNINSTALL_PLUGIN', 'jooservices-resume/jooservices-resume.php' );
 		include dirname( __DIR__, 2 ) . '/uninstall.php';
-		$this->assertNotNull( get_post( $id ), 'data survives uninstall by default' );
+		$this->assertNotNull( get_post( $company ), 'company data survives uninstall by default' );
+		$this->assertTrue( (bool) get_post_meta( $post, '_joo_featured', true ) );
+		$this->assertSame( 'Engineering team', get_term_meta( $term, 'joo_short_description', true ) );
+		$this->assertSame( 'Engineer', get_user_meta( $user, 'joo_title', true ) );
+		$this->assertSame( Plugin::VERSION, get_option( 'joo_resume_version' ) );
+
+		define( 'JOO_RESUME_DELETE_DATA_ON_UNINSTALL', true );
+		include dirname( __DIR__, 2 ) . '/uninstall.php';
+		$this->assertNull( get_post( $company ), 'opt-in uninstall deletes company records' );
+		$this->assertFalse( metadata_exists( 'post', $post, '_joo_featured' ) );
+		$this->assertFalse( metadata_exists( 'term', $term, 'joo_short_description' ) );
+		$this->assertFalse( metadata_exists( 'user', $user, 'joo_title' ) );
+		$this->assertFalse( get_option( 'joo_resume_version' ) );
+		$this->assertFalse( get_option( 'joo_resume_flush_rewrite' ) );
 	}
 }

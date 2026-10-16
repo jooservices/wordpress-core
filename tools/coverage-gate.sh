@@ -14,7 +14,7 @@ gate() {
   esac
 }
 gate packages/theme-core/src 85
-gate plugins/jooservices-content/src 80
+gate plugins/jooservices-resume/src 80
 gate themes/jooservices/inc 70
 gate themes/starter/inc 70
 exit $fail

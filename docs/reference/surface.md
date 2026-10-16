@@ -64,8 +64,8 @@ REST namespace: `joo/v1`.
 - `joo_cache_version`
 - `joo_cache_tags`
 - `joo_demo_checksum`
-- `joo_content_version`
-- `joo_content_flush_rewrite`
+- `joo_resume_version`
+- `joo_resume_flush_rewrite`
 - `joo_settings_schema_version`
 
 ## Post meta

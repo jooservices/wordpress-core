@@ -14,6 +14,7 @@ if ( ! $joo_tests_dir || ! is_file( $joo_tests_dir . '/includes/functions.php' )
 }
 
 require_once '/workspace/vendor/autoload.php';
+require_once __DIR__ . '/worktree-autoload.php';
 require_once $joo_tests_dir . '/includes/functions.php';
 
 // Core is loaded exactly like a theme would load it (core.php), before WordPress finishes booting.
@@ -26,7 +27,7 @@ if ( is_file( $joo_core ) ) {
 tests_add_filter(
 	'muplugins_loaded',
 	static function (): void {
-		$plugin = '/workspace/plugins/jooservices-content/jooservices-content.php';
+		$plugin = '/workspace/plugins/jooservices-resume/jooservices-resume.php';
 		if ( is_file( $plugin ) ) {
 			require_once $plugin;
 		}

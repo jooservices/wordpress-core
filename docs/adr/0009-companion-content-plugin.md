@@ -1,4 +1,4 @@
-# D9 Companion plugin for content model
+# D9 JOOservices Resume data plugin
 
 - Status: Accepted
 - Date: 2026-10-14
@@ -8,7 +8,7 @@
 Data (companies, term/user meta, featured flags) must survive theme changes.
 
 ## Decision
-Plugin `jooservices-content` owns the CPT and meta; core reads through `ContentProviderInterface` and degrades gracefully without it.
+Plugin `jooservices-resume` owns the CPT and meta; core reads through `ContentProviderInterface` and degrades gracefully without it.
 
 ## Alternatives considered
 - CPT in the theme: data is hidden on theme switch.

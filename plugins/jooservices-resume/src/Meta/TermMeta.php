@@ -2,14 +2,14 @@
 /**
  * Category and tag meta.
  *
- * @package JOOservices\Content
+ * @package JOOservices\Resume
  */
 
 declare(strict_types=1);
 
-namespace JOOservices\Content\Meta;
+namespace JOOservices\Resume\Meta;
 
-use JOOservices\Content\Support\Validate;
+use JOOservices\Resume\Support\Validate;
 
 /**
  * Short description, topic image and intro for categories and tags.
@@ -113,20 +113,20 @@ final class TermMeta {
 	private function definitions(): array {
 		return array(
 			'joo_short_description' => array(
-				'label' => __( 'Short description', 'jooservices-content' ),
-				'help'  => __( 'Up to 160 characters. Shown in the category tree and used as the archive meta description.', 'jooservices-content' ),
+				'label' => __( 'Short description', 'jooservices-resume' ),
+				'help'  => __( 'Up to 160 characters. Shown in the category tree and used as the archive meta description.', 'jooservices-resume' ),
 				'type'  => 'text',
 				'max'   => 160,
 			),
 			'joo_image_id'          => array(
-				'label' => __( 'Topic image (attachment id)', 'jooservices-content' ),
-				'help'  => __( 'A small image for the Top topics block. Use the button to pick one from the media library.', 'jooservices-content' ),
+				'label' => __( 'Topic image (attachment id)', 'jooservices-resume' ),
+				'help'  => __( 'A small image for the Top topics block. Use the button to pick one from the media library.', 'jooservices-resume' ),
 				'type'  => 'media',
 				'max'   => 0,
 			),
 			'joo_intro'             => array(
-				'label' => __( 'Topic intro', 'jooservices-content' ),
-				'help'  => __( 'Up to 200 characters shown next to the topic image.', 'jooservices-content' ),
+				'label' => __( 'Topic intro', 'jooservices-resume' ),
+				'help'  => __( 'Up to 200 characters shown next to the topic image.', 'jooservices-resume' ),
 				'type'  => 'text',
 				'max'   => 200,
 			),
@@ -146,7 +146,7 @@ final class TermMeta {
 				'<input type="number" min="0" id="%1$s" name="%1$s" value="%2$s" class="small-text" data-joo-media> <button type="button" class="button" data-joo-media-pick="%1$s">%3$s</button>',
 				esc_attr( $key ),
 				esc_attr( $value ),
-				esc_html__( 'Choose image', 'jooservices-content' )
+				esc_html__( 'Choose image', 'jooservices-resume' )
 			);
 			return;
 		}
@@ -166,7 +166,7 @@ final class TermMeta {
 		}
 		$short = isset( $_POST['joo_short_description'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['joo_short_description'] ) ) : '';
 		$intro = isset( $_POST['joo_intro'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['joo_intro'] ) ) : '';
-		$image = isset( $_POST['joo_image_id'] ) ? Validate::imageId( wp_unslash( (string) $_POST['joo_image_id'] ) ) : 0;
+		$image = isset( $_POST['joo_image_id'] ) ? Validate::imageId( absint( wp_unslash( (string) $_POST['joo_image_id'] ) ) ) : 0;
 		update_term_meta( $termId, 'joo_short_description', mb_substr( $short, 0, 160 ) );
 		update_term_meta( $termId, 'joo_intro', mb_substr( $intro, 0, 200 ) );
 		update_term_meta( $termId, 'joo_image_id', $image );
@@ -179,8 +179,8 @@ final class TermMeta {
 	 * @return array<string, string>
 	 */
 	public function columns( $columns ): array {
-		$columns['joo_image'] = __( 'Topic image', 'jooservices-content' );
-		$columns['joo_short'] = __( 'Short description', 'jooservices-content' );
+		$columns['joo_image'] = __( 'Topic image', 'jooservices-resume' );
+		$columns['joo_short'] = __( 'Short description', 'jooservices-resume' );
 		return $columns;
 	}
 
@@ -213,6 +213,6 @@ final class TermMeta {
 			return;
 		}
 		wp_enqueue_media();
-		wp_enqueue_script( 'joo-content-term-meta', plugins_url( 'assets/term-meta.js', JOO_CONTENT_FILE ), array( 'jquery' ), \JOOservices\Content\Plugin::VERSION, true );
+		wp_enqueue_script( 'joo-resume-term-meta', plugins_url( 'assets/term-meta.js', JOO_RESUME_FILE ), array( 'jquery' ), \JOOservices\Resume\Plugin::VERSION, true );
 	}
 }

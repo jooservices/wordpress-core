@@ -4,7 +4,7 @@ import { chromium } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fromRoot } from './lib/paths.mjs';
-import { extractCriticalRules, mergeAndMinify } from './lib/critical.mjs';
+import { extractCriticalRules, localizeSiteUrls, mergeAndMinify } from './lib/critical.mjs';
 
 const args = Object.fromEntries(
   process.argv
@@ -61,9 +61,8 @@ for (const [context, url] of Object.entries(targets)) {
     lists.push(await extractCriticalRules(page));
     await page.close();
   }
-  const normalized = lists.map((rules) => rules.map((rule) => rule.replaceAll(base, '')));
-  const { css, size, gzip } = mergeAndMinify(normalized);
-  writeFileSync(join(outDir, `${context}.css`), css);
+  const { css, size, gzip } = mergeAndMinify(lists);
+  writeFileSync(join(outDir, `${context}.css`), localizeSiteUrls(css, base));
   const ok = gzip <= maxGzip;
   failed ||= !ok;
   console.log(

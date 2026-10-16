@@ -3,12 +3,12 @@
 A dark-first technical blog block theme built on `jooservices/wp-theme-core`: left rail, featured slider, post list, a read-only terminal dock on the right, a terminal-style 404, EN/VI, SEO, lazy loading and performance budgets.
 
 ## Requirements
-WordPress 6.6 or newer (tested on 6.6 and the latest release), PHP 8.1 or newer. The companion plugin `jooservices-content` provides the Company type and the term, user and featured fields; without it the theme still works and the rail blocks hide themselves.
+WordPress 6.6 or newer (tested on 6.6 and the latest release), PHP 8.1 or newer. JOOservices Resume (`plugins/jooservices-resume`) provides the Company type and the profile, topic and featured-post fields; without it the theme still works and blocks that need its data hide themselves.
 
 ## Install
 1. Build the package: `make package THEME=jooservices` (writes `artifacts/package/jooservices-<version>.zip`).
 2. Upload the zip under Appearance, Themes, Add New, or `wp theme install jooservices-<version>.zip --activate`.
-3. Install and activate the companion plugin (`plugins/jooservices-content`).
+3. Install and activate JOOservices Resume (`plugins/jooservices-resume`).
 4. Appearance, Menus: assign a menu to **Primary menu**. Appearance, Editor: the header uses the Navigation block.
 5. Users, your profile: set Title, Short bio, socials and avatar (they feed the profile card and the author box).
 6. Posts: tick **Featured** (and an order) on up to five posts for the slider.

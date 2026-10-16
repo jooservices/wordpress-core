@@ -8,8 +8,8 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `joo_cache_version`
 - `joo_cache_tags`
 - `joo_demo_checksum`
-- `joo_content_version`
-- `joo_content_flush_rewrite`
+- `joo_resume_version`
+- `joo_resume_flush_rewrite`
 - `joo_settings_schema_version`
 
 ## transients
@@ -108,6 +108,7 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `joo-theme-toggle`
 - `joo-progress`
 - `joo-404`
+- `joo-search`
 
 ## hooks
 
@@ -126,6 +127,8 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `joo/seo/graph/pieces`
 - `joo/seo/schema/{piece}`
 - `joo/seo/yield`
+- `joo/content/featured_exclusion_limit`
+- `joo/seo/block_author_enumeration`
 - `joo/seo/x_default`
 - `joo/seo/profile_page`
 - `joo/lazy/policy`
@@ -147,6 +150,17 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `joo/i18n/locales`
 - `joo/terminal/commands`
 - `joo/terminal/fs`
+- `joo/compat/report`
+- `joo/perf/image_formats`
+- `joo/lazy/provider`
+- `joo/seo/alternates`
+- `joo/seo/allow_external_canonical`
+- `joo/seo/head_end`
+- `joo/seo/primary_category`
+- `joo/seo/noindex_post_ids`
+- `joo/perf/skip_critical_css`
+- `joo/compat/forms_needed`
+- `joo/profile/owner_id`
 
 ## settings keys
 

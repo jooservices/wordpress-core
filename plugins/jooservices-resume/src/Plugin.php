@@ -2,17 +2,15 @@
 /**
  * Plugin bootstrap.
  *
- * @package JOOservices\Content
+ * @package JOOservices\Resume
  */
 
 declare(strict_types=1);
 
-namespace JOOservices\Content;
+namespace JOOservices\Resume;
 
-use JOOservices\Content\Meta\Featured;
-use JOOservices\Content\Meta\TermMeta;
-use JOOservices\Content\Meta\UserMeta;
-use JOOservices\Content\PostTypes\Company;
+use JOOservices\Resume\Modules\ProfileAndEditorialFields;
+use JOOservices\Resume\PostTypes\Company;
 
 /**
  * Checks the requirements and registers the components. It does not depend on the theme core.
@@ -45,8 +43,8 @@ final class Plugin {
 	 * Activation: version and a one-time rewrite flush after the CPT exists.
 	 */
 	public static function activate(): void {
-		update_option( 'joo_content_version', self::VERSION );
-		update_option( 'joo_content_flush_rewrite', '1' );
+		update_option( 'joo_resume_version', self::VERSION );
+		update_option( 'joo_resume_flush_rewrite', '1' );
 	}
 
 	/**
@@ -63,7 +61,7 @@ final class Plugin {
 					echo '<div class="notice notice-error"><p>' . esc_html(
 						sprintf(
 							/* translators: 1: PHP version, 2: WordPress version. */
-							__( 'JOOservices Content needs PHP %1$s and WordPress %2$s or newer and stays inactive.', 'jooservices-content' ),
+							__( 'JOOservices Resume needs PHP %1$s and WordPress %2$s or newer and stays inactive.', 'jooservices-resume' ),
 							self::MIN_PHP,
 							self::MIN_WP
 						)
@@ -82,7 +80,7 @@ final class Plugin {
 	 * Loads translations.
 	 */
 	public static function loadTextDomain(): void {
-		load_plugin_textdomain( 'jooservices-content', false, dirname( plugin_basename( JOO_CONTENT_FILE ) ) . '/languages' );
+		load_plugin_textdomain( 'jooservices-resume', false, dirname( plugin_basename( JOO_RESUME_FILE ) ) . '/languages' );
 	}
 
 	/**
@@ -90,17 +88,15 @@ final class Plugin {
 	 */
 	public static function register(): void {
 		( new Company() )->hook();
-		( new TermMeta() )->hook();
-		( new UserMeta() )->hook();
-		( new Featured() )->hook();
+		( new ProfileAndEditorialFields() )->hook();
 	}
 
 	/**
 	 * Flushes the rewrite rules once after activation.
 	 */
 	public static function maybeFlushRewrites(): void {
-		if ( '1' === get_option( 'joo_content_flush_rewrite' ) ) {
-			delete_option( 'joo_content_flush_rewrite' );
+		if ( '1' === get_option( 'joo_resume_flush_rewrite' ) ) {
+			delete_option( 'joo_resume_flush_rewrite' );
 			flush_rewrite_rules( false );
 		}
 	}
