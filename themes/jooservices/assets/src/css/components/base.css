@@ -83,7 +83,7 @@ img {
 }
 
 .joo-tags__items sup {
-  margin-left: 3px;
+  margin-inline-start: 3px;
   color: var(--joo-muted);
 }
 
