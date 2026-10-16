@@ -9,6 +9,7 @@ export default defineConfig({
     // Slow tools (stylelint, generators) time out at the 5 s default when the shared Docker host is busy.
     testTimeout: 30000,
     include: [
+      'plugins/**/assets/**/*.test.js',
       'packages/**/resources/**/*.test.js',
       'packages/**/js/**/*.test.js',
       'themes/**/assets/src/js/**/*.test.js',
