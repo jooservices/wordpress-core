@@ -245,7 +245,7 @@ export async function runMatrix(options) {
   const { args = [], env = {}, io } = options;
   const flag = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
   const base = flag('--base', env.WP_SITE_URL ?? 'http://127.0.0.1:8082');
-  const browserBase = env.E2E_BASE_URL ?? 'http://wordpress';
+  const browserBase = env.E2E_BASE_URL ?? 'http://127.0.0.1:8082';
   const theme = flag(
     '--theme',
     checked(io.wp('theme', 'list', '--status=active', '--field=name'), 'could not read active theme') || 'unknown'

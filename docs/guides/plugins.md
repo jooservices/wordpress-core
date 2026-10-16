@@ -13,7 +13,7 @@ The MCP server itself is a Node service (`../wordpress-mcp/packages/mcp-server`,
 
 ```bash
 make demo THEME=jooservices     # WordPress, theme, demo content
-make demo-mcp                   # stages both plugins, connects them, starts the MCP server
+# The MCP server container was removed from this repository (JOOS-126): run it from the wordpress-mcp repository.
 ```
 
 `make demo-mcp` does, in order:

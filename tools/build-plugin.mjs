@@ -51,23 +51,10 @@ export function build(slug, { zip = true } = {}) {
     cpSync(join(source, file), join(stage, file));
   }
   if (plugin.composer) {
-    // The container has composer and PHP 8.3; the staged folder is a writable mount (/workspace/artifacts).
+    // Runs in the shared PHP runtime (make plugins-package, make test-marketplace), which has Composer and PHP.
     execFileSync(
-      fromRoot('docker/scripts/compose.sh'),
-      [
-        'exec',
-        '-T',
-        '-u',
-        'www-data',
-        'wordpress',
-        'composer',
-        'install',
-        '--no-dev',
-        '--no-interaction',
-        '--optimize-autoloader',
-        '--working-dir',
-        `/workspace/artifacts/plugins/${slug}`,
-      ],
+      'composer',
+      ['install', '--no-dev', '--no-interaction', '--optimize-autoloader', '--working-dir', stage],
       { stdio: 'inherit', input: '' }
     );
   }

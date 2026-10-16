@@ -36,3 +36,7 @@ The `pid` file identifies the process; the `worktree` file identifies its checko
 rm .tmp/jooservices-wp-shared-test.lock/pid .tmp/jooservices-wp-shared-test.lock/worktree
 rmdir .tmp/jooservices-wp-shared-test.lock
 ```
+
+## Browser tests no longer run in Docker
+
+Playwright runs on the Dev VM (`docker/scripts/e2e-vm.sh`), so `Target crashed` from Docker memory pressure no longer applies to E2E. If a run cannot start, check `ssh dev true`, that no other process holds the WordPress lock, and that the site port is free (`docker ps` shows only `workspaces-wp-web`).

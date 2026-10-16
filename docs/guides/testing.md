@@ -4,13 +4,13 @@ Install dependencies in the shared developer runtimes with `make deps`. `make li
 
 | Level | Command | Where it runs | Notes |
 |---|---|---|---|
-| PHP lint and analysis | `make lint`, `make analyse` | Worktree mounted at `/workspace` in shared `php-app` (PHP 8.5 CLI) | Includes Node 24 CLI for PHP tooling subprocesses; PHPStan targets PHP 8.3 (`phpVersion: 80300`); PHPCS/PHPCompatibility targets `8.3-`. |
-| JavaScript checks | `make lint`, `make analyse` | Worktree mounted at `/workspace` in shared `node-runtime` | ESLint, Stylelint, Prettier, and TypeScript use the lockfile dependencies. |
-| PHP unit | `make test-unit` | Shared `php-app` | PHPUnit 9.6 + Brain Monkey; PCOV is enabled only for coverage runs. |
+| PHP lint and analysis | `make lint`, `make analyse` | Worktree mounted at `/workspace` in shared `php-8.5-app` (PHP 8.5 CLI) | Includes Node 24 CLI for PHP tooling subprocesses; PHPStan targets PHP 8.3 (`phpVersion: 80300`); PHPCS/PHPCompatibility targets `8.3-`. |
+| JavaScript checks | `make lint`, `make analyse` | Worktree mounted at `/workspace` in shared `php-8.5-app` (Node 24 and npm included) | ESLint, Stylelint, Prettier, and TypeScript use the lockfile dependencies. |
+| PHP unit | `make test-unit` | Shared `php-8.5-app` | PHPUnit 9.6 + Brain Monkey; PCOV is enabled only for coverage runs. |
 | JavaScript unit | `make test-unit` | Shared `node-runtime` | Vitest and jsdom. Helpers live in `packages/test-kit/js/dom.js`. |
-| Integration | `make test-integration`; `WP_VERSION=6.6 WP_PHP_VERSION=8.1 make test-integration` | One shared WordPress container, selected under the Workspaces-wide lock | Uses the current ticket's `wp_JOOS_<n>` schema and `wptests_` table prefix. `WP_PHP_VERSION` accepts 8.1 through 8.5. |
-| E2E | `make test-e2e THEME=jooservices` | Shared Playwright 1.64.1 runner on `workspaces-shared` | Browser tests use `http://wordpress` by default and run under the same lock. |
-| Compatibility matrix | `make test-matrix THEME=jooservices` | Host orchestrator, shared WordPress and Playwright runners | Tests Tier 1 and basic Tier 3 plugins. Use `ARGS="--runtime-only"` for a runtime smoke, `ARGS="--child-theme"` to repeat plugin checks with a temporary child theme, or `ARGS="--only yoast,cf7"` to select plugins. |
+| Integration | `make test-integration`; `WP_VERSION=6.6 WP_PHP_VERSION=8.1 make test-integration` | One shared `wp-web` container, selected under the Workspaces-wide lock | Uses the current ticket's `wp_JOOS_<n>` schema and `wptests_` table prefix. `WP_PHP_VERSION` accepts 8.1 through 8.5. |
+| E2E | `make test-e2e THEME=jooservices` | Playwright 1.64.1 on the Dev VM, against the shared WordPress through a reverse tunnel | Browser tests use `WP_SITE_URL` (default `http://127.0.0.1:8082`) and run under the same lock. |
+| Compatibility matrix | `make test-matrix THEME=jooservices` | Host orchestrator, shared WordPress (`wp-web`) and the Dev VM | Tests Tier 1 and basic Tier 3 plugins. Use `ARGS="--runtime-only"` for a runtime smoke, `ARGS="--child-theme"` to repeat plugin checks with a temporary child theme, or `ARGS="--only yoast,cf7"` to select plugins. |
 | Tooling self-tests | `make test-tooling` | Host | Proves configured quality tools fail on a violation. |
 
 The PHP app container runs PHP 8.5 for current tooling and coverage support. PHPStan and PHPCS enforce PHP 8.3 compatibility, so syntax or APIs introduced after 8.3 must fail the gates. PHP 8.5 is not the source compatibility target. WordPress tasks build the active theme and core assets before selecting the worktree mount, so integration and browser runs do not depend on generated files from a previous checkout. Integration runs each test suite in its own PHPUnit process: core and plugin fixtures do not inherit the selected theme's boot hooks, while the theme suite runs with the selected theme.

@@ -1,57 +1,49 @@
 # Docker development setup
 
-JOOservices theme worktrees share the Workspaces Docker network `workspaces-shared` and its `mariadb` service. The repo does not start another MariaDB container or create a project bridge network.
+Theme work uses only shared Workspaces Docker services; the repository builds no image and starts no container of its own. Read the Workspaces `dockers/README.md` and the `workspace-runtimes` skill for the shared groups (`workspaces-shared` apps and `workspaces-cli-shared` CLI runtimes).
+
+| Need | Shared service | How the repository uses it |
+|---|---|---|
+| PHP, Composer, WP-CLI (gates, unit tests, packaging) | `php-8.5-app` (PHP 8.5, Node 24 binary, all extensions) | `docker/scripts/runtime.sh php\|composer\|wp\|php-node`, one-off `run --rm`, worktree mounted at `/workspace` |
+| JavaScript tools | `php-8.5-app` (Node 24, npm, npx are in the same image) | `runtime.sh node\|npm\|npx` |
+| Database | shared MariaDB (`mariadb`) | one `wp_JOOS_<n>` schema and scoped user per ticket (`shared-db.sh`) |
+| WordPress web server | `wp-web` (Apache + the same PHP image, PHP 8.3 here) | one container at a time, started by `wp-task.sh` under the lock, this worktree mounted through a generated override |
+| Mail | shared `mailpit` (UI `http://127.0.0.1:18025`) | `docker/mu-plugins/joowt-mail.php` sends to `mailpit:1025` |
+| Browser E2E | Dev VM (`ssh dev`), not Docker | `docker/scripts/e2e-vm.sh`: reverse tunnel of the site port, rsync, run, copy reports back |
+| Sonar scan | `sonar-scanner` (CLI project) | `scripts/docker/shared sonar-scan` from the Workspaces root |
 
 ## Set up a ticket worktree
 
-For Docker memory problems, crashed browser runs, slow tests, and the shared WordPress test lock, see the [Docker troubleshooting guide](docker-troubleshooting.md).
-
-From the Workspaces root, start the shared database and long-lived developer runtimes once:
+For memory problems, slow tests and the shared WordPress lock see the [Docker troubleshooting guide](docker-troubleshooting.md).
 
 ```sh
-scripts/docker/shared up mariadb
-scripts/docker/shared runtimes-up php-app playwright-runner
+make init-env              # ignored .env with this ticket's database name and random passwords
+make deps                  # composer install and npm ci in the shared runtimes
+make shared-db-create      # this ticket's schema and user in the shared MariaDB
+make up THEME=jooservices  # wp-web with this worktree mounted, WordPress downloaded, installed, theme active
 ```
 
-In the ticket worktree, generate its ignored `.env`, install locked dependencies, create the ticket database, and start WordPress:
+Credentials stay in the ignored worktree `.env` and the Workspaces root `.env`. `make shared-db-drop CONFIRM=JOOS-<n>` drops only that ticket's database and user.
 
-```sh
-make init-env
-make deps
-make shared-db-create
-make up THEME=jooservices
-```
+## The shared WordPress web container
 
-`make init-env` reads the `JOOS-<n>` key from the worktree branch and creates `DB_NAME=wp_JOOS_<n>`, a matching scoped database user, and local passwords. The WordPress test container uses only that database. `make shared-db-drop CONFIRM=JOOS-<n>` drops only the named ticket database and its matching user. Credentials stay in the ignored Workspaces and worktree `.env` files.
+There is exactly one `wp-web` container (`workspaces-wp-web`, loopback port from `WP_SITE_URL`, default `http://127.0.0.1:8082`). `docker/scripts/wp-task.sh` takes the Workspaces-wide lock `Workspaces/.tmp/jooservices-wp-shared-test.lock`, starts a fresh container for the current worktree (new web root, WordPress core from the WP-CLI download cache, `wp-config.php` for this ticket's database), and runs the task. Integration, E2E, health, seeding, matrix, marketplace and screenshot tasks are therefore serialized across worktrees. PHP lint, analysis and unit work are not: they use one-off CLI containers and can run in parallel.
 
-The shared test Compose project is fixed at `joowt-wp-shared-test`. It has one PHP 8.3 Apache WordPress container and a per-demo Mailpit service. Worktrees select the container's source mounts through `docker/scripts/wp-task.sh`; the shared lock at `Workspaces/.tmp/jooservices-wp-shared-test.lock` serializes integration, E2E, health, and other WordPress operations. PHP, Node, and Playwright one-off commands mount the selected checkout at `/workspace`, so PHP lint, analysis, and unit work can run concurrently across worktrees.
-
-## URL and WordPress versions
-
-`WP_SITE_URL` is the single source for the host port. A fresh ticket `.env` defaults to `http://127.0.0.1:8082`; Compose derives the published port from this URL. The shared Node and Playwright containers use the in-network WordPress service name `http://wordpress` by default. `make health` and `make test-e2e` therefore target the selected shared test container and do not fall back to port 8080. Set `E2E_BASE_URL` only when intentionally testing another URL reachable from the runner container.
-
-Use the latest WordPress image by default or select the 6.6 minimum for integration tests:
+Select versions with environment variables: `WP_VERSION` (`latest`, a series such as `6.6`, or a full version) and `WP_PHP_VERSION` (8.1 to 8.5; the matching `workspaces/php-app:<version>` image is built on first use). Both default to the latest WordPress on PHP 8.3, the compatibility target of the theme.
 
 ```sh
 make demo THEME=jooservices
 make test-integration THEME=jooservices
 WP_VERSION=6.6 make test-integration THEME=jooservices
-make test-e2e THEME=jooservices ARGS="tests/e2e/specs/shared"
+make test-e2e THEME=jooservices ARGS="specs/shared"
 ```
 
-Both images use PHP 8.3. Each WordPress task mounts the active worktree in the single test web container and renews its anonymous core volume so the selected version's files are actually used; Mailpit remains running between tasks. The database schema and uploads volume are ticket-scoped, so media survives web-container recreation without crossing ticket boundaries. Integration tables use the separate `wptests_` table prefix within the ticket schema. `make down` stops only the shared test WordPress and Mailpit containers. `make reset CONFIRM=yes` removes those test containers, the current ticket's uploads volume, and only that ticket database; it does not stop any Workspaces core service.
+`make down` removes the web container (database and uploads are kept). `make reset CONFIRM=yes` also removes the web root, this ticket's uploads volume and its database; it never touches Workspaces core services or Mailpit. Integration tables use the `wptests_` prefix inside the ticket schema.
 
-## Existing main demo
+## E2E on the Dev VM
 
-The owner's existing `main` demo on project `jooservices-wp-themes` and port 8080 is still on its previous isolated MariaDB and Compose network. This feature does not stop, recreate, reset, or migrate that running stack. The new ticket worktree targets a different Compose project and uses port 8082 by default.
+Playwright runs on the Dev VM (`ssh dev`) so Docker keeps its memory. `e2e-vm.sh` opens a reverse tunnel of the site port, copies the worktree with tar over ssh (without `node_modules`, `vendor`, `.git`, `.env`) to `~/projects/jooservices-wp-themes` on the VM, runs `npm ci` when `package-lock.json` changed, writes a minimal `.env` with the admin login from stdin, runs the command, and copies `artifacts/` (and `E2E_VM_PULL` paths such as the critical CSS) back. It needs the lock to be held, which `wp-task.sh` guarantees. Trace and report files are in `artifacts/reports/e2e` after the run.
 
-After an owner-approved migration, use this sequence for the main demo. It is documented here and has **not** been run:
+## Owner demo
 
-1. Record the current main Compose configuration and make a private, verified backup of its WordPress database and ignored `.env`. Keep both the old container and volume available for rollback.
-2. Create dedicated main-demo schemas and a least-privilege database account in shared MariaDB. Keep the test ticket's `wp_JOOS_<n>` schema separate from the main demo schemas.
-3. Export the old `wordpress` site schema with a transaction-consistent dump, import it into the new main-demo schema, and verify the imported row counts before changing the running WordPress container.
-4. Update only the main demo's private database settings to use `mariadb` on `workspaces-shared`. Keep its Compose project name, published port 8080, WordPress version, and Mailpit endpoint unchanged for cutover.
-5. During the approved cutover, reconnect/recreate only the main demo's WordPress service, then check the homepage, login, admin writes, media, permalinks, mail capture, and database connectivity. If any check fails, restore the prior private settings and reconnect to the old MariaDB volume.
-6. Retain the old MariaDB container and volume until the owner accepts the migration. Remove them only in a separate, explicitly approved cleanup step.
-
-Do not run the ticket database scripts for the main demo. The running main stack remains outside the worktree test lock and its migration is pending an owner-approved step.
+The owner demo is not part of the test web container. A long-lived demo can be run as a second named instance of the same shared service (`WP_WEB_NAME`, `WP_WEB_PROJECT` and its own port), and it must use the shared MariaDB and Mailpit like everything else.

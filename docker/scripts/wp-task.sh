@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Select the current worktree on the single shared WordPress test container and
+# Select the current worktree on the single shared WordPress web runtime (wp-web) and
 # hold a Workspaces-wide lock for the complete operation.
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -22,31 +22,19 @@ done
 lock_dir="$workspaces_root/.tmp/jooservices-wp-shared-test.lock"
 mkdir -p "$(dirname "$lock_dir")"
 lock_owned=0
-marketplace_override="$ROOT/.tmp/jooservices-marketplace-compose.yaml"
 restore_theme_source=0
-capture_created_wordpress=0
-capture_created_mailpit=0
-capture_created_uploads=0
 restore_marketplace_mount() {
   if ((restore_theme_source)); then
-    rm -f "$marketplace_override"
-    if ! "${compose[@]}" up -d --build --wait --force-recreate --renew-anon-volumes wordpress; then
-      echo "ERROR: failed to restore the source theme mount; inspect the shared WordPress container." >&2
-    elif ! "${compose[@]}" exec -T -u www-data -e "THEME=$theme" wordpress bash /scripts/install-wp.sh; then
-      echo "ERROR: failed to verify WordPress after restoring the source theme mount." >&2
-    fi
     restore_theme_source=0
+    WEB_MARKETPLACE=0
+    if ! web_start || ! webx -e "THEME=$theme" bash /scripts/install-wp.sh; then
+      echo "ERROR: failed to restore the source mounts; inspect the shared WordPress container." >&2
+    fi
   fi
 }
 cleanup_marketplace_preview() {
-  if [[ "${CLEANUP_MARKETPLACE_PREVIEW:-0}" == 1 ]] && ((lock_owned)) && [[ "${ticket:-}" == JOOS-100 ]] && declare -p compose >/dev/null 2>&1; then
-    local services=()
-    if ((capture_created_wordpress)); then services+=(wordpress); fi
-    if ((capture_created_mailpit)); then services+=(mailpit); fi
-    if ((${#services[@]})); then
-      "${compose[@]}" stop "${services[@]}" || echo "ERROR: failed to stop newly created test containers." >&2
-      "${compose[@]}" rm -f "${services[@]}" || echo "ERROR: failed to remove newly created test containers." >&2
-    fi
+  if [[ "${CLEANUP_MARKETPLACE_PREVIEW:-0}" == 1 ]] && ((lock_owned)) && [[ -n "${ticket:-}" ]]; then
+    web_down --reset || echo "ERROR: failed to remove the shared test web container." >&2
     CONFIRM="$ticket" "$ROOT/docker/scripts/shared-db.sh" drop "$ticket" || echo "ERROR: failed to drop the JOOS test database." >&2
     local uploads_volume="joowt-$(get_env DB_NAME)-uploads"
     if docker volume inspect "$uploads_volume" >/dev/null 2>&1; then
@@ -108,8 +96,9 @@ fi
   exit 2
 }
 
-compose=("$ROOT/docker/scripts/compose.sh")
-export JOOWT_PROJECT=joowt-wp-shared-test
+source "$ROOT/docker/scripts/web-lib.sh"
+site_base() { printf '%s' "${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" url "$(web_site_url)")}"; }
+internal_base() { printf '%s' "${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "$(web_site_url)")}"; }
 ensure_stack() {
   ln -sfn ../../packages/theme-core "themes/$theme/core"
   bash "$ROOT/docker/scripts/runtime.sh" node tools/build-assets.mjs --root packages/theme-core
@@ -117,41 +106,38 @@ ensure_stack() {
     bash "$ROOT/docker/scripts/runtime.sh" node tools/build-assets.mjs --root "themes/$theme" --src assets/src --out assets/build
   fi
   "$ROOT/docker/scripts/shared-db.sh" create "$ticket"
-  local site_url port
-  site_url="${WP_SITE_URL:-$(get_env WP_SITE_URL)}"
-  port="$(bash "$ROOT/docker/scripts/site-url.sh" port "$site_url")"
+  local port
+  port="$(bash "$ROOT/docker/scripts/site-url.sh" port "$(web_site_url)")"
   "$ROOT/docker/scripts/check-port.sh" "$port" wordpress
-  "$ROOT/docker/scripts/check-port.sh" "$(get_env MAIL_PORT)" mailpit
-  "${compose[@]}" up -d --build --wait mailpit
-  "${compose[@]}" up -d --build --wait --force-recreate --renew-anon-volumes wordpress
-  "${compose[@]}" exec -T -u www-data -e "THEME=$theme" wordpress bash /scripts/install-wp.sh
+  web_start
+  webx -e "THEME=$theme" bash /scripts/install-wp.sh
 }
 
 seed_demo() {
   if [[ "$action" == seed-live ]]; then
     bash "$ROOT/docker/scripts/runtime.sh" node tools/live-import.mjs --source "${SOURCE:-artifacts/live/jooservices.com.json}" --out artifacts/demo/live
-    "${compose[@]}" exec -T -u www-data -e DEMO_SET=live wordpress bash /scripts/seed.sh "$theme" --reset
+    webx -e DEMO_SET=live bash /scripts/seed.sh "$theme" --reset
     return
   fi
   bash "$ROOT/docker/scripts/runtime.sh" node tools/wxr-generator/generate.mjs --out "artifacts/demo/$theme" >/dev/null
   if [[ "$action" == seed-reset ]]; then
-    "${compose[@]}" exec -T -u www-data wordpress bash /scripts/seed.sh "$theme" --reset
+    webx bash /scripts/seed.sh "$theme" --reset
   else
-    "${compose[@]}" exec -T -u www-data wordpress bash /scripts/seed.sh "$theme"
+    webx bash /scripts/seed.sh "$theme"
   fi
 }
 
 health_check() {
   local values base
-  values="$("${compose[@]}" exec -T -u www-data wordpress wp eval-file /scripts/health-values.php </dev/null)"
-  base="${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")}"
+  values="$(webx wp eval-file /scripts/health-values.php </dev/null)"
+  base="$(internal_base)"
   E2E_BASE_URL="$base" bash "$ROOT/docker/scripts/runtime.sh" node tools/health.mjs --base "$base" --values "$values"
 }
 
 case "$action" in
   up|install)
     ensure_stack
-    echo "Shared WordPress test site ready at $(bash "$ROOT/docker/scripts/site-url.sh" url "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")."
+    echo "Shared WordPress test site ready at $(bash "$ROOT/docker/scripts/site-url.sh" url "$(web_site_url)")."
     ;;
   seed|seed-reset)
     ensure_stack
@@ -163,16 +149,16 @@ case "$action" in
     ;;
   integration)
     ensure_stack
-    "${compose[@]}" exec -T -u www-data -e "JOO_TEST_THEME=${TEST_THEME:-$theme}" -e "COVERAGE=${COVERAGE:-0}" wordpress bash /scripts/phpunit-integration.sh "$@"
+    webx -e "JOO_TEST_THEME=${TEST_THEME:-$theme}" -e "COVERAGE=${COVERAGE:-0}" bash /scripts/phpunit-integration.sh "$@"
     ;;
   e2e)
     ensure_stack
-    base="${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")}"
+    base="$(site_base)"
     E2E_BASE_URL="$base" E2E_THEME="$theme" bash "$ROOT/docker/scripts/runtime.sh" playwright npx --no-install playwright test -c tests/e2e/playwright.config.ts "$@"
     ;;
   e2e-demo)
     ensure_stack
-    "${compose[@]}" exec -T -u www-data wordpress bash /scripts/e2e-demo-import.sh
+    webx bash /scripts/e2e-demo-import.sh
     ;;
   matrix)
     ensure_stack
@@ -184,81 +170,67 @@ case "$action" in
     bash "$ROOT/docker/scripts/runtime.sh" node tools/theme-check.mjs --theme "$theme"
     bash "$ROOT/docker/scripts/runtime.sh" php-node tools/build-theme.mjs --theme "$theme"
     bash "$ROOT/docker/scripts/runtime.sh" php-node tools/build-plugin.mjs --plugin jooservices-resume
-    mkdir -p "$(dirname "$marketplace_override")"
-    cat > "$marketplace_override" <<EOF
-services:
-  wordpress:
-    volumes:
-      - "$ROOT/artifacts/package/$theme:/var/www/html/wp-content/themes/$theme:ro"
-      - "$ROOT/artifacts/plugins/jooservices-resume:/var/www/html/wp-content/plugins/jooservices-resume:ro"
-EOF
     restore_theme_source=1
-    "${compose[@]}" -f "$marketplace_override" up -d --build --wait --force-recreate --renew-anon-volumes wordpress
-    "${compose[@]}" exec -T -u www-data -e "THEME=$theme" wordpress bash /scripts/install-wp.sh
+    WEB_MARKETPLACE=1 web_start
+    webx -e "THEME=$theme" bash /scripts/install-wp.sh
     for checker in theme-check plugin-check; do
-      if ! "${compose[@]}" exec -T -u www-data wordpress wp plugin is-installed "$checker" </dev/null; then
-        "${compose[@]}" exec -T -u www-data wordpress wp plugin install "$checker" </dev/null
+      if ! webx wp plugin is-installed "$checker" </dev/null; then
+        webx wp plugin install "$checker" </dev/null
       fi
-      "${compose[@]}" exec -T -u www-data wordpress wp plugin activate "$checker" </dev/null
+      webx wp plugin activate "$checker" </dev/null
     done
     # Run both checkers so the evidence is complete, then fail if either reported a problem.
     check_status=0
-    "${compose[@]}" exec -T -u www-data wordpress wp theme-check run "$theme" --format=json </dev/null || check_status=1
-    "${compose[@]}" exec -T -u www-data wordpress wp plugin check jooservices-resume --format=json --require=./wp-content/plugins/plugin-check/cli.php </dev/null || check_status=1
+    webx wp theme-check run "$theme" --format=json </dev/null || check_status=1
+    webx wp plugin check jooservices-resume --format=json --require=./wp-content/plugins/plugin-check/cli.php </dev/null || check_status=1
     [[ "$check_status" -eq 0 ]] || exit 1
     ;;
   screenshots)
     ensure_stack
-    base="${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")}"
+    base="$(site_base)"
     E2E_BASE_URL="$base" bash "$ROOT/docker/scripts/runtime.sh" playwright node tools/screenshots.mjs --theme "$theme" --base "$base" "$@"
     ;;
   critical)
     ensure_stack
-    base="${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")}"
-    bash "$ROOT/docker/scripts/runtime.sh" playwright node tools/critical.mjs --theme "$theme" --base "$base" "$@"
+    base="$(site_base)"
+    E2E_VM_PULL="themes/$theme/assets/critical" bash "$ROOT/docker/scripts/runtime.sh" playwright node tools/critical.mjs --theme "$theme" --base "$base" "$@"
     ;;
   health)
     ensure_stack
     health_check
     ;;
   demo)
-    if [[ "${CLEANUP_MARKETPLACE_PREVIEW:-0}" == 1 ]]; then
-      [[ -n "$("${compose[@]}" ps --all -q wordpress 2>/dev/null)" ]] || capture_created_wordpress=1
-      [[ -n "$("${compose[@]}" ps --all -q mailpit 2>/dev/null)" ]] || capture_created_mailpit=1
-      uploads_volume="joowt-$(get_env DB_NAME)-uploads"
-      docker volume inspect "$uploads_volume" >/dev/null 2>&1 || capture_created_uploads=1
-    fi
     ensure_stack
     seed_demo
     if [[ "${CAPTURE_MARKETPLACE_PREVIEW:-0}" == 1 ]]; then
-      "${compose[@]}" exec -T -u www-data wordpress wp search-replace 'Viet VU' 'Jordan Sample' --all-tables --precise </dev/null
-      "${compose[@]}" exec -T -u www-data wordpress wp search-replace 'Viet Vu' 'Jordan Sample' --all-tables --precise </dev/null
-      "${compose[@]}" exec -T -u www-data wordpress wp search-replace 'SGCarmart' 'Northstar Demo Co.' --all-tables --precise </dev/null
-      "${compose[@]}" exec -T -u www-data wordpress wp search-replace 'www.sgcarmart.com' 'northstar.example' --all-tables --precise </dev/null
-      "${compose[@]}" exec -T -u www-data wordpress wp search-replace 'Acme Labs' 'Harborview Demo Co.' --all-tables --precise </dev/null
-      E2E_BASE_URL="${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")}" \
+      webx wp search-replace 'Viet VU' 'Jordan Sample' --all-tables --precise </dev/null
+      webx wp search-replace 'Viet Vu' 'Jordan Sample' --all-tables --precise </dev/null
+      webx wp search-replace 'SGCarmart' 'Northstar Demo Co.' --all-tables --precise </dev/null
+      webx wp search-replace 'www.sgcarmart.com' 'northstar.example' --all-tables --precise </dev/null
+      webx wp search-replace 'Acme Labs' 'Harborview Demo Co.' --all-tables --precise </dev/null
+      E2E_BASE_URL="$(site_base)" E2E_VM_PULL="themes/$theme/screenshot.png" \
         bash "$ROOT/docker/scripts/runtime.sh" playwright node tools/marketplace-preview.mjs "themes/$theme/screenshot.png"
     fi
     health_check
-    echo "Demo ready at $(bash "$ROOT/docker/scripts/site-url.sh" url "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")."
+    echo "Demo ready at $(bash "$ROOT/docker/scripts/site-url.sh" url "$(web_site_url)")."
     ;;
   wp)
     ensure_stack
-    "${compose[@]}" exec -T -u www-data wordpress wp "$@"
+    webx wp "$@"
     ;;
   shell)
     ensure_stack
-    "${compose[@]}" exec -u www-data wordpress bash
+    docker exec -it -u www-data -w /var/www/html "$WEB_NAME" bash
     ;;
   logs)
-    "${compose[@]}" logs -f --tail=100 "${1:-wordpress}"
+    docker logs -f --tail=100 "$WEB_NAME"
     ;;
   down)
-    "${compose[@]}" stop wordpress mailpit
+    web_down
     ;;
   reset)
-    [[ "${CONFIRM:-}" == yes ]] || { echo "reset stops the shared test WordPress and Mailpit containers, removes only this ticket's upload volume, and drops this ticket database. Re-run with CONFIRM=yes." >&2; exit 2; }
-    "${compose[@]}" down --remove-orphans
+    [[ "${CONFIRM:-}" == yes ]] || { echo "reset removes the shared test web container and its web root, this ticket's upload volume, and this ticket database; it leaves Mailpit and every Workspaces core service running. Re-run with CONFIRM=yes." >&2; exit 2; }
+    web_down --reset
     CONFIRM="$ticket" "$ROOT/docker/scripts/shared-db.sh" drop "$ticket"
     uploads_volume="joowt-$(get_env DB_NAME)-uploads"
     if docker volume inspect "$uploads_volume" >/dev/null 2>&1; then
@@ -267,23 +239,23 @@ EOF
     ;;
   plugins-off)
     ensure_stack
-    "${compose[@]}" exec -T -u www-data wordpress bash -c 'for p in wordpress-seo syntaxhighlighter akismet litespeed-cache health-check wordpress-chatgpt; do wp plugin is-active "$p" 2>/dev/null && wp plugin deactivate "$p"; done; true' </dev/null
+    webx bash -c 'for p in wordpress-seo syntaxhighlighter akismet litespeed-cache health-check wordpress-chatgpt; do wp plugin is-active "$p" 2>/dev/null && wp plugin deactivate "$p"; done; true' </dev/null
     ;;
   plugins-on)
     ensure_stack
-    "${compose[@]}" exec -T -u www-data wordpress bash -c 'for p in wordpress-seo syntaxhighlighter akismet litespeed-cache health-check wordpress-chatgpt; do wp plugin is-installed "$p" 2>/dev/null && ! wp plugin is-active "$p" 2>/dev/null && wp plugin activate "$p"; done; true' </dev/null
+    webx bash -c 'for p in wordpress-seo syntaxhighlighter akismet litespeed-cache health-check wordpress-chatgpt; do wp plugin is-installed "$p" 2>/dev/null && ! wp plugin is-active "$p" 2>/dev/null && wp plugin activate "$p"; done; true' </dev/null
     ;;
   demo-plugins)
     ensure_stack
-    "${compose[@]}" exec -T -u www-data wordpress bash /scripts/demo-plugins.sh
+    webx bash /scripts/demo-plugins.sh
     ;;
   i18n)
     ensure_stack
     mkdir -p artifacts/i18n
-    "${compose[@]}" exec -T -u www-data wordpress wp i18n make-pot /workspace/packages/theme-core /workspace/artifacts/i18n/joo-core.pot --domain=joo-core --exclude=tests,node_modules,resources/build,languages --skip-js --quiet
-    "${compose[@]}" exec -T -u www-data wordpress wp i18n make-pot /workspace/plugins/jooservices-resume /workspace/artifacts/i18n/jooservices-resume.pot --domain=jooservices-resume --exclude=tests,node_modules,languages --skip-js --quiet
-    "${compose[@]}" exec -T -u www-data wordpress wp i18n make-pot /workspace/themes/starter /workspace/artifacts/i18n/starter.pot --domain=starter --exclude=tests,node_modules,core,languages --skip-js --quiet
-    "${compose[@]}" exec -T -u www-data wordpress wp i18n make-pot /workspace/themes/jooservices /workspace/artifacts/i18n/jooservices.pot --domain=jooservices --exclude=tests,node_modules,core,languages,assets/src --skip-js --quiet
+    webx wp i18n make-pot /workspace/packages/theme-core /workspace/artifacts/i18n/joo-core.pot --domain=joo-core --exclude=tests,node_modules,resources/build,languages --skip-js --quiet
+    webx wp i18n make-pot /workspace/plugins/jooservices-resume /workspace/artifacts/i18n/jooservices-resume.pot --domain=jooservices-resume --exclude=tests,node_modules,languages --skip-js --quiet
+    webx wp i18n make-pot /workspace/themes/starter /workspace/artifacts/i18n/starter.pot --domain=starter --exclude=tests,node_modules,core,languages --skip-js --quiet
+    webx wp i18n make-pot /workspace/themes/jooservices /workspace/artifacts/i18n/jooservices.pot --domain=jooservices --exclude=tests,node_modules,core,languages,assets/src --skip-js --quiet
     bash "$ROOT/docker/scripts/runtime.sh" node tools/i18n.mjs
     ;;
   *)

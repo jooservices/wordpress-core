@@ -2,14 +2,13 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
 THEME ?= jooservices
-export JOOWT_PROJECT ?= joowt-wp-shared-test
 JOOS_TICKET ?= $(shell git branch --show-current | sed -nE 's/.*(JOOS-[0-9]+).*/\1/p')
 WP_SITE_URL ?= $(shell bash ./docker/scripts/site-url.sh url)
 WP_PORT = $(shell bash ./docker/scripts/site-url.sh port "$(WP_SITE_URL)")
 E2E_BASE_URL = $(shell bash ./docker/scripts/site-url.sh internal "$(WP_SITE_URL)")
 export JOOS_TICKET WP_VERSION WP_PHP_VERSION WP_SITE_URL WP_PORT E2E_BASE_URL MATRIX_VARIANT
 
-.PHONY: test-marketplace critical screenshots plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-e2e-demo demo-package demo health perf test-matrix package docs clean hooks release
+.PHONY: test-marketplace critical screenshots plugins-off plugins-on plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-e2e-demo demo-package demo health perf test-matrix package docs clean hooks release
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -22,7 +21,6 @@ define require_theme
 	@test -d themes/$(THEME) || { echo "theme not found: themes/$(THEME)"; exit 1; }
 endef
 
-COMPOSE := ./docker/scripts/compose.sh
 PHP := bash ./docker/scripts/runtime.sh php -d error_reporting=24575
 COMPOSER := bash ./docker/scripts/runtime.sh composer
 NODE := bash ./docker/scripts/runtime.sh node
@@ -96,7 +94,7 @@ coverage: ## Merged unit + integration coverage (pcov in Docker) with the thresh
 test-integration: ## wp-phpunit in the serialized shared WordPress container (WP_VERSION=6.6 for minimum version)
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh integration $(THEME) $(ARGS)
-test-e2e: ## Playwright E2E in the shared runner (THEME=..., ARGS="specs/shared")
+test-e2e: ## Playwright E2E on the Dev VM against the shared test site (THEME=..., ARGS="specs/shared")
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh e2e $(THEME) $(ARGS)
 test-e2e-demo: demo-package ## Import, diff, idempotence, and rollback on a clean shared WordPress site
@@ -126,17 +124,11 @@ seed-live: ## Replace the demo with the public content of a live site (needs art
 	@SOURCE=$(or $(SOURCE),artifacts/live/jooservices.com.json) bash ./docker/scripts/wp-task.sh seed-live $(THEME)
 demo-plugins: ## Install the plugins jooservices.com uses (docker/demo-plugins.json)
 	@bash ./docker/scripts/wp-task.sh demo-plugins $(THEME)
-mcp-env: ## Add the MCP demo secrets to .env (never printed)
-	@./docker/scripts/mcp.sh env
-demo-mcp: ## Stage the MCP and Resume plugins, connect them and start the MCP server (http://127.0.0.1:3000/mcp)
-	@./docker/scripts/mcp.sh up
-mcp-down: ## Stop the MCP server
-	@./docker/scripts/mcp.sh down
 plugins-package: ## Build the zips of the plugins (artifacts/package)
-	@$(NODE) tools/build-plugin.mjs --plugin all
-plugins-off: ## Deactivate the mirror plugins (Yoast, SyntaxHighlighter, MCP...): the e2e specs and `make health` assume a plain site
+	@$(PHP_NODE) tools/build-plugin.mjs --plugin all
+plugins-off: ## Deactivate the mirror plugins (Yoast, SyntaxHighlighter...): the e2e specs and `make health` assume a plain site
 	@bash ./docker/scripts/wp-task.sh plugins-off $(THEME)
-plugins-on: ## Activate the mirror plugins again (demo-plugins + MCP plugin)
+plugins-on: ## Activate the mirror plugins again (demo-plugins)
 	@bash ./docker/scripts/wp-task.sh plugins-on $(THEME)
 demo: ## Build, start Docker, install WordPress + theme, seed, health check (THEME=...)
 	$(call require_theme)
