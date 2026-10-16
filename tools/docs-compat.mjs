@@ -8,12 +8,19 @@ const plugins = JSON.parse(readFileSync(fromRoot('tests/matrix/plugins.json'), '
 const reportDir = fromRoot('artifacts/reports/matrix');
 const results = new Map();
 if (existsSync(reportDir)) {
-  const files = readdirSync(reportDir)
+  const reports = readdirSync(reportDir)
     .filter((f) => f.endsWith('.json'))
-    .sort();
-  for (const file of files) {
-    const doc = JSON.parse(readFileSync(join(reportDir, file), 'utf8'));
-    for (const row of doc.results ?? []) results.set(row.key, { ...row, date: doc.date });
+    .map((file) => ({ file, doc: JSON.parse(readFileSync(join(reportDir, file), 'utf8')) }))
+    .sort((a, b) => {
+      const testedAt = (report) => report.doc.testedAt ?? `${report.doc.date ?? ''}T00:00:00.000Z`;
+      return testedAt(a).localeCompare(testedAt(b)) || a.file.localeCompare(b.file);
+    });
+  for (const { doc } of reports) {
+    if (doc.kind === 'runtime') continue;
+    const runtime = doc.runtime
+      ? `WordPress ${doc.runtime.wordpress}; PHP ${doc.runtime.php}; ${doc.runtime.database}`
+      : '';
+    for (const row of doc.results ?? []) results.set(row.key, { ...row, date: doc.date, runtime });
   }
 }
 const tierTitle = { 1: 'Tier 1: tested in the matrix', 2: 'Tier 2: detected, best effort', 3: 'Tier 3: basic support' };
@@ -26,9 +33,11 @@ out.push(
   ''
 );
 out.push(
+  'See the [product compatibility matrix](../themes/jooservices/docs/compatibility-matrix.md) for the WordPress, PHP, database, install, hosting, and browser support targets.',
+  '',
   'Compatibility is defined in tiers. **Tier 1** plugins have an adapter and an automated matrix test. **Tier 2** plugins are detected and need no changes. **Tier 3** (page builders, WooCommerce) get basic, documented support only: no custom design and no guarantee for every feature.',
   '',
-  'No theme can guarantee that every plugin works. A result below says what was tested, with which version, on which date. `NOT RUN` means the matrix has not been executed for that plugin yet; `SKIPPED` rows carry the reason (for example a commercial plugin that needs a licence).',
+  'No theme can guarantee that every plugin works. A result below says what was tested, with which version, runtime, and date. `NOT RUN` means there is no test evidence. `UNSUPPORTED` means the product does not promise support for that item in 1.0. `BLOCKED` means an operational issue stopped the test and needs a rerun.',
   '',
   'To ask for support for another plugin, open a Jira issue in the JOOWT project with the plugin name, version, the page that breaks and the console output.',
   ''
@@ -39,23 +48,23 @@ for (const tier of [1, 2, 3]) {
   out.push(
     `## ${tierTitle[tier]}`,
     '',
-    '| Plugin | Group | Source | Tested version | Date | Result | Notes |',
-    '|---|---|---|---|---|---|---|'
+    '| Plugin | Group | Source | Tested version | Runtime | Date | Result | Notes |',
+    '|---|---|---|---|---|---|---|---|'
   );
   for (const p of rows) {
     const r = results.get(p.key);
     let result = 'NOT RUN';
     let notes = '';
     if (p.source === 'manual' && !r) {
-      result = 'SKIPPED';
-      notes = 'Commercial plugin: needs a licensed copy supplied by the owner (tests/matrix/README).';
+      result = 'UNSUPPORTED';
+      notes = 'Not included in 1.0: a licensed copy is unavailable for verification.';
     }
     if (r) {
       result = r.result;
-      notes = r.notes ?? (r.reason ? `Reason: ${r.reason}` : '');
+      notes = r.notes?.join('; ') ?? (r.reason ? `Reason: ${r.reason}` : '');
     }
     out.push(
-      `| ${cell(p.name)} | ${cell(p.group)} | ${p.source} | ${cell(r?.version ?? '')} | ${cell(r?.date ?? '')} | ${result} | ${cell(notes)} |`
+      `| ${cell(p.name)} | ${cell(p.group)} | ${p.source} | ${cell(r?.version ?? '')} | ${cell(r?.runtime ?? '')} | ${cell(r?.date ?? '')} | ${result} | ${cell(notes)} |`
     );
   }
   out.push('');

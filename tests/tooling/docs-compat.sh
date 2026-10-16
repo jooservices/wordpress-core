@@ -17,6 +17,6 @@ json.dump(d,open('tests/matrix/plugins.json','w'))
 PY
 node tools/docs-compat.mjs --check >/dev/null 2>&1 && bad "stale not detected" || ok "stale file detected"
 cp /tmp/plugins.json.bak tests/matrix/plugins.json; node tools/docs-compat.mjs >/dev/null
-grep -q "SKIPPED" docs/compatibility.md && grep -q "Commercial plugin" docs/compatibility.md && ok "skipped rows carry a reason" || bad "skipped reason"
+grep -q "UNSUPPORTED" docs/compatibility.md && grep -q "licensed copy is unavailable" docs/compatibility.md && ok "licensed plugins carry an unsupported reason" || bad "licensed plugin reason"
 grep -q "No theme can guarantee" docs/compatibility.md && ok "disclaimer present" || bad "disclaimer"
 exit $fail

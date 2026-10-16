@@ -209,9 +209,19 @@ function createThemeForestPackage({
   mkdirSync(pluginArea, { recursive: true });
   copyFileSync(themeZip, join(themeArea, basename(themeZip)));
   copyFileSync(pluginZip, join(pluginArea, basename(pluginZip)));
-  for (const file of ['compatibility-matrix.md', 'content-migration.md', 'deployment-runbook.md', 'demo-tour.md']) {
+  for (const file of ['content-migration.md', 'deployment-runbook.md', 'demo-tour.md']) {
     copyFileSync(fromRoot('themes/jooservices/docs', file), join(docs, file));
   }
+  const compatibilityMatrix = readFileSync(fromRoot('themes/jooservices/docs/compatibility-matrix.md'), 'utf8').replace(
+    '[plugin results](../../../docs/compatibility.md)',
+    '[plugin results](plugin-compatibility.md)'
+  );
+  writeFileSync(join(docs, 'compatibility-matrix.md'), compatibilityMatrix);
+  const pluginCompatibility = readFileSync(fromRoot('docs/compatibility.md'), 'utf8').replace(
+    '[product compatibility matrix](../themes/jooservices/docs/compatibility-matrix.md)',
+    '[product compatibility matrix](compatibility-matrix.md)'
+  );
+  writeFileSync(join(docs, 'plugin-compatibility.md'), pluginCompatibility);
   writeFileSync(
     join(docs, 'README.md'),
     [
@@ -229,7 +239,7 @@ function createThemeForestPackage({
       '',
       '## Requirements and support',
       '',
-      'WordPress 6.6 or newer and PHP 8.1 or newer are required. See the included compatibility matrix and deployment runbook. ThemeForest is the update channel. The theme makes no external licence or tracking request.',
+      'WordPress 6.6 or newer and PHP 8.1 or newer are required. See the included compatibility matrix, plugin compatibility table, and deployment runbook. ThemeForest is the update channel. The theme makes no external licence or tracking request.',
       '',
       '## Customization',
       '',

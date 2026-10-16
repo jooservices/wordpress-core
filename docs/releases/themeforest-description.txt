@@ -15,7 +15,10 @@ REQUIREMENTS
 - Tested through WordPress 7.1
 
 COMPATIBILITY
-The release targets Chrome and Edge current and previous versions, Firefox ESR and current, Safari 16.4 or newer, iOS Safari 16.4 or newer, and Android Chrome. WooCommerce is not required and receives no product styling in this release.
+WordPress 6.6+ and PHP 8.1+ are the product minimums. The browser targets are Chrome and Edge current and previous versions, Firefox ESR and current, Safari 16.4+, iOS Safari 16.4+, and Android Chrome current stable. WooCommerce is not required; product, cart, and checkout templates are unstyled. The complete matrix in the buyer documentation lists tested versions and marks unsupported or unvalidated cells.
+
+SUPPORT
+Support covers installation and use of the shipped theme and JOOservices Resume plugin, plus reproducible defects on versions marked supported in the compatibility matrix. Requests should include product, WordPress, PHP, database, plugin, theme, browser and operating-system versions, affected URL, and reproduction steps. Support entitlement and any response commitment follow the selected ThemeForest item support terms. No separate response-time SLA is promised.
 
 INSTALLATION AND UPDATES
 Install the theme zip in Appearance > Themes. Install and activate the separate JOOservices Resume zip in Plugins. ThemeForest and the Envato Market plugin handle marketplace update delivery. The theme makes no purchase-code or licence-server request and remains functional if marketplace update entitlement expires.

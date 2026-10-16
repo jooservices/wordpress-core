@@ -30,6 +30,7 @@ export default defineConfig({
         'tools/release-check.mjs',
         'tools/lib/reproducible.mjs',
         'tools/screenshots.mjs',
+        'tools/matrix-core.mjs',
       ],
       exclude: ['**/*.test.js'],
       thresholds: { lines: 85, functions: 85, branches: 75, statements: 85 },

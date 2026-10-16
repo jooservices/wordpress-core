@@ -8,13 +8,16 @@ Install dependencies in the shared developer runtimes with `make deps`. `make li
 | JavaScript checks | `make lint`, `make analyse` | Worktree mounted at `/workspace` in shared `node-runtime` | ESLint, Stylelint, Prettier, and TypeScript use the lockfile dependencies. |
 | PHP unit | `make test-unit` | Shared `php-app` | PHPUnit 9.6 + Brain Monkey; PCOV is enabled only for coverage runs. |
 | JavaScript unit | `make test-unit` | Shared `node-runtime` | Vitest and jsdom. Helpers live in `packages/test-kit/js/dom.js`. |
-| Integration | `make test-integration`; `WP_VERSION=6.6 make test-integration` | One shared PHP 8.3 WordPress container | Uses the current ticket's `wp_JOOS_<n>` schema and `wptests_` table prefix. The Workspaces-wide lock selects one worktree at a time. |
+| Integration | `make test-integration`; `WP_VERSION=6.6 WP_PHP_VERSION=8.1 make test-integration` | One shared WordPress container, selected under the Workspaces-wide lock | Uses the current ticket's `wp_JOOS_<n>` schema and `wptests_` table prefix. `WP_PHP_VERSION` accepts 8.1 through 8.5. |
 | E2E | `make test-e2e THEME=jooservices` | Shared Playwright 1.64.1 runner on `workspaces-shared` | Browser tests use `http://wordpress` by default and run under the same lock. |
+| Compatibility matrix | `make test-matrix THEME=jooservices` | Host orchestrator, shared WordPress and Playwright runners | Tests Tier 1 and basic Tier 3 plugins. Use `ARGS="--runtime-only"` for a runtime smoke, `ARGS="--child-theme"` to repeat plugin checks with a temporary child theme, or `ARGS="--only yoast,cf7"` to select plugins. |
 | Tooling self-tests | `make test-tooling` | Host | Proves configured quality tools fail on a violation. |
 
 The PHP app container runs PHP 8.5 for current tooling and coverage support. PHPStan and PHPCS enforce PHP 8.3 compatibility, so syntax or APIs introduced after 8.3 must fail the gates. PHP 8.5 is not the source compatibility target. WordPress tasks build the active theme and core assets before selecting the worktree mount, so integration and browser runs do not depend on generated files from a previous checkout. Integration runs each test suite in its own PHPUnit process: core and plugin fixtures do not inherit the selected theme's boot hooks, while the theme suite runs with the selected theme.
 
-WordPress integration uses the PHP 8.3 Apache images for latest and 6.6. The `docker/scripts/phpunit-integration.sh` runner selects the matching `wp-phpunit` series. When the lockfile library does not match the running WordPress series, the matching release is installed under `/tmp` in the container. Both test suites use the ticket's isolated schema; the `wptests_` table prefix separates the WordPress test tables from the demo site's `wp_` tables.
+WordPress tasks select the matching Apache image from `WP_VERSION` and `WP_PHP_VERSION`; supported runtime selections are WordPress 6.6, 6.7, 6.8, latest, and beta, with PHP 8.1–8.5. For example, `WP_VERSION=6.6 WP_PHP_VERSION=8.1 make test-matrix THEME=jooservices ARGS="--runtime-only"` records a runtime-only check. `MATRIX_VARIANT` supplies an optional report label, while `WP_SITE_URL` and `E2E_BASE_URL` select the showcase host URL and the in-network browser URL. `make test-matrix` seeds only the current ticket's showcase schema, captures the installed WordPress/PHP/database versions, then writes JSON and Markdown reports in `artifacts/reports/matrix/`. `MATRIX_VARIANT`, `WP_VERSION`, and `WP_PHP_VERSION` are passed to the shared browser runner where applicable.
+
+The `docker/scripts/phpunit-integration.sh` runner selects the matching `wp-phpunit` series. When the lockfile library does not match the running WordPress series, the matching release is installed under `/tmp` in the container. Both test suites use the ticket's isolated schema; the `wptests_` table prefix separates the WordPress test tables from the demo site's `wp_` tables.
 
 ## Base classes and helpers
 
@@ -25,6 +28,6 @@ WordPress integration uses the PHP 8.3 Apache images for latest and 6.6. The `do
 
 ## Reports
 
-`artifacts/reports/` (git-ignored): `unit/` (Clover, HTML, summary), `vitest/`, `integration/junit-<wp-version>-<suite>.xml`, `e2e/` (JUnit + HTML). Coverage gates: `tools/coverage-gate.sh` (core 85%, plugin 80%, themes 70%) and Vitest thresholds in `vitest.config.js`.
+`artifacts/reports/` (git-ignored): `unit/` (Clover, HTML, summary), `vitest/`, `integration/junit-<wp-version>-<suite>.xml`, `e2e/` (JUnit + HTML), and `matrix/` (variant-specific JSON and Markdown). Coverage gates: `tools/coverage-gate.sh` (core 85%, plugin 80%, themes 70%) and Vitest thresholds in `vitest.config.js`.
 
 The shared WordPress container is serialized by `docker/scripts/wp-task.sh` using a lock under `Workspaces/.tmp`. PHP, static-analysis, and JavaScript unit jobs run in one-off containers with the active worktree mounted at `/workspace`; those jobs can run across worktrees in parallel. See [Docker development setup](docker.md) for shared database setup and the unexecuted main-demo migration procedure.

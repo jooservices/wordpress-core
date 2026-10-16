@@ -8,15 +8,26 @@ cd "$ROOT"
 env_value() { grep -E "^$1=" .env | head -1 | cut -d= -f2-; }
 WP_VERSION="${WP_VERSION:-$(env_value WP_VERSION)}"
 WP_VERSION="${WP_VERSION:-latest}"
+WP_PHP_VERSION="${WP_PHP_VERSION:-8.3}"
 WP_SITE_URL="${WP_SITE_URL:-$(env_value WP_SITE_URL)}"
 WP_SITE_URL="${WP_SITE_URL:-http://127.0.0.1:8082}"
 WP_PORT="$(bash "$ROOT/docker/scripts/site-url.sh" port "$WP_SITE_URL")"
-if [ "$WP_VERSION" = "latest" ]; then export WP_IMAGE_TAG="php8.3-apache"; else export WP_IMAGE_TAG="${WP_VERSION}-php8.3-apache"; fi
+if [[ ! "$WP_PHP_VERSION" =~ ^8\.[1-5]$ ]]; then
+  echo "ERROR: WP_PHP_VERSION must be one of 8.1, 8.2, 8.3, 8.4, or 8.5." >&2
+  exit 2
+fi
+if [[ "$WP_VERSION" == "latest" ]]; then
+  export WP_IMAGE_TAG="php${WP_PHP_VERSION}-apache"
+elif [[ "$WP_VERSION" == "beta" || "$WP_VERSION" == "next-beta" ]]; then
+  export WP_IMAGE_TAG="beta-php${WP_PHP_VERSION}-apache"
+else
+  export WP_IMAGE_TAG="${WP_VERSION}-php${WP_PHP_VERSION}-apache"
+fi
 if [[ -n "${JOOWT_PROJECT:-}" && "$JOOWT_PROJECT" != "joowt-wp-shared-test" ]]; then
   echo "ERROR: the shared WordPress test container has the fixed Compose project joowt-wp-shared-test." >&2
   exit 2
 fi
-export WP_VERSION WP_SITE_URL WP_PORT
+export WP_VERSION WP_PHP_VERSION WP_SITE_URL WP_PORT
 export COMPOSE_PROJECT_NAME="joowt-wp-shared-test"
 # Extra themes (scaffolded with make new-theme) are mounted through a generated override file.
 EXTRA="docker/.themes.generated.yaml"

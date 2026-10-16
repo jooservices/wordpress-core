@@ -44,7 +44,8 @@ local browser storage and does not include analytics or tracking pixels.
 = What browser versions are supported? =
 
 See docs/browser-compatibility.md for supported browser targets and current
-validation status.
+validation status. See docs/compatibility-matrix.md for the complete
+WordPress, PHP, database, hosting, plugin, and support matrix.
 
 == Credits ==
 
