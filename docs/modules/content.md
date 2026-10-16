@@ -32,6 +32,19 @@ Compatibility note: the former lab-only folder and slug `jooservices-content` ha
 
 `current` is derived from an empty end month; `CompanyRecord::durationLabel()` gives `2 yrs 3 mos`. Order: pinned first, then `manual` (menu order, newest start) or `date`. REST write errors are 400 with a message per problem. The classic admin box and the repeater screens come with JOOS-88; the front end with JOOS-89.
 
+### Admin screens (JOOS-88)
+
+Decision: classic meta boxes plus a small vanilla script (`assets/company-editor.js`, no build step) instead of block-editor sidebar panels. They work with the existing classic company screen, every control is a native labelled field, and the repeaters are reachable and operable with the keyboard.
+
+| Screen | What it does |
+|---|---|
+| Company edit | boxes: details, profile and location, roles, achievements and technologies, custom fields, private details and visibility. Repeaters add, remove and move rows with buttons (no drag needed), announce each change in a live region and keep names in screen order. Each group is saved only when valid; messages say what to fix. Unsaved-changes warning. |
+| Company list | logo, role, period, current, pinned, visibility, order; filter (all, current, past, pinned); bulk actions pin (exactly one), hide, show |
+| Companies > Settings (`manage_options`) | display defaults (date format, show duration, private labels; option `joo_resume_settings`) and the custom-field builder with a preview |
+| Companies > Import / Export (`manage_options`) | export own JSON (complete, private fields included), JSON Resume `work` and CSV (public data only, formula-safe); import of own JSON or JSON Resume with a dry run: nothing is created unless every company is valid (1 MB, 200 companies, `.json`) |
+
+Mapping lives in `Transfer\Mapper` (pure, unit-tested); `Model\CompanyWriter` is the single write path of the importer. Nonces and capability checks guard every action.
+
 ## Core side (`Content\`)
 `ContentProviderInterface` (`@api`): `profile()`, `pinnedCompany()`, `companies($page,$perPage,$excludePinned)`, `categoryTree($hideEmpty)`, `topics($limit,$strategy)`, `featured($limit)`, `related($postId,$limit)`; immutable value objects in `Content\Model`.
 

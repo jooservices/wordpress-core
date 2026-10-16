@@ -148,6 +148,38 @@ final class CompanyRecord {
 	}
 
 	/**
+	 * Flat row with every field (the own export format and the importer share it). Includes private fields: only for
+	 * the owner.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function toRow(): array {
+		return array(
+			'name'          => $this->name,
+			'role'          => $this->role,
+			'from'          => $this->from,
+			'to'            => $this->to,
+			'pinned'        => $this->pinned,
+			'url'           => $this->url,
+			'summary'       => $this->summary,
+			'description'   => $this->description,
+			'city'          => $this->city,
+			'country'       => $this->country,
+			'employment'    => $this->employment,
+			'industry'      => $this->industry,
+			'remote'        => $this->remote,
+			'roles'         => $this->roles,
+			'achievements'  => $this->achievements,
+			'technologies'  => $this->technologies,
+			'custom'        => $this->custom,
+			'compensation'  => $this->compensation,
+			'equity'        => $this->equity,
+			'public_fields' => $this->publicFields,
+			'menu_order'    => $this->menuOrder,
+		);
+	}
+
+	/**
 	 * Keeps the custom values whose definition is public.
 	 *
 	 * @param array<string, mixed>       $values      Values by key.

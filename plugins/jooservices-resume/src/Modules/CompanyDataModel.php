@@ -284,6 +284,22 @@ final class CompanyDataModel {
 				return __( 'A custom number field holds a number.', 'jooservices-resume' );
 			case 'custom_date':
 				return __( 'A custom date field looks like 2025-06-30.', 'jooservices-resume' );
+			case 'company_name':
+				return __( 'Every company needs a name.', 'jooservices-resume' );
+			case 'company_month':
+				return __( 'The start month must look like 2022-03 and the end month like 2025-06 or be empty.', 'jooservices-resume' );
+			case 'company_order':
+				return __( 'The end month cannot be before the start month.', 'jooservices-resume' );
+			case 'company_url':
+				return __( 'The website must be an https URL.', 'jooservices-resume' );
+			case 'import_json':
+				return __( 'The file is not valid JSON.', 'jooservices-resume' );
+			case 'import_format':
+				return __( 'The file is neither a JOOservices Resume export nor a JSON Resume document with a work section.', 'jooservices-resume' );
+			case 'import_rows':
+				return __( 'The file has more than 200 companies.', 'jooservices-resume' );
+			case 'import_empty':
+				return __( 'The file contains no companies.', 'jooservices-resume' );
 			case 'custom_url':
 				return __( 'A custom URL field must be an https URL.', 'jooservices-resume' );
 		}

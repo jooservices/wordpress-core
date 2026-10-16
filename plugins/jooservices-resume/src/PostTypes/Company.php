@@ -369,11 +369,15 @@ final class Company {
 		if ( ! is_admin() || ! $query instanceof \WP_Query || ! $query->is_main_query() || self::TYPE !== $query->get( 'post_type' ) ) {
 			return;
 		}
-		$orderby = (string) $query->get( 'orderby' );
+		$orderby = $query->get( 'orderby' );
+		if ( is_array( $orderby ) ) {
+			return; // Already ordered (another hook or an earlier pass set a multi-key order).
+		}
+		$orderby = (string) $orderby;
 		if ( 'joo_from' === $orderby ) {
 			$query->set( 'meta_key', '_joo_company_from' ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 			$query->set( 'orderby', 'meta_value' );
-		} elseif ( '' === $orderby ) {
+		} elseif ( '' === $orderby && array() === (array) $query->get( 'meta_query' ) ) { // A list filter already set its own meta query: keep the default date order.
 			$query->set(
 				'meta_query', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				array(

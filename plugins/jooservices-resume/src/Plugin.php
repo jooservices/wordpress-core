@@ -9,6 +9,10 @@ declare(strict_types=1);
 
 namespace JOOservices\Resume;
 
+use JOOservices\Resume\Admin\CompanyEditor;
+use JOOservices\Resume\Admin\CompanyList;
+use JOOservices\Resume\Admin\ImportExport;
+use JOOservices\Resume\Admin\Settings;
 use JOOservices\Resume\Modules\CompanyDataModel;
 use JOOservices\Resume\Modules\ProfileAndEditorialFields;
 use JOOservices\Resume\PostTypes\Company;
@@ -90,6 +94,12 @@ final class Plugin {
 	public static function register(): void {
 		( new Company() )->hook();
 		( new CompanyDataModel() )->hook();
+		if ( is_admin() ) {
+			( new CompanyEditor() )->hook();
+			( new CompanyList() )->hook();
+			( new Settings() )->hook();
+			( new ImportExport() )->hook();
+		}
 		( new ProfileAndEditorialFields() )->hook();
 	}
 

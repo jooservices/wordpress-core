@@ -8,7 +8,8 @@
     "joo_resume_version",
     "joo_resume_flush_rewrite",
     "joo_settings_schema_version",
-    "joo_resume_custom_fields"
+    "joo_resume_custom_fields",
+    "joo_resume_settings"
   ],
   "transients": ["joo_manifest_{slug}_{hash}"],
   "postMeta": [
