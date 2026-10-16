@@ -29,6 +29,45 @@ msgstr "Menu chính"
 msgid "Footer menu"
 msgstr "Menu chân trang"
 
+msgid "Back to top"
+msgstr "Lên đầu trang"
+
+msgid "404 with search"
+msgstr "Trang 404 kèm tìm kiếm"
+
+msgid "A friendly missing-page message and site search form."
+msgstr "Thông báo trang không tồn tại cùng biểu mẫu tìm kiếm trong site."
+
+msgid "404 terminal message"
+msgstr "Thông báo 404 kiểu terminal"
+
+msgid "A terminal-style missing-page message with a recovery link."
+msgstr "Thông báo trang không tồn tại kiểu terminal kèm liên kết quay lại."
+
+msgid "About and expertise"
+msgstr "Giới thiệu và chuyên môn"
+
+msgid "A biography with a clear expertise list."
+msgstr "Tiểu sử kèm danh sách chuyên môn rõ ràng."
+
+msgid "Contact and availability"
+msgstr "Liên hệ và trạng thái sẵn sàng"
+
+msgid "A short contact section with an email call to action."
+msgstr "Phần liên hệ ngắn với lời mời gửi email."
+
+msgid "Technical hero"
+msgstr "Mở đầu kỹ thuật"
+
+msgid "A title, short introduction and primary call to action."
+msgstr "Tiêu đề, phần giới thiệu ngắn và lời kêu gọi hành động chính."
+
+msgid "Newsletter placeholder"
+msgstr "Mẫu chỗ trống bản tin"
+
+msgid "A non-connected newsletter callout ready for a form block."
+msgstr "Lời mời đăng ký bản tin chưa kết nối, sẵn sàng thêm khối biểu mẫu."
+
 msgid "Background"
 msgstr "Nền"
 
@@ -137,5 +176,14 @@ msgstr "Toàn chiều rộng (không cột trái)"
 msgid "Dark"
 msgstr "Tối"
 
+msgid "Forest"
+msgstr "Rừng"
+
 msgid "Light"
 msgstr "Sáng"
+
+msgid "Ocean"
+msgstr "Đại dương"
+
+msgid "Paper"
+msgstr "Giấy"
