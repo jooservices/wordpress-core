@@ -4,7 +4,7 @@
   "name": "joo/theme-toggle",
   "title": "Theme toggle",
   "category": "joo",
-  "description": "Switch between dark and light mode.",
+  "description": "Cycle through the theme's available colour schemes.",
   "textdomain": "joo-core",
   "attributes": {},
   "supports": { "html": false }

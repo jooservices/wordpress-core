@@ -22,7 +22,7 @@
     "hide_featured_in_list": true
   },
   "design": {
-    "colorSchemes": ["dark", "light"],
+    "colorSchemes": ["dark", "light", "ocean", "forest", "paper"],
     "defaultScheme": "dark",
     "followSystem": true,
     "tokens": "design/tokens.json"
@@ -152,7 +152,7 @@
   },
   "blocks": {
     "disabled": [],
-    "patterns": ["jooservices"],
+    "patterns": ["patterns"],
     "canvas": true
   },
   "content": {

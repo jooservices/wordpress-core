@@ -1,5 +1,4 @@
-/* Aliases used by every component file. Palette values come from theme.json (dark) and styles/light.json (light);
-   the light block below is kept identical to styles/light.json by tests/tokens.test.mjs. */
+/* Palette aliases are shared by component styles; values mirror design/tokens.json. */
 :root {
   --joo-bg: var(--wp--preset--color--background);
   --joo-surface: var(--wp--preset--color--surface);
@@ -24,6 +23,25 @@
   color-scheme: dark;
 }
 
+:root[data-theme='dark'] {
+  --wp--preset--color--background: rgb(10 14 19);
+  --wp--preset--color--surface: rgb(16 22 29);
+  --wp--preset--color--raised: rgb(22 30 40);
+  --wp--preset--color--ink: rgb(217 227 239);
+  --wp--preset--color--muted: rgb(127 144 166);
+  --wp--preset--color--line: rgb(30 41 53);
+  --wp--preset--color--accent: rgb(92 200 255);
+  --wp--preset--color--accent-ink: rgb(4 18 28);
+  --wp--preset--color--pin: rgb(242 184 75);
+  --wp--preset--color--ok: rgb(79 209 161);
+  --wp--preset--color--err: rgb(255 107 107);
+  --wp--preset--color--chip: rgb(21 32 44);
+  --wp--preset--color--code: rgb(6 9 13);
+  --wp--preset--color--border: rgb(30 41 53);
+
+  color-scheme: dark;
+}
+
 :root[data-theme='light'] {
   --wp--preset--color--background: rgb(238 242 246);
   --wp--preset--color--surface: rgb(255 255 255);
@@ -31,7 +49,6 @@
   --wp--preset--color--ink: rgb(15 28 43);
   --wp--preset--color--muted: rgb(86 104 121);
   --wp--preset--color--line: rgb(213 221 230);
-  --wp--preset--color--border: rgb(213 221 230);
   --wp--preset--color--accent: rgb(10 107 176);
   --wp--preset--color--accent-ink: rgb(255 255 255);
   --wp--preset--color--pin: rgb(154 96 0);
@@ -39,6 +56,64 @@
   --wp--preset--color--err: rgb(192 57 43);
   --wp--preset--color--chip: rgb(230 237 245);
   --wp--preset--color--code: rgb(11 21 32);
+  --wp--preset--color--border: rgb(213 221 230);
+
+  color-scheme: light;
+}
+
+:root[data-theme='ocean'] {
+  --wp--preset--color--background: rgb(7 24 36);
+  --wp--preset--color--surface: rgb(12 36 51);
+  --wp--preset--color--raised: rgb(19 50 69);
+  --wp--preset--color--ink: rgb(225 242 250);
+  --wp--preset--color--muted: rgb(157 185 197);
+  --wp--preset--color--line: rgb(49 82 97);
+  --wp--preset--color--accent: rgb(87 199 229);
+  --wp--preset--color--accent-ink: rgb(7 24 36);
+  --wp--preset--color--pin: rgb(244 201 93);
+  --wp--preset--color--ok: rgb(89 212 153);
+  --wp--preset--color--err: rgb(255 119 119);
+  --wp--preset--color--chip: rgb(22 57 75);
+  --wp--preset--color--code: rgb(4 17 27);
+  --wp--preset--color--border: rgb(49 82 97);
+
+  color-scheme: dark;
+}
+
+:root[data-theme='forest'] {
+  --wp--preset--color--background: rgb(12 23 18);
+  --wp--preset--color--surface: rgb(20 36 27);
+  --wp--preset--color--raised: rgb(29 48 36);
+  --wp--preset--color--ink: rgb(229 244 232);
+  --wp--preset--color--muted: rgb(162 192 168);
+  --wp--preset--color--line: rgb(53 76 59);
+  --wp--preset--color--accent: rgb(118 214 159);
+  --wp--preset--color--accent-ink: rgb(9 33 18);
+  --wp--preset--color--pin: rgb(244 201 105);
+  --wp--preset--color--ok: rgb(115 211 155);
+  --wp--preset--color--err: rgb(255 120 120);
+  --wp--preset--color--chip: rgb(36 60 44);
+  --wp--preset--color--code: rgb(9 19 13);
+  --wp--preset--color--border: rgb(53 76 59);
+
+  color-scheme: dark;
+}
+
+:root[data-theme='paper'] {
+  --wp--preset--color--background: rgb(247 241 231);
+  --wp--preset--color--surface: rgb(255 253 247);
+  --wp--preset--color--raised: rgb(238 231 218);
+  --wp--preset--color--ink: rgb(36 33 24);
+  --wp--preset--color--muted: rgb(93 88 78);
+  --wp--preset--color--line: rgb(215 206 189);
+  --wp--preset--color--accent: rgb(140 63 30);
+  --wp--preset--color--accent-ink: rgb(255 255 255);
+  --wp--preset--color--pin: rgb(128 85 0);
+  --wp--preset--color--ok: rgb(35 107 72);
+  --wp--preset--color--err: rgb(166 33 33);
+  --wp--preset--color--chip: rgb(236 227 210);
+  --wp--preset--color--code: rgb(238 231 218);
+  --wp--preset--color--border: rgb(215 206 189);
 
   color-scheme: light;
 }

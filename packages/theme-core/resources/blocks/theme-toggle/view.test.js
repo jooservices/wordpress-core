@@ -10,6 +10,7 @@ let mediaListener;
 beforeEach(() => {
   localStorage.clear();
   document.documentElement.dataset.theme = 'dark';
+  document.documentElement.style.colorScheme = 'dark';
   document.head.replaceChildren(
     Object.assign(document.createElement('meta'), { name: 'color-scheme', content: 'dark' })
   );
@@ -18,14 +19,20 @@ beforeEach(() => {
     addEventListener: (_type, fn) => (mediaListener = fn),
     removeEventListener() {},
   });
-  render('<joo-theme-toggle><button type="button" aria-pressed="true" hidden></button></joo-theme-toggle>');
+  render(
+    '<joo-theme-toggle data-schemes="dark,light,ocean,forest,paper"><button type="button" aria-label="Change colour theme" hidden></button></joo-theme-toggle>'
+  );
 });
 
 describe('theme toggle', () => {
   it('shows the button and reflects the current scheme', () => {
     const button = document.querySelector('button');
     expect(button.hidden).toBe(false);
-    expect(button.getAttribute('aria-pressed')).toBe('true');
+    expect(button.getAttribute('aria-label')).toBe('Change colour theme');
+    expect(button.dataset.colorScheme).toBe('dark');
+    document.documentElement.style.colorScheme = 'light';
+    window.dispatchEvent(new CustomEvent('joo:theme', { detail: { value: 'light' } }));
+    expect(button.dataset.colorScheme).toBe('light');
   });
 
   it('toggles, persists and syncs the color-scheme meta', () => {
@@ -33,11 +40,12 @@ describe('theme toggle', () => {
     button.click();
     expect(current()).toBe('light');
     expect(stored()).toBe('light');
-    expect(button.getAttribute('aria-pressed')).toBe('false');
-    expect(document.querySelector('meta[name="color-scheme"]').getAttribute('content')).toBe('light');
+    expect(document.querySelector('meta[name="color-scheme"]').getAttribute('content')).toBe('light dark');
     button.click();
-    expect(current()).toBe('dark');
-    expect(stored()).toBe('dark');
+    expect(current()).toBe('ocean');
+    expect(stored()).toBe('ocean');
+    button.click();
+    expect(current()).toBe('forest');
   });
 
   it('follows the system until the user chooses', () => {

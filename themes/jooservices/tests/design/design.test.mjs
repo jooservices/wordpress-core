@@ -27,6 +27,7 @@ const contrast = (a, b) => {
   return (hi + 0.05) / (lo + 0.05);
 };
 const palette = (file) => Object.fromEntries(json(file).settings.color.palette.map((p) => [p.slug, p.color]));
+const schemeNames = ['dark', 'light', 'ocean', 'forest', 'paper'];
 
 describe('design tokens', () => {
   const tokens = json('design/tokens.json');
@@ -39,12 +40,25 @@ describe('design tokens', () => {
     for (const [slug, value] of Object.entries(tokens.light)) expect(light[slug], `light ${slug}`).toBe(value);
   });
 
-  it('the runtime light scheme in tokens.css matches styles/light.json', () => {
+  it('every runtime scheme in tokens.css matches its Site Editor variation', () => {
     const css = read('assets/src/css/components/tokens.css');
-    const block = css.slice(css.indexOf("[data-theme='light']"));
-    for (const [slug, value] of Object.entries(light)) {
-      const [r, g, b] = toRgb(value);
-      expect(block, `light ${slug}`).toContain(`--wp--preset--color--${slug}: rgb(${r} ${g} ${b});`);
+    for (const scheme of schemeNames) {
+      const colors = palette(`styles/${scheme}.json`);
+      const start = css.indexOf(`:root[data-theme='${scheme}']`);
+      const end = css.indexOf('\n}', start);
+      const block = css.slice(start, end);
+      expect(start, `${scheme} runtime token block`).toBeGreaterThanOrEqual(0);
+      for (const [slug, value] of Object.entries(colors)) {
+        const [r, g, b] = toRgb(value);
+        expect(block, `${scheme} ${slug}`).toContain(`--wp--preset--color--${slug}: rgb(${r} ${g} ${b});`);
+      }
+    }
+  });
+
+  it('every named variation has the same palette slugs as the base theme', () => {
+    for (const scheme of schemeNames) {
+      expect(palette(`styles/${scheme}.json`), scheme).toHaveProperty('background');
+      expect(Object.keys(palette(`styles/${scheme}.json`)), scheme).toEqual(Object.keys(dark));
     }
   });
 
@@ -67,10 +81,8 @@ describe('design tokens', () => {
       expect(dark, slug).toHaveProperty(slug);
   });
 
-  for (const [scheme, colors] of [
-    ['dark', dark],
-    ['light', light],
-  ]) {
+  for (const scheme of schemeNames) {
+    const colors = palette(`styles/${scheme}.json`);
     it(`${scheme}: contrast targets hold`, () => {
       expect(contrast(colors.ink, colors.background), 'ink on background').toBeGreaterThanOrEqual(7);
       expect(contrast(colors.ink, colors.surface), 'ink on surface').toBeGreaterThanOrEqual(7);
@@ -84,11 +96,11 @@ describe('design tokens', () => {
   }
 
   it('the 404 status colour is readable on the terminal background in both schemes', () => {
-    // notfound.css pins the red to the dark-scheme value because the terminal window is dark in both schemes.
+    // The 404 terminal stays dark in every palette, so it uses a fixed dark canvas and red.
     const css = read('assets/src/css/components/notfound.css');
     expect(css).toContain('color: rgb(255 107 107);');
-    expect(contrast(dark.err, dark.code)).toBeGreaterThanOrEqual(4.5);
-    expect(contrast(dark.err, light.code)).toBeGreaterThanOrEqual(4.5);
+    expect(css).toContain('background: rgb(6 9 13);');
+    expect(contrast('#ff6b6b', '#06090d')).toBeGreaterThanOrEqual(4.5);
   });
 });
 

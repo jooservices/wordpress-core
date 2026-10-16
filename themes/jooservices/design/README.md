@@ -1,5 +1,7 @@
 # Design reference
 
+The Site Editor variations are Dark, Light, Ocean, Forest, and Paper. `tokens.json` is the palette source of truth; `tests/design/design.test.mjs` checks palette parity, contrast, and runtime CSS parity for every variation.
+
 `reference-demo.html` is the approved behavioural and visual reference (the v2 demo). Open it in a browser; the
 buttons at the top switch views, scheme, language, density and viewport.
 

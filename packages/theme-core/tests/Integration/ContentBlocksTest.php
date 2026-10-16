@@ -15,6 +15,7 @@ use JOOservices\ThemeCore\Admin\Notices;
 use JOOservices\ThemeCore\Blocks\Blocks\RelatedPosts;
 use JOOservices\ThemeCore\Blocks\BlockRegistrar;
 use JOOservices\ThemeCore\Blocks\HeadingAnchors;
+use JOOservices\ThemeCore\Config\Settings;
 use JOOservices\ThemeCore\Kernel;
 use JOOservices\ThemeCore\Lazy\FragmentLazy;
 use JOOservices\ThemeCore\Seo\Schema\GraphPrinter;
@@ -415,9 +416,17 @@ final class ContentBlocksTest extends IntegrationTestCase {
 		$this->boot( 'multilang.json' );
 		$toggle = do_blocks( '<!-- wp:joo/theme-toggle /-->' );
 		$this->assertStringContainsString( '<joo-theme-toggle', $toggle );
-		$this->assertStringContainsString( 'aria-pressed="true"', $toggle );
+		$this->assertStringContainsString( 'aria-label="Change colour theme"', $toggle );
+		$this->assertStringNotContainsString( 'aria-pressed=', $toggle );
 		$this->assertStringContainsString( 'hidden>', $toggle );
 		$this->assertStringContainsString( 'aria-hidden="true"', $toggle );
+		$settings = Kernel::container()->get( Settings::class );
+		try {
+			$settings->save( array( 'features.theme_toggle' => false ) );
+			$this->assertSame( '', trim( do_blocks( '<!-- wp:joo/theme-toggle /-->' ) ) );
+		} finally {
+			$settings->repository()->reset();
+		}
 
 		$post = self::factory()->post->create();
 		update_post_meta( $post, '_joo_lang', 'en' );

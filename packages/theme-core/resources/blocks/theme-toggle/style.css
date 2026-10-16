@@ -7,7 +7,7 @@
   cursor: pointer;
 }
 
-:root[data-theme='dark'] .joo-theme-toggle__sun,
-:root[data-theme='light'] .joo-theme-toggle__moon {
+.joo-theme-toggle__button[data-color-scheme='dark'] .joo-theme-toggle__sun,
+.joo-theme-toggle__button[data-color-scheme='light'] .joo-theme-toggle__moon {
   display: none;
 }

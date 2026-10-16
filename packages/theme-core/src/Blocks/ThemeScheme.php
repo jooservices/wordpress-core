@@ -1,6 +1,6 @@
 <?php
 /**
- * Dark/light scheme without a flash.
+ * Colour scheme without a flash.
  *
  * @package JOOservices\ThemeCore
  */
@@ -55,7 +55,14 @@ final class ThemeScheme {
 	 * @return list<string>
 	 */
 	public function schemes(): array {
-		$schemes = array_values( array_intersect( array( 'dark', 'light' ), array_map( 'strval', (array) $this->manifest->get( 'design.colorSchemes', array( 'dark', 'light' ) ) ) ) );
+		$schemes = array_values(
+			array_unique(
+				array_filter(
+					array_map( 'strval', (array) $this->manifest->get( 'design.colorSchemes', array( 'dark', 'light' ) ) ),
+					static fn( string $scheme ): bool => 1 === preg_match( '/^[a-z][a-z0-9-]{0,31}$/', $scheme )
+				)
+			)
+		);
 		return array() === $schemes ? array( 'dark' ) : $schemes;
 	}
 
@@ -90,8 +97,14 @@ final class ThemeScheme {
 		}
 		$default = $this->defaultScheme();
 		$follow  = (bool) $this->manifest->get( 'design.followSystem', true );
+		$allowed = wp_json_encode( $this->schemes() );
 		$system  = $follow ? "matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'" : "'" . $default . "'";
-		return "try{var s=localStorage.getItem('joo-theme');document.documentElement.dataset.theme=s==='light'||s==='dark'?s:" . $system . '}catch(e){}';
+		return sprintf(
+			'try{var a=%s,s=localStorage.getItem(\'joo-theme\'),m=%s;document.documentElement.dataset.theme=a.includes(s)?s:(a.includes(m)?m:\'%s\')}catch(e){}',
+			$allowed,
+			$system,
+			$default
+		);
 	}
 
 	/**
