@@ -6,7 +6,7 @@
 | Time | Screen and action | Narration |
 |---|---|---|
 | 0:00–0:25 | Show the homepage at desktop width; point out the rail, featured slider, article list, and header controls. | “JOOservices gives a technical blog a profile rail, featured writing, and a focused reading layout.” |
-| 0:25–0:55 | Toggle dark and light styles; resize to a phone viewport. | “Readers can choose a colour scheme, and the layout adapts to narrow screens.” |
+| 0:25–0:55 | Cycle the five colour schemes; resize to a phone viewport. | “Readers can choose a colour scheme, and the layout adapts to narrow screens.” |
 | 0:55–1:35 | Open a post with code, table of contents, featured image, and related posts. Use Copy on a code block. | “Posts include reading navigation, code examples, and related content.” |
 | 1:35–2:20 | Open **Users → Profile**, show title, biography, avatar, and social fields; then open **Companies**. | “The companion JOOservices Resume plugin supplies the profile and company history shown across the site.” |
 | 2:20–3:00 | Open the About page and show the company timeline. | “Enter company records once and reuse them in the resume view.” |

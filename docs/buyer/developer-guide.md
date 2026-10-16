@@ -33,7 +33,9 @@ Version: 1.0.0
 */
 ```
 
-Place the child theme in `wp-content/themes/jooservices-child/`. Copy only the template or part you need, such as `templates/single.html`; keep core files and the parent theme unchanged. Verify overrides after every parent update.
+Place the child theme in `wp-content/themes/jooservices-child/`. Copy only the template or part you need, such as `templates/single.html` or `parts/footer.html`; keep core files and the parent theme unchanged. Verify overrides after every parent update.
+
+The theme-core dynamic block renderer also supports PHP templates at `parts/joo/{slug}.php`. The child theme is checked first, then the parent theme, then the block's bundled `render.php`. For example, `parts/joo/profile-card.php` replaces only the profile-card markup while keeping the block's data provider and editor attributes. A sample child theme under `themes/jooservices/tests/fixtures/sample-child` demonstrates both a footer template-part override and a profile-card block-template override; the theme integration suite exercises both lookup paths.
 
 ## Settings schema
 

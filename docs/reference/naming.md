@@ -11,6 +11,8 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `joo_resume_version`
 - `joo_resume_flush_rewrite`
 - `joo_settings_schema_version`
+- `joo_resume_custom_fields`
+- `joo_resume_settings`
 
 ## transients
 
@@ -40,6 +42,20 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `_joo_company_pinned`
 - `_joo_company_url`
 - `_joo_company_logo_id`
+- `_joo_company_city`
+- `_joo_company_country`
+- `_joo_company_industry`
+- `_joo_company_summary`
+- `_joo_company_employment`
+- `_joo_company_remote`
+- `_joo_company_description`
+- `_joo_company_roles`
+- `_joo_company_achievements`
+- `_joo_company_technologies`
+- `_joo_company_custom`
+- `_joo_company_compensation`
+- `_joo_company_equity`
+- `_joo_company_public_fields`
 
 ## termMeta
 
@@ -206,12 +222,20 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `perf.block_css_granular`
 - `perf.remove_head_noise`
 - `perf.preconnect`
-- `features.terminal`
 - `features.slider`
+- `features.rail`
+- `features.back_to_top`
 - `features.theme_toggle`
 - `features.reading_progress`
 - `features.hide_featured_in_list`
 - `content.profile_user_id`
+- `content.rail_profile`
+- `content.rail_companies`
+- `content.rail_categories`
+- `content.rail_topics`
+- `content.rail_tags`
+- `appearance.card_density`
+- `appearance.date_format`
 - `content.topics_strategy`
 - `content.topics_limit`
 - `content.topics_manual`

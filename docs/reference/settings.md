@@ -48,12 +48,20 @@ Precedence: filter `joo/settings/value`, then the value saved in the admin, then
 | `perf.block_css_granular` | boolean | `true` | performance | Core and custom block styles load only when the block is used. |
 | `perf.remove_head_noise` | boolean | `true` | performance | Removes generator, RSD, WLW and shortlink output. |
 | `perf.preconnect` | array | `[]` | performance | Origins to preconnect (https only). |
-| `features.terminal` | boolean | `true` | general | Enable terminal dock. |
 | `features.slider` | boolean | `true` | general | Enable featured slider. |
-| `features.theme_toggle` | boolean | `true` | general | Enable dark/light toggle. |
+| `features.rail` | boolean | `true` | general | Show the sidebar rail on templates that include it. |
+| `features.back_to_top` | boolean | `true` | general | Show a fixed link that returns visitors to the page header. |
+| `features.theme_toggle` | boolean | `true` | general | Let visitors cycle through the theme's available colour schemes. |
 | `features.reading_progress` | boolean | `true` | general | Enable reading progress bar. |
 | `features.hide_featured_in_list` | boolean | `true` | general | Enable hide featured posts from the latest list. |
 | `content.profile_user_id` | integer | `0` | content | User shown in About me and schema Person (0 = first administrator). |
+| `content.rail_profile` | boolean | `true` | content | Show the owner profile card in the sidebar rail. |
+| `content.rail_companies` | boolean | `true` | content | Show the company timeline block in the sidebar rail. |
+| `content.rail_categories` | boolean | `true` | content | Show the category tree block in the sidebar rail. |
+| `content.rail_topics` | boolean | `true` | content | Show the top topics block in the sidebar rail. |
+| `content.rail_tags` | boolean | `true` | content | Show the tag list block in the sidebar rail. |
+| `appearance.card_density` | string | `"comfortable"` | appearance | Choose comfortable spacing or a compact post list. |
+| `appearance.date_format` | string | `"site"` | appearance | Use the WordPress site format or choose a display format for post dates. |
 | `content.topics_strategy` | string | `"count"` | content | count: most posts first; manual: curated list. |
 | `content.topics_limit` | integer | `4` | content | Number of topics shown. |
 | `content.topics_manual` | array | `[]` | content | Tag ids in display order (used by the manual strategy). |
