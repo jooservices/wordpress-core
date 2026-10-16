@@ -30,3 +30,8 @@ The plugin matrix remains the review limitation. Its seven bounded commands are
 listed in `.github/workflows/nightly.yml`; they still need to run after the
 shared WordPress lock is free. The full nine-cell runtime workflow and full
 integration, E2E, and performance suites were not run locally.
+
+## QA addendum (Claude)
+
+- Merged `develop` again (JOOS-89 and later) and regenerated `docs/reference/surface.md` (it was stale after the Resume features, `make docs-check` failed on `develop`); lint, analyse, unit (PHPUnit 272, Vitest 260) and `make docs-check` pass.
+- Ran the first plugin group of the nightly matrix on the shared stack (`MATRIX_VARIANT=latest-php8.3-04-forms`, child theme): the pipeline works end to end (installs each plugin, runs the browser checks, writes the JSON and Markdown report) and reported FAIL for Contact Form 7, WPForms Lite and Fluent Forms with `layout shift budget` on home, category and tag. The same failure for all three on every view points at the measurement or at a shared effect of form plugins, so it is tracked as a separate finding, not as a defect of the tooling.
