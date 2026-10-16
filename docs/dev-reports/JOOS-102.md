@@ -16,9 +16,10 @@
 | `make lint` | Pass: headers, PHPCS (288 files), ESLint, Stylelint, and Prettier. |
 | `make analyse` | Pass: both PHPStan configurations, both TypeScript checks, and Deptrac; zero errors or violations. |
 | `make test-unit` | PHP: pass (280 tests, 1,426 assertions). Vitest: first run failed under concurrent E2E load (22/23 files and 104/105 tests passed; the font subset test hit its 30-second timeout and 17 worker starts timed out). A single-worker retry is pending. |
-| `make test-integration ARGS='--filter DemoImporterTest'` | First run found pre-existing `news` and `php` terms in the PHPUnit test tables. Updated the fixture to unique term slugs; retry is waiting for the shared WordPress lock. |
-| `make test-e2e-demo` | Pending the shared WordPress lock. |
+| `make test-integration ARGS='--filter DemoImporterTest'` | First run found pre-existing `news` and `php` terms in the PHPUnit test tables. Updated the fixture to unique term slugs; retry timed out after 15 minutes waiting for JOOS-89 to release the live shared lock. |
+| `make test-e2e-demo` | Failed safely at dry-run because the existing seeded site has conflicting author, category, and tag slugs. Import stopped before writes, so no demo content was added; this gate needs a clean WordPress site. |
 | `make demo-package` | Pass: 763,032 bytes compressed, 25 files, below the 40 MB limit. |
+| `make release THEME=jooservices` | Pass: generated a 2,623 KB ThemeForest archive containing the 763,032-byte demo ZIP; two builds compared byte-for-byte reproducible. |
 | `tools/release.test.mjs` | Pass: 13 tests, including buyer package contents and licensing metadata. |
 | Targeted PHPCS, shell syntax, and `git diff --check` | Pass. |
 | Merge `develop` | Pass: merged the new buyer Resume guide; no conflicts. |
