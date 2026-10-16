@@ -93,6 +93,7 @@ describe('release', () => {
       '<url>https://jooservices.com</url><url>https://www.sgcarmart.com</url>',
       '<content:encoded><![CDATA[hello@jooservices.com]]></content:encoded>',
       '<url>https://github.com/jooservices</url>',
+      '<dc:creator><![CDATA[viet]]></dc:creator>',
     ].join('\n');
     const clean = sanitizeDemoXml(xml, [
       { name: 'JOOservices Ltd', url: 'https://jooservices.com' },
@@ -104,6 +105,8 @@ describe('release', () => {
     expect(clean).toContain('<wp:post_name><![CDATA[example-company-2]]></wp:post_name>');
     expect(clean).toContain('hello@example.test');
     expect(clean).not.toContain('Viet VU');
+    expect(clean).toContain('<dc:creator><![CDATA[taylor]]></dc:creator>');
+    expect(clean).not.toContain('<![CDATA[viet]]>');
     expect(clean).not.toContain('SGCarmart');
     expect(clean).not.toContain('jooservices.com');
     expect(clean).not.toContain('sgcarmart.com');

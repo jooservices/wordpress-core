@@ -107,6 +107,7 @@ export function sanitizeDemoXml(sourceXml, companies) {
       '<wp:author_last_name><![CDATA[VU]]></wp:author_last_name>',
       '<wp:author_last_name><![CDATA[Example]]></wp:author_last_name>'
     )
+    .replaceAll('<dc:creator><![CDATA[viet]]></dc:creator>', '<dc:creator><![CDATA[taylor]]></dc:creator>')
     .replace(/jooservices\.com/gi, 'example.test')
     .replaceAll('https://github.com/jooservices', 'https://example.invalid')
     .replaceAll('https://www.linkedin.com/in/jooservices', 'https://example.invalid');

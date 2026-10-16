@@ -32,3 +32,12 @@
 ## Proposed backlog
 
 No out-of-scope findings identified during implementation.
+
+## QA addendum (Claude)
+
+Importer defects found on a clean shared site and fixed during QA (the earlier runs never got the WordPress lock, so the importer had no passing integration or E2E run):
+- `term_exists()` returns `0` or `null`, not `false`: every package term was reported as a conflict in the dry run and in the import. Both checks now test for a truthy value.
+- The package builder (`tools/release.mjs::sanitizeDemoXml`) renamed the author in `wp:author` but not in `dc:creator`, so 54 posts named the real login `viet`: it also failed the importer's "unknown author" check and leaked the name into a licence-clean package. `dc:creator` is now mapped too (unit test extended).
+- `WPLANG=en_US` cannot be stored (WordPress keeps the old value for a language that is not installed); an English package now leaves `WPLANG` unset and the test says so.
+
+Verification after the fixes and a merge of `develop` (JOOS-89, JOOS-99): `make lint`, `make analyse`, PHPUnit unit 280 tests, Vitest 261, plugin integration 43 tests / 392 assertions, `make test-e2e-demo` on a clean site (import in 8 s, zero structural differences, idempotent rerun, owner content kept, rollback) pass.

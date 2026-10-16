@@ -212,7 +212,7 @@ final class DemoImporter {
 				$slug     = 'category' === $kind ? (string) $fields->category_nicename : (string) $fields->tag_slug;
 				$name     = 'category' === $kind ? (string) $fields->cat_name : (string) $fields->tag_name;
 				$existing = term_exists( $slug, $taxonomy );
-				if ( false !== $existing ) {
+				if ( $existing ) { // term_exists() returns 0 or null (not false) when the term does not exist.
 					$term = get_term( is_array( $existing ) ? (int) $existing['term_id'] : (int) $existing, $taxonomy );
 					if ( ! $term || is_wp_error( $term ) || $name !== $term->name ) {
 						$errors[] = 'A site term conflicts with the package: ' . $taxonomy . '/' . $slug;
@@ -306,7 +306,7 @@ final class DemoImporter {
 				$name        = 'category' === $kind ? (string) $fields->cat_name : (string) $fields->tag_name;
 				$parent_slug = 'category' === $kind ? (string) $fields->category_parent : '';
 				$existing    = term_exists( $slug, $taxonomy );
-				if ( false !== $existing ) {
+				if ( $existing ) { // term_exists() returns 0 or null (not false) when the term does not exist.
 					$term_id = is_array( $existing ) ? (int) $existing['term_id'] : (int) $existing;
 					$term    = get_term( $term_id, $taxonomy );
 					if ( ! $term || is_wp_error( $term ) || $name !== $term->name ) {
@@ -777,7 +777,9 @@ final class DemoImporter {
 			}
 		}
 		$locale = sanitize_text_field( (string) ( $language['locale'] ?? 'en_US' ) );
-		$this->setManagedOption( 'WPLANG', $locale );
+		if ( '' !== $locale && 'en_US' !== $locale ) { // English is WordPress's built-in locale: WPLANG stays unset (WordPress refuses en_US as a value).
+			$this->setManagedOption( 'WPLANG', $locale );
+		}
 		$theme_mods = $theme_options['theme_mods'] ?? array();
 		$locations  = is_array( $theme_mods ) ? ( $theme_mods['nav_menu_locations'] ?? array() ) : array();
 		if ( ! is_array( $theme_mods ) || 1 !== count( $theme_mods ) || ! is_array( $locations ) || array( 'primary', 'footer' ) !== array_values( $locations ) ) {

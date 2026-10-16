@@ -65,7 +65,7 @@ final class DemoImporterTest extends IntegrationTestCase {
 		$this->assertSame( (int) get_user_by( 'login', 'taylor' )->ID, get_option( 'joo_jooservices_settings' )['content.profile_user_id'] );
 		$this->assertSame( 'Engineer', get_post_meta( $this->postId( 'joo_company', 'example-company' ), '_joo_company_role', true ) );
 		$this->assertSame( 'Software Engineer', get_user_meta( (int) get_user_by( 'login', 'taylor' )->ID, 'joo_title', true ) );
-		$this->assertSame( 'en_US', get_option( 'WPLANG' ) );
+		$this->assertFalse( get_option( 'WPLANG' ), 'an English package leaves WPLANG unset' );
 		$this->assertCount( 1, get_comments( array( 'post_id' => $this->postId( 'post', 'demo-article' ) ) ) );
 		$this->assertSame( array(), $importer->diff( $this->package )['differences'] );
 
