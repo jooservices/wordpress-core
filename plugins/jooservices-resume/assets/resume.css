@@ -1,0 +1,155 @@
+/* Resume timeline. Colours come from the active theme's tokens with neutral fallbacks, so it follows dark and light schemes. */
+.joo-resume {
+  --joo-resume-line: var(--joo-line, rgb(128 128 128 / 40%));
+  --joo-resume-muted: var(--joo-muted, inherit);
+  --joo-resume-accent: var(--joo-accent, currentcolor);
+
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.joo-resume__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.joo-resume__item {
+  position: relative;
+  margin: 0;
+  padding-block: 0 24px;
+  padding-inline-start: 20px;
+  border-inline-start: 1px solid var(--joo-resume-line);
+}
+
+.joo-resume__item::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 6px;
+  inset-inline-start: -5px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--joo-resume-accent);
+  border-radius: 50%;
+  background: var(--joo-bg, Canvas);
+}
+
+.joo-resume__item.is-current::before {
+  background: var(--joo-resume-accent);
+}
+
+.joo-resume__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 12px;
+  align-items: center;
+}
+
+.joo-resume__logo {
+  grid-row: 1 / span 3;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+.joo-resume__header > :not(.joo-resume__logo) {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.joo-resume__header:not(:has(.joo-resume__logo)) {
+  display: block;
+}
+
+.joo-resume__company {
+  margin: 0;
+  font-size: 1.05em;
+}
+
+.joo-resume__role,
+.joo-resume__period {
+  margin: 2px 0 0;
+}
+
+.joo-resume__period {
+  color: var(--joo-resume-muted);
+  font-size: 0.9em;
+}
+
+.joo-resume__current {
+  font-weight: 600;
+}
+
+.joo-resume__summary,
+.joo-resume__description {
+  margin: 8px 0 0;
+}
+
+.joo-resume__roles,
+.joo-resume__achievements {
+  margin: 8px 0 0;
+  padding-inline-start: 1.2em;
+}
+
+.joo-resume__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.joo-resume__tags li {
+  padding: 2px 8px;
+  border: 1px solid var(--joo-resume-line);
+  border-radius: 999px;
+  font-size: 0.85em;
+}
+
+.joo-resume__custom {
+  display: grid;
+  gap: 4px;
+  margin: 10px 0 0;
+}
+
+.joo-resume__custom div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.joo-resume__custom dt {
+  font-weight: 600;
+}
+
+.joo-resume__custom dd {
+  margin: 0;
+}
+
+.joo-resume__empty {
+  color: var(--joo-resume-muted);
+}
+
+@page {
+  size: a4;
+  margin: 15mm;
+}
+
+@media print {
+  .joo-resume__item {
+    break-inside: avoid;
+    border-inline-start-color: currentcolor;
+  }
+
+  .joo-resume a[href]::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+    word-break: break-all;
+  }
+
+  .joo-resume__tags li {
+    border-color: currentcolor;
+  }
+}
