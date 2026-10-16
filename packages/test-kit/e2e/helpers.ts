@@ -110,6 +110,21 @@ export async function setScheme(page: Page, scheme: 'dark' | 'light'): Promise<v
   }, scheme);
 }
 
+/** Lay the page out right to left before it loads (what an Arabic or Hebrew locale sets on <html>). */
+export async function useRtl(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const set = () => {
+      const root = document.documentElement;
+      if (!root) return;
+      if (root.getAttribute('dir') !== 'rtl') root.setAttribute('dir', 'rtl');
+      if (root.getAttribute('lang') !== 'ar') root.setAttribute('lang', 'ar');
+    };
+    set();
+    // <html> does not exist yet when this script runs: watch the document until it does, then keep the attributes.
+    new MutationObserver(set).observe(document, { attributes: true, childList: true, subtree: true });
+  });
+}
+
 /** Read WP_ADMIN_USER / WP_ADMIN_PASSWORD from the repository .env (never printed). */
 export async function adminCredentials(): Promise<{ user: string; password: string }> {
   const { readFileSync } = await import('node:fs');
