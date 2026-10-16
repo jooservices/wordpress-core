@@ -1,5 +1,5 @@
 // Screenshot gallery of the running demo: every view at three viewports in both schemes.
-// Usage: node tools/screenshots.mjs --theme jooservices [--base http://127.0.0.1:8080]
+// Usage: node tools/screenshots.mjs --theme jooservices [--base http://127.0.0.1:8082]
 import { chromium } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -31,7 +31,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       .filter(Boolean)
   );
   const theme = String(args.theme ?? 'jooservices');
-  const base = String(args.base ?? 'http://127.0.0.1:8080').replace(/\/$/, '');
+  const base = String(
+    args.base ?? process.env.E2E_BASE_URL ?? process.env.WP_SITE_URL ?? 'http://127.0.0.1:8082'
+  ).replace(/\/$/, '');
   const out = fromRoot('artifacts', 'screenshots', theme);
   mkdirSync(out, { recursive: true });
   const browser = await chromium.launch();

@@ -14,7 +14,7 @@ const allow = process.env.E2E_ALLOW_CONSOLE ? [new RegExp(process.env.E2E_ALLOW_
 
 async function discover(request: APIRequestContext) {
   const home = await (await request.get('/')).text();
-  const base = new URL(process.env.E2E_BASE_URL ?? 'http://127.0.0.1:8080').origin;
+  const base = new URL(process.env.E2E_BASE_URL ?? 'http://wordpress').origin;
   const links = [...home.matchAll(/href="([^"#?]+)"/g)]
     .map((m) => m[1])
     .filter((href) => href.startsWith(base) || href.startsWith('/'));
@@ -29,7 +29,7 @@ test.describe('views', () => {
   let views: Record<string, { path: string; status: number }>;
   test.beforeAll(async ({ playwright }) => {
     const request = await playwright.request.newContext({
-      baseURL: process.env.E2E_BASE_URL ?? 'http://127.0.0.1:8080',
+      baseURL: process.env.E2E_BASE_URL ?? 'http://wordpress',
     });
     const { single } = await discover(request);
     await request.dispose();

@@ -1,6 +1,6 @@
 # Demo tour
 
-`make demo THEME=jooservices` gives a site with 38 published posts, 3 pages, 6 companies, 72 comments and 12 images (deterministic: the same seed always creates the same content). Open http://127.0.0.1:8080 (admin credentials are in `.env`). Allow about two minutes for the tour.
+`make demo THEME=jooservices` gives a site with 38 published posts, 3 pages, 6 companies, 72 comments and 12 images (deterministic: the same seed always creates the same content). Open the `WP_SITE_URL` from the worktree `.env` (defaults to `http://127.0.0.1:8082`); admin credentials are in `.env`. Allow about two minutes for the tour.
 
 | Step | Where | What to show |
 |---|---|---|

@@ -1,6 +1,6 @@
 <?php
 /**
- * Bootstrap for integration tests (real WordPress, wp_tests schema).
+ * Bootstrap for integration tests (real WordPress, ticket-scoped schema).
  *
  * Environment: WP_TESTS_DIR (set by docker/scripts/phpunit-integration.sh), JOO_TEST_THEME (optional theme slug).
  *
@@ -49,3 +49,21 @@ tests_add_filter(
 );
 
 require $joo_tests_dir . '/includes/bootstrap.php';
+
+// WP's bootstrap has already executed these theme callbacks. Some integration
+// cases replay after_setup_theme after Kernel::reset(); retain core callbacks,
+// but do not repeat the theme's one-time supports/editor setup after wp_loaded.
+$joo_theme = getenv( 'JOO_TEST_THEME' );
+if ( $joo_theme && isset( $GLOBALS['wp_filter']['after_setup_theme'] ) && $GLOBALS['wp_filter']['after_setup_theme'] instanceof WP_Hook ) {
+	$joo_theme_functions = realpath( '/workspace/themes/' . $joo_theme . '/functions.php' );
+	if ( $joo_theme_functions ) {
+		foreach ( $GLOBALS['wp_filter']['after_setup_theme']->callbacks as $priority => $callbacks ) {
+			foreach ( $callbacks as $callback ) {
+				$function = $callback['function'];
+				if ( $function instanceof Closure && realpath( ( new ReflectionFunction( $function ) )->getFileName() ) === $joo_theme_functions ) {
+					remove_action( 'after_setup_theme', $function, $priority );
+				}
+			}
+		}
+	}
+}

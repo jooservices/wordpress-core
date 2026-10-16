@@ -7,10 +7,10 @@
 
 define( 'ABSPATH', '/var/www/html/' );
 define( 'WP_DEBUG', true );
-define( 'DB_NAME', 'wp_tests' );
-define( 'DB_USER', getenv( 'WORDPRESS_DB_USER' ) ?: 'wordpress' );
+define( 'DB_NAME', getenv( 'WORDPRESS_DB_NAME' ) ?: 'wp_JOOS_0' );
+define( 'DB_USER', getenv( 'WORDPRESS_DB_USER' ) ?: 'wp_JOOS_0' );
 define( 'DB_PASSWORD', getenv( 'WORDPRESS_DB_PASSWORD' ) ?: '' );
-define( 'DB_HOST', getenv( 'WORDPRESS_DB_HOST' ) ?: 'db' );
+define( 'DB_HOST', getenv( 'WORDPRESS_DB_HOST' ) ?: 'mariadb:3306' );
 define( 'DB_CHARSET', 'utf8mb4' );
 define( 'DB_COLLATE', '' );
 define( 'WP_TESTS_DOMAIN', 'example.test' );

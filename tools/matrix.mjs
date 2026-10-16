@@ -1,5 +1,5 @@
 // Plugin compatibility matrix: install each Tier-1 plugin, run the health table and the browser smoke, then restore.
-// Usage: node tools/matrix.mjs [--theme <label, default: the active theme>] [--only yoast,cf7] [--base http://127.0.0.1:8080] [--no-browser]
+// Usage: node tools/matrix.mjs [--theme <label, default: the active theme>] [--only yoast,cf7] [--base http://127.0.0.1:8082] [--no-browser]
 import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { run as runHealth } from './health.mjs';
@@ -142,7 +142,7 @@ async function testPlugin(entry, ctx) {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const flag = (n, d) => (args.includes(n) ? args[args.indexOf(n) + 1] : d);
-  const base = flag('--base', process.env.E2E_BASE_URL ?? 'http://127.0.0.1:8080');
+  const base = flag('--base', process.env.E2E_BASE_URL ?? process.env.WP_SITE_URL ?? 'http://127.0.0.1:8082');
   const theme = flag('--theme', wp('theme', 'list', '--status=active', '--field=name').stdout.trim() || 'unknown');
   const only = flag('--only', '').split(',').filter(Boolean);
   const matrix = JSON.parse(readFileSync('tests/matrix/plugins.json', 'utf8'));
