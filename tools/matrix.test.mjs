@@ -64,23 +64,32 @@ describe('matrix helpers', () => {
   });
 
   it('uses the shared Playwright runner and reports stderr when its JSON artifact is missing', () => {
-    let spawnArgs;
+    let invoked = false;
     const result = browserSmoke(
       'runtime',
       'jooservices',
       { browserBase: 'http://wordpress', paths: { single: '/hello/' } },
       {
-        spawn: (...args) => {
-          spawnArgs = args;
-          return { status: 1, stdout: 'runner output', stderr: 'first line\nlast line' };
+        spawn: (command, args, options) => {
+          invoked = true;
+          expect(command).toBe('bash');
+          expect(args).toContain('playwright');
+          expect(options.env?.E2E_BASE_URL).toBe('http://wordpress');
+          return /** @type {any} */ ({
+            pid: 1,
+            output: [null, 'runner output', 'first line\nlast line'],
+            stdout: 'runner output',
+            stderr: 'first line\nlast line',
+            status: 1,
+            signal: null,
+          });
         },
         readReport: () => {
           throw new Error('report was not created');
         },
       }
     );
-    expect(spawnArgs[1]).toContain('playwright');
-    expect(spawnArgs[2].env.E2E_BASE_URL).toBe('http://wordpress');
+    expect(invoked).toBe(true);
     expect(result).toEqual({ failed: true, notes: ['browser failed without a report: last line'] });
   });
 });

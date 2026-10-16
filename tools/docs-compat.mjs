@@ -37,7 +37,7 @@ out.push(
   '',
   'Compatibility is defined in tiers. **Tier 1** plugins have an adapter and an automated matrix test. **Tier 2** plugins are detected and need no changes. **Tier 3** (page builders, WooCommerce) get basic, documented support only: no custom design and no guarantee for every feature.',
   '',
-  'A result below says what was tested, with which version, runtime, and date. `NOT RUN` means there is no test evidence. `UNSUPPORTED` means the product does not promise support for that item in 1.0. `BLOCKED` means an operational issue stopped the test and needs a rerun.',
+  'No theme can guarantee that every plugin works. A result below says what was tested, with which version, runtime, and date. `NOT RUN` means there is no test evidence. `UNSUPPORTED` means the product does not promise support for that item in 1.0. `BLOCKED` means an operational issue stopped the test and needs a rerun.',
   '',
   'To ask for support for another plugin, open a Jira issue in the JOOWT project with the plugin name, version, the page that breaks and the console output.',
   ''
@@ -61,7 +61,7 @@ for (const tier of [1, 2, 3]) {
     }
     if (r) {
       result = r.result;
-      notes = r.notes ?? (r.reason ? `Reason: ${r.reason}` : '');
+      notes = r.notes?.join('; ') ?? (r.reason ? `Reason: ${r.reason}` : '');
     }
     out.push(
       `| ${cell(p.name)} | ${cell(p.group)} | ${p.source} | ${cell(r?.version ?? '')} | ${cell(r?.runtime ?? '')} | ${cell(r?.date ?? '')} | ${result} | ${cell(notes)} |`

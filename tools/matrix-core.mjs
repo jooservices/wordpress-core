@@ -91,7 +91,7 @@ export function prepareChildTheme(parent, wpCommand) {
   return { slug, created: true };
 }
 
-export function removeChildTheme(child, wpCommand, logError = () => {}) {
+export function removeChildTheme(child, wpCommand, logError = (_message) => {}) {
   if (!child?.created) return;
   const result = wpCommand('theme', 'delete', child.slug, '--force');
   if (result.status !== 0) logError(`warning: could not remove generated child theme ${child.slug}`);
@@ -240,7 +240,9 @@ async function testRuntime(ctx, io) {
   };
 }
 
-export async function runMatrix({ args = [], env = {}, io }) {
+/** @param {{ args?: string[], env?: Record<string, string | undefined>, io: any }} options */
+export async function runMatrix(options) {
+  const { args = [], env = {}, io } = options;
   const flag = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
   const base = flag('--base', env.WP_SITE_URL ?? 'http://127.0.0.1:8082');
   const browserBase = env.E2E_BASE_URL ?? 'http://wordpress';

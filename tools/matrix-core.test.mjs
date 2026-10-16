@@ -17,6 +17,7 @@ import {
 const good = (stdout = '') => ({ status: 0, stdout, stderr: '' });
 const bad = (stderr = 'command failed') => ({ status: 1, stdout: '', stderr });
 
+/** @param {{ plugins?: any[], [key: string]: any }} settings */
 function fakeIO({ plugins = [], ...options } = {}) {
   const calls = [];
   const files = new Map();
