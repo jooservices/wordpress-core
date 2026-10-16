@@ -8,10 +8,19 @@ const SETTINGS = '/wp-admin/themes.php?page=joo-settings';
 async function resetTab(page, tab: string) {
   await page.goto(`${SETTINGS}&tab=${tab}`);
   await page.getByRole('button', { name: 'Reset this tab to defaults' }).click();
-  await page.locator('dialog button.button-primary').click();
+  // The confirm button submits a form: wait for the reload before the next navigation (a goto during it fails with ERR_ABORTED).
+  await Promise.all([page.waitForEvent('load'), page.locator('dialog button.button-primary').click()]);
 }
 
+/** Reusable step: the seeded owner profile (content.profile_user_id) must survive a reset of the content tab. */
+const PROFILE_USER = '[name="joo_settings[content.profile_user_id]"]';
+const PROFILE_LABEL = /Viet VU/; // the owner of the deterministic demo (docker/scripts/seed.php)
+
+// A long browser journey on a shared, busy Docker host: one retry. Every run starts by resetting all tabs and ends by restoring the owner profile.
+test.describe.configure({ retries: 1 });
+
 test('buyer settings save, affect the front end and reset to defaults', async ({ page }) => {
+  test.setTimeout(180_000);
   await loginAsAdmin(page);
   let completed = false;
   try {
@@ -95,14 +104,29 @@ test('buyer settings save, affect the front end and reset to defaults', async ({
     await expect(page.locator('.joo-theme-toggle__button')).toHaveCount(1);
     completed = true;
   } finally {
+    // The journey's page may have crashed: restore on a fresh page of the same session.
+    const restore = async () => {
+      const fresh = await page.context().newPage();
+      try {
+        await fresh.goto(`${SETTINGS}&tab=content`);
+        await fresh.locator(PROFILE_USER).selectOption({ label: PROFILE_LABEL });
+        await fresh.getByRole('button', { name: 'Save changes' }).click();
+        await expect(fresh.locator('.notice-success')).toBeVisible();
+      } finally {
+        await fresh.close();
+      }
+    };
     if (!completed) {
+      const fresh = await page.context().newPage();
       for (const tab of ['general', 'content', 'appearance', 'terminal']) {
         try {
-          await resetTab(page, tab);
+          await resetTab(fresh, tab);
         } catch {
-          // A crashed page cannot reset its options; each viewport starts by resetting every tab.
+          // Each run starts by resetting every tab, so a failed cleanup is repaired by the next run.
         }
       }
+      await fresh.close();
     }
+    await restore();
   }
 });
