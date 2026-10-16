@@ -173,13 +173,15 @@ case "$action" in
   marketplace)
     ensure_stack
     bash "$ROOT/docker/scripts/runtime.sh" node tools/theme-check.mjs --theme "$theme"
-    bash "$ROOT/docker/scripts/runtime.sh" php-node tools/build-theme.mjs --theme "$theme" --include-plugin jooservices-resume
+    bash "$ROOT/docker/scripts/runtime.sh" php-node tools/build-theme.mjs --theme "$theme"
+    bash "$ROOT/docker/scripts/runtime.sh" php-node tools/build-plugin.mjs --plugin jooservices-resume
     mkdir -p "$(dirname "$marketplace_override")"
     cat > "$marketplace_override" <<EOF
 services:
   wordpress:
     volumes:
       - "$ROOT/artifacts/package/$theme:/var/www/html/wp-content/themes/$theme:ro"
+      - "$ROOT/artifacts/plugins/jooservices-resume:/var/www/html/wp-content/plugins/jooservices-resume:ro"
 EOF
     restore_theme_source=1
     "${compose[@]}" -f "$marketplace_override" up -d --build --wait --force-recreate --renew-anon-volumes wordpress
@@ -190,8 +192,11 @@ EOF
       fi
       "${compose[@]}" exec -T -u www-data wordpress wp plugin activate "$checker" </dev/null
     done
-    "${compose[@]}" exec -T -u www-data wordpress wp theme-check run "$theme" --format=json </dev/null
-    "${compose[@]}" exec -T -u www-data wordpress wp plugin check jooservices-resume --format=json --require=./wp-content/plugins/plugin-check/cli.php </dev/null
+    # Run both checkers so the evidence is complete, then fail if either reported a problem.
+    check_status=0
+    "${compose[@]}" exec -T -u www-data wordpress wp theme-check run "$theme" --format=json </dev/null || check_status=1
+    "${compose[@]}" exec -T -u www-data wordpress wp plugin check jooservices-resume --format=json --require=./wp-content/plugins/plugin-check/cli.php </dev/null || check_status=1
+    [[ "$check_status" -eq 0 ]] || exit 1
     ;;
   screenshots)
     ensure_stack

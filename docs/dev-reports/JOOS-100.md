@@ -28,8 +28,9 @@
 | Theme package | Pass | `make NODE='bash docker/scripts/runtime.sh php-node' package THEME=jooservices`; 297 files, 726 KB. Archive inventory includes GPL files and both OFL font licenses. |
 | Resume plugin package | Pass | `tools/build-plugin.mjs --plugin jooservices-resume`; 17 files, 32 KB. |
 | `make plugins-package` | Partial | Resume archive built; command then failed because optional WordPress MCP plugin source is unavailable (`MCP_PLUGIN_SRC` unset). |
-| `make test-marketplace` | In progress | The first source-directory run failed because it scanned excluded development tests/design and reported Theme Check required items. The target now builds and mounts the installable archive for a rerun. |
-| Integration/E2E | Pending | Attempts timed out waiting 15 minutes for the shared WordPress lock held by JOOS-107; no JOOS-100 integration or browser tests started. |
+| `make test-marketplace` | Findings | Runs on the packaged theme (without the bundled plugin zip, which the WordPress.org checker forbids) and on the staged Resume plugin. Plugin Check: no errors, 2 warnings (`load_plugin_textdomain`, `LICENSES.md` in the plugin root). Theme Check: 2 REQUIRED (`remove_action` of `rel_canonical` and `wp_shortlink_wp_head` in `core/src/Seo/HeadPrinter.php`) and a two-text-domain warning; tracked as JOOS-112 for an owner decision. The target runs both checkers, then fails if either reported a problem. |
+| Privacy E2E | Pass | `privacy.spec.ts`: 3 passed (phone, tablet, desktop) on the shared stack; `make demo` health 17/17. The full integration and E2E suites were not rerun here: this ticket changes tooling, docs, licences and package metadata only. |
+| Merge with `develop` | Pass | Conflicts in Makefile, wp-task.sh, ci.yml and build-theme.mjs resolved by keeping both sides (`buildTheme(slug, { outDir, bundledPluginSlug })`). Lint, analyse and unit pass after the merge (PHPUnit 256, Vitest 247). |
 | GitHub Actions marketplace job | Not run | This repository has no remote; no push was made. YAML/Markdown formatting passes Prettier. |
 
 ## Risks and remaining review gates
