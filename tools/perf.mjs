@@ -1,5 +1,5 @@
 // Lighthouse (mobile) and byte budgets for a theme running in Docker.
-// Usage: node tools/perf.mjs --theme jooservices [--base http://127.0.0.1:8080]
+// Usage: node tools/perf.mjs --theme jooservices [--base http://127.0.0.1:8082]
 import { chromium } from '@playwright/test';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import lighthouse from 'lighthouse';
@@ -33,7 +33,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       .filter(Boolean)
   );
   const theme = String(args.theme ?? 'jooservices');
-  const base = String(args.base ?? 'http://127.0.0.1:8080').replace(/\/$/, '');
+  const base = String(
+    args.base ?? process.env.E2E_BASE_URL ?? process.env.WP_SITE_URL ?? 'http://127.0.0.1:8082'
+  ).replace(/\/$/, '');
   const budgets = JSON.parse(readFileSync(fromRoot('themes', theme, 'budgets.json'), 'utf8'));
   const chrome = await launch({
     chromePath: chromium.executablePath(),

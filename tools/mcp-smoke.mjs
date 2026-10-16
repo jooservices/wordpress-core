@@ -1,6 +1,6 @@
 // End to end check of the MCP demo: WordPress plugin REST with the connection token, then the MCP server over
 // Streamable HTTP (initialize, tools/list, one read tool). Secrets come from .env and are never printed.
-// Usage: node tools/mcp-smoke.mjs [--wp http://127.0.0.1:8080] [--mcp http://127.0.0.1:3000]
+// Usage: node tools/mcp-smoke.mjs [--wp http://127.0.0.1:8082] [--mcp http://127.0.0.1:3000]
 import { readFileSync } from 'node:fs';
 import { fromRoot } from './lib/paths.mjs';
 
@@ -27,7 +27,7 @@ const env = Object.fromEntries(
 async function main() {
   const args = process.argv.slice(2);
   const arg = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
-  const wp = arg('--wp', env.WP_SITE_URL ?? 'http://127.0.0.1:8080').replace(/\/$/, '');
+  const wp = arg('--wp', env.WP_SITE_URL ?? 'http://127.0.0.1:8082').replace(/\/$/, '');
   const mcp = arg('--mcp', `http://127.0.0.1:${env.MCP_PORT ?? 3000}`).replace(/\/$/, '');
   const results = [];
   const check = (name, ok, detail = '') => {

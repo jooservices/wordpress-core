@@ -1,5 +1,5 @@
 // Generates assets/critical/{context}.css for a theme from the running demo.
-// Usage: node tools/critical.mjs --theme jooservices [--base http://127.0.0.1:8080] [--max-gzip 14336]
+// Usage: node tools/critical.mjs --theme jooservices [--base http://127.0.0.1:8082] [--max-gzip 14336]
 import { chromium } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -16,7 +16,9 @@ const args = Object.fromEntries(
     )
 );
 const theme = String(args.theme ?? 'jooservices');
-const base = String(args.base ?? 'http://127.0.0.1:8080').replace(/\/$/, '');
+const base = String(
+  args.base ?? process.env.E2E_BASE_URL ?? process.env.WP_SITE_URL ?? 'http://127.0.0.1:8082'
+).replace(/\/$/, '');
 const maxGzip = Number(args['max-gzip'] ?? 14 * 1024);
 const outDir = fromRoot('themes', theme, 'assets', 'critical');
 const viewports = [
@@ -59,7 +61,8 @@ for (const [context, url] of Object.entries(targets)) {
     lists.push(await extractCriticalRules(page));
     await page.close();
   }
-  const { css, size, gzip } = mergeAndMinify(lists);
+  const normalized = lists.map((rules) => rules.map((rule) => rule.replaceAll(base, '')));
+  const { css, size, gzip } = mergeAndMinify(normalized);
   writeFileSync(join(outDir, `${context}.css`), css);
   const ok = gzip <= maxGzip;
   failed ||= !ok;

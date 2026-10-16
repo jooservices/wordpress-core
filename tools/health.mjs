@@ -1,5 +1,5 @@
 // Verifies a running demo: status, content type and key markers for each view in tests/matrix/urls.json.
-// Usage: node tools/health.mjs [--base http://127.0.0.1:8080] [--values '{"draft-id":1}'] (`make health` fills the values from WP-CLI)
+// Usage: node tools/health.mjs [--base http://127.0.0.1:8082] [--values '{"draft-id":1}'] (`make health` fills the values from WP-CLI)
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -75,7 +75,7 @@ export async function run({ base, table, extra = {}, seoActive = false }) {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const flag = (n, d) => (args.includes(n) ? args[args.indexOf(n) + 1] : d);
-  const base = flag('--base', process.env.E2E_BASE_URL ?? 'http://127.0.0.1:8080');
+  const base = flag('--base', process.env.E2E_BASE_URL ?? process.env.WP_SITE_URL ?? 'http://127.0.0.1:8082');
   const table = JSON.parse(readFileSync(fileURLToPath(new URL('../tests/matrix/urls.json', import.meta.url)), 'utf8'));
   const extra = JSON.parse(flag('--values', '{}'));
   const results = await run({ base, table, extra });
