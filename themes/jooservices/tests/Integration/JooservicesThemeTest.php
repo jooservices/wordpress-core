@@ -142,12 +142,20 @@ final class JooservicesThemeTest extends IntegrationTestCase {
 	}
 
 	public function test_buyer_patterns_are_registered_in_the_joo_services_editor_category(): void {
-		Kernel::container()->get( PatternLoader::class )->register();
-		$registry = \WP_Block_Patterns_Registry::get_instance();
-		foreach ( array( 'hero', 'about', 'contact', '404-search', '404-terminal', 'newsletter' ) as $slug ) {
-			$name = 'jooservices/' . $slug;
-			$this->assertTrue( $registry->is_registered( $name ), $name );
-			$this->assertSame( array( 'jooservices' ), $registry->get_registered( $name )['categories'] );
+		$original_theme = get_stylesheet();
+		switch_theme( 'jooservices' );
+		try {
+			Kernel::container()->get( PatternLoader::class )->register();
+			$registry = \WP_Block_Patterns_Registry::get_instance();
+			foreach ( array( 'hero', 'about', 'contact', '404-search', '404-terminal', 'newsletter' ) as $slug ) {
+				$name = 'jooservices/' . $slug;
+				$this->assertTrue( $registry->is_registered( $name ), $name );
+				$this->assertSame( array( 'jooservices' ), $registry->get_registered( $name )['categories'] );
+			}
+		} finally {
+			if ( 'jooservices' !== $original_theme ) {
+				switch_theme( $original_theme );
+			}
 		}
 	}
 
