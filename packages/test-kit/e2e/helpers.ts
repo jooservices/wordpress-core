@@ -114,11 +114,14 @@ export async function setScheme(page: Page, scheme: 'dark' | 'light'): Promise<v
 export async function useRtl(page: Page): Promise<void> {
   await page.addInitScript(() => {
     const set = () => {
-      document.documentElement.setAttribute('dir', 'rtl');
-      document.documentElement.setAttribute('lang', 'ar');
+      const root = document.documentElement;
+      if (!root) return;
+      if (root.getAttribute('dir') !== 'rtl') root.setAttribute('dir', 'rtl');
+      if (root.getAttribute('lang') !== 'ar') root.setAttribute('lang', 'ar');
     };
     set();
-    new MutationObserver(set).observe(document.documentElement, { attributes: true, attributeFilter: ['dir', 'lang'] });
+    // <html> does not exist yet when this script runs: watch the document until it does, then keep the attributes.
+    new MutationObserver(set).observe(document, { attributes: true, childList: true, subtree: true });
   });
 }
 
