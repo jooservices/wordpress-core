@@ -5,7 +5,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 ROOT="$(cd "$SCRIPT_DIR/../.." && pwd -P)"
 action="${1:-}"
-[[ -n "$action" ]] || { echo "Usage: wp-task.sh up|install|seed|seed-reset|integration|e2e|e2e-demo|marketplace|screenshots|health|demo|wp|shell|logs|down|reset|plugins-on|plugins-off [args ...]" >&2; exit 2; }
+[[ -n "$action" ]] || { echo "Usage: wp-task.sh up|install|seed|seed-reset|integration|e2e|e2e-demo|matrix|marketplace|screenshots|health|demo|wp|shell|logs|down|reset|plugins-on|plugins-off [args ...]" >&2; exit 2; }
 shift
 theme="${1:-jooservices}"
 if (($# > 0)); then shift; fi
@@ -173,6 +173,11 @@ case "$action" in
   e2e-demo)
     ensure_stack
     "${compose[@]}" exec -T -u www-data wordpress bash /scripts/e2e-demo-import.sh
+    ;;
+  matrix)
+    ensure_stack
+    seed_demo
+    node tools/matrix.mjs --theme "$theme" "$@"
     ;;
   marketplace)
     ensure_stack

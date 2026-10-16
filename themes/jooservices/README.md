@@ -5,6 +5,8 @@ A dark-first technical blog block theme built on `jooservices/wp-theme-core`: le
 ## Requirements
 WordPress 6.6 or newer, PHP 8.1 or newer. Release QA runs the minimum supported WordPress version (6.6) and the latest release before packaging. JOOservices Resume (`plugins/jooservices-resume`) provides the Company type and the profile, topic and featured-post fields; without it the theme still works and blocks that need its data hide themselves.
 
+See the [product compatibility matrix](docs/compatibility-matrix.md) for tested versions, unsupported 1.0 cells, browser targets, and the support policy.
+
 ## Install
 1. Build the package: `make package THEME=jooservices` (writes `artifacts/package/jooservices-<version>.zip`).
 2. Upload the zip under Appearance, Themes, Add New, or `wp theme install jooservices-<version>.zip --activate`.
