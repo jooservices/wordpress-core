@@ -4,6 +4,8 @@ JOOservices theme worktrees share the Workspaces Docker network `workspaces-shar
 
 ## Set up a ticket worktree
 
+For Docker memory problems, crashed browser runs, slow tests, and the shared WordPress test lock, see the [Docker troubleshooting guide](docker-troubleshooting.md).
+
 From the Workspaces root, start the shared database and long-lived developer runtimes once:
 
 ```sh
