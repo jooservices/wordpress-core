@@ -3,11 +3,19 @@ import { define } from 'joo-runtime';
 
 const KEY = 'joo-theme';
 
+/** @returns {string[]} Schemes supported by the active theme. */
+export function schemes() {
+  const value = document.querySelector('joo-theme-toggle')?.dataset.schemes;
+  const allowed = typeof value === 'string' ? value.split(',') : ['dark', 'light'];
+  const safe = allowed.filter((scheme) => /^[a-z][a-z0-9-]{0,31}$/.test(scheme));
+  return safe.length ? safe : ['dark'];
+}
+
 /** @returns {string|null} Stored choice. */
 export function stored() {
   try {
     const value = localStorage.getItem(KEY);
-    return value === 'light' || value === 'dark' ? value : null;
+    return schemes().includes(value) ? value : null;
   } catch {
     return null;
   }
@@ -15,16 +23,18 @@ export function stored() {
 
 /** @returns {string} Current scheme of the page. */
 export function current() {
-  return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+  const value = document.documentElement.dataset.theme;
+  return schemes().includes(value) ? value : schemes()[0];
 }
 
 /**
  * Applies a scheme to the page and keeps the color-scheme meta tag in sync.
- * @param {string} scheme light or dark.
+ * @param {string} scheme A name in the active theme's design.colorSchemes list.
  */
 export function apply(scheme) {
+  if (!schemes().includes(scheme)) return;
   document.documentElement.dataset.theme = scheme;
-  document.querySelector('meta[name="color-scheme"]')?.setAttribute('content', scheme);
+  document.querySelector('meta[name="color-scheme"]')?.setAttribute('content', 'light dark');
 }
 
 export class JooThemeToggle extends HTMLElement {
@@ -34,7 +44,8 @@ export class JooThemeToggle extends HTMLElement {
     this.button.hidden = false;
     this.sync();
     this.button.addEventListener('click', () => {
-      const next = current() === 'dark' ? 'light' : 'dark';
+      const available = schemes();
+      const next = available[(available.indexOf(current()) + 1) % available.length];
       apply(next);
       try {
         localStorage.setItem(KEY, next);
@@ -53,7 +64,7 @@ export class JooThemeToggle extends HTMLElement {
     // The terminal's `theme` command asks for a scheme through this event.
     this.onRequest = (event) => {
       const value = event.detail?.value;
-      if (value !== 'light' && value !== 'dark') return;
+      if (!schemes().includes(value)) return;
       apply(value);
       try {
         localStorage.setItem(KEY, value);
@@ -71,7 +82,8 @@ export class JooThemeToggle extends HTMLElement {
   }
 
   sync() {
-    this.button.setAttribute('aria-pressed', String(current() === 'dark'));
+    const colorScheme = window.getComputedStyle(document.documentElement).colorScheme;
+    this.button.dataset.colorScheme = colorScheme.includes('light') && !colorScheme.includes('dark') ? 'light' : 'dark';
   }
 }
 

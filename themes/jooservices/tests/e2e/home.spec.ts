@@ -26,7 +26,7 @@ test.describe('home', () => {
       ].map((e) => e.className.split(' ')[0])
     );
     expect(order).toEqual(['joo-profile', 'joo-companies', 'joo-tree', 'joo-topics', 'joo-tags']);
-    await expect(page.locator('.joo-profile__name')).toHaveText('Viet VU');
+    await expect(page.locator('#joo-rail .joo-profile__name')).toHaveText('Viet VU');
     await expect(page.locator('.joo-company--pinned')).toContainText('JOOservices Ltd');
   });
 

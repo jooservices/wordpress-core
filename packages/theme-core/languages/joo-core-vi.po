@@ -90,8 +90,8 @@ msgstr "terminal"
 msgid "Read-only terminal"
 msgstr "Terminal chỉ đọc"
 
-msgid "Toggle dark mode"
-msgstr "Bật/tắt chế độ tối"
+msgid "Change colour theme"
+msgstr "Đổi bảng màu giao diện"
 
 msgid "On this page"
 msgstr "Trong trang này"
@@ -571,8 +571,8 @@ msgstr "Terminal chỉ đọc gắn bên cạnh trang (tải khi mở lần đ�
 msgid "Theme toggle"
 msgstr "Chuyển giao diện"
 
-msgid "Switch between dark and light mode."
-msgstr "Chuyển giữa chế độ tối và sáng."
+msgid "Cycle through the theme's available colour schemes."
+msgstr "Chuyển lần lượt qua các bảng màu có sẵn của giao diện."
 
 msgid "Contents of the article with a scroll-spy."
 msgstr "Mục lục của bài viết, theo dõi vị trí cuộn."

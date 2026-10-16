@@ -282,6 +282,15 @@
   transition: border-color 0.15s;
 }
 
+body.joo-card-density--compact .joo-feed .wp-block-post-template {
+  gap: 8px;
+}
+
+body.joo-card-density--compact .joo-card {
+  gap: 12px;
+  padding: 8px;
+}
+
 .joo-card:hover {
   border-color: color-mix(in srgb, var(--joo-accent) 50%, var(--joo-line));
 }

@@ -22,6 +22,8 @@ if ( ! is_readable( $joo_core ) ) {
 
 require_once $joo_core;
 \JOOservices\ThemeCore\Kernel::boot( __DIR__ . '/joo-theme.json' );
+require_once __DIR__ . '/inc/BuyerOptions.php';
+\JOOservices\Jooservices\BuyerOptions::hook();
 
 add_action(
 	'after_setup_theme',

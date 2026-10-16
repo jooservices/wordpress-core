@@ -44,6 +44,31 @@
   overflow-x: auto;
 }
 
+.editor-styles-wrapper .joo-header:has(.wp-block-site-logo img) .joo-logo {
+  display: none;
+}
+
+.editor-styles-wrapper .joo-logo {
+  margin: 0;
+  font: 600 22px/1 var(--wp--preset--font-family--mono);
+}
+
+.editor-styles-wrapper .joo-logo-image img {
+  display: block;
+  width: auto;
+  max-height: 52px;
+}
+
+.editor-styles-wrapper .joo-footer__socials .joo-profile__who,
+.editor-styles-wrapper .joo-footer__socials .joo-profile__bio,
+.editor-styles-wrapper .joo-footer__socials .joo-profile__more {
+  display: none;
+}
+
+.editor-styles-wrapper .joo-footer__socials .joo-profile__socials {
+  margin: 0;
+}
+
 .editor-styles-wrapper .wp-block-image img {
   max-width: 100%;
   height: auto;

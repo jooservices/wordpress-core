@@ -36,7 +36,18 @@ for (const [list, items] of Object.entries(registry)) {
 }
 
 // 2. every key of the settings descriptor is unique and uses a known namespace
-const namespaces = new Set(['modules', 'core', 'seo', 'lazy', 'perf', 'features', 'content', 'i18n', 'terminal']);
+const namespaces = new Set([
+  'modules',
+  'core',
+  'seo',
+  'lazy',
+  'perf',
+  'features',
+  'content',
+  'appearance',
+  'i18n',
+  'terminal',
+]);
 for (const key of Object.keys(settings.settings))
   if (!namespaces.has(key.split('.')[0])) fail(`settings: ${key} has an unknown namespace`);
 

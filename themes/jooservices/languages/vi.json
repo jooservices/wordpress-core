@@ -41,6 +41,22 @@
   "XS": "XS",
   "Light": "Sáng",
   "Dark": "Tối",
+  "Ocean": "Đại dương",
+  "Forest": "Rừng",
+  "Paper": "Giấy",
   "Canvas (no header or footer)": "Canvas (không đầu trang và chân trang)",
-  "Full width (no rail)": "Toàn chiều rộng (không cột trái)"
+  "Full width (no rail)": "Toàn chiều rộng (không cột trái)",
+  "Technical hero": "Mở đầu kỹ thuật",
+  "A title, short introduction and primary call to action.": "Tiêu đề, phần giới thiệu ngắn và lời kêu gọi hành động chính.",
+  "About and expertise": "Giới thiệu và chuyên môn",
+  "A biography with a clear expertise list.": "Tiểu sử kèm danh sách chuyên môn rõ ràng.",
+  "Contact and availability": "Liên hệ và trạng thái sẵn sàng",
+  "A short contact section with an email call to action.": "Phần liên hệ ngắn với lời mời gửi email.",
+  "404 with search": "Trang 404 kèm tìm kiếm",
+  "A friendly missing-page message and site search form.": "Thông báo trang không tồn tại cùng biểu mẫu tìm kiếm trong site.",
+  "404 terminal message": "Thông báo 404 kiểu terminal",
+  "A terminal-style missing-page message with a recovery link.": "Thông báo trang không tồn tại kiểu terminal kèm liên kết quay lại.",
+  "Newsletter placeholder": "Mẫu chỗ trống bản tin",
+  "A non-connected newsletter callout ready for a form block.": "Lời mời đăng ký bản tin chưa kết nối, sẵn sàng thêm khối biểu mẫu.",
+  "Back to top": "Lên đầu trang"
 }

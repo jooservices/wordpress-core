@@ -39,6 +39,16 @@
   color: var(--joo-accent);
 }
 
+.joo-footer__socials .joo-profile__who,
+.joo-footer__socials .joo-profile__bio,
+.joo-footer__socials .joo-profile__more {
+  display: none;
+}
+
+.joo-footer__socials .joo-profile__socials {
+  margin: 0;
+}
+
 .joo-footer__copy {
   grid-column: 1 / -1;
   display: flex;
@@ -48,6 +58,29 @@
   padding-top: 14px;
   font: 12px/1.6 var(--joo-mono);
   border-top: 1px solid var(--joo-line);
+}
+
+.joo-back-to-top {
+  position: fixed;
+  inset-inline-end: 18px;
+  bottom: 18px;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding-inline: 12px;
+  color: var(--joo-ink);
+  background: var(--joo-surface);
+  border: 1px solid var(--joo-line);
+  border-radius: 999px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 18%);
+}
+
+.joo-back-to-top:hover {
+  color: var(--joo-accent);
+  border-color: var(--joo-accent);
 }
 
 @container shell (max-width: 900px) {

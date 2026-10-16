@@ -22,6 +22,10 @@
       "title": "Content"
     },
     {
+      "id": "appearance",
+      "title": "Appearance"
+    },
+    {
       "id": "terminal",
       "title": "Terminal"
     },
@@ -445,16 +449,6 @@
       "sanitize": "string_list",
       "manifest": "perf.preconnect"
     },
-    "features.terminal": {
-      "type": "boolean",
-      "default": true,
-      "group": "general",
-      "title": "Terminal dock",
-      "description": "Enable terminal dock.",
-      "ui": "toggle",
-      "sanitize": "bool",
-      "manifest": "features.terminal"
-    },
     "features.slider": {
       "type": "boolean",
       "default": true,
@@ -465,12 +459,30 @@
       "sanitize": "bool",
       "manifest": "features.slider"
     },
+    "features.rail": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Sidebar rail",
+      "description": "Show the sidebar rail on templates that include it.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "features.back_to_top": {
+      "type": "boolean",
+      "default": true,
+      "group": "general",
+      "title": "Back to top link",
+      "description": "Show a fixed link that returns visitors to the page header.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
     "features.theme_toggle": {
       "type": "boolean",
       "default": true,
       "group": "general",
-      "title": "Dark/light toggle",
-      "description": "Enable dark/light toggle.",
+      "title": "Colour scheme toggle",
+      "description": "Let visitors cycle through the theme's available colour schemes.",
       "ui": "toggle",
       "sanitize": "bool",
       "manifest": "features.theme_toggle"
@@ -504,6 +516,71 @@
       "ui": "user",
       "sanitize": "user_id",
       "minimum": 0
+    },
+    "content.rail_profile": {
+      "type": "boolean",
+      "default": true,
+      "group": "content",
+      "title": "Profile card in the rail",
+      "description": "Show the owner profile card in the sidebar rail.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "content.rail_companies": {
+      "type": "boolean",
+      "default": true,
+      "group": "content",
+      "title": "Companies in the rail",
+      "description": "Show the company timeline block in the sidebar rail.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "content.rail_categories": {
+      "type": "boolean",
+      "default": true,
+      "group": "content",
+      "title": "Categories in the rail",
+      "description": "Show the category tree block in the sidebar rail.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "content.rail_topics": {
+      "type": "boolean",
+      "default": true,
+      "group": "content",
+      "title": "Top topics in the rail",
+      "description": "Show the top topics block in the sidebar rail.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "content.rail_tags": {
+      "type": "boolean",
+      "default": true,
+      "group": "content",
+      "title": "Tags in the rail",
+      "description": "Show the tag list block in the sidebar rail.",
+      "ui": "toggle",
+      "sanitize": "bool"
+    },
+    "appearance.card_density": {
+      "type": "string",
+      "default": "comfortable",
+      "group": "appearance",
+      "title": "Post card density",
+      "description": "Choose comfortable spacing or a compact post list.",
+      "ui": "select",
+      "sanitize": "enum",
+      "enum": ["comfortable", "compact"]
+    },
+    "appearance.date_format": {
+      "type": "string",
+      "default": "site",
+      "group": "appearance",
+      "title": "Date format",
+      "description": "Use the WordPress site format or choose a display format for post dates.",
+      "ui": "select",
+      "sanitize": "enum",
+      "enum": ["site", "F j, Y", "Y-m-d", "d/m/Y"]
     },
     "content.topics_strategy": {
       "type": "string",
@@ -572,7 +649,8 @@
       "title": "Enable terminal",
       "description": "Show the terminal dock.",
       "ui": "toggle",
-      "sanitize": "bool"
+      "sanitize": "bool",
+      "manifest": "features.terminal"
     },
     "terminal.open_by_default": {
       "type": "boolean",

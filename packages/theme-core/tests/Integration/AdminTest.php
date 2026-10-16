@@ -134,6 +134,22 @@ final class AdminTest extends IntegrationTestCase {
 				'lazy.iframes'     => '0',
 			)
 		);
+		$page->process(
+			'general',
+			array(
+				'features.rail'        => '0',
+				'features.back_to_top' => '0',
+			)
+		);
+		$page->process( 'terminal', array( 'terminal.enabled' => '0' ) );
+		$page->process( 'content', array( 'content.rail_profile' => '0' ) );
+		$page->process(
+			'appearance',
+			array(
+				'appearance.card_density' => 'compact',
+				'appearance.date_format'  => 'Y-m-d',
+			)
+		);
 		$export = wp_json_encode(
 			array(
 				'joo_settings_export' => 1,
@@ -142,10 +158,20 @@ final class AdminTest extends IntegrationTestCase {
 		);
 		Kernel::container()->get( Settings::class )->repository()->reset();
 		$this->assertSame( 1, Kernel::container()->get( Settings::class )->get( 'lazy.eager_count' ) );
+		$this->assertSame( 'comfortable', Kernel::container()->get( Settings::class )->get( 'appearance.card_density' ) );
 		$result = $page->import( (string) $export );
 		$this->assertSame( array(), $result['errors'] );
 		$this->assertSame( 2, Kernel::container()->get( Settings::class )->get( 'lazy.eager_count' ) );
 		$this->assertFalse( Kernel::container()->get( Settings::class )->get( 'lazy.iframes' ) );
+		$this->assertSame( 'compact', Kernel::container()->get( Settings::class )->get( 'appearance.card_density' ) );
+		$this->assertSame( 'Y-m-d', Kernel::container()->get( Settings::class )->get( 'appearance.date_format' ) );
+		$this->assertFalse( Kernel::container()->get( Settings::class )->get( 'features.rail' ) );
+		$this->assertFalse( Kernel::container()->get( Settings::class )->get( 'terminal.enabled' ) );
+		$this->assertFalse( Kernel::container()->get( Settings::class )->get( 'content.rail_profile' ) );
+		Kernel::container()->get( Settings::class )->repository()->reset();
+		$this->assertSame( 'comfortable', Kernel::container()->get( Settings::class )->get( 'appearance.card_density' ) );
+		$this->assertTrue( Kernel::container()->get( Settings::class )->get( 'features.back_to_top' ) );
+		$this->assertTrue( Kernel::container()->get( Settings::class )->get( 'terminal.enabled' ) );
 	}
 
 	public function test_import_rejects_foreign_documents(): void {

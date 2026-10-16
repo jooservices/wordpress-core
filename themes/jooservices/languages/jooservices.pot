@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-16T00:01:10+00:00\n"
+"POT-Creation-Date: 2026-10-16T12:19:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jooservices\n"
@@ -39,108 +39,214 @@ msgstr ""
 msgid "JOOservices core is missing from this theme. Reinstall the theme package or run \"make link-core\"."
 msgstr ""
 
-#: functions.php:35
+#: functions.php:37
 msgid "Primary menu"
 msgstr ""
 
-#: functions.php:36
+#: functions.php:38
 msgid "Footer menu"
+msgstr ""
+
+#: inc/BuyerOptions.php:88
+msgid "Back to top"
+msgstr ""
+
+#: patterns/404-search.php
+msgctxt "Pattern title"
+msgid "404 with search"
+msgstr ""
+
+#: patterns/404-search.php
+msgctxt "Pattern description"
+msgid "A friendly missing-page message and site search form."
+msgstr ""
+
+#: patterns/404-terminal.php
+msgctxt "Pattern title"
+msgid "404 terminal message"
+msgstr ""
+
+#: patterns/404-terminal.php
+msgctxt "Pattern description"
+msgid "A terminal-style missing-page message with a recovery link."
+msgstr ""
+
+#: patterns/about.php
+msgctxt "Pattern title"
+msgid "About and expertise"
+msgstr ""
+
+#: patterns/about.php
+msgctxt "Pattern description"
+msgid "A biography with a clear expertise list."
+msgstr ""
+
+#: patterns/contact.php
+msgctxt "Pattern title"
+msgid "Contact and availability"
+msgstr ""
+
+#: patterns/contact.php
+msgctxt "Pattern description"
+msgid "A short contact section with an email call to action."
+msgstr ""
+
+#: patterns/hero.php
+msgctxt "Pattern title"
+msgid "Technical hero"
+msgstr ""
+
+#: patterns/hero.php
+msgctxt "Pattern description"
+msgid "A title, short introduction and primary call to action."
+msgstr ""
+
+#: patterns/newsletter.php
+msgctxt "Pattern title"
+msgid "Newsletter placeholder"
+msgstr ""
+
+#: patterns/newsletter.php
+msgctxt "Pattern description"
+msgid "A non-connected newsletter callout ready for a form block."
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Background"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Surface"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Raised"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Ink"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Muted"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Line"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Accent"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Accent ink"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Pinned"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "OK"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Error"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Chip"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Code"
 msgstr ""
 
 #: theme.json
 #: styles/dark.json
+#: styles/forest.json
 #: styles/light.json
+#: styles/ocean.json
+#: styles/paper.json
 msgctxt "Color name"
 msgid "Border"
 msgstr ""
@@ -255,7 +361,22 @@ msgctxt "Style variation name"
 msgid "Dark"
 msgstr ""
 
+#: styles/forest.json
+msgctxt "Style variation name"
+msgid "Forest"
+msgstr ""
+
 #: styles/light.json
 msgctxt "Style variation name"
 msgid "Light"
+msgstr ""
+
+#: styles/ocean.json
+msgctxt "Style variation name"
+msgid "Ocean"
+msgstr ""
+
+#: styles/paper.json
+msgctxt "Style variation name"
+msgid "Paper"
 msgstr ""

@@ -1,6 +1,6 @@
 # JOOservices theme
 
-A dark-first technical blog block theme built on `jooservices/wp-theme-core`: left rail, featured slider, post list, a read-only terminal dock on the right, a terminal-style 404, EN/VI, SEO, lazy loading and performance budgets.
+A dark-first technical blog block theme built on `jooservices/wp-theme-core`: left rail, featured slider, post list, a read-only terminal dock on the right, a terminal-style 404, five contrast-tested colour schemes, EN/VI, SEO, lazy loading and performance budgets.
 
 ## Requirements
 WordPress 6.6 or newer, PHP 8.1 or newer. Release QA runs the minimum supported WordPress version (6.6) and the latest release before packaging. JOOservices Resume (`plugins/jooservices-resume`) provides the Company type and the profile, topic and featured-post fields; without it the theme still works and blocks that need its data hide themselves.
@@ -19,10 +19,10 @@ See the [product compatibility matrix](docs/compatibility-matrix.md) for tested 
 7. Settings, JOOservices: SEO, lazy loading, performance and terminal options. The owner can switch lazy loading off globally or per type.
 
 ## Configuration
-`joo-theme.json` is the manifest (modules, features, fonts, image sizes, SEO, lazy and terminal defaults). Settings saved in the admin override it. `features.hide_featured_in_list` hides the slider posts from the first page of the list.
+`joo-theme.json` is the manifest (modules, features, colour schemes, fonts, image sizes, SEO, lazy and terminal defaults). Settings saved in the admin override it. `features.hide_featured_in_list` hides the slider posts from the first page of the list. Buyer controls and their single edit location are listed in [Customize the design](../../docs/buyer/customize.md).
 
 ## Design
-`design/` holds the approved reference, a checklist, the tokens and the list of deviations. Colours come from `theme.json`; `styles/light.json` is the light scheme and `assets/src/css/components/tokens.css` repeats it for the runtime switch (a test keeps them identical). Fonts are self-hosted subsets (`assets/fonts/README.md`).
+`design/` holds the approved reference, a checklist, the tokens and the list of deviations. Colours come from `theme.json` and the five files under `styles/`; `assets/src/css/components/tokens.css` provides the same palettes for the runtime switch (tests keep them identical and check contrast). Fonts are self-hosted subsets (`assets/fonts/README.md`).
 
 ## Quality gates
 | Gate | Command |

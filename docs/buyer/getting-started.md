@@ -10,7 +10,7 @@
 
 1. In WordPress, open **Appearance → Themes → Add New Theme → Upload Theme** and upload the `jooservices-<version>.zip` file. Select **Install Now**, then **Activate**.
 2. Open **Plugins → Add New Plugin → Upload Plugin**. Upload the `jooservices-resume-<version>.zip` file, select **Install Now**, then **Activate Plugin**.
-3. Visit the site once. The theme supplies dark and light styles; use the theme toggle in the header to choose a scheme.
+3. Visit the site once. The theme includes five colour schemes; use the header control to cycle through them.
 4. Open **Appearance → Editor → Navigation**. Create the menu links you need and assign the menu to the theme's primary navigation area. Save the changes.
 5. Open **Users → Profile** and add a display name, title, short biography, avatar, and social links. See [Profile and company history](resume-and-company.md).
 6. Add a post with a category and featured image. Publish it, then open the homepage and the post to confirm the layout.

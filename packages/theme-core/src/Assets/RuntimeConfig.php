@@ -58,7 +58,7 @@ final class RuntimeConfig {
 	 */
 	public function data(): array {
 		$features = array(
-			'terminal'         => (bool) $this->settings->get( 'features.terminal', true ) && (bool) $this->settings->get( 'terminal.enabled', true ),
+			'terminal'         => (bool) $this->settings->get( 'terminal.enabled', true ),
 			'slider'           => (bool) $this->settings->get( 'features.slider', true ),
 			'theme_toggle'     => (bool) $this->settings->get( 'features.theme_toggle', true ),
 			'reading_progress' => (bool) $this->settings->get( 'features.reading_progress', true ),

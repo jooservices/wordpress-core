@@ -37,7 +37,7 @@ final class TerminalDock extends DynamicBlock {
 		unset( $attrs, $block );
 		/** @var Settings $settings */
 		$settings = $this->container->get( Settings::class );
-		$enabled  = (bool) $settings->get( 'terminal.enabled', true ) && (bool) $settings->get( 'features.terminal', true );
+		$enabled  = (bool) $settings->get( 'terminal.enabled', true );
 		if ( $enabled && is_404() && (bool) $settings->get( 'terminal.hide_on_404', true ) ) {
 			$enabled = false;
 		}

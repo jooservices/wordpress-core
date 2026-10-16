@@ -26,6 +26,19 @@ test.describe('shell', () => {
     await expect(page.locator('nav[aria-label]').first()).toBeAttached();
   });
 
+  test('the header falls back to the editable text title when no image logo is set', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('header .joo-logo')).toBeVisible();
+    await expect(page.locator('header .joo-logo-image img')).toHaveCount(0);
+    await page.locator('header.joo-header').evaluate((node) => {
+      node.insertAdjacentHTML(
+        'afterbegin',
+        '<div class="wp-block-site-logo joo-logo-image"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt=""></div>'
+      );
+    });
+    await expect(page.locator('header .joo-logo')).toBeHidden();
+  });
+
   test('the layout never scrolls horizontally from 320 to 3840 px', async ({ page }) => {
     test.slow(); // 60 page loads: needs more than the default budget on a busy machine
     for (const width of WIDTHS) {
@@ -71,12 +84,36 @@ test.describe('shell', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     expect(bg).toBe('rgb(10, 14, 19)');
-    await page.getByRole('button', { name: /toggle dark mode/i }).click();
+    await page.getByRole('button', { name: /change colour theme/i }).click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(238, 242, 246)');
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     await dark.close();
+  });
+
+  test('the colour theme control cycles all five variations at phone, tablet and desktop widths', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('joo-theme', 'dark'));
+    const schemes = [
+      ['light', 'rgb(238, 242, 246)'],
+      ['ocean', 'rgb(7, 24, 36)'],
+      ['forest', 'rgb(12, 23, 18)'],
+      ['paper', 'rgb(247, 241, 231)'],
+      ['dark', 'rgb(10, 14, 19)'],
+    ];
+    for (const width of [390, 820, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/');
+      for (const [scheme, background] of schemes) {
+        await page.getByRole('button', { name: /change colour theme/i }).click();
+        await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
+        expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe(background);
+        const lightPalette = scheme === 'light' || scheme === 'paper';
+        await expect(page.locator(lightPalette ? '.joo-theme-toggle__sun' : '.joo-theme-toggle__moon')).toBeVisible();
+        await expect(page.locator(lightPalette ? '.joo-theme-toggle__moon' : '.joo-theme-toggle__sun')).toBeHidden();
+        await noHorizontalScroll(page);
+      }
+    }
   });
 
   test('a stored preference is applied before the first paint', async ({ page }) => {
