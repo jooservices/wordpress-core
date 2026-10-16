@@ -8,7 +8,9 @@ WordPress 6.6 or newer, PHP 8.1 or newer. Release QA runs the minimum supported 
 ## Install
 1. Build the package: `make package THEME=jooservices` (writes `artifacts/package/jooservices-<version>.zip`).
 2. Upload the zip under Appearance, Themes, Add New, or `wp theme install jooservices-<version>.zip --activate`.
-3. Install and activate JOOservices Resume (`plugins/jooservices-resume`).
+3. To add company and profile content, extract `jooservices/plugins/jooservices-resume.zip`
+   from the theme download, then upload and activate it under Plugins, Add New,
+   Upload Plugin. The source lives in `plugins/jooservices-resume/` in this repo.
 4. Appearance, Menus: assign a menu to **Primary menu**. Appearance, Editor: the header uses the Navigation block.
 5. Users, your profile: set Title, Short bio, socials and avatar (they feed the profile card and the author box).
 6. Posts: tick **Featured** (and an order) on up to five posts for the slider.

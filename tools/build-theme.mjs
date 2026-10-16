@@ -2,10 +2,11 @@
 // Usage: node tools/build-theme.mjs --theme jooservices
 import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, statSync } from 'node:fs';
-import { join, relative, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fromRoot } from './lib/paths.mjs';
 import { normalizeTimestamps, sortedRelativeFiles } from './lib/reproducible.mjs';
 import { classify, readPatterns, walk } from './runtime-bundle.mjs';
+import { build as buildPlugin } from './build-plugin.mjs';
 
 /** Theme paths that never ship. */
 export const EXCLUDED = [
@@ -32,7 +33,19 @@ export function styleHeader(css) {
   return Object.fromEntries([...css.matchAll(/^([A-Za-z ]+):\s*(.+)$/gm)].map((m) => [m[1].trim(), m[2].trim()]));
 }
 
-export function buildTheme(slug = 'jooservices', { outDir = fromRoot('artifacts/package') } = {}) {
+/** Copy a built companion-plugin zip into the installable theme package. */
+export function addBundledPlugin(stage, pluginZip, slug) {
+  if (!existsSync(pluginZip)) throw new Error(`bundled plugin archive is missing: ${pluginZip}`);
+  const destination = join(stage, 'plugins', `${slug}.zip`);
+  mkdirSync(dirname(destination), { recursive: true });
+  cpSync(pluginZip, destination);
+  return destination;
+}
+
+export function buildTheme(
+  slug = 'jooservices',
+  { outDir = fromRoot('artifacts/package'), bundledPluginSlug = null } = {}
+) {
   const themeDir = fromRoot('themes', slug);
   const coreDir = fromRoot('packages/theme-core');
   const header = styleHeader(readFileSync(join(themeDir, 'style.css'), 'utf8'));
@@ -61,6 +74,10 @@ export function buildTheme(slug = 'jooservices', { outDir = fromRoot('artifacts/
   for (const file of allowed) {
     mkdirSync(join(stage, 'core', file, '..'), { recursive: true });
     cpSync(join(coreDir, file), join(stage, 'core', file));
+  }
+  if (bundledPluginSlug) {
+    const plugin = buildPlugin(bundledPluginSlug);
+    addBundledPlugin(stage, plugin.zipPath, bundledPluginSlug);
   }
 
   // Checks of the staged tree.
@@ -113,8 +130,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const slug = args.includes('--theme') ? args[args.indexOf('--theme') + 1] : 'jooservices';
   const outDir = args.includes('--out') ? args[args.indexOf('--out') + 1] : fromRoot('artifacts/package');
+  const pluginArg = args.indexOf('--include-plugin');
+  const bundledPluginSlug = pluginArg >= 0 ? args[pluginArg + 1] : null;
+  if (pluginArg >= 0 && !bundledPluginSlug) throw new Error('--include-plugin requires a plugin slug');
   try {
-    const result = buildTheme(slug, { outDir });
+    const result = buildTheme(slug, { outDir, bundledPluginSlug });
     console.log(
       `built ${relative(fromRoot(), result.zipPath)}: ${result.files} files, ${(result.size / 1024).toFixed(0)} KB (core ${walk(join(result.stage, 'core')).length} files)`
     );

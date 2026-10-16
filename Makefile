@@ -9,7 +9,7 @@ WP_PORT = $(shell bash ./docker/scripts/site-url.sh port "$(WP_SITE_URL)")
 E2E_BASE_URL = $(shell bash ./docker/scripts/site-url.sh internal "$(WP_SITE_URL)")
 export JOOS_TICKET WP_SITE_URL WP_PORT E2E_BASE_URL
 
-.PHONY: critical screenshots plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks release
+.PHONY: test-marketplace critical screenshots plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks release
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -99,6 +99,9 @@ test-integration: ## wp-phpunit in the serialized shared WordPress container (WP
 test-e2e: ## Playwright E2E in the shared runner (THEME=..., ARGS="specs/shared")
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh e2e $(THEME) $(ARGS)
+test-marketplace: ## WordPress Theme Check and Plugin Check in the serialized shared test site
+	$(call require_theme)
+	@bash ./docker/scripts/wp-task.sh marketplace $(THEME)
 screenshots: ## Capture showcase screenshots in the serialized shared WordPress stack
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh screenshots $(THEME) $(ARGS)
@@ -133,6 +136,9 @@ plugins-on: ## Activate the mirror plugins again (demo-plugins + MCP plugin)
 demo: ## Build, start Docker, install WordPress + theme, seed, health check (THEME=...)
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh demo $(THEME)
+capture-marketplace-preview: ## Capture the sanitized preview, then remove this ticket's test site/database (THEME=...)
+	$(call require_theme)
+	@CAPTURE_MARKETPLACE_PREVIEW=1 CLEANUP_MARKETPLACE_PREVIEW=1 bash ./docker/scripts/wp-task.sh demo $(THEME)
 health: ## Verify the running demo (THEME=...)
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh health $(THEME)
@@ -145,7 +151,7 @@ test-matrix: ## Plugin compatibility matrix (THEME=...)
 package: ## Build the installable theme zip (THEME=...)
 	$(call require_theme)
 	@$(NODE) tools/theme-check.mjs --theme $(THEME)
-	@$(NODE) tools/build-theme.mjs --theme $(THEME)
+	@$(NODE) tools/build-theme.mjs --theme $(THEME) $(if $(filter jooservices,$(THEME)),--include-plugin jooservices-resume)
 release: ## Build ThemeForest artifacts (THEME=..., WP=..., TAG=1 for local tags)
 	$(call require_theme)
 	@node tools/release-runner.mjs --theme $(THEME) $(if $(WP),--wp $(WP)) $(if $(TAG),--tag)
