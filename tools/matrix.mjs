@@ -8,9 +8,15 @@ import { browserResult, readRuntime, prepareChildTheme, removeChildTheme, runMat
 
 export * from './matrix-core.mjs';
 
-const compose = (...args) => spawnSync('./docker/scripts/compose.sh', args, { encoding: 'utf8', input: '' });
-const wp = (...args) => compose('exec', '-T', '-u', 'www-data', 'wordpress', 'wp', ...args);
-const sh = (script) => compose('exec', '-T', '-u', 'www-data', 'wordpress', 'bash', '-c', script);
+const webName = process.env.WP_WEB_NAME ?? 'workspaces-wp-web';
+// The shared wp-web container (one at a time; the caller holds the WordPress lock).
+const webx = (...args) =>
+  spawnSync('docker', ['exec', '-i', '-u', 'www-data', '-w', '/var/www/html', webName, ...args], {
+    encoding: 'utf8',
+    input: '',
+  });
+const wp = (...args) => webx('wp', ...args);
+const sh = (script) => webx('bash', '-c', script);
 
 export function browserSmoke(
   plugin,
@@ -68,8 +74,19 @@ const defaultIO = {
   readValues: () =>
     JSON.parse(
       execFileSync(
-        './docker/scripts/compose.sh',
-        ['exec', '-T', '-u', 'www-data', 'wordpress', 'wp', 'eval-file', '/scripts/health-values.php'],
+        'docker',
+        [
+          'exec',
+          '-i',
+          '-u',
+          'www-data',
+          '-w',
+          '/var/www/html',
+          webName,
+          'wp',
+          'eval-file',
+          '/scripts/health-values.php',
+        ],
         { encoding: 'utf8', input: '' }
       )
     ),

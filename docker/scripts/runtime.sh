@@ -1,36 +1,37 @@
 #!/usr/bin/env bash
+# Runs a tool in the shared Workspaces CLI runtimes (project workspaces-cli-shared) with this checkout mounted at
+# /workspace. Nothing stays running: the container is removed afterwards.
+#   php|composer|wp   PHP 8.5 image (WP_PHP_CLI=8.3 selects the 8.3 image)
+#   php-node          Node 24 in the PHP image (tools that need PHP and Node in one process)
+#   node|npm|npx      the same PHP image (Node 24, npm, npx are in it)
+#   playwright        Playwright on the Dev VM (see e2e-vm.sh), not in Docker
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 ROOT="$(cd "$SCRIPT_DIR/../.." && pwd -P)"
 tool="${1:-}"
-[[ -n "$tool" ]] || { echo "Usage: runtime.sh php|composer|node|php-node|npm|npx|playwright <command> [args ...]" >&2; exit 2; }
+[[ -n "$tool" ]] || { echo "Usage: runtime.sh php|composer|wp|php-node|node|npm|npx|playwright <command> [args ...]" >&2; exit 2; }
 shift
 
+php_service="php-${WP_PHP_CLI:-8.5}-app"
 case "$tool" in
-  php|composer)
-    service=php-app
-    entrypoint=""
+  php | composer | wp)
+    service="$php_service"
     command=("$tool" "$@")
     ;;
-  node)
-    service=node-runtime
-    entrypoint=""
-    command=("$@")
-    ;;
   php-node)
-    service=php-app
-    entrypoint=node
-    command=("$@")
+    service="$php_service"
+    command=(node "$@")
     ;;
-  npm|npx)
-    service=node-runtime
-    entrypoint="$tool"
-    command=("$@")
+  node)
+    service="$php_service"
+    command=(node "$@")
+    ;;
+  npm | npx)
+    service="$php_service"
+    command=("$tool" "$@")
     ;;
   playwright)
-    service=playwright-runner
-    entrypoint=""
-    command=("$@")
+    exec bash "$SCRIPT_DIR/e2e-vm.sh" "$@"
     ;;
   *)
     echo "Unsupported shared runtime: $tool" >&2
@@ -47,10 +48,15 @@ done
   exit 2
 }
 
-compose=(docker compose --project-directory "$workspaces_root" --env-file "$workspaces_root/.env" -f "$workspaces_root/dockers/compose.yaml" -p workspaces-shared --profile runtimes run --rm --no-deps --volume "$ROOT:/workspace" --workdir /workspace --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --env TMPDIR=/tmp)
+version="${service#php-}"; version="${version%-app}"
+if [[ "$service" == php-* ]] && ! docker image inspect "workspaces/php-app:$version" >/dev/null 2>&1; then
+  "$workspaces_root/scripts/docker/env-run" --cli --profile cli build "$service" >&2
+fi
+
+compose=("$workspaces_root/scripts/docker/env-run" --cli --profile cli run --rm --no-deps --volume "$ROOT:/workspace" --workdir /workspace --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --env TMPDIR=/tmp --env NPM_CONFIG_UPDATE_NOTIFIER=false)
 for name in E2E_BASE_URL E2E_THEME E2E_ENGINES CI WP_VERSION WP_PHP_VERSION MATRIX_VARIANT MATRIX_PLUGIN MATRIX_PATHS MATRIX_CLS PLAYWRIGHT_JSON_OUTPUT_NAME; do
   value="${!name:-}"
   if [[ -n "$value" ]]; then compose+=(--env "$name"); fi
 done
-if [[ -n "$entrypoint" ]]; then compose+=(--entrypoint "$entrypoint"); fi
+export COMPOSE_PROGRESS=quiet
 exec "${compose[@]}" "$service" "${command[@]}"

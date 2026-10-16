@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = process.env.E2E_BASE_URL ?? 'http://wordpress';
+const baseURL = process.env.E2E_BASE_URL ?? 'http://127.0.0.1:8082';
 const theme = process.env.E2E_THEME ?? '';
 const reports = '../../artifacts/reports/e2e';
 

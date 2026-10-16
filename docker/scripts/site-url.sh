@@ -23,7 +23,7 @@ if mode == "port":
     print(parts.port or (443 if parts.scheme == "https" else 80))
 elif mode == "internal":
     if parts.hostname in {"127.0.0.1", "localhost"}:
-        print(urlunsplit((parts.scheme, "wordpress", parts.path.rstrip("/"), parts.query, parts.fragment)))
+        print(urlunsplit((parts.scheme, "workspaces-wp-web", parts.path.rstrip("/"), parts.query, parts.fragment)))
     else:
         print(raw.rstrip("/"))
 elif mode == "url":
