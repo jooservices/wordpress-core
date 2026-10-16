@@ -27,6 +27,7 @@ test.describe('shell', () => {
   });
 
   test('the layout never scrolls horizontally from 320 to 3840 px', async ({ page }) => {
+    test.slow(); // 60 page loads: needs more than the default budget on a busy machine
     for (const width of WIDTHS) {
       await page.setViewportSize({ width, height: 900 });
       for (const view of VIEWS) {

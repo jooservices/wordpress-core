@@ -136,6 +136,11 @@ case "$action" in
     base="${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")}"
     E2E_BASE_URL="$base" E2E_THEME="$theme" bash "$ROOT/docker/scripts/runtime.sh" playwright npx --no-install playwright test -c tests/e2e/playwright.config.ts "$@"
     ;;
+  critical)
+    ensure_stack
+    base="${E2E_BASE_URL:-$(bash "$ROOT/docker/scripts/site-url.sh" internal "${WP_SITE_URL:-$(get_env WP_SITE_URL)}")}"
+    bash "$ROOT/docker/scripts/runtime.sh" playwright node tools/critical.mjs --theme "$theme" --base "$base" "$@"
+    ;;
   health)
     ensure_stack
     health_check

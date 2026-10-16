@@ -9,7 +9,7 @@ WP_PORT = $(shell bash ./docker/scripts/site-url.sh port "$(WP_SITE_URL)")
 E2E_BASE_URL = $(shell bash ./docker/scripts/site-url.sh internal "$(WP_SITE_URL)")
 export JOOS_TICKET WP_SITE_URL WP_PORT E2E_BASE_URL
 
-.PHONY: plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
+.PHONY: critical plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -99,6 +99,9 @@ test-integration: ## wp-phpunit in the serialized shared WordPress container (WP
 test-e2e: ## Playwright E2E in the shared runner (THEME=..., ARGS="specs/shared")
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh e2e $(THEME) $(ARGS)
+critical: ## Regenerate the critical CSS from the running demo (THEME=...)
+	$(call require_theme)
+	@bash ./docker/scripts/wp-task.sh critical $(THEME) $(ARGS)
 new-theme: ## Scaffold a theme from the starter: make new-theme NAME=acme [TITLE="Acme"]
 	@$(NODE) tools/new-theme.mjs --name=$(NAME) $(if $(TITLE),--title="$(TITLE)") $(if $(FROM),--from=$(FROM))
 seed: ## Generate and import the deterministic demo content (idempotent; THEME=...)
