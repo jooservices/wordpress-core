@@ -75,8 +75,16 @@ function writeZip(directory, output, { includeRoot = true } = {}) {
 export function sanitizeDemoXml(sourceXml, companies) {
   let xml = sourceXml;
   companies.forEach((company, index) => {
-    xml = xml.split(company.name).join(`Example Company ${index + 1}`);
     if (company.url) xml = xml.split(company.url).join('https://example.invalid');
+    const slug = company.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+    xml = xml.replace(/<wp:post_name><!\[CDATA\[([^\]]*)\]\]><\/wp:post_name>/g, (entry, value) =>
+      value.toLowerCase() === slug ? `<wp:post_name><![CDATA[example-company-${index + 1}]]></wp:post_name>` : entry
+    );
+    const escapedName = company.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    xml = xml.replace(new RegExp(escapedName, 'gi'), `Example Company ${index + 1}`);
   });
   xml = xml
     .replaceAll(
@@ -99,6 +107,7 @@ export function sanitizeDemoXml(sourceXml, companies) {
       '<wp:author_last_name><![CDATA[VU]]></wp:author_last_name>',
       '<wp:author_last_name><![CDATA[Example]]></wp:author_last_name>'
     )
+    .replace(/jooservices\.com/gi, 'example.test')
     .replaceAll('https://github.com/jooservices', 'https://example.invalid')
     .replaceAll('https://www.linkedin.com/in/jooservices', 'https://example.invalid');
   return xml;

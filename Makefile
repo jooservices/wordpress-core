@@ -90,7 +90,7 @@ coverage: ## Merged unit + integration coverage (pcov in Docker) with the thresh
 	@rm -rf artifacts/reports/cov artifacts/reports/unit && mkdir -p artifacts/reports/cov artifacts/reports/unit
 	@$(PHP) -d pcov.enabled=1 -d pcov.directory=/workspace vendor/bin/phpunit -c phpunit.xml.dist --do-not-cache-result --coverage-php artifacts/reports/cov/unit.cov
 	@COVERAGE=1 TEST_THEME="$(TEST_THEME)" bash ./docker/scripts/wp-task.sh integration $(THEME) >/dev/null
-	@$(PHP) vendor/bin/phpcov merge --clover artifacts/reports/unit/clover.xml --html artifacts/reports/unit/html --text artifacts/reports/unit/summary.txt artifacts/reports/cov >/dev/null
+	@$(PHP) -d memory_limit=1G vendor/bin/phpcov merge --clover artifacts/reports/unit/clover.xml --html artifacts/reports/unit/html --text artifacts/reports/unit/summary.txt artifacts/reports/cov >/dev/null
 	@./tools/coverage-gate.sh artifacts/reports/unit/clover.xml
 	@$(PHP_NODE) node_modules/vitest/vitest.mjs run --coverage $(VITEST_ARGS)
 test-integration: ## wp-phpunit in the serialized shared WordPress container (WP_VERSION=6.6 for minimum version)
