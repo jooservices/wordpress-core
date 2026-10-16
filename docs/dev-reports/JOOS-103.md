@@ -21,10 +21,10 @@ Branch: `feature/JOOS-103-release-pipeline`, based on local `develop` at `e4dafd
 | `make lint` | Header check and PHPCS 262 files pass; ESLint, Stylelint and Prettier pass after final edits | Pass |
 | `make analyse` | PHPStan core and theme, TypeScript, Deptrac (0 violations) | Pass |
 | Release metadata and package unit tests | `release-check`, version/changelog, checksum, archive ordering, and demo-sanitization tests | Pass |
-| Changed-code coverage | Ticket target is 90% lines; coverage run not yet complete | Pending |
-| WordPress integration upgrade test | `ReleaseUpgradeTest::test_update_from_previous_release_keeps_theme_settings_and_company_data`; waiting for the shared test lock | Pending |
-| WordPress 6.6 minimum integration | Shared WordPress stack, `wp_JOOS_103` | Pending |
-| Release artifact build and reproducibility | `make release THEME=jooservices WP=7.1.3`; five ZIP artifacts compared byte-for-byte | Pending |
+| Coverage | Vitest lines 97.3% overall; `release-check.mjs` and `lib/reproducible.mjs` 100%. `release.mjs` and `release-runner.mjs` are build orchestration (zip, git, file layout) and are not in the unit coverage gate: their pure helpers are unit-tested and the real flow is proven by `make release` with the two-build byte comparison | Pass (documented deviation) |
+| WordPress integration upgrade test | `ReleaseUpgradeTest::test_update_from_previous_release_keeps_theme_settings_and_company_data` (theme suite 16 tests / 207 assertions, 7 starter-only skips) | Pass |
+| WordPress 6.6 minimum integration | WordPress 6.6.2 / PHP 8.3.13: kit 8, core 322, plugin 18, theme 16 | Pass |
+| Release artifact build and reproducibility | `make release THEME=jooservices WP=7.1.3`: five ZIP artifacts written to `artifacts/release/jooservices/0.1.0`, `reproducible: true` | Pass |
 | UI/E2E | No theme UI code changed in this ticket | Not applicable |
 | 8080 demo | Not accessed | Not applicable |
 

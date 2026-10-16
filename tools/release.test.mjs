@@ -213,6 +213,29 @@ describe('release metadata validation', () => {
     );
   });
 
+  it('reports a mismatching changelog and a Tested up to below Requires at least', () => {
+    const found = releaseProblems({
+      ...valid,
+      theme: {
+        ...valid.theme,
+        version: '1.0.0',
+        changelogVersion: '0.9.0',
+        docsChangelogVersion: '0.9.0',
+        testedUpTo: '6.0',
+        requiresAtLeast: '6.6',
+      },
+      plugin: { ...valid.plugin, version: 'x' },
+    });
+    expect(found).toEqual(
+      expect.arrayContaining([
+        'theme changelog 0.9.0 does not match 1.0.0',
+        'release docs theme changelog 0.9.0 does not match 1.0.0',
+        'plugin Version "x" is not strict semver',
+        expect.stringContaining('Tested up to 6.0 is below Requires at least 6.6'),
+      ])
+    );
+  });
+
   it('blocks missing or invalid preview files and detects the current release metadata', () => {
     expect(releaseProblems({ ...valid, preview: {} })).toContain(
       'ThemeForest primary preview is missing or is not a PNG'

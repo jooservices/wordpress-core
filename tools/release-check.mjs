@@ -147,6 +147,7 @@ export function checkRelease(root, themeSlug = 'jooservices', options = {}) {
   return problems;
 }
 
+/* v8 ignore start -- command line entry point, exercised by `make release` */
 if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const slug = args.includes('--theme') ? args[args.indexOf('--theme') + 1] : 'jooservices';
@@ -159,3 +160,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const { theme, plugin } = readReleaseMetadata(fromRoot(), slug);
   console.log(`ok ${slug} ${theme.version} + ${plugin.name} ${plugin.version}; preview 590x300; GPL compatible`);
 }
+/* v8 ignore stop */
