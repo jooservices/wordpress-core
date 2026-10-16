@@ -4,7 +4,7 @@ import { chromium } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fromRoot } from './lib/paths.mjs';
-import { extractCriticalRules, mergeAndMinify } from './lib/critical.mjs';
+import { extractCriticalRules, localizeSiteUrls, mergeAndMinify } from './lib/critical.mjs';
 
 const args = Object.fromEntries(
   process.argv
@@ -60,7 +60,7 @@ for (const [context, url] of Object.entries(targets)) {
     await page.close();
   }
   const { css, size, gzip } = mergeAndMinify(lists);
-  writeFileSync(join(outDir, `${context}.css`), css);
+  writeFileSync(join(outDir, `${context}.css`), localizeSiteUrls(css, base));
   const ok = gzip <= maxGzip;
   failed ||= !ok;
   console.log(

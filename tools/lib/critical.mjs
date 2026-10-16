@@ -4,6 +4,17 @@ import { transform } from 'lightningcss';
 import { gzipSync } from 'node:zlib';
 
 /**
+ * Make same-site asset URLs portable across local and production hosts.
+ * @param {string} css Critical CSS.
+ * @param {string} siteUrl URL used to capture the CSS.
+ * @returns {string} CSS with the capture origin removed from same-site URLs.
+ */
+export function localizeSiteUrls(css, siteUrl) {
+  const { origin } = new URL(siteUrl);
+  return css.replaceAll(`${origin}/`, '/');
+}
+
+/**
  * Collect top-level critical rules from the current page.
  * @param {import('@playwright/test').Page} page Page that finished loading.
  * @returns {Promise<string[]>} Rule texts in source order.
