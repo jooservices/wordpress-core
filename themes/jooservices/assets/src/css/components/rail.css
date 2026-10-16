@@ -208,9 +208,10 @@
 }
 
 .joo-tree__children > ul {
-  margin: 0 0 4px 9px;
-  padding-left: 14px;
-  border-left: 1px solid var(--joo-line);
+  margin: 0 0 4px;
+  margin-inline-start: 9px;
+  padding-inline-start: 14px;
+  border-inline-start: 1px solid var(--joo-line);
 }
 
 .joo-tree__item {

@@ -59,7 +59,7 @@
 .editor-styles-wrapper th,
 .editor-styles-wrapper td {
   padding: 6px 10px;
-  text-align: left;
+  text-align: start;
   border: 1px solid var(--wp--preset--color--line);
 }
 

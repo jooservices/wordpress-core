@@ -5,6 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fromRoot } from './lib/paths.mjs';
+import { normalizeTimestamps, sortedRelativeFiles } from './lib/reproducible.mjs';
 import { walk } from './runtime-bundle.mjs';
 
 const config = JSON.parse(readFileSync(fromRoot('tools/plugins.config.json'), 'utf8')).plugins;
@@ -89,7 +90,10 @@ export function build(slug, { zip = true } = {}) {
     mkdirSync(fromRoot('artifacts/package'), { recursive: true });
     zipPath = fromRoot('artifacts/package', `${slug}-${version}.zip`);
     rmSync(zipPath, { force: true });
-    execFileSync('zip', ['-qr', '-X', zipPath, slug], { cwd: fromRoot('artifacts/plugins') });
+    normalizeTimestamps(stage);
+    execFileSync('zip', ['-q', '-X', zipPath, ...sortedRelativeFiles(stage).map((file) => `${slug}/${file}`)], {
+      cwd: fromRoot('artifacts/plugins'),
+    });
   }
   return { slug, version, stage, zipPath, files: walk(stage).length, size: zipPath ? statSync(zipPath).size : 0 };
 }

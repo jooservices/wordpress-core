@@ -2,8 +2,9 @@
 // Usage: node tools/build-theme.mjs --theme jooservices
 import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, statSync } from 'node:fs';
-import { dirname, join, relative } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fromRoot } from './lib/paths.mjs';
+import { normalizeTimestamps, sortedRelativeFiles } from './lib/reproducible.mjs';
 import { classify, readPatterns, walk } from './runtime-bundle.mjs';
 import { build as buildPlugin } from './build-plugin.mjs';
 
@@ -14,6 +15,7 @@ export const EXCLUDED = [
   /^tests(\/|$)/,
   /^design(\/|$)/,
   /^demo(\/|$)/,
+  /^release-assets(\/|$)/,
   /^assets\/src(\/|$)/,
   /^package\.json$/,
   /^budgets\.json$/,
@@ -40,18 +42,17 @@ export function addBundledPlugin(stage, pluginZip, slug) {
   return destination;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  const args = process.argv.slice(2);
-  const slug = args.includes('--theme') ? args[args.indexOf('--theme') + 1] : 'jooservices';
-  const pluginArg = args.indexOf('--include-plugin');
-  const bundledPluginSlug = pluginArg >= 0 ? args[pluginArg + 1] : null;
-  if (pluginArg >= 0 && !bundledPluginSlug) throw new Error('--include-plugin requires a plugin slug');
+export function buildTheme(
+  slug = 'jooservices',
+  { outDir = fromRoot('artifacts/package'), bundledPluginSlug = null } = {}
+) {
   const themeDir = fromRoot('themes', slug);
   const coreDir = fromRoot('packages/theme-core');
   const header = styleHeader(readFileSync(join(themeDir, 'style.css'), 'utf8'));
   const version = header.Version;
   if (!version) throw new Error('style.css has no Version header');
-  const out = fromRoot('artifacts/package');
+  const out = resolve(outDir);
+  mkdirSync(out, { recursive: true });
   const stage = join(out, slug);
   rmSync(stage, { recursive: true, force: true });
   mkdirSync(stage, { recursive: true });
@@ -105,14 +106,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const coreFiles = walk(join(stage, 'core'));
   const rejected = classify(coreFiles, readPatterns()).rejected;
   if (rejected.length) problems.push(`unexpected core files: ${rejected.slice(0, 5).join(', ')}`);
-  if (problems.length) {
-    console.error(`package FAILED:\n  ${problems.join('\n  ')}`);
-    process.exit(1);
-  }
+  if (problems.length) throw new Error(`package FAILED:\n  ${problems.join('\n  ')}`);
 
   const zip = join(out, `${slug}-${version}.zip`);
   rmSync(zip, { force: true });
-  execFileSync('zip', ['-qr', '-X', zip, slug], { cwd: out });
+  normalizeTimestamps(stage);
+  execFileSync('zip', ['-q', '-X', zip, ...sortedRelativeFiles(stage).map((file) => `${slug}/${file}`)], {
+    cwd: out,
+  });
   const files = walk(stage).length;
   const size = statSync(zip).size;
   console.log(
@@ -120,8 +121,25 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   );
   // The zip must open and list the theme folder at its root.
   const listing = execFileSync('unzip', ['-Z1', zip], { encoding: 'utf8' }).split('\n').filter(Boolean);
-  if (!listing.every((entry) => entry.startsWith(`${slug}/`))) {
-    console.error('zip entries are not all below the theme folder');
+  if (!listing.every((entry) => entry.startsWith(`${slug}/`)))
+    throw new Error('zip entries are not all below the theme folder');
+  return { slug, version, stage, zipPath: zip, files, size };
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const args = process.argv.slice(2);
+  const slug = args.includes('--theme') ? args[args.indexOf('--theme') + 1] : 'jooservices';
+  const outDir = args.includes('--out') ? args[args.indexOf('--out') + 1] : fromRoot('artifacts/package');
+  const pluginArg = args.indexOf('--include-plugin');
+  const bundledPluginSlug = pluginArg >= 0 ? args[pluginArg + 1] : null;
+  if (pluginArg >= 0 && !bundledPluginSlug) throw new Error('--include-plugin requires a plugin slug');
+  try {
+    const result = buildTheme(slug, { outDir, bundledPluginSlug });
+    console.log(
+      `built ${relative(fromRoot(), result.zipPath)}: ${result.files} files, ${(result.size / 1024).toFixed(0)} KB (core ${walk(join(result.stage, 'core')).length} files)`
+    );
+  } catch (error) {
+    console.error(`build-theme: ${error.message}`);
     process.exit(1);
   }
 }

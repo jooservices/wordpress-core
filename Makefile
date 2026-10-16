@@ -9,7 +9,7 @@ WP_PORT = $(shell bash ./docker/scripts/site-url.sh port "$(WP_SITE_URL)")
 E2E_BASE_URL = $(shell bash ./docker/scripts/site-url.sh internal "$(WP_SITE_URL)")
 export JOOS_TICKET WP_SITE_URL WP_PORT E2E_BASE_URL
 
-.PHONY: plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-marketplace demo capture-marketplace-preview health perf test-matrix package docs clean hooks
+.PHONY: test-marketplace critical screenshots plugins-off plugins-on mcp-env demo-mcp mcp-down plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e demo health perf test-matrix package docs clean hooks release
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -63,7 +63,7 @@ link-core: ## Link packages/theme-core into themes/$(THEME)/core
 	$(call require_theme)
 	@ln -sfn ../../packages/theme-core themes/$(THEME)/core
 	@echo "themes/$(THEME)/core -> ../../packages/theme-core"
-VITEST_ARGS ?= --configLoader native --no-cache --fsModuleCachePath /tmp/jooservices-wp-themes-vitest
+VITEST_ARGS ?= --configLoader native --no-cache --fsModuleCachePath /tmp/jooservices-wp-themes-vitest --maxWorkers=4
 lint: ## PHPCS, ESLint, Stylelint, Prettier, header check
 	@$(PHP) tools/check-headers.php
 	@$(PHP) vendor/bin/phpcs
@@ -90,7 +90,7 @@ coverage: ## Merged unit + integration coverage (pcov in Docker) with the thresh
 	@rm -rf artifacts/reports/cov artifacts/reports/unit && mkdir -p artifacts/reports/cov artifacts/reports/unit
 	@$(PHP) -d pcov.enabled=1 -d pcov.directory=/workspace vendor/bin/phpunit -c phpunit.xml.dist --do-not-cache-result --coverage-php artifacts/reports/cov/unit.cov
 	@COVERAGE=1 TEST_THEME="$(TEST_THEME)" bash ./docker/scripts/wp-task.sh integration $(THEME) >/dev/null
-	@$(PHP) vendor/bin/phpcov merge --clover artifacts/reports/unit/clover.xml --html artifacts/reports/unit/html --text artifacts/reports/unit/summary.txt artifacts/reports/cov >/dev/null
+	@$(PHP) -d memory_limit=1G vendor/bin/phpcov merge --clover artifacts/reports/unit/clover.xml --html artifacts/reports/unit/html --text artifacts/reports/unit/summary.txt artifacts/reports/cov >/dev/null
 	@./tools/coverage-gate.sh artifacts/reports/unit/clover.xml
 	@$(PHP_NODE) node_modules/vitest/vitest.mjs run --coverage $(VITEST_ARGS)
 test-integration: ## wp-phpunit in the serialized shared WordPress container (WP_VERSION=6.6 for minimum version)
@@ -102,6 +102,12 @@ test-e2e: ## Playwright E2E in the shared runner (THEME=..., ARGS="specs/shared"
 test-marketplace: ## WordPress Theme Check and Plugin Check in the serialized shared test site
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh marketplace $(THEME)
+screenshots: ## Capture showcase screenshots in the serialized shared WordPress stack
+	$(call require_theme)
+	@bash ./docker/scripts/wp-task.sh screenshots $(THEME) $(ARGS)
+critical: ## Regenerate the critical CSS from the running demo (THEME=...)
+	$(call require_theme)
+	@bash ./docker/scripts/wp-task.sh critical $(THEME) $(ARGS)
 new-theme: ## Scaffold a theme from the starter: make new-theme NAME=acme [TITLE="Acme"]
 	@$(NODE) tools/new-theme.mjs --name=$(NAME) $(if $(TITLE),--title="$(TITLE)") $(if $(FROM),--from=$(FROM))
 seed: ## Generate and import the deterministic demo content (idempotent; THEME=...)
@@ -146,10 +152,17 @@ package: ## Build the installable theme zip (THEME=...)
 	$(call require_theme)
 	@$(NODE) tools/theme-check.mjs --theme $(THEME)
 	@$(NODE) tools/build-theme.mjs --theme $(THEME) $(if $(filter jooservices,$(THEME)),--include-plugin jooservices-resume)
+release: ## Build ThemeForest artifacts (THEME=..., WP=..., TAG=1 for local tags)
+	$(call require_theme)
+	@node tools/release-runner.mjs --theme $(THEME) $(if $(WP),--wp $(WP)) $(if $(TAG),--tag)
 i18n: ## Make POT files (WP-CLI in Docker), build the Vietnamese .po/.mo and fail on untranslated strings
 	@bash ./docker/scripts/wp-task.sh i18n $(THEME)
-docs: ## Generate reference docs (compatibility matrix; more generators land with their stories)
+docs: ## Generate compatibility and API reference docs
 	@$(NODE) tools/docs-compat.mjs
+	@$(NODE) tools/docs-reference.mjs
+docs-check: ## Check generated API references and buyer documentation links
+	@$(NODE) tools/docs-reference.mjs --check
+	@$(NODE) tools/docs-check.mjs
 hooks: ## Install repository git hooks (repo-local config only)
 	@git config --local core.hooksPath tools/githooks
 	@echo "core.hooksPath = $$(git config --local core.hooksPath)"

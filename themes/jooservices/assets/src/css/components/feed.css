@@ -168,7 +168,7 @@
 
 .joo-slider__controls {
   position: absolute;
-  right: 14px;
+  inset-inline-end: 14px;
   bottom: 12px;
   display: flex;
   gap: 8px;
@@ -342,6 +342,14 @@
 .joo-card__excerpt .wp-block-post-excerpt__more-link {
   font: 500 13px/1.6 var(--joo-mono);
   color: var(--joo-accent);
+}
+
+.joo-card__excerpt .wp-block-post-excerpt__more-link::after {
+  content: ' →';
+}
+
+.joo-card__excerpt .wp-block-post-excerpt__more-link:dir(rtl)::after {
+  content: ' ←';
 }
 
 /* pager */

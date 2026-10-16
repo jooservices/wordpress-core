@@ -29,6 +29,8 @@ describe('build-theme', () => {
       'budgets.json',
       'assets/build/css/a.css.map',
       'design/reference-demo.html',
+      'release-assets/preview/01_jooservices.png',
+      'release-assets/README.md',
       'demo/content.xml',
       '.DS_Store',
     ];

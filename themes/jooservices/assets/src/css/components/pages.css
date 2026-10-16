@@ -28,21 +28,23 @@
 /* timeline (About) */
 .joo-timeline {
   margin: 8px 0 0;
-  padding: 0 0 0 18px;
+  padding: 0;
+  padding-inline-start: 18px;
   list-style: none;
-  border-left: 1px solid var(--joo-line);
+  border-inline-start: 1px solid var(--joo-line);
 }
 
 .joo-timeline > li {
   position: relative;
-  padding: 0 0 16px 6px;
+  padding: 0 0 16px;
+  padding-inline-start: 6px;
 }
 
 .joo-timeline > li::before {
   content: '';
   position: absolute;
   top: 7px;
-  left: -24px;
+  inset-inline-start: -24px;
   width: 11px;
   height: 11px;
   background: var(--joo-surface);
@@ -97,13 +99,15 @@
 
 .joo-main .joo-companies__list {
   margin: 8px 0 0;
-  padding: 0 0 0 18px;
-  border-left: 1px solid var(--joo-line);
+  padding: 0;
+  padding-inline-start: 18px;
+  border-inline-start: 1px solid var(--joo-line);
 }
 
 .joo-main .joo-companies__list .joo-company {
   position: relative;
-  padding: 0 0 16px 6px;
+  padding: 0 0 16px;
+  padding-inline-start: 6px;
   border-top: 0;
 }
 
@@ -115,7 +119,7 @@
   content: '';
   position: absolute;
   top: 7px;
-  left: -24px;
+  inset-inline-start: -24px;
   width: 11px;
   height: 11px;
   background: var(--joo-surface);

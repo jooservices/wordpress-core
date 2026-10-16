@@ -3,7 +3,7 @@
 A dark-first technical blog block theme built on `jooservices/wp-theme-core`: left rail, featured slider, post list, a read-only terminal dock on the right, a terminal-style 404, EN/VI, SEO, lazy loading and performance budgets.
 
 ## Requirements
-WordPress 6.6 or newer (tested on 6.6 and the latest release), PHP 8.1 or newer. JOOservices Resume (`plugins/jooservices-resume`) provides the Company type and the profile, topic and featured-post fields; without it the theme still works and blocks that need its data hide themselves.
+WordPress 6.6 or newer, PHP 8.1 or newer. Release QA runs the minimum supported WordPress version (6.6) and the latest release before packaging. JOOservices Resume (`plugins/jooservices-resume`) provides the Company type and the profile, topic and featured-post fields; without it the theme still works and blocks that need its data hide themselves.
 
 ## Install
 1. Build the package: `make package THEME=jooservices` (writes `artifacts/package/jooservices-<version>.zip`).
@@ -33,10 +33,9 @@ WordPress 6.6 or newer (tested on 6.6 and the latest release), PHP 8.1 or newer.
 | Plugin matrix | `make test-matrix THEME=jooservices` |
 
 ## Releasing
-1. Update `Version` in `style.css` and the entry in `CHANGELOG.md`; set `Tested up to` to the newest WordPress you ran the gates on.
-2. Run every gate above on the latest WordPress and on 6.6 (`JOOWT_PROJECT=joowt-wp66 WP_VERSION=6.6 ...`).
-3. `make package THEME=jooservices`, install the zip on a clean site, run `make health`.
-4. Tag the commit `jooservices-<version>`. Nothing is pushed by the tooling.
+`style.css` and the Resume plugin main-file header are the canonical SemVer values. Mirror them in the theme and plugin changelogs, `Plugin::VERSION`, and the plugin readme stable tag. See the [theme changelog](CHANGELOG.md). `node tools/release-check.mjs` validates the mirrors, WordPress/PHP requirements, GPL notices, and the ThemeForest preview image. See [the release policy](../../docs/release-policy.md).
+
+After all gates pass on the latest WordPress and 6.6, run `make release THEME=jooservices WP=7.1.3`, replacing `7.1.3` with the exact latest WordPress version tested. It builds the theme and JOOservices Resume zips, the ThemeForest main download, demo-content and preview zips, checksums, a dependency list, and an evidence report. The release tool performs two full builds and fails if the archive bytes differ. Use `make release THEME=jooservices WP=7.1.3 TAG=1` only when the release is approved; this creates local `theme-<version>` and `plugin-<version>` tags and never pushes.
 
 ## Rollback
-Re-install the previous zip (`wp theme install previous.zip --force`). Settings are stored in the `joo_jooservices_settings` option and are forward and backward compatible within a minor version; content is not touched by the theme.
+Re-install the previous theme and Resume plugin zips. Settings are stored in the `joo_jooservices_theme_settings` option; company records use the stable `joo_company` post type and `_joo_company_*` metadata. Code rollback does not require a database rollback. See the [release and recovery policy](../../docs/release-policy.md).
