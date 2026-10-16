@@ -126,5 +126,19 @@ for (const [key, def] of Object.entries(settings.settings)) {
     report(`setting ${key} manifest path ${def.manifest}`, false, 'not in manifest schema');
 }
 
+// 5. Resume company schema: the example is valid, every invalid fixture is rejected
+const companySchema = read(fromRoot('plugins/jooservices-resume/schema/company.schema.json'));
+const validateCompany = ajv.compile(companySchema);
+const companyDir = fromRoot('plugins/jooservices-resume/schema');
+const companyExample = read(join(companyDir, 'examples/company.json'));
+report(
+  'valid   plugins/jooservices-resume/schema/examples/company.json',
+  validateCompany(companyExample),
+  ajv.errorsText(validateCompany.errors)
+);
+for (const f of readdirSync(join(companyDir, 'invalid'))) {
+  report(`invalid company ${f} is rejected`, !validateCompany(read(join(companyDir, 'invalid', f))));
+}
+
 console.log(failures ? `\n${failures} failure(s)` : '\nall schema checks passed');
 process.exit(failures ? 1 : 0);

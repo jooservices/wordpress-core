@@ -1,0 +1,25 @@
+{
+  "id": 12,
+  "name": "Example Systems",
+  "role": "CTO",
+  "from": "2022-03",
+  "to": "",
+  "current": true,
+  "duration": "3 yrs 4 mos",
+  "pinned": true,
+  "url": "https://example.test",
+  "logo_id": 0,
+  "summary": "Built the platform.",
+  "description": "<p>Led <strong>engineering</strong>.</p>",
+  "location": { "city": "Hanoi", "country": "Vietnam" },
+  "employment": "founder",
+  "industry": "Software",
+  "remote": true,
+  "roles": [
+    { "title": "CTO", "from": "2023-01", "to": "", "summary": "Promoted" },
+    { "title": "Engineer", "from": "2022-03", "to": "2022-12", "summary": "" }
+  ],
+  "achievements": [{ "text": "Cut infrastructure cost", "metric": "40", "unit": "%", "url": "https://example.test/case" }],
+  "technologies": ["PHP", "Go"],
+  "custom": { "team_size": 12 }
+}

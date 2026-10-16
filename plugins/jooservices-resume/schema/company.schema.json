@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jooservices.com/schema/resume/company.schema.json",
+  "title": "JOOservices Resume company (public projection)",
+  "description": "What a visitor may receive for one company. Private fields (compensation, equity, private custom values) appear only when the owner switched them to public. Repeaters are stored as JSON meta with the schema version below.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "role", "from", "to", "current", "duration", "pinned", "location", "roles", "achievements", "technologies", "custom"],
+  "properties": {
+    "id": { "type": "integer", "minimum": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "role": { "type": "string", "maxLength": 80 },
+    "from": { "$ref": "#/$defs/monthOrEmpty" },
+    "to": { "$ref": "#/$defs/monthOrEmpty" },
+    "current": { "type": "boolean", "description": "True when the end month is empty." },
+    "duration": { "type": "string", "description": "Computed, for example 2 yrs 3 mos." },
+    "pinned": { "type": "boolean" },
+    "url": { "$ref": "#/$defs/httpsOrEmpty" },
+    "logo_id": { "type": "integer", "minimum": 0 },
+    "summary": { "type": "string", "maxLength": 200 },
+    "description": { "type": "string", "maxLength": 5000, "description": "Limited rich text: p, br, strong, em, ul, ol, li, a (https and mailto)." },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["city", "country"],
+      "properties": { "city": { "type": "string", "maxLength": 80 }, "country": { "type": "string", "maxLength": 80 } }
+    },
+    "employment": { "enum": ["", "full_time", "contract", "freelance", "founder"] },
+    "industry": { "type": "string", "maxLength": 80 },
+    "remote": { "type": "boolean" },
+    "roles": {
+      "type": "array",
+      "description": "Inside the company period, not overlapping, newest first.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "from", "to", "summary"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "from": { "$ref": "#/$defs/month" },
+          "to": { "$ref": "#/$defs/monthOrEmpty" },
+          "summary": { "type": "string", "maxLength": 400 }
+        }
+      }
+    },
+    "achievements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text", "metric", "unit", "url"],
+        "properties": {
+          "text": { "type": "string", "minLength": 1, "maxLength": 240 },
+          "metric": { "type": "string", "maxLength": 30 },
+          "unit": { "type": "string", "maxLength": 20 },
+          "url": { "$ref": "#/$defs/httpsOrEmpty" }
+        }
+      }
+    },
+    "technologies": { "type": "array", "maxItems": 40, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 40 } },
+    "custom": {
+      "type": "object",
+      "description": "Public owner-defined values by key (text, number, date, url or list).",
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]{1,29}$" },
+      "additionalProperties": {
+        "oneOf": [{ "type": "string" }, { "type": "number" }, { "type": "array", "items": { "type": "string" } }]
+      }
+    },
+    "compensation": { "type": "string", "maxLength": 120, "description": "Only when the owner made it public." },
+    "equity": { "type": "string", "maxLength": 120, "description": "Only when the owner made it public." }
+  },
+  "$defs": {
+    "month": { "type": "string", "pattern": "^\\d{4}-(0[1-9]|1[0-2])$" },
+    "monthOrEmpty": { "type": "string", "pattern": "^(\\d{4}-(0[1-9]|1[0-2]))?$" },
+    "httpsOrEmpty": { "type": "string", "pattern": "^(https://.+)?$" }
+  }
+}
