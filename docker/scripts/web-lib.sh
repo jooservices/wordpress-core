@@ -39,7 +39,10 @@ web_write_override() {
     echo '      WP_VERSION: ${WEB_WP_VERSION}'
     echo "      MAIL_HOST: mailpit"
     echo "      MAIL_PORT_SMTP: '1025'"
-    echo "    volumes:"
+    # Test mode replaces the default web root (the whole Workspaces tree) with this ticket's own WordPress root.
+    echo "    volumes: !override"
+    echo "      - wp_web_root:/var/www/html"
+    echo "      - wpcli_cache:/cache"
     echo "      - wp_uploads:/var/www/html/wp-content/uploads"
     echo "      - php_logs:/var/log/php"
     echo "      - wp_tests_lib:/tmp/wordpress-tests-lib"
