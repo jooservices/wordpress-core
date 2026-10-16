@@ -1,12 +1,15 @@
 @media print {
+  .joo-header,
+  .joo-footer,
   .joo-rail,
   .joo-term,
-  .joo-header__tools {
+  .joo-progress {
     display: none;
   }
 
   body {
     padding-inline: 0;
     background: transparent;
+    color: black;
   }
 }

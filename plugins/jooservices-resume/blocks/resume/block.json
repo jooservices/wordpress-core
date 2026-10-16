@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "joo/resume",
+  "title": "Resume timeline",
+  "category": "widgets",
+  "description": "The companies of the resume as a timeline: roles, achievements, technologies and public custom fields.",
+  "textdomain": "jooservices-resume",
+  "attributes": {
+    "order": { "type": "string", "enum": ["manual", "date"], "default": "manual" },
+    "limit": { "type": "integer", "default": 0, "minimum": 0 },
+    "currentOnly": { "type": "boolean", "default": false }
+  },
+  "supports": { "html": false, "autoRegister": true }
+}

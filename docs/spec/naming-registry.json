@@ -60,7 +60,9 @@
     "/related/(?P<post_id>\\d+)",
     "/profile",
     "/fragment/(?P<name>[a-z0-9-]+)",
-    "/terminal/fs"
+    "/terminal/fs",
+    "/resume",
+    "/resume/json-resume"
   ],
   "blocks": [
     "joo/breadcrumbs",
@@ -84,7 +86,8 @@
     "joo/archive-count",
     "joo/term-intro",
     "joo/term-image",
-    "joo/author-stats"
+    "joo/author-stats",
+    "joo/resume"
   ],
   "customElements": [
     "joo-slider",
