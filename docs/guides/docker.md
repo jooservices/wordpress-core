@@ -40,9 +40,16 @@ make test-e2e THEME=jooservices ARGS="specs/shared"
 
 `make down` removes the web container (database and uploads are kept). `make reset CONFIRM=yes` also removes the web root, this ticket's uploads volume and its database; it never touches Workspaces core services or Mailpit. Integration tables use the `wptests_` prefix inside the ticket schema.
 
-## E2E on the Dev VM
+## E2E: tests here, browser on the Dev VM
 
-Playwright runs on the Dev VM (`ssh dev`) so Docker keeps its memory. `e2e-vm.sh` opens a reverse tunnel of the site port, copies the worktree with tar over ssh (without `node_modules`, `vendor`, `.git`, `.env`) to `~/projects/jooservices-wp-themes` on the VM, runs `npm ci` when `package-lock.json` changed, writes a minimal `.env` with the admin login from stdin, runs the command, and copies `artifacts/` (and `E2E_VM_PULL` paths such as the critical CSS) back. It needs the lock to be held, which `wp-task.sh` guarantees. Trace and report files are in `artifacts/reports/e2e` after the run.
+Nothing is copied to the VM. `docker/scripts/e2e-vm.sh` (called by `make test-e2e` through `runtime.sh playwright`):
+
+1. starts `playwright run-server` on the Dev VM (`ssh dev`; Playwright 1.64.1 from `~/pw`, the same version as this project) on port 9300 (`E2E_VM_WS_PORT` changes it);
+2. opens one ssh session with two tunnels: VM port 9300 to Mac (so the tests reach the browser server) and the site port to the Mac (so the browser on the VM opens `http://127.0.0.1:8082`, the local `wp-web`);
+3. runs `playwright test` in the shared `php-8.5-e2e` container, which shares `wp-web`'s network, with `PW_TEST_CONNECT_WS_ENDPOINT` pointing at the VM browser through `tcp-forward.mjs` (the VM server only accepts loopback host names);
+4. writes reports and traces here (`artifacts/reports/e2e`), then stops the VM server and the tunnels.
+
+It needs the lock (held by `wp-task.sh`) and `ssh dev` to work. Tools that launch a browser themselves (`screenshots`, `critical`, `marketplace-preview`) still need a remote-browser option and are not covered by this path.
 
 ## Owner demo
 

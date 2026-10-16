@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-# Runs a Playwright command on the Dev VM (ssh dev) against the shared WordPress test site, through a reverse tunnel
-# of the site port. The VM runs the browsers; Docker never does. Files travel as tar over ssh (the VM has no rsync). The shared WordPress lock must be held by the caller.
-# Usage: e2e-vm.sh <command> [args ...]   Environment: E2E_VM_PULL = extra repo paths to copy back (space separated).
+# Browser E2E with the browser on the Dev VM and the tests here: nothing is copied to the VM.
+#   - the VM runs `playwright run-server` (Playwright from ~/pw on the VM, same version as this project);
+#   - one ssh session forwards VM port -> that server (-L) and the site port -> this Mac (-R), so the browser on the VM
+#     opens the local site at http://127.0.0.1:<site port>;
+#   - the test process runs in the shared php-8.5-e2e container, which shares wp-web's network, and connects to the
+#     VM browser (PW_TEST_CONNECT_WS_ENDPOINT) through a small loopback forwarder (tcp-forward.mjs). Reports and traces are written here.
+# The WordPress lock must be held and wp-web running (wp-task.sh does both). Usage: e2e-vm.sh <command> [args ...]
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 ROOT="$(cd "$SCRIPT_DIR/../.." && pwd -P)"
@@ -9,55 +13,31 @@ ROOT="$(cd "$SCRIPT_DIR/../.." && pwd -P)"
 
 get_env() { awk -F= -v key="$1" '$1 == key { sub(/^[^=]*=/, ""); print; exit }' "$ROOT/.env"; }
 site_url="${WP_SITE_URL:-$(get_env WP_SITE_URL)}"
-port="$(bash "$SCRIPT_DIR/site-url.sh" port "$site_url")"
-remote='projects/jooservices-wp-themes'   # one folder on the VM; E2E runs are serialized by the WordPress lock
+site_port="$(bash "$SCRIPT_DIR/site-url.sh" port "$site_url")"
+ws_port="${E2E_VM_WS_PORT:-9300}"
 ssh_opts=(-o BatchMode=yes -o ConnectTimeout=10)
 control="/tmp/e2evm-$$.ctl"   # unix socket paths are limited to about 100 characters
-mkdir -p "$ROOT/.tmp"
+server_started=0
+
+cleanup() {
+  ((! server_started)) || ssh "${ssh_opts[@]}" dev "pkill -f 'playwright run-server --port $ws_port'; rm -f /tmp/pw-run-server-$$.log" >/dev/null 2>&1 || true
+  ssh -S "$control" -O exit dev >/dev/null 2>&1 || true
+  rm -f "$control"
+}
+trap cleanup EXIT
 
 ssh "${ssh_opts[@]}" dev true || { echo "ERROR: the Dev VM is not reachable (ssh dev)." >&2; exit 2; }
-rm -f "$control"
-ssh "${ssh_opts[@]}" -M -S "$control" -f -N -o ExitOnForwardFailure=yes -R "$port:127.0.0.1:$port" dev
-close_tunnel() { ssh -S "$control" -O exit dev >/dev/null 2>&1 || true; rm -f "$control"; }
-trap close_tunnel EXIT
-
-remote_home="$(ssh "${ssh_opts[@]}" dev 'printf %s "$HOME"')"
-ssh "${ssh_opts[@]}" dev "mkdir -p ~/$remote"
-# The VM has no rsync: replace the sources with tar over ssh, keeping node_modules, artifacts and the lock hash.
-ssh "${ssh_opts[@]}" dev "cd ~/$remote && find . -mindepth 1 -maxdepth 1 ! -name node_modules ! -name artifacts ! -name .lockhash -exec rm -rf {} +"
-tar -C "$ROOT" -czf - --exclude=.git --exclude=node_modules --exclude=vendor --exclude=artifacts --exclude=.tmp --exclude=.env \
-  --exclude='*.zip' . | ssh "${ssh_opts[@]}" dev "tar -xzf - -C ~/$remote"
-
-# Credentials travel on stdin only; the VM gets a minimal .env (the specs read the admin login from it).
-env_lines=()
-for name in E2E_BASE_URL E2E_THEME E2E_ENGINES E2E_ALLOW_CONSOLE CI WP_SITE_URL MATRIX_VARIANT MATRIX_PLUGIN MATRIX_PATHS MATRIX_CLS PLAYWRIGHT_JSON_OUTPUT_NAME; do
-  value="${!name:-}"
-  [[ -n "$value" ]] || continue
-  value="${value//\/workspace\//$remote_home/$remote/}"
-  env_lines+=("export $name=$(printf '%q' "$value")")
+ssh "${ssh_opts[@]}" dev "! ss -ltn | grep -q ':$ws_port '" || { echo "ERROR: port $ws_port is already in use on the Dev VM (set E2E_VM_WS_PORT)." >&2; exit 2; }
+# setsid detaches the server from the ssh session, so ssh returns at once and the server survives until cleanup.
+ssh "${ssh_opts[@]}" dev "setsid nohup bash -c 'cd ~/pw && exec npx playwright run-server --port $ws_port --host 127.0.0.1' > /tmp/pw-run-server-$$.log 2>&1 < /dev/null &"
+server_started=1
+for _ in $(seq 1 30); do
+  ssh "${ssh_opts[@]}" dev "grep -q 'Listening on' /tmp/pw-run-server-$$.log" && break
+  sleep 1
 done
-quoted="$(printf '%q ' "$@")"
-status=0
-ssh "${ssh_opts[@]}" dev "bash -s" <<REMOTE || status=$?
-set -euo pipefail
-cd ~/$remote
-umask 077
-printf 'WP_ADMIN_USER=%s\nWP_ADMIN_PASSWORD=%s\nWP_SITE_URL=%s\n' '$(get_env WP_ADMIN_USER)' '$(get_env WP_ADMIN_PASSWORD)' '$site_url' > .env
-lock_hash="\$(sha256sum package-lock.json | cut -d' ' -f1)"
-if [ ! -d node_modules ] || [ "\$(cat .lockhash 2>/dev/null)" != "\$lock_hash" ]; then
-  npm ci --no-audit --no-fund >/dev/null
-  echo "\$lock_hash" > .lockhash
-fi
-$(printf '%s\n' "${env_lines[@]+"${env_lines[@]}"}")
-set +e
-$quoted
-code=\$?
-rm -f .env
-exit \$code
-REMOTE
+ssh "${ssh_opts[@]}" dev "grep -q 'Listening on' /tmp/pw-run-server-$$.log" || { echo "ERROR: the Playwright server did not start on the Dev VM." >&2; exit 2; }
+ssh "${ssh_opts[@]}" -M -S "$control" -f -N -o ExitOnForwardFailure=yes \
+  -L "$ws_port:127.0.0.1:$ws_port" -R "$site_port:127.0.0.1:$site_port" dev
 
-mkdir -p "$ROOT/artifacts"
-pull() { ssh "${ssh_opts[@]}" dev "cd ~/$remote && [ -e '$1' ] && tar -czf - '$1'" 2>/dev/null | tar -xzf - -C "$ROOT" 2>/dev/null || true; }
-pull artifacts
-for path in ${E2E_VM_PULL:-}; do pull "$path"; done
-exit "$status"
+PW_TEST_CONNECT_WS_ENDPOINT="ws://127.0.0.1:$ws_port/" E2E_BASE_URL="http://127.0.0.1:$site_port" \
+  bash "$SCRIPT_DIR/runtime.sh" e2e bash -c 'node docker/scripts/tcp-forward.mjs "$0" host.docker.internal "$0" & exec "${@:1}"' "$ws_port" "$@"
