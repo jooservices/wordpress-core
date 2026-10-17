@@ -19,23 +19,13 @@ Run only the tests you need. For one Playwright spec, pass its path and the desk
 make test-e2e THEME=jooservices ARGS="path/to/spec.ts --project=desktop"
 ```
 
-## Shared WordPress test lock
+## A site does not respond
 
-`Waiting for the shared WordPress test lock` means another WordPress task is using the single shared test container. All tickets share `Workspaces/.tmp/jooservices-wp-shared-test.lock`; hold the lock for at most 20 minutes and let the operation finish before retrying.
-
-Inspect the lock owner's PID and worktree from the Workspaces root:
-
-```sh
-cat .tmp/jooservices-wp-shared-test.lock/pid
-cat .tmp/jooservices-wp-shared-test.lock/worktree
-```
-
-The `pid` file identifies the process; the `worktree` file identifies its checkout. Do not remove a live owner's lock. If the recorded PID is dead, the stale lock may be removed:
-
-```sh
-rm .tmp/jooservices-wp-shared-test.lock/pid .tmp/jooservices-wp-shared-test.lock/worktree
-rmdir .tmp/jooservices-wp-shared-test.lock
-```
+- `scripts/docker/web-site list` shows the sites of the shared `wp-web`; `scripts/docker/shared web-up` starts it if it is down.
+- `403` on a `<host>.localhost` URL means the host is not a registered site (Apache answers the default vhost). Run `make up` to register this worktree's site.
+- If `web-site add` prints an Apache error, another site's config is broken: nothing was changed and the error names the file. Fix or remove that file in `<Company>/config/apache/`, then run `make up` again.
+- A site shows the wrong theme or plugin version: the symlinks in `artifacts/wp/wp-content` point to this worktree's folders; `make up` recreates them.
+- To start from scratch: `make reset CONFIRM=yes && make up` (removes this worktree's site and database only).
 
 ## Browser tests no longer run in Docker
 
