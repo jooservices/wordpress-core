@@ -123,7 +123,7 @@ final class SeoTest extends IntegrationTestCase {
 		$printer->attach();
 		$head = $this->capture( 'wp_head' );
 		$this->assertSame( 1, $this->occurrences( '<meta name="description"', $head ) );
-		$this->assertSame( 1, $this->occurrences( 'rel="canonical"', $head ), 'rel_canonical from core is removed' );
+		$this->assertSame( 1, $this->occurrences( 'rel="canonical"', $head ), 'exactly one canonical (core prints it from the engine URL)' );
 		$this->assertSame( 0, $this->occurrences( 'rel=\'shortlink\'', $head ) + $this->occurrences( 'rel="shortlink"', $head ) );
 		$this->assertSame( 1, $this->occurrences( '<meta name=\'robots\'', $head ) + $this->occurrences( '<meta name="robots"', $head ) );
 		$this->assertSame( 1, $this->occurrences( 'property="og:title"', $head ) );

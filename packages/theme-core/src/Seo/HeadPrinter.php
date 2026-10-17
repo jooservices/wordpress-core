@@ -115,8 +115,10 @@ final class HeadPrinter {
 			}
 			return;
 		}
-		remove_action( 'wp_head', 'rel_canonical' );
-		remove_action( 'wp_head', 'wp_shortlink_wp_head', 10 );
+		// Core actions stay hooked (marketplace rule): core prints the canonical of singular pages from our URL, and the
+		// shortlink is turned off through its own filter.
+		add_filter( 'get_canonical_url', array( $this, 'coreCanonical' ), 20 );
+		add_filter( 'pre_get_shortlink', '__return_empty_string' );
 		add_filter( 'pre_get_document_title', array( $this, 'title' ), 20 );
 		add_filter( 'wp_robots', fn( $robots ) => $this->services['robots']->filter( (array) $robots, $this->context() ), 20 );
 		add_action( 'wp_head', array( $this, 'print' ), 1 );
@@ -236,10 +238,24 @@ final class HeadPrinter {
 	}
 
 	/**
+	 * The canonical URL core prints for singular pages (`rel_canonical`): this engine's URL, or none where it prints none.
+	 *
+	 * @return string|false
+	 */
+	public function coreCanonical() {
+		$canonical = $this->services['canonical']->url( $this->context() );
+		return null === $canonical || $this->context()->isRestricted() ? false : $canonical;
+	}
+
+	/**
 	 * Prints the tags.
 	 */
 	public function print(): void {
 		$lines = $this->render();
+		if ( is_singular() && false !== has_action( 'wp_head', 'rel_canonical' ) ) {
+			// Core prints the canonical of this page (from coreCanonical()), so ours would be a duplicate.
+			$lines = array_values( array_filter( $lines, static fn( $line ) => 0 !== strpos( $line, '<link rel="canonical"' ) ) );
+		}
 		if ( array() !== $lines ) {
 			echo "\n<!-- JOOservices SEO -->\n" . implode( "\n", $lines ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every tag is escaped in render().
 		}
