@@ -89,6 +89,7 @@ snapshot_import() { # $1 = snapshot dir
   admin="$(wpx user list --role=administrator --field=ID </dev/null | head -1)"
   wpx user update "$admin" --user_pass="$WP_ADMIN_PASSWORD" --skip-email >/dev/null
   wpx core update-db >/dev/null
+  run_migrations >/dev/null
   wpx theme activate "$theme" >/dev/null
   wpx plugin activate jooservices-resume >/dev/null 2>&1 || true
   wpx rewrite flush >/dev/null 2>&1 || true
@@ -150,6 +151,9 @@ staging_backup() {
   echo "Backed up staging to $out"
 }
 
+# Applies the pending data migrations (migrations/, see docs/guides/migrations.md) to this site.
+run_migrations() { wpx eval-file "$ROOT/docker/scripts/migrate.php" "$@" </dev/null; }
+
 staging_require_clean() {
   [[ -z "$(git -C "$ROOT" status --porcelain)" ]] || { echo "ERROR: the staging checkout has uncommitted changes; staging must show committed develop only." >&2; exit 2; }
 }
@@ -169,6 +173,24 @@ case "$action" in
     ensure_site
     seed_demo
     ;;
+  migrate)
+    ensure_site
+    run_migrations "$@"
+    ;;
+  test-migrations)
+    # Idempotency proof on a worktree site (never on staging): apply the fixtures twice, forgetting in between.
+    [[ "$ticket" != staging ]] || { echo "ERROR: test-migrations drops the migration records; run it in a worktree, not on staging." >&2; exit 2; }
+    ensure_site
+    prefix="$(wpx db prefix </dev/null)"
+    run_migrations dir="$ROOT/docker/scripts/migration-fixtures"
+    wpx db query "DROP TABLE ${prefix}joo_dev_migrations" </dev/null
+    run_migrations dir="$ROOT/docker/scripts/migration-fixtures"
+    [[ "$(wpx option get joo_migration_fixture_sql </dev/null)" == ok && "$(wpx option get joo_migration_fixture_php </dev/null)" == ok ]]
+    wpx option delete joo_migration_fixture_sql joo_migration_fixture_php </dev/null >/dev/null
+    wpx db query "DROP TABLE ${prefix}joo_dev_migrations" </dev/null
+    run_migrations   # restore the records of the real migrations
+    echo "OK: SQL and PHP migrations applied twice without error (idempotent)."
+    ;;
   staging-up)
     # Staging is seeded once and never reseeded by itself (that would wipe the content under review).
     staging_require_clean
@@ -185,6 +207,8 @@ case "$action" in
     staging_require_clean
     ensure_site
     wpx core update-db </dev/null
+    if [[ "$(run_migrations status | sed -n 's/^[0-9]* applied, \([0-9]*\) pending.*/\1/p')" != 0 ]]; then staging_backup; fi
+    run_migrations
     wpx cache flush </dev/null
     wpx transient delete --all </dev/null
     wpx rewrite flush </dev/null 2>/dev/null || true
