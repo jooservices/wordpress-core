@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Fixture releases</title><entry><id>tag:github.com,2008:Repository/1/v1.2.0</id><title>Fictional Runtime v1.2.0</title><updated>2026-01-08T10:15:00Z</updated><link rel="alternate" href="https://github.com/example/runtime/releases/tag/v1.2.0"/><author><name>Fixture Maintainer</name></author><content>Copyrighted release text must remain headline-only.</content></entry></feed>

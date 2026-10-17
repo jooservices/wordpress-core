@@ -17,12 +17,15 @@ export function parseMcpBody(text) {
   return JSON.parse(data.at(-1));
 }
 
-const env = Object.fromEntries(
-  readFileSync(fromRoot('.env'), 'utf8')
-    .split('\n')
-    .filter((l) => l.includes('=') && !l.startsWith('#'))
-    .map((l) => [l.slice(0, l.indexOf('=')), l.slice(l.indexOf('=') + 1)])
-);
+const isCli = import.meta.url === `file://${process.argv[1]}`;
+const env = isCli
+  ? Object.fromEntries(
+      readFileSync(fromRoot('.env'), 'utf8')
+        .split('\n')
+        .filter((l) => l.includes('=') && !l.startsWith('#'))
+        .map((l) => [l.slice(0, l.indexOf('=')), l.slice(l.indexOf('=') + 1)])
+    )
+  : {};
 
 async function main() {
   const args = process.argv.slice(2);
@@ -113,4 +116,4 @@ async function main() {
   process.exit(results.every(Boolean) ? 0 : 1);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) await main();
+if (isCli) await main();
