@@ -12,6 +12,7 @@ test.describe('right to left', () => {
   });
 
   test('the layout never scrolls horizontally from 320 to 2560 px', async ({ page }) => {
+    test.slow(); // WIDTHS x VIEWS page loads: a browser reached over a tunnel needs more than the default time
     for (const width of WIDTHS) {
       await page.setViewportSize({ width, height: 900 });
       for (const view of VIEWS) {

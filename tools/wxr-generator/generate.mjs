@@ -383,7 +383,7 @@ ${(o.comments ?? []).map((c) => `<wp:comment><wp:comment_id>${c.id}</wp:comment_
     {
       slug: 'about',
       title: 'About',
-      content: `${heading('About me')}\n\n<!-- wp:joo/profile-card {"titleLevel":3} /-->\n\n${para(2)}\n\n${heading('What I work on')}\n\n${list()}\n\n${heading('Where I have worked')}\n\n<!-- wp:joo/companies {"perPage":6} /-->\n\n${heading('Get in touch')}\n\n<!-- wp:paragraph -->\n<p>The best way to reach me is the contact page, or the links in the profile card.</p>\n<!-- /wp:paragraph -->`,
+      content: `${heading('About me')}\n\n<!-- wp:joo/profile-card {"titleLevel":3} /-->\n\n${para(2)}\n\n${heading('What I work on')}\n\n${list()}\n\n${heading('Where I have worked')}\n\n<!-- wp:joo/resume /-->\n\n${heading('Get in touch')}\n\n<!-- wp:paragraph -->\n<p>The best way to reach me is the contact page, or the links in the profile card.</p>\n<!-- /wp:paragraph -->`,
     },
     {
       slug: 'contact',
@@ -411,6 +411,19 @@ ${(o.comments ?? []).map((c) => `<wp:comment><wp:comment_id>${c.id}</wp:comment_
     );
     counts.pages += 1;
   });
+  // The fields of the Resume plugin (JOOS-87): list fields are stored as JSON strings, like the plugin does.
+  const companyDetails = (d = {}) => [
+    ['_joo_company_summary', d.summary ?? ''],
+    ['_joo_company_employment', d.employment ?? ''],
+    ['_joo_company_city', d.city ?? ''],
+    ['_joo_company_country', d.country ?? ''],
+    ['_joo_company_industry', d.industry ?? ''],
+    ['_joo_company_remote', d.remote ? '1' : ''],
+    ['_joo_company_roles', JSON.stringify(d.roles ?? [])],
+    ['_joo_company_achievements', JSON.stringify(d.achievements ?? [])],
+    ['_joo_company_technologies', JSON.stringify(d.technologies ?? [])],
+    ['_joo_company_custom', JSON.stringify(d.custom ?? {})],
+  ];
   data.companies.forEach((c, i) => {
     items.push(
       item({
@@ -429,6 +442,7 @@ ${(o.comments ?? []).map((c) => `<wp:comment><wp:comment_id>${c.id}</wp:comment_
           ['_joo_company_to', c.to],
           ['_joo_company_pinned', c.pinned ? '1' : ''],
           ['_joo_company_url', c.url],
+          ...companyDetails(c.details),
         ],
       })
     );
@@ -483,6 +497,8 @@ ${items.join('\n')}
       show_on_front: 'posts',
       default_comment_status: 'open',
       timezone_string: 'UTC',
+      // Custom field definitions of the Resume plugin (JSON string): two public, one private.
+      joo_resume_custom_fields: JSON.stringify(data.customFields),
     },
     profile: {
       user: 'viet',

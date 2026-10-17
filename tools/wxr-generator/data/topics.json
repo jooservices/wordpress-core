@@ -1,13 +1,53 @@
 {
   "categories": [
-    { "slug": "ai", "name": "AI", "parent": "", "description": "Agents, LLMs and the tooling around them." },
-    { "slug": "blog", "name": "Blog", "parent": "", "description": "Company notes, news and general posts." },
-    { "slug": "companies", "name": "Companies", "parent": "blog", "description": "Places I have worked and what I learned there." },
-    { "slug": "news", "name": "News", "parent": "blog", "description": "Releases and announcements." },
-    { "slug": "research-and-development", "name": "Research & Development", "parent": "", "description": "Experiments, setups and lessons learned." },
-    { "slug": "homelab", "name": "Homelab", "parent": "research-and-development", "description": "Servers, networks and containers at home." },
-    { "slug": "study-cases", "name": "Study cases", "parent": "research-and-development", "description": "Problems solved end to end." },
-    { "slug": "tips-and-tricks", "name": "Tips & Tricks", "parent": "research-and-development", "description": "Small habits that add up." }
+    {
+      "slug": "ai",
+      "name": "AI",
+      "parent": "",
+      "description": "Agents, LLMs and the tooling around them."
+    },
+    {
+      "slug": "blog",
+      "name": "Blog",
+      "parent": "",
+      "description": "Company notes, news and general posts."
+    },
+    {
+      "slug": "companies",
+      "name": "Companies",
+      "parent": "blog",
+      "description": "Places I have worked and what I learned there."
+    },
+    {
+      "slug": "news",
+      "name": "News",
+      "parent": "blog",
+      "description": "Releases and announcements."
+    },
+    {
+      "slug": "research-and-development",
+      "name": "Research & Development",
+      "parent": "",
+      "description": "Experiments, setups and lessons learned."
+    },
+    {
+      "slug": "homelab",
+      "name": "Homelab",
+      "parent": "research-and-development",
+      "description": "Servers, networks and containers at home."
+    },
+    {
+      "slug": "study-cases",
+      "name": "Study cases",
+      "parent": "research-and-development",
+      "description": "Problems solved end to end."
+    },
+    {
+      "slug": "tips-and-tricks",
+      "name": "Tips & Tricks",
+      "parent": "research-and-development",
+      "description": "Small habits that add up."
+    }
   ],
   "tags": ["mcp", "llm", "laravel", "docker", "wordpress", "homelab", "go", "zsh", "queues", "seo", "agents", "testing", "php", "redis"],
   "core": [
@@ -125,7 +165,49 @@
       "to": "",
       "pinned": true,
       "description": "Building developer tooling, AI agents and WordPress products.",
-      "url": "https://jooservices.com"
+      "url": "https://jooservices.com",
+      "details": {
+        "summary": "Developer tooling, AI agents and WordPress products.",
+        "employment": "founder",
+        "city": "Ho Chi Minh City",
+        "country": "Vietnam",
+        "industry": "Software",
+        "remote": true,
+        "roles": [
+          {
+            "title": "Founder & CTO",
+            "from": "2023-06",
+            "to": "",
+            "summary": "Own the product, the architecture and hiring."
+          },
+          {
+            "title": "Founding engineer",
+            "from": "2022-03",
+            "to": "2023-05",
+            "summary": "Built the first WordPress and AI products."
+          }
+        ],
+        "achievements": [
+          {
+            "text": "Took a WordPress theme and a resume plugin to marketplace review",
+            "metric": "2",
+            "unit": "products",
+            "url": ""
+          },
+          {
+            "text": "Cut the CI time of the monorepo",
+            "metric": "45",
+            "unit": "%",
+            "url": ""
+          }
+        ],
+        "technologies": ["PHP", "Laravel", "WordPress", "Go", "Docker", "TypeScript"],
+        "custom": {
+          "team_size": 6,
+          "focus": "AI agents and developer tooling",
+          "internal_note": "Not for publication"
+        }
+      }
     },
     {
       "name": "SGCarmart",
@@ -134,7 +216,43 @@
       "to": "2022-02",
       "pinned": false,
       "description": "Marketplace platform: search, listings and payments.",
-      "url": "https://www.sgcarmart.com"
+      "url": "https://www.sgcarmart.com",
+      "details": {
+        "summary": "Vehicle marketplace: search, listings and payments.",
+        "employment": "full_time",
+        "city": "Singapore",
+        "country": "Singapore",
+        "industry": "Automotive marketplace",
+        "remote": false,
+        "roles": [
+          {
+            "title": "Senior Engineer",
+            "from": "2021-01",
+            "to": "2022-02",
+            "summary": "Led the search and listings squad."
+          },
+          {
+            "title": "Software Engineer",
+            "from": "2019-04",
+            "to": "2020-12",
+            "summary": "Built payment and listing features."
+          }
+        ],
+        "achievements": [
+          {
+            "text": "Rebuilt listing search for much faster results",
+            "metric": "3",
+            "unit": "x faster",
+            "url": ""
+          }
+        ],
+        "technologies": ["PHP", "Laravel", "MySQL", "Redis", "Elasticsearch"],
+        "custom": {
+          "team_size": 12,
+          "focus": "Marketplace search",
+          "internal_note": "Reference available on request"
+        }
+      }
     },
     {
       "name": "Acme Labs",
@@ -143,7 +261,36 @@
       "to": "2019-03",
       "pinned": false,
       "description": "APIs and queues for a logistics start-up.",
-      "url": ""
+      "url": "",
+      "details": {
+        "summary": "Internal tools and APIs for a product studio.",
+        "employment": "full_time",
+        "city": "Hanoi",
+        "country": "Vietnam",
+        "industry": "Software",
+        "remote": false,
+        "roles": [
+          {
+            "title": "Backend Engineer",
+            "from": "2017-01",
+            "to": "2019-03",
+            "summary": "Designed REST APIs and background workers."
+          }
+        ],
+        "achievements": [
+          {
+            "text": "Moved the job queue to workers with retries and dead letters",
+            "metric": "99.9",
+            "unit": "% delivery",
+            "url": ""
+          }
+        ],
+        "technologies": ["PHP", "Symfony", "PostgreSQL", "RabbitMQ"],
+        "custom": {
+          "team_size": 8,
+          "focus": "APIs and queues"
+        }
+      }
     },
     {
       "name": "Northwind",
@@ -152,7 +299,28 @@
       "to": "2016-12",
       "pinned": false,
       "description": "Agency work in PHP and JavaScript.",
-      "url": ""
+      "url": "",
+      "details": {
+        "summary": "Web projects for small businesses.",
+        "employment": "contract",
+        "city": "Da Nang",
+        "country": "Vietnam",
+        "industry": "Agency",
+        "remote": true,
+        "roles": [
+          {
+            "title": "Web Developer",
+            "from": "2015-06",
+            "to": "2016-12",
+            "summary": "Shipped custom WordPress sites."
+          }
+        ],
+        "achievements": [],
+        "technologies": ["PHP", "WordPress", "MySQL", "jQuery"],
+        "custom": {
+          "focus": "Custom WordPress sites"
+        }
+      }
     },
     {
       "name": "Contoso",
@@ -161,9 +329,62 @@
       "to": "2015-05",
       "pinned": false,
       "description": "First professional role: maintenance and support.",
-      "url": ""
+      "url": "",
+      "details": {
+        "summary": "Learned the craft on a small product team.",
+        "employment": "full_time",
+        "city": "",
+        "country": "Vietnam",
+        "industry": "",
+        "remote": false,
+        "roles": [
+          {
+            "title": "Junior Developer",
+            "from": "2013-09",
+            "to": "2015-05",
+            "summary": "Fixed bugs and wrote features under review."
+          }
+        ],
+        "achievements": [],
+        "technologies": ["PHP", "JavaScript"],
+        "custom": {}
+      }
     },
-    { "name": "Freelance", "role": "Developer", "from": "2012-01", "to": "2013-08", "pinned": false, "description": "Small business websites.", "url": "" }
+    {
+      "name": "Freelance",
+      "role": "Developer",
+      "from": "2012-01",
+      "to": "2013-08",
+      "pinned": false,
+      "description": "Small business websites.",
+      "url": "",
+      "details": {
+        "summary": "Independent web development.",
+        "employment": "freelance",
+        "city": "",
+        "country": "Vietnam",
+        "industry": "",
+        "remote": true,
+        "roles": [
+          {
+            "title": "Developer",
+            "from": "2012-01",
+            "to": "2013-08",
+            "summary": "Small sites and plugins for local clients."
+          }
+        ],
+        "achievements": [
+          {
+            "text": "Delivered the first paid plugin",
+            "metric": "1",
+            "unit": "plugin",
+            "url": ""
+          }
+        ],
+        "technologies": ["PHP", "WordPress"],
+        "custom": {}
+      }
+    }
   ],
   "comments": [
     "Great write-up, this saved me an afternoon.",
@@ -172,5 +393,28 @@
     "Thanks! Link to the repo?",
     "One question about the retry policy.",
     "Agreed, defaults matter."
+  ],
+  "customFields": [
+    {
+      "key": "team_size",
+      "label": "Team size",
+      "type": "number",
+      "public": true,
+      "order": 0
+    },
+    {
+      "key": "focus",
+      "label": "Focus",
+      "type": "text",
+      "public": true,
+      "order": 1
+    },
+    {
+      "key": "internal_note",
+      "label": "Internal note",
+      "type": "text",
+      "public": false,
+      "order": 2
+    }
   ]
 }

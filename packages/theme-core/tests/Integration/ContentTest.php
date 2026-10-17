@@ -122,6 +122,95 @@ final class ContentTest extends IntegrationTestCase {
 		$this->assertSame( 'https://newco.test', $all->items[0]->url );
 	}
 
+	public function test_the_profile_follows_a_change_of_the_profile_user_setting_without_waiting_for_the_cache(): void {
+		$other = self::factory()->user->create(
+			array(
+				'role'         => 'administrator',
+				'display_name' => 'Second Owner',
+			)
+		);
+		wp_update_user(
+			array(
+				'ID'           => 1,
+				'display_name' => 'First Owner',
+			)
+		);
+		$provider = $this->boot();
+		$settings = Kernel::container()->get( \JOOservices\ThemeCore\Config\SettingsRepository::class );
+		$settings->save( array( 'content.profile_user_id' => 1 ) );
+		$this->assertSame( 'First Owner', $provider->profile()?->name );
+		$settings->save( array( 'content.profile_user_id' => $other ) );
+		$this->assertSame( 'Second Owner', $provider->profile()?->name, 'the cached profile is refreshed by the settings change' );
+		// Saving the default value empties the stored settings and deletes the option row (SettingsRepository::write): the default
+		// owner, the first administrator, is shown at once ...
+		$settings->save( array( 'content.profile_user_id' => 0 ) );
+		$this->assertFalse( get_option( $settings->optionName() ), 'the option row is gone' );
+		$this->assertSame( 'First Owner', $provider->profile()?->name, 'deleting the settings refreshes the cache' );
+		// ... and the next save is an add_option(), which must refresh the cache as well.
+		$settings->save( array( 'content.profile_user_id' => $other ) );
+		$this->assertSame( 'Second Owner', $provider->profile()?->name, 'a first save after a reset refreshes the cache' );
+	}
+
+	public function test_a_company_shows_its_summary_and_its_newest_role_when_the_resume_fields_exist(): void {
+		$provider = $this->boot();
+		$id       = $this->company( 'Fieldco', '2020-01', '', true );
+		update_post_meta( $id, '_joo_company_summary', 'Short public summary.' );
+		$roles = array(
+			array(
+				'title'   => 'Staff Engineer',
+				'from'    => '2022-01',
+				'to'      => '',
+				'summary' => '',
+			),
+			array(
+				'title'   => 'Engineer',
+				'from'    => '2020-01',
+				'to'      => '2021-12',
+				'summary' => '',
+			),
+		);
+		// The resume plugin stores the roles as an envelope; a plain list is accepted too.
+		update_post_meta(
+			$id,
+			'_joo_company_roles',
+			wp_slash(
+				(string) wp_json_encode(
+					array(
+						'v'     => 1,
+						'items' => $roles,
+					)
+				)
+			)
+		);
+		// Private fields of the resume plugin are never read by the theme.
+		update_post_meta( $id, '_joo_company_compensation', 'secret compensation' );
+		wp_cache_flush();
+		$company = $provider->pinnedCompany();
+		$this->assertSame( 'Staff Engineer', $company?->role, 'the newest role (roles are stored newest first)' );
+		$this->assertSame( 'Short public summary.', $company?->description, 'the summary replaces the excerpt' );
+		$this->assertStringNotContainsString( 'secret', (string) wp_json_encode( $company?->toArray() ) );
+		update_post_meta( $id, '_joo_company_roles', wp_slash( (string) wp_json_encode( $roles ) ) );
+		wp_cache_flush();
+		$this->assertSame( 'Staff Engineer', $provider->pinnedCompany()?->role, 'a plain list works too' );
+	}
+
+	public function test_a_company_without_usable_resume_fields_keeps_the_single_role_and_the_excerpt(): void {
+		$provider = $this->boot();
+		$id       = $this->company( 'Plainco', '2020-01', '', true );
+		update_post_meta( $id, '_joo_company_roles', '{not json' );
+		update_post_meta( $id, '_joo_company_summary', '' );
+		wp_cache_flush();
+		$company = $provider->pinnedCompany();
+		$this->assertSame( 'Engineer at Plainco', $company?->role );
+		$this->assertSame( 'Plainco description', $company?->description );
+		update_post_meta( $id, '_joo_company_roles', '[]' );
+		wp_cache_flush();
+		$this->assertSame( 'Engineer at Plainco', $provider->pinnedCompany()?->role, 'an empty list falls back too' );
+		update_post_meta( $id, '_joo_company_roles', wp_slash( '{"v":1,"items":[]}' ) );
+		wp_cache_flush();
+		$this->assertSame( 'Engineer at Plainco', $provider->pinnedCompany()?->role, 'an empty envelope falls back too' );
+	}
+
 	public function test_profile_combines_user_fields_and_the_pinned_company(): void {
 		$provider = $this->boot();
 		wp_update_user(

@@ -178,7 +178,13 @@ test.describe('Resume admin screens', () => {
         page.waitForEvent('download'),
         page.getByRole('link', { name: 'JOOservices Resume (JSON)' }).click(),
       ]);
-      const own = JSON.parse(await (await import('node:fs/promises')).readFile((await download.path())!, 'utf8'));
+      // saveAs() works with a local and with a remote browser; Download.path() does not exist for a remote one.
+      const { mkdtemp, readFile } = await import('node:fs/promises');
+      const { tmpdir } = await import('node:os');
+      const { join } = await import('node:path');
+      const file = join(await mkdtemp(join(tmpdir(), 'joo-export-')), 'resume.json');
+      await download.saveAs(file);
+      const own = JSON.parse(await readFile(file, 'utf8'));
       expect(own.format).toBe('jooservices-resume');
       expect(JSON.stringify(own.companies)).toContain(`${MARK} Acme`);
 

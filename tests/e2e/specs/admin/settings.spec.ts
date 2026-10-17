@@ -10,6 +10,7 @@ test.describe('settings page', () => {
   });
 
   test('every tab renders and its content passes axe', async ({ page }) => {
+    test.slow(); // one axe scan per tab: a browser reached over a tunnel needs more than the default time
     for (const tab of TABS) {
       await page.goto(`${PAGE}&tab=${tab}`);
       await expect(page.locator('.joo-settings h1')).toBeVisible();

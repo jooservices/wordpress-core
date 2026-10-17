@@ -109,7 +109,12 @@ test('buyer settings save, affect the front end and reset to defaults', async ({
       const fresh = await page.context().newPage();
       try {
         await fresh.goto(`${SETTINGS}&tab=content`);
-        await fresh.locator(PROFILE_USER).selectOption({ label: PROFILE_LABEL });
+        // selectOption({ label }) takes a string, not a pattern: resolve the option by its text first.
+        const owner = await fresh
+          .locator(`${PROFILE_USER} option`, { hasText: PROFILE_LABEL })
+          .first()
+          .getAttribute('value');
+        await fresh.locator(PROFILE_USER).selectOption(owner ?? '');
         await fresh.getByRole('button', { name: 'Save changes' }).click();
         await expect(fresh.locator('.notice-success')).toBeVisible();
       } finally {
