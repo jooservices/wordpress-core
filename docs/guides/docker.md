@@ -52,7 +52,7 @@ The project checkout (`projects/jooservices-wp-themes`, branch `develop`) is the
 
 | Command (in the project checkout) | What it does |
 |---|---|
-| `make staging-up` | Creates the site; seeds it from the stored snapshot **once**; never reseeds an existing site |
+| `make staging-up` | Creates the site; seeds it from the stored snapshot **once** (it then sets the option `joo_staging_initialized`; set it yourself when you import content by hand); never reseeds an existing site |
 | `make staging-update` | After a merge into `develop`: rebuilds assets, runs `core update-db` and the data migrations, clears caches, health check |
 | `make staging-reseed CONFIRM=yes` | Replaces the content with the pristine snapshot (a backup is taken first) |
 
