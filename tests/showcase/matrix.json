@@ -1,0 +1,3301 @@
+{
+  "schemaVersion": 1,
+  "ticket": "JOOS-91",
+  "title": "JOOservices showcase content matrix",
+  "specificationSource": "themes/jooservices/design/checklist.md",
+  "specificationIds": [
+    "HOME-01",
+    "HOME-02",
+    "HOME-03",
+    "HOME-04",
+    "HOME-05",
+    "HOME-06",
+    "HOME-07",
+    "HOME-08",
+    "HOME-09",
+    "HOME-10",
+    "SINGLE-01",
+    "SINGLE-02",
+    "SINGLE-03",
+    "SINGLE-04",
+    "SINGLE-05",
+    "SINGLE-06",
+    "SINGLE-07",
+    "SINGLE-08",
+    "SINGLE-09",
+    "SINGLE-10",
+    "SINGLE-11",
+    "SINGLE-12",
+    "SINGLE-13",
+    "SINGLE-14",
+    "ARCHIVE-01",
+    "ARCHIVE-02",
+    "ARCHIVE-03",
+    "ARCHIVE-04",
+    "ARCHIVE-05",
+    "ARCHIVE-06",
+    "ARCHIVE-07",
+    "ARCHIVE-08",
+    "SEARCH-01",
+    "SEARCH-02",
+    "SEARCH-03",
+    "SEARCH-04",
+    "SEARCH-05",
+    "SEARCH-06",
+    "ABOUT-01",
+    "ABOUT-02",
+    "ABOUT-03",
+    "ABOUT-04",
+    "404-01",
+    "404-02",
+    "404-03",
+    "404-04",
+    "404-05",
+    "404-06",
+    "404-07",
+    "404-08",
+    "SHELL-01",
+    "SHELL-02",
+    "SHELL-03",
+    "SHELL-04",
+    "SHELL-05",
+    "SHELL-06",
+    "SHELL-07",
+    "SHELL-08",
+    "SHELL-09",
+    "SHELL-10",
+    "TERMINAL-01",
+    "TERMINAL-02",
+    "TERMINAL-03",
+    "TERMINAL-04",
+    "TERMINAL-05",
+    "TERMINAL-06",
+    "TERMINAL-07",
+    "TERMINAL-08"
+  ],
+  "verificationProfiles": {
+    "ltr": {
+      "browsers": ["Chromium", "WebKit", "Firefox"],
+      "viewports": [
+        {
+          "id": "phone",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "tablet",
+          "width": 820,
+          "height": 1180
+        },
+        {
+          "id": "desktop",
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "schemes": ["dark", "light", "ocean", "forest", "paper"],
+      "languages": ["en", "vi"],
+      "overflowSweepWidths": [320, 360, 375, 390, 430, 768, 820, 1024, 1280, 1440, 1920, 3840],
+      "browserTargets": [
+        "Chrome desktop: current and previous stable",
+        "Edge desktop: current and previous stable",
+        "Safari desktop: 16.4 or newer",
+        "iOS Safari: 16.4 or newer on a real device",
+        "Firefox: ESR and current stable",
+        "Android Chrome: current stable on a real device"
+      ]
+    },
+    "rtl": {
+      "browsers": ["Chromium", "WebKit", "Firefox"],
+      "viewports": [
+        {
+          "id": "phone",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "tablet",
+          "width": 820,
+          "height": 1180
+        },
+        {
+          "id": "desktop",
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "schemes": ["dark", "light", "ocean", "forest", "paper"],
+      "languages": ["ar", "he_IL"],
+      "overflowSweepWidths": [320, 360, 375, 390, 430, 768, 820, 1024, 1280, 1440, 1920, 3840],
+      "browserTargets": [
+        "Chrome desktop: current and previous stable",
+        "Edge desktop: current and previous stable",
+        "Safari desktop: 16.4 or newer",
+        "iOS Safari: 16.4 or newer on a real device",
+        "Firefox: ESR and current stable",
+        "Android Chrome: current stable on a real device"
+      ]
+    },
+    "cjk": {
+      "browsers": ["Chromium", "WebKit", "Firefox"],
+      "viewports": [
+        {
+          "id": "phone",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "tablet",
+          "width": 820,
+          "height": 1180
+        },
+        {
+          "id": "desktop",
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "schemes": ["dark", "light", "ocean", "forest", "paper"],
+      "languages": ["zh_CN"],
+      "overflowSweepWidths": [320, 360, 375, 390, 430, 768, 820, 1024, 1280, 1440, 1920, 3840],
+      "browserTargets": [
+        "Chrome desktop: current and previous stable",
+        "Edge desktop: current and previous stable",
+        "Safari desktop: 16.4 or newer",
+        "iOS Safari: 16.4 or newer on a real device",
+        "Firefox: ESR and current stable",
+        "Android Chrome: current stable on a real device"
+      ]
+    }
+  },
+  "coverageRule": "For every row, execute the Cartesian product of each referenced profile: browser × viewport × colour scheme × site language. RTL runs configure WordPress locale ar or he_IL so is_rtl() is true.",
+  "sourcePolicy": "Editorial examples sourced from real technical material must include source URL, licence/rights basis, and fetch date as tracked by JOOS-106; demo-for-sale content must be licence-clean.",
+  "rows": [
+    {
+      "id": "HOME-SHELL",
+      "viewOrComponent": "Header and document shell",
+      "contentKey": "layout.header",
+      "contentRequired": [
+        "Skip link first",
+        "one header nav main aside footer",
+        "search trigger",
+        "visible focus",
+        "two-language switcher",
+        "initial dark/system scheme",
+        "persisted choice without flash"
+      ],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-01", "SHELL-01", "SHELL-02", "SHELL-07", "SHELL-08", "SHELL-09", "SHELL-10"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:HOME-SHELL",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/home.spec.ts",
+          "status": "partial-baseline"
+        },
+        {
+          "file": "themes/jooservices/tests/e2e/shell.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "HOME-RAIL",
+      "viewOrComponent": "Home rail",
+      "contentKey": "layout.rail",
+      "contentRequired": ["Profile, companies, category tree, top topics, and tags in this order", "populated links"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:HOME-RAIL",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/home.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "HOME-FEATURED",
+      "viewOrComponent": "Featured slider",
+      "contentKey": "home.featured",
+      "contentRequired": [
+        "Exactly five featured posts plus an extra featured post; include sticky and `_joo_featured` cases; each has a cover, category, metadata, title and excerpt; first image is eager with high fetch priority."
+      ],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-03", "HOME-10"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:HOME-FEATURED",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/home.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "HOME-SLIDER-INPUT",
+      "viewOrComponent": "Featured slider controls",
+      "contentKey": "home.slider-interactions",
+      "contentRequired": ["Keyboard and touch arrows, dots, pause", "autoplay pauses on hover, focus, hidden tab and reduced motion"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-04", "HOME-05"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:HOME-SLIDER-INPUT",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/home.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "HOME-LATEST",
+      "viewOrComponent": "Home article cards",
+      "contentKey": "home.latest",
+      "contentRequired": ["Cards include thumbnail, metadata, title, excerpt, read link and tags", "one short post and varied thumbnail ratios"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-06"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:HOME-LATEST",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/home.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "HOME-PAGINATION",
+      "viewOrComponent": "Home pagination",
+      "contentKey": "home.pagination",
+      "contentRequired": ["At least three pages of posts", "numbered/next links retain the home archive base", "44px touch target"],
+      "expectedUrl": "/page/2/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-07"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:HOME-PAGINATION",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "HOME-EMPTY",
+      "viewOrComponent": "Empty home state",
+      "contentKey": "home.empty",
+      "contentRequired": ["Zero published posts", "helpful empty-state copy and no broken featured slider"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:HOME-EMPTY",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "HOME-FEATURED-EXCLUSION",
+      "viewOrComponent": "Featured exclusion from feed",
+      "contentKey": "home.featured-exclusion",
+      "contentRequired": ["Five featured items and a non-featured feed", "featured posts are absent from the list when hide_featured_in_list is enabled"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-09"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:HOME-FEATURED-EXCLUSION",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SINGLE-BASE-META",
+      "viewOrComponent": "Single post frame and metadata",
+      "contentKey": "post.standard",
+      "contentRequired": ["Published post with breadcrumb, one H1, 120-character title, author, category, dates, reading time, tags and a cover"],
+      "expectedUrl": "/ai/showcase-standard-post/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-01", "SINGLE-02", "SINGLE-03", "SINGLE-14"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SINGLE-BASE-META",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/single.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SINGLE-COVER-21-9",
+      "viewOrComponent": "Single post wide cover",
+      "contentKey": "post.cover-21-9",
+      "contentRequired": ["Featured cover with a 21:9 source image", "desktop crop 21:9 and phone crop 16:8"],
+      "expectedUrl": "/ai/showcase-wide-cover/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SINGLE-COVER-21-9",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/single.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SINGLE-TOC-20",
+      "viewOrComponent": "Long post and table of contents",
+      "contentKey": "post.long-toc",
+      "contentRequired": ["One published post with at least 20 H2 headings", "TOC links resolve to matching anchors"],
+      "expectedUrl": "/research/long-form-toc/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-05"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SINGLE-TOC-20",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/single.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SINGLE-PROSE-CODE",
+      "viewOrComponent": "Prose and code presentation",
+      "contentKey": "post.code-samples",
+      "contentRequired": ["70ch prose", "code in PHP, JavaScript, Python, Go and shell with language labels, copy buttons and a long line"],
+      "expectedUrl": "/backend/code-samples/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-06", "SINGLE-07"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SINGLE-PROSE-CODE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/single.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SINGLE-BLOCKS",
+      "viewOrComponent": "Core prose blocks",
+      "contentKey": "post.core-blocks",
+      "contentRequired": [
+        "Wide table, blockquote, pullquote, nested unordered and ordered lists, captioned image, gallery, columns, buttons, cover block, separator and spacer"
+      ],
+      "expectedUrl": "/frontend/core-blocks/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SINGLE-BLOCKS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/single.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SINGLE-PREV-NEXT",
+      "viewOrComponent": "Single post navigation",
+      "contentKey": "post.adjacent",
+      "contentRequired": ["Previous and next posts both exist and have non-empty titles", "controls stack on phone"],
+      "expectedUrl": "/ai/showcase-standard-post/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-09"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SINGLE-PREV-NEXT",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/single.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SINGLE-AUTHOR",
+      "viewOrComponent": "Single post author box",
+      "contentKey": "post.author-box",
+      "contentRequired": ["Author with avatar, display name, title, biography and social links"],
+      "expectedUrl": "/ai/showcase-standard-post/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-10"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SINGLE-AUTHOR",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/single.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SINGLE-RELATED",
+      "viewOrComponent": "Related posts",
+      "contentKey": "post.related",
+      "contentRequired": ["At least three related published cards", "load on demand when scrolled into view"],
+      "expectedUrl": "/ai/showcase-standard-post/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-11"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SINGLE-RELATED",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/single.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SINGLE-COMMENTS",
+      "viewOrComponent": "Nested comments",
+      "contentKey": "comments.nested-40",
+      "contentRequired": ["Exactly 40 approved comments nested to five levels", "replies are indented and the form is on demand"],
+      "expectedUrl": "/ai/showcase-standard-post/#comments",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-12"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SINGLE-COMMENTS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/single.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SINGLE-PROGRESS",
+      "viewOrComponent": "Reading progress",
+      "contentKey": "post.reading-progress",
+      "contentRequired": ["Long post with enough height to scroll", "progress moves from zero while scrolling and is decorative to assistive technology"],
+      "expectedUrl": "/research/long-form-toc/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-13"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SINGLE-PROGRESS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/single.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-SHORT",
+      "viewOrComponent": "Short post",
+      "contentKey": "post.short",
+      "contentRequired": ["Published post under 300 words with one paragraph and one heading"],
+      "expectedUrl": "/tips/short-post/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-SHORT",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-LONG-TITLE",
+      "viewOrComponent": "Very long post title",
+      "contentKey": "post.title-very-long",
+      "contentRequired": ["Published post with a 180-character title", "exactly one H1 and no horizontal overflow"],
+      "expectedUrl": "/career/very-long-title/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-LONG-TITLE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-NO-FEATURED-IMAGE",
+      "viewOrComponent": "Post without a featured image",
+      "contentKey": "post.no-featured-image",
+      "contentRequired": ["Published post with no featured image", "metadata and card layout remain intact with no broken image placeholder"],
+      "expectedUrl": "/tips/no-featured-image/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-06", "SINGLE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-NO-FEATURED-IMAGE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-IMAGE-TALL",
+      "viewOrComponent": "Tall image",
+      "contentKey": "post.image-tall",
+      "contentRequired": ["Portrait image at 2:3 displayed without stretching or overflowing"],
+      "expectedUrl": "/hardware/tall-image/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-IMAGE-TALL",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-IMAGE-WIDE",
+      "viewOrComponent": "Wide image",
+      "contentKey": "post.image-wide",
+      "contentRequired": ["Landscape image at 16:9 with intrinsic dimensions and responsive srcset"],
+      "expectedUrl": "/hardware/wide-image/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-IMAGE-WIDE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-IMAGE-SMALL",
+      "viewOrComponent": "Small image",
+      "contentKey": "post.image-small",
+      "contentRequired": ["Small 96x64 source thumbnail", "displayed dimensions and alt text remain valid"],
+      "expectedUrl": "/hardware/small-image/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-IMAGE-SMALL",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-TAGS-25",
+      "viewOrComponent": "Many tags",
+      "contentKey": "post.tags-25",
+      "contentRequired": [
+        "Published post assigned exactly 25 tags; all links remain usable and do not overflow.",
+        "all links remain usable and do not overflow"
+      ],
+      "expectedUrl": "/databases/many-tags/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-14"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-TAGS-25",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-TAGS-RANGE",
+      "viewOrComponent": "Tag-count range",
+      "contentKey": "post.tags-range-1-25",
+      "contentRequired": ["Fixture posts with exactly 1, 2 and 25 tags exercise the stated 1–25 count range; each tag link remains usable."],
+      "expectedUrl": "/databases/tag-count-range/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-14"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-TAGS-RANGE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-NO-TAGS",
+      "viewOrComponent": "Post with no tags",
+      "contentKey": "post.no-tags",
+      "contentRequired": ["Published post with zero tags", "no empty tag wrapper or separator"],
+      "expectedUrl": "/tips/no-tags/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-14"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-NO-TAGS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-MANY-CATEGORIES",
+      "viewOrComponent": "Many categories",
+      "contentKey": "post.categories-many",
+      "contentRequired": ["Published post assigned to at least five categories with a deterministic primary category"],
+      "expectedUrl": "/backend/many-categories/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-03", "SINGLE-14"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-MANY-CATEGORIES",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-DEEP-CATEGORY",
+      "viewOrComponent": "Three-level category ancestry",
+      "contentKey": "post.category-depth-3",
+      "contentRequired": ["Published post in a leaf category nested exactly three levels below the root", "breadcrumbs and URL show the ancestry"],
+      "expectedUrl": "/category/engineering/backend/databases/deep-category/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-01", "ARCHIVE-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-DEEP-CATEGORY",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-DRAFT",
+      "viewOrComponent": "Draft post visibility",
+      "contentKey": "post.draft",
+      "contentRequired": ["Draft post exists in generated content", "anonymous canonical URL returns 404 and never exposes title/body"],
+      "expectedUrl": "/career/draft-hidden/",
+      "expectedStatus": 404,
+      "specIds": ["SINGLE-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-DRAFT",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-PRIVATE",
+      "viewOrComponent": "Private post visibility",
+      "contentKey": "post.private",
+      "contentRequired": ["Private post exists in generated content", "anonymous canonical URL returns 404 and never exposes title/body"],
+      "expectedUrl": "/career/private-hidden/",
+      "expectedStatus": 404,
+      "specIds": ["SINGLE-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-PRIVATE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-SCHEDULED",
+      "viewOrComponent": "Scheduled post visibility",
+      "contentKey": "post.scheduled",
+      "contentRequired": ["Future-dated scheduled post exists in generated content", "anonymous canonical URL returns 404 before publish time"],
+      "expectedUrl": "/news/scheduled-hidden/",
+      "expectedStatus": 404,
+      "specIds": ["SINGLE-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-SCHEDULED",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-PASSWORD",
+      "viewOrComponent": "Password-protected post",
+      "contentKey": "post.password-protected",
+      "contentRequired": ["Published password-protected post shows password form and hides body until the correct password is submitted"],
+      "expectedUrl": "/blog/protected-ask-me/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-PASSWORD",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-MULTIPAGE",
+      "viewOrComponent": "Three-page post",
+      "contentKey": "post.multi-page-3",
+      "contentRequired": ["Published post split into exactly three pages with working previous/next page links and page labels"],
+      "expectedUrl": "/tutorials/three-page-post/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-MULTIPAGE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-TABLE-WIDE",
+      "viewOrComponent": "Wide table",
+      "contentKey": "post.table-wide",
+      "contentRequired": ["Table with at least 12 columns and long cell values", "horizontal scrolling is contained within the table region"],
+      "expectedUrl": "/databases/wide-table/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-TABLE-WIDE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-QUOTE",
+      "viewOrComponent": "Blockquote and pullquote",
+      "contentKey": "post.quotes",
+      "contentRequired": ["One blockquote with attribution and one pullquote with long text"],
+      "expectedUrl": "/opinion/quotes/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-QUOTE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-LISTS",
+      "viewOrComponent": "Nested and ordered lists",
+      "contentKey": "post.nested-lists",
+      "contentRequired": ["Three-level nested unordered list and ordered list with non-default start value"],
+      "expectedUrl": "/tutorials/nested-lists/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-LISTS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-IMAGE-CAPTIONS",
+      "viewOrComponent": "Images with captions",
+      "contentKey": "post.image-captions",
+      "contentRequired": ["At least two images with long captions and meaningful alt text"],
+      "expectedUrl": "/hardware/captioned-images/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-IMAGE-CAPTIONS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-GALLERY",
+      "viewOrComponent": "Image gallery",
+      "contentKey": "post.gallery",
+      "contentRequired": ["Gallery with at least six images, mixed aspect ratios and captions"],
+      "expectedUrl": "/hardware/gallery/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-GALLERY",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-VIDEO",
+      "viewOrComponent": "Self-hosted video",
+      "contentKey": "post.video-self-hosted",
+      "contentRequired": ["Self-hosted video with poster, controls and captions track", "no external host request"],
+      "expectedUrl": "/homelab/self-hosted-video/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-VIDEO",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-AUDIO",
+      "viewOrComponent": "Audio player",
+      "contentKey": "post.audio",
+      "contentRequired": ["Self-hosted audio with controls and a text transcript"],
+      "expectedUrl": "/homelab/audio/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-AUDIO",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-EMBED-YOUTUBE",
+      "viewOrComponent": "YouTube embed",
+      "contentKey": "post.embed-youtube",
+      "contentRequired": ["YouTube URL embed with title, lazy load and privacy-safe fallback"],
+      "expectedUrl": "/news/embed-youtube/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-EMBED-YOUTUBE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-EMBED-VIMEO",
+      "viewOrComponent": "Vimeo embed",
+      "contentKey": "post.embed-vimeo",
+      "contentRequired": ["Vimeo URL embed with title, lazy load and privacy-safe fallback"],
+      "expectedUrl": "/news/embed-vimeo/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-EMBED-VIMEO",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-EMBED-X",
+      "viewOrComponent": "X embed",
+      "contentKey": "post.embed-x",
+      "contentRequired": ["X post URL rendered as a readable link/fallback when third-party scripts are unavailable"],
+      "expectedUrl": "/news/embed-x/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-EMBED-X",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-EMBED-GIST",
+      "viewOrComponent": "GitHub Gist embed",
+      "contentKey": "post.embed-gist",
+      "contentRequired": ["GitHub Gist URL with code fallback and no required third-party script"],
+      "expectedUrl": "/backend/embed-gist/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-EMBED-GIST",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-DOWNLOAD",
+      "viewOrComponent": "File download",
+      "contentKey": "post.file-download",
+      "contentRequired": ["Accessible link to a generated plain-text or PDF download with filename and file size"],
+      "expectedUrl": "/tutorials/file-download/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-DOWNLOAD",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-COLUMNS",
+      "viewOrComponent": "Columns block",
+      "contentKey": "post.columns",
+      "contentRequired": ["Two- and three-column layouts with long text", "columns stack in reading order on phone"],
+      "expectedUrl": "/frontend/columns/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-COLUMNS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-BUTTONS",
+      "viewOrComponent": "Buttons block",
+      "contentKey": "post.buttons",
+      "contentRequired": ["Primary and secondary buttons with accessible names, focus and hover states"],
+      "expectedUrl": "/frontend/buttons/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-BUTTONS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-COVER-BLOCK",
+      "viewOrComponent": "Cover block",
+      "contentKey": "post.cover-block",
+      "contentRequired": ["Cover block with background image, overlay, heading and link", "text contrast remains readable"],
+      "expectedUrl": "/frontend/cover-block/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-COVER-BLOCK",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-SEPARATOR-SPACER",
+      "viewOrComponent": "Separators and spacer",
+      "contentKey": "post.separator-spacer",
+      "contentRequired": ["Multiple separator styles and spacer sizes appear without collapsing surrounding content"],
+      "expectedUrl": "/frontend/separators-spacers/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-SEPARATOR-SPACER",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-DETAILS",
+      "viewOrComponent": "Details accordion",
+      "contentKey": "post.details-accordion",
+      "contentRequired": ["Native details/summary with long content", "opens and closes by keyboard and pointer"],
+      "expectedUrl": "/tutorials/details-accordion/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-DETAILS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-FOOTNOTES",
+      "viewOrComponent": "Footnotes",
+      "contentKey": "post.footnotes",
+      "contentRequired": ["At least three footnote references with matching backlinks and readable labels"],
+      "expectedUrl": "/tutorials/footnotes/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-FOOTNOTES",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-MATH-PREFORMATTED",
+      "viewOrComponent": "Math and preformatted text",
+      "contentKey": "post.math-preformatted",
+      "contentRequired": ["Inline and display math plus preformatted whitespace-preserving text"],
+      "expectedUrl": "/backend/math-preformatted/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-MATH-PREFORMATTED",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-SHORTCODE",
+      "viewOrComponent": "Shortcodes",
+      "contentKey": "post.shortcodes",
+      "contentRequired": ["Supported resume/profile shortcode and an unknown shortcode rendered without a fatal error"],
+      "expectedUrl": "/career/shortcodes/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-SHORTCODE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-RTL-SNIPPET",
+      "viewOrComponent": "RTL text snippet",
+      "contentKey": "post.rtl-snippet",
+      "contentRequired": ["Arabic and Hebrew inline text alongside an isolated left-to-right code snippet"],
+      "expectedUrl": "/ar/rtl/rtl-snippet/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-06"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-RTL-SNIPPET",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-EMOJI",
+      "viewOrComponent": "Emoji",
+      "contentKey": "post.emoji",
+      "contentRequired": ["Title, body and excerpt include emoji including a multi-codepoint emoji sequence"],
+      "expectedUrl": "/tips/emoji/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-EMOJI",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-ENGLISH",
+      "viewOrComponent": "English post",
+      "contentKey": "post.language-en",
+      "contentRequired": ["Published English post with correct lang metadata, excerpt and translation relationship where available."],
+      "expectedUrl": "/en/tutorials/english-sample/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-ENGLISH",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-VIETNAMESE",
+      "viewOrComponent": "Vietnamese post",
+      "contentKey": "post.language-vi",
+      "contentRequired": ["Published Vietnamese post with correct diacritics, lang metadata and Vietnamese translation link"],
+      "expectedUrl": "/vi/tutorials/huong-dan-mau/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-VIETNAMESE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-CHINESE",
+      "viewOrComponent": "Chinese post",
+      "contentKey": "post.language-zh",
+      "contentRequired": ["Published Simplified Chinese sample text with correct UTF-8, line wrapping and lang metadata"],
+      "expectedUrl": "/zh/tutorials/chinese-sample/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-CHINESE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl", "cjk"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-LONG-UNBROKEN",
+      "viewOrComponent": "Long unbroken strings and URLs",
+      "contentKey": "post.long-unbroken",
+      "contentRequired": ["A 240-character unbroken token and a 300-character URL", "no page-wide horizontal overflow"],
+      "expectedUrl": "/backend/unbroken-strings/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-06"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-LONG-UNBROKEN",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "POST-HTML-ENTITIES",
+      "viewOrComponent": "HTML entities",
+      "contentKey": "post.html-entities",
+      "contentRequired": ["Literal ampersands, angle brackets, quotes, apostrophes and encoded entities render as text without creating markup"],
+      "expectedUrl": "/backend/html-entities/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:POST-HTML-ENTITIES",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMMENTS-NONE",
+      "viewOrComponent": "No comments",
+      "contentKey": "comments.none",
+      "contentRequired": ["Post with comments enabled but zero comments", "empty comments state and reply form"],
+      "expectedUrl": "/tips/no-comments/#comments",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-12"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMMENTS-NONE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMMENTS-ONE",
+      "viewOrComponent": "One comment",
+      "contentKey": "comments.one",
+      "contentRequired": ["Post with exactly one approved comment and a usable reply link"],
+      "expectedUrl": "/tips/one-comment/#comments",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-12"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMMENTS-ONE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMMENTS-PENDING",
+      "viewOrComponent": "Pending comment",
+      "contentKey": "comments.pending",
+      "contentRequired": ["One pending comment exists but is not visible to anonymous visitors", "editor can identify it in moderation"],
+      "expectedUrl": "/tips/pending-comment/#comments",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-12"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMMENTS-PENDING",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMMENTS-LONG",
+      "viewOrComponent": "Long comment",
+      "contentKey": "comments.long-text",
+      "contentRequired": ["Approved comment with at least 2,000 characters and paragraphs, links and punctuation"],
+      "expectedUrl": "/tips/long-comment/#comments",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-12"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMMENTS-LONG",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMMENTS-AVATARS",
+      "viewOrComponent": "Comment avatars",
+      "contentKey": "comments.avatars",
+      "contentRequired": ["Three commenters with avatar image, default avatar and missing avatar"],
+      "expectedUrl": "/tips/comment-avatars/#comments",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-12"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMMENTS-AVATARS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMMENTS-CLOSED",
+      "viewOrComponent": "Closed comments",
+      "contentKey": "comments.closed",
+      "contentRequired": ["Post with comments closed", "existing discussion remains readable and no reply form appears"],
+      "expectedUrl": "/tips/closed-comments/#comments",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-12"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMMENTS-CLOSED",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMMENTS-FORM-ERRORS",
+      "viewOrComponent": "Comment form errors",
+      "contentKey": "comments.form-errors",
+      "contentRequired": ["Required-field and invalid-email validation states with errors associated to inputs"],
+      "expectedUrl": "/tips/comment-form-errors/#respond",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-12"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMMENTS-FORM-ERRORS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "AUTHOR-PROFILES",
+      "viewOrComponent": "Three author profiles",
+      "contentKey": "authors.three-profiles",
+      "contentRequired": ["Three users: full avatar/bio/socials, avatar only, and no avatar/bio/socials", "no email or login-name leakage"],
+      "expectedUrl": "/author/showcase-author/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-10", "ARCHIVE-07"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:AUTHOR-PROFILES",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "AUTHOR-ZERO",
+      "viewOrComponent": "Author archive with zero posts",
+      "contentKey": "authors.zero-posts",
+      "contentRequired": ["Author has zero published posts", "canonical author URL returns the documented empty/not-found state and leaks no login name"],
+      "expectedUrl": "/author/author-no-posts/",
+      "expectedStatus": 404,
+      "specIds": ["ARCHIVE-06", "ARCHIVE-07"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:AUTHOR-ZERO",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "AUTHOR-ONE",
+      "viewOrComponent": "Author archive with one post",
+      "contentKey": "authors.one-post",
+      "contentRequired": ["Author archive contains exactly one published post and profile card"],
+      "expectedUrl": "/author/one-post-author/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-07"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:AUTHOR-ONE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "AUTHOR-25",
+      "viewOrComponent": "Author archive with 25 posts",
+      "contentKey": "authors.twenty-five-posts",
+      "contentRequired": ["Author archive contains exactly 25 published posts and paginates without duplicate or missing cards"],
+      "expectedUrl": "/author/many-posts-author/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-05", "ARCHIVE-07"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:AUTHOR-25",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "CATEGORY-METADATA",
+      "viewOrComponent": "Category descriptions and images",
+      "contentKey": "taxonomy.category-metadata",
+      "contentRequired": ["One category with description and image", "a sibling category has neither", "both have meaningful archive headers"],
+      "expectedUrl": "/category/ai/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:CATEGORY-METADATA",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/archives.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "CATEGORY-EMPTY",
+      "viewOrComponent": "Empty category archive",
+      "contentKey": "taxonomy.category-empty",
+      "contentRequired": ["Public category term with zero published posts", "empty-state copy and archive identity remain visible"],
+      "expectedUrl": "/category/empty/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-06"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:CATEGORY-EMPTY",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "CATEGORY-DEEP",
+      "viewOrComponent": "Deep category tree",
+      "contentKey": "taxonomy.category-depth",
+      "contentRequired": ["Engineering/backend/databases three-level tree with posts at leaf and parent terms"],
+      "expectedUrl": "/category/engineering/backend/databases/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:CATEGORY-DEEP",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "TAG-METADATA",
+      "viewOrComponent": "Tag descriptions and images",
+      "contentKey": "taxonomy.tag-metadata",
+      "contentRequired": ["One tag with image and intro", "another tag without image", "fallback uses a post image or neutral state"],
+      "expectedUrl": "/tag/mcp/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-02", "ARCHIVE-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:TAG-METADATA",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/archives.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "TOPIC-MANY",
+      "viewOrComponent": "Topic archive with many posts",
+      "contentKey": "taxonomy.topic-many",
+      "contentRequired": ["Topic archive with at least 25 matching posts, image, intro and pagination"],
+      "expectedUrl": "/tag/ai-security/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-02", "ARCHIVE-05"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:TOPIC-MANY",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "DATE-YEAR",
+      "viewOrComponent": "Year archive",
+      "contentKey": "archive.date-year",
+      "contentRequired": ["Year archive with posts from multiple months and years"],
+      "expectedUrl": "/2025/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:DATE-YEAR",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "DATE-MONTH",
+      "viewOrComponent": "Month archive",
+      "contentKey": "archive.date-month",
+      "contentRequired": ["Month archive with posts from at least two days"],
+      "expectedUrl": "/2025/03/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:DATE-MONTH",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "DATE-DAY",
+      "viewOrComponent": "Day archive",
+      "contentKey": "archive.date-day",
+      "contentRequired": ["Day archive with at least two posts on the same day"],
+      "expectedUrl": "/2025/03/12/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:DATE-DAY",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "PAGE-ABOUT",
+      "viewOrComponent": "About and resume page",
+      "contentKey": "page.about-resume",
+      "contentRequired": ["Published About page with profile, skills and company timeline"],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-01", "ABOUT-02", "ABOUT-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:PAGE-ABOUT",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/archives.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "PAGE-CONTACT",
+      "viewOrComponent": "Contact page",
+      "contentKey": "page.contact",
+      "contentRequired": ["Published contact page with email/social/contact form links reachable by keyboard"],
+      "expectedUrl": "/contact/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:PAGE-CONTACT",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "PAGE-PRIVACY",
+      "viewOrComponent": "Privacy page",
+      "contentKey": "page.privacy",
+      "contentRequired": ["Published privacy policy page with headings, long prose and readable links"],
+      "expectedUrl": "/privacy/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-01"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:PAGE-PRIVACY",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "PAGE-FULL-WIDTH",
+      "viewOrComponent": "Full-width page",
+      "contentKey": "page.full-width",
+      "contentRequired": ["Page uses the full-width template and has no sidebar rail"],
+      "expectedUrl": "/full-width/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-01"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:PAGE-FULL-WIDTH",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "PAGE-CANVAS",
+      "viewOrComponent": "Canvas page",
+      "contentKey": "page.canvas",
+      "contentRequired": ["Page uses the canvas template with no theme chrome and preserves readable content width"],
+      "expectedUrl": "/canvas/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-01"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:PAGE-CANVAS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "PAGE-CHILD",
+      "viewOrComponent": "Child page",
+      "contentKey": "page.child",
+      "contentRequired": ["Published child page nested beneath About", "breadcrumbs and page URL preserve ancestry"],
+      "expectedUrl": "/about/experience/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-01"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:PAGE-CHILD",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "PAGE-SIDEBAR-LESS",
+      "viewOrComponent": "Sidebar-less page",
+      "contentKey": "page.sidebarless",
+      "contentRequired": ["Published page uses the sidebar-less layout and keeps main content centered"],
+      "expectedUrl": "/sidebarless/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-01"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:PAGE-SIDEBAR-LESS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "NOTFOUND",
+      "viewOrComponent": "404 error view",
+      "contentKey": "view.not-found",
+      "contentRequired": ["Unknown URL returns HTTP 404, noindex/no-store, escaped request path and terminal chrome"],
+      "expectedUrl": "/definitely-not-here/",
+      "expectedStatus": 404,
+      "specIds": ["404-01", "404-02", "404-03", "404-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:NOTFOUND",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/notfound.spec.ts",
+          "status": "partial-baseline"
+        },
+        {
+          "file": "tests/e2e/specs/shared/http.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "NOTFOUND-SUGGESTIONS",
+      "viewOrComponent": "404 suggestions",
+      "contentKey": "view.not-found-suggestions",
+      "contentRequired": ["Unknown path similar to three existing posts", "suggestions show those posts in ranked order"],
+      "expectedUrl": "/definitely-not-here/",
+      "expectedStatus": 404,
+      "specIds": ["404-05"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:NOTFOUND-SUGGESTIONS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "NOTFOUND-RETRY",
+      "viewOrComponent": "404 retry control",
+      "contentKey": "view.not-found-retry",
+      "contentRequired": ["Retry widget appears only with JavaScript and safely checks the local post index"],
+      "expectedUrl": "/definitely-not-here/",
+      "expectedStatus": 404,
+      "specIds": ["404-06"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:NOTFOUND-RETRY",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "NOTFOUND-SEARCH",
+      "viewOrComponent": "404 search fallback",
+      "contentKey": "view.not-found-search",
+      "contentRequired": ["Search form submits and works with JavaScript disabled"],
+      "expectedUrl": "/definitely-not-here/",
+      "expectedStatus": 404,
+      "specIds": ["404-07"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:NOTFOUND-SEARCH",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "NOTFOUND-WIDTH",
+      "viewOrComponent": "404 full-width shell",
+      "contentKey": "view.not-found-layout",
+      "contentRequired": ["No rail or terminal dock on 404", "readable on phone and desktop"],
+      "expectedUrl": "/definitely-not-here/",
+      "expectedStatus": 404,
+      "specIds": ["404-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:NOTFOUND-WIDTH",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SEARCH-RESULTS",
+      "viewOrComponent": "Search results",
+      "contentKey": "search.results",
+      "contentRequired": ["Search for docker returns multiple posts", "query echoed, form prefilled and page noindex"],
+      "expectedUrl": "/?s=docker",
+      "expectedStatus": 200,
+      "specIds": ["SEARCH-01", "SEARCH-02", "SEARCH-03", "SEARCH-05"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SEARCH-RESULTS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/archives.spec.ts",
+          "status": "partial-baseline"
+        },
+        {
+          "file": "tests/e2e/specs/shared/views.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SEARCH-ONE",
+      "viewOrComponent": "Single search result",
+      "contentKey": "search.one-result",
+      "contentRequired": ["Unique query returns exactly one post and no unrelated results"],
+      "expectedUrl": "/?s=unique-showcase-result",
+      "expectedStatus": 200,
+      "specIds": ["SEARCH-01", "SEARCH-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SEARCH-ONE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SEARCH-EMPTY",
+      "viewOrComponent": "No search results",
+      "contentKey": "search.empty",
+      "contentRequired": ["No-match query shows suggestions and keeps the labeled search form"],
+      "expectedUrl": "/?s=zzzzqqqq",
+      "expectedStatus": 200,
+      "specIds": ["SEARCH-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SEARCH-EMPTY",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/archives.spec.ts",
+          "status": "partial-baseline"
+        },
+        {
+          "file": "tests/e2e/specs/shared/views.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SEARCH-SPECIAL",
+      "viewOrComponent": "Search special characters",
+      "contentKey": "search.special-characters",
+      "contentRequired": ["Query includes Unicode, ampersand, plus, slash, quotes and punctuation without malformed URL or HTML"],
+      "expectedUrl": "/?s=%E2%9C%A8+%26+%2B+%2F+%22",
+      "expectedStatus": 200,
+      "specIds": ["SEARCH-01", "SEARCH-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SEARCH-SPECIAL",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SEARCH-LONG",
+      "viewOrComponent": "Very long search query",
+      "contentKey": "search.long-query",
+      "contentRequired": ["200-character search query is preserved safely and produces a usable empty state"],
+      "expectedUrl": "/?s=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "expectedStatus": 200,
+      "specIds": ["SEARCH-02", "SEARCH-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SEARCH-LONG",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SEARCH-BLANK",
+      "viewOrComponent": "Blank search redirect",
+      "contentKey": "search.blank",
+      "contentRequired": ["Blank `?s=` request redirects to the home URL with HTTP 301; it must not render an empty results archive."],
+      "expectedUrl": "/?s=",
+      "expectedStatus": 301,
+      "specIds": ["SEARCH-06"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SEARCH-BLANK",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "tests/e2e/specs/shared/seo.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "SEARCH-SUGGESTIONS",
+      "viewOrComponent": "Search suggestions",
+      "contentKey": "search.suggestions",
+      "contentRequired": ["Search UI offers local suggestions from published content", "keyboard selection and no-result fallback work"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["SEARCH-02", "SEARCH-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:SEARCH-SUGGESTIONS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "PAGE-LANGUAGE-PAIR",
+      "viewOrComponent": "Translated content pair",
+      "contentKey": "language.translation-pair",
+      "contentRequired": ["Equivalent English and Vietnamese posts cross-link with hreflang and matching translation metadata"],
+      "expectedUrl": "/ai/prompt-caching/",
+      "expectedStatus": 200,
+      "specIds": ["SHELL-09"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:PAGE-LANGUAGE-PAIR",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "LANG-SWITCHER",
+      "viewOrComponent": "Two-language switcher",
+      "contentKey": "language.switcher",
+      "contentRequired": ["Site has English and Vietnamese enabled", "switcher appears, names the languages and navigates to the equivalent translation"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["SHELL-09"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:LANG-SWITCHER",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "RTL-POSTS",
+      "viewOrComponent": "Arabic and Hebrew posts",
+      "contentKey": "rtl.posts",
+      "contentRequired": ["Separate Arabic and Hebrew posts with correct lang/dir and readable mixed-script titles"],
+      "expectedUrl": "/rtl/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-02"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:RTL-POSTS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/rtl.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "RTL-PAGES",
+      "viewOrComponent": "Arabic and Hebrew pages",
+      "contentKey": "rtl.pages",
+      "contentRequired": ["About and contact pages rendered with site locales ar and he_IL", "document direction is RTL"],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-01"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:RTL-PAGES",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/rtl.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "RTL-COMMENTS",
+      "viewOrComponent": "Arabic and Hebrew comments",
+      "contentKey": "rtl.comments",
+      "contentRequired": ["Arabic and Hebrew comments, replies and validation labels render RTL with correct text direction"],
+      "expectedUrl": "/rtl/rtl-comments/#comments",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-12"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:RTL-COMMENTS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "RTL-MENUS",
+      "viewOrComponent": "RTL menu labels",
+      "contentKey": "rtl.menus",
+      "contentRequired": ["Arabic and Hebrew primary and footer menu labels with three-level submenu navigation"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["SHELL-02", "SHELL-06"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:RTL-MENUS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "RTL-COMPANIES",
+      "viewOrComponent": "Arabic and Hebrew companies",
+      "contentKey": "rtl.companies",
+      "contentRequired": ["Company names, roles and achievements in Arabic and Hebrew render in the mirrored timeline"],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:RTL-COMPANIES",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "RTL-MIXED",
+      "viewOrComponent": "Mixed LTR and RTL text",
+      "contentKey": "rtl.mixed-text",
+      "contentRequired": ["Arabic/Hebrew paragraphs contain isolated code, URLs and numbers", "code remains LTR and text does not overflow"],
+      "expectedUrl": "/rtl/mixed-text/",
+      "expectedStatus": 200,
+      "specIds": ["SINGLE-06"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:RTL-MIXED",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/rtl.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "RTL-LOCALE",
+      "viewOrComponent": "RTL WordPress locales",
+      "contentKey": "rtl.site-locale",
+      "contentRequired": ["Run the whole site once with locale ar and once with he_IL", "is_rtl() is true and document dir is rtl on every route"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["SHELL-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:RTL-LOCALE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "NAV-MENU",
+      "viewOrComponent": "Primary navigation",
+      "contentKey": "navigation.primary-menu",
+      "contentRequired": ["Primary menu has 12 items, three nesting levels and one deliberately long label", "overlay and keyboard behavior work"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-01", "SHELL-04", "SHELL-05"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:NAV-MENU",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "NAV-FOOTER",
+      "viewOrComponent": "Footer menus",
+      "contentKey": "navigation.footer-menus",
+      "contentRequired": ["Footer contains about, explore, connect and legal groups with nested links"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["SHELL-06"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:NAV-FOOTER",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "NAV-NO-WIDGETS",
+      "viewOrComponent": "No widgets",
+      "contentKey": "navigation.no-widgets",
+      "contentRequired": ["Site has no registered widgets", "footer, rail and page layout retain their normal spacing"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["SHELL-02", "SHELL-06"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:NAV-NO-WIDGETS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "PAGINATION-ONE",
+      "viewOrComponent": "Single-page pagination",
+      "contentKey": "navigation.pagination-one",
+      "contentRequired": ["Archive has exactly one result page and renders no misleading next-page link"],
+      "expectedUrl": "/category/one-page/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-07", "ARCHIVE-05"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:PAGINATION-ONE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "PAGINATION-THREE",
+      "viewOrComponent": "Three-page pagination",
+      "contentKey": "navigation.pagination-three",
+      "contentRequired": ["Archive has exactly three result pages", "page two and page three contain distinct posts"],
+      "expectedUrl": "/category/three-pages/page/2/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-07", "ARCHIVE-05"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:PAGINATION-THREE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "PAGINATION-TWELVE",
+      "viewOrComponent": "Twelve-page pagination",
+      "contentKey": "navigation.pagination-twelve",
+      "contentRequired": ["Archive has exactly 12 pages", "page 12 is reachable and page links preserve archive base"],
+      "expectedUrl": "/category/twelve-pages/page/12/",
+      "expectedStatus": 200,
+      "specIds": ["HOME-07", "ARCHIVE-05"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:PAGINATION-TWELVE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "TERMINAL-DOCK",
+      "viewOrComponent": "Terminal dock layout",
+      "contentKey": "terminal.dock",
+      "contentRequired": ["Dock is sticky on desktop, bottom sheet on phone, hidden on 404", "open/close returns focus"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["TERMINAL-01", "TERMINAL-02", "TERMINAL-06"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:TERMINAL-DOCK",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/shell.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "TERMINAL-KEYS",
+      "viewOrComponent": "Terminal keyboard and commands",
+      "contentKey": "terminal.keyboard-commands",
+      "contentRequired": [
+        "Tab and backtick open/close as specified",
+        "ls, cd, cat, tree, grep, open, theme and lang work",
+        "reduced motion disables caret blink"
+      ],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["TERMINAL-02", "TERMINAL-03", "TERMINAL-04", "TERMINAL-06", "TERMINAL-08"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:TERMINAL-KEYS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [
+        {
+          "file": "themes/jooservices/tests/e2e/shell.spec.ts",
+          "status": "partial-baseline"
+        }
+      ],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "TERMINAL-SAFE",
+      "viewOrComponent": "Terminal safety and loading",
+      "contentKey": "terminal.safe-readonly",
+      "contentRequired": ["Read-only commands never write or make network requests", "one FS load is cached and no state is persisted"],
+      "expectedUrl": "/",
+      "expectedStatus": 200,
+      "specIds": ["TERMINAL-05", "TERMINAL-07"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:TERMINAL-SAFE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "TERMINAL-FILESYSTEM",
+      "viewOrComponent": "Terminal filesystem size",
+      "contentKey": "terminal.filesystem-100-posts",
+      "contentRequired": ["Published terminal filesystem contains at least 100 posts and stays within documented payload cap"],
+      "expectedUrl": "/wp-json/joo/v1/terminal/fs?lang=en",
+      "expectedStatus": 200,
+      "specIds": ["TERMINAL-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:TERMINAL-FILESYSTEM",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-NEWS",
+      "viewOrComponent": "Editorial category: News",
+      "contentKey": "editorial.news",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/news/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-NEWS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-TUTORIALS",
+      "viewOrComponent": "Editorial category: Tutorials",
+      "contentKey": "editorial.tutorials",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/tutorials/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-TUTORIALS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-HOW-TOS",
+      "viewOrComponent": "Editorial category: How-tos",
+      "contentKey": "editorial.how-tos",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/how-tos/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-HOW-TOS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-REVIEWS",
+      "viewOrComponent": "Editorial category: Reviews",
+      "contentKey": "editorial.reviews",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/reviews/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-REVIEWS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-RELEASE-NOTES",
+      "viewOrComponent": "Editorial category: Release notes",
+      "contentKey": "editorial.release-notes",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/release-notes/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-RELEASE-NOTES",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-SECURITY",
+      "viewOrComponent": "Editorial category: Security advisories",
+      "contentKey": "editorial.security-advisories",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/security-advisories/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-SECURITY",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-OPINION",
+      "viewOrComponent": "Editorial category: Opinion",
+      "contentKey": "editorial.opinion",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/opinion/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-OPINION",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-CASE-STUDIES",
+      "viewOrComponent": "Editorial category: Case studies",
+      "contentKey": "editorial.case-studies",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/case-studies/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-CASE-STUDIES",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-TIPS",
+      "viewOrComponent": "Editorial category: Tips",
+      "contentKey": "editorial.tips",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/tips/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-TIPS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-HOMELAB",
+      "viewOrComponent": "Editorial category: Homelab",
+      "contentKey": "editorial.homelab",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/homelab/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-HOMELAB",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-AI",
+      "viewOrComponent": "Editorial category: AI",
+      "contentKey": "editorial.ai",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/ai/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-AI",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-DEVOPS",
+      "viewOrComponent": "Editorial category: DevOps",
+      "contentKey": "editorial.devops",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/devops/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-DEVOPS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-BACKEND",
+      "viewOrComponent": "Editorial category: Backend",
+      "contentKey": "editorial.backend",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/backend/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-BACKEND",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-FRONTEND",
+      "viewOrComponent": "Editorial category: Frontend",
+      "contentKey": "editorial.frontend",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/frontend/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-FRONTEND",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-DATABASES",
+      "viewOrComponent": "Editorial category: Databases",
+      "contentKey": "editorial.databases",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/databases/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-DATABASES",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-NETWORKING",
+      "viewOrComponent": "Editorial category: Networking",
+      "contentKey": "editorial.networking",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/networking/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-NETWORKING",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-HARDWARE",
+      "viewOrComponent": "Editorial category: Hardware",
+      "contentKey": "editorial.hardware",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/hardware/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-HARDWARE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "EDITORIAL-CAREER",
+      "viewOrComponent": "Editorial category: Career",
+      "contentKey": "editorial.career",
+      "contentRequired": [
+        "At least one published, category-appropriate article sourced from the JOOS-106 research set; record its source URL, licence/rights basis and fetch date."
+      ],
+      "expectedUrl": "/category/career/",
+      "expectedStatus": 200,
+      "specIds": ["ARCHIVE-01", "ARCHIVE-04"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:EDITORIAL-CAREER",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMPANY-ZERO",
+      "viewOrComponent": "Zero companies",
+      "contentKey": "companies.zero",
+      "contentRequired": ["About/resume page renders a clear empty state with no phantom company."],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMPANY-ZERO",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMPANY-ONE",
+      "viewOrComponent": "One company",
+      "contentKey": "companies.one",
+      "contentRequired": ["Exactly one public company with role, dates and readable timeline."],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMPANY-ONE",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMPANY-SIX",
+      "viewOrComponent": "Six companies",
+      "contentKey": "companies.six",
+      "contentRequired": ["Six public companies ordered newest first with stable date periods."],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMPANY-SIX",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMPANY-30",
+      "viewOrComponent": "Thirty companies",
+      "contentKey": "companies.thirty",
+      "contentRequired": ["Thirty public companies paginate or otherwise remain accessible without layout overflow."],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMPANY-30",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMPANY-CURRENT-ONLY",
+      "viewOrComponent": "Current-only companies",
+      "contentKey": "companies.current-only",
+      "contentRequired": ["Several past companies and one current company; current-only filter shows only the current record."],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMPANY-CURRENT-ONLY",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMPANY-RICH-FIELDS",
+      "viewOrComponent": "Company roles, achievements and custom fields",
+      "contentKey": "companies.rich-fields",
+      "contentRequired": ["Company has role history, achievements, technologies and public custom fields with long values."],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMPANY-RICH-FIELDS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMPANY-PRIVATE-FIELDS",
+      "viewOrComponent": "Private company fields",
+      "contentKey": "companies.private-fields",
+      "contentRequired": ["Company has private compensation/equity/custom values; these never appear in HTML or public REST."],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMPANY-PRIVATE-FIELDS",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMPANY-NO-LOGO",
+      "viewOrComponent": "Company without logo",
+      "contentKey": "companies.no-logo",
+      "contentRequired": ["Public company has no logo; neutral fallback renders without broken image."],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMPANY-NO-LOGO",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMPANY-LONG-TEXT",
+      "viewOrComponent": "Long company text",
+      "contentKey": "companies.long-text",
+      "contentRequired": ["Company summary and description each exceed 2,000 characters and wrap without overflow."],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMPANY-LONG-TEXT",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    },
+    {
+      "id": "COMPANY-PINNED",
+      "viewOrComponent": "Pinned current company",
+      "contentKey": "companies.pinned",
+      "contentRequired": ["Exactly one current company is pinned and appears before the history in timeline and rail."],
+      "expectedUrl": "/about/",
+      "expectedStatus": 200,
+      "specIds": ["ABOUT-03"],
+      "automatedTest": {
+        "id": "SHOWCASE-MATRIX:COMPANY-PINNED",
+        "file": "tests/e2e/specs/showcase/matrix.spec.ts",
+        "status": "planned",
+        "trackingTicket": "JOOS-97"
+      },
+      "existingCoverage": [],
+      "manualCheckOwner": "Product Owner",
+      "manualCheckStatus": "pending",
+      "verificationProfiles": ["ltr", "rtl"],
+      "checkedBy": "Not yet checked; Product Owner sign-off pending."
+    }
+  ]
+}
