@@ -1,0 +1,12 @@
+{
+  "query": {
+    "pages": [
+      {
+        "pageid": 771,
+        "revisions": [{ "revid": 991 }],
+        "title": "Fictional computing glossary entry",
+        "extract": "A short fictional extract for testing the attribution pipeline."
+      }
+    ]
+  }
+}

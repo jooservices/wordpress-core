@@ -1,0 +1,10 @@
+{
+  "type": "standard",
+  "title": "Fictional DevOps summary",
+  "pageid": 772,
+  "extract": "A fictional summary for testing the Wikimedia REST response shape.",
+  "timestamp": "2026-01-11T10:00:00Z",
+  "content_urls": {
+    "desktop": { "page": "https://en.wikipedia.org/wiki/Fictional_DevOps_summary" }
+  }
+}

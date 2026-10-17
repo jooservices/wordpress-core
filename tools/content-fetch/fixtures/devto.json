@@ -1,0 +1,12 @@
+[
+  {
+    "id": 501,
+    "title": "A fictional guide to stable queue workers",
+    "url": "https://dev.to/fixture/queue-workers",
+    "published_at": "2026-01-02T12:30:00Z",
+    "language": "en",
+    "tag_list": ["queues", "php"],
+    "description": "This fixture description must not enter a restricted snapshot.",
+    "user": { "name": "Fixture Author", "username": "fixture-author" }
+  }
+]

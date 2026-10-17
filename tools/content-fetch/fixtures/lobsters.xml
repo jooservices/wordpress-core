@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>Lobsters fixture</title><item><title>Fictional service mesh incident report</title><link>https://example.test/story/mesh</link><guid>fixture-mesh</guid><pubDate>Tue, 06 Jan 2026 09:00:00 GMT</pubDate><description>Restricted fixture text stays out of the normalized record.</description><category>networking</category></item></channel></rss>
