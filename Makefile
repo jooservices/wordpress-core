@@ -5,7 +5,7 @@ THEME ?= jooservices
 JOOS_TICKET ?= $(shell git branch --show-current | sed -nE 's/.*(JOOS-[0-9]+).*/\1/p')
 export JOOS_TICKET WP_VERSION WP_PHP_VERSION MATRIX_VARIANT
 
-.PHONY: test-marketplace critical screenshots plugins-off plugins-on plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-e2e-demo demo-package demo health perf test-matrix package docs clean hooks release
+.PHONY: migrate test-migrations staging-up staging-update staging-reseed test-marketplace critical screenshots plugins-off plugins-on plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-e2e-demo demo-package demo health perf test-matrix package docs clean hooks release
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -38,6 +38,16 @@ shared-db-create: ## Create this ticket's shared MariaDB database and scoped use
 shared-db-drop: ## Drop only this ticket's shared MariaDB database (CONFIRM=JOOS-<n>)
 	@test -n "$(JOOS_TICKET)" || { echo "run from a JOOS ticket branch or pass JOOS_TICKET=JOOS-<n>"; exit 2; }
 	@CONFIRM="$(CONFIRM)" bash ./docker/scripts/shared-db.sh drop $(JOOS_TICKET)
+migrate: ## Apply pending data migrations (migrations/) to this site; MIGRATE_ARGS=status lists them
+	@bash ./docker/scripts/wp-task.sh migrate $(THEME) $(MIGRATE_ARGS)
+test-migrations: ## Prove the migrations are idempotent (apply, forget, apply again)
+	@bash ./docker/scripts/wp-task.sh test-migrations $(THEME)
+staging-up: ## Create the project's staging site (http://jooservices-wp-themes.localhost:8082) from develop; seeds once
+	@JOOS_TICKET=staging bash ./docker/scripts/wp-task.sh staging-up $(THEME)
+staging-update: ## After a merge into develop: rebuild, migrate data, clear caches, health check
+	@JOOS_TICKET=staging bash ./docker/scripts/wp-task.sh staging-update $(THEME)
+staging-reseed: ## Replace the staging content with the pristine seed snapshot (backup first; needs CONFIRM=yes)
+	@CONFIRM="$(CONFIRM)" JOOS_TICKET=staging bash ./docker/scripts/wp-task.sh staging-reseed $(THEME)
 up: ## Create this worktree's WordPress site on the shared wp-web, install WordPress + THEME
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh up $(THEME)
