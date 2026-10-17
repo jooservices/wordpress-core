@@ -195,8 +195,9 @@ case "$action" in
     # Staging is seeded once and never reseeded by itself (that would wipe the content under review).
     staging_require_clean
     ensure_site
-    if [[ -z "$(wpx option get joo_demo_checksum 2>/dev/null </dev/null || true)" ]]; then
+    if [[ -z "$(wpx option get joo_staging_initialized 2>/dev/null </dev/null || true)" ]]; then
       seed_demo
+      wpx option update joo_staging_initialized "$(date -u +%FT%TZ)" </dev/null >/dev/null
     else
       echo "Staging already holds content: not reseeded."
     fi
