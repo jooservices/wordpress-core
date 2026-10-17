@@ -20,7 +20,7 @@ use JOOservices\ThemeCore\Kernel;
 
 final class JooservicesThemeTest extends IntegrationTestCase {
 
-	private const DIR = '/workspace/themes/jooservices';
+	private const DIR = __DIR__ . '/../..';
 
 	public function set_up(): void {
 		parent::set_up();
@@ -233,7 +233,7 @@ final class JooservicesThemeTest extends IntegrationTestCase {
 			$this->assertSame( $child . '/parts/footer.html', $part );
 			$this->assertStringContainsString( 'Footer override from the sample child theme', (string) file_get_contents( $part ) );
 
-			$blockTemplate = TemplateLocator::locate( 'profile-card', '/workspace/packages/theme-core/resources/blocks/profile-card' );
+			$blockTemplate = TemplateLocator::locate( 'profile-card', dirname( __DIR__, 4 ) . '/packages/theme-core/resources/blocks/profile-card' );
 			$this->assertSame( $child . '/parts/joo/profile-card.php', $blockTemplate );
 			$this->assertStringContainsString( 'Child block template override', do_blocks( '<!-- wp:joo/profile-card /-->' ) );
 		} finally {

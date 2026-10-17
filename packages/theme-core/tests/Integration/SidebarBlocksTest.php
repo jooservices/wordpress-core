@@ -19,7 +19,7 @@ use JOOservices\ThemeCore\Kernel;
 
 final class SidebarBlocksTest extends IntegrationTestCase {
 
-	private const MANIFEST = '/workspace/packages/theme-core/tests/Fixtures/manifests/perf.json';
+	private const MANIFEST = __DIR__ . '/../Fixtures/manifests/perf.json';
 
 	private const BLOCKS = array( 'joo/profile-card', 'joo/companies', 'joo/category-tree', 'joo/top-topics', 'joo/tag-list' );
 

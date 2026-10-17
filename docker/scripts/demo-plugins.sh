@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Installs and activates the plugins of docker/demo-plugins.json (those not marked skipInstall). Runs as www-data.
+# Installs and activates the plugins of docker/demo-plugins.json (those not marked skipInstall). Runs in the shared PHP CLI container, in the site folder.
 set -uo pipefail
-cd /var/www/html
-LIST=/workspace/docker/demo-plugins.json
+cd "${JOO_SITE_DIR:?}"
+LIST="${JOO_ROOT:?}/docker/demo-plugins.json"
 for slug in $(php -r '$j=json_decode(file_get_contents($argv[1]),true);foreach($j["plugins"] as $p){if(empty($p["skipInstall"]))echo $p["slug"],"\n";}' "$LIST"); do
   if wp plugin is-installed "$slug" 2>/dev/null; then
     wp plugin is-active "$slug" 2>/dev/null || wp plugin activate "$slug"

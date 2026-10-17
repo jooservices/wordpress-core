@@ -1,7 +1,7 @@
 // Renders 1200x630 social cards (Open Graph size) for posts that have no usable featured image, in the theme's
 // look: dark grid, accent pill with the category, the title in the theme font and the site name.
 // Used by tools/live-import.mjs; the PNGs land in the given directory.
-import { chromium } from '@playwright/test';
+import { launchBrowser } from './lib/browser.mjs';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fromRoot } from './lib/paths.mjs';
@@ -45,7 +45,7 @@ h1{font-size:${titleSize(title)}px;line-height:1.15;font-weight:600;text-wrap:ba
  */
 export async function renderCards(cards, dir) {
   if (!cards.length) return;
-  const browser = await chromium.launch();
+  const browser = await launchBrowser();
   const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
   for (const card of cards) {
     await page.setContent(cardHtml(card), { waitUntil: 'load' });

@@ -20,7 +20,7 @@ use JOOservices\ThemeCore\Tests\Fixtures\Modules\FailingModule;
 
 final class AdminTest extends IntegrationTestCase {
 
-	private const MANIFEST = '/workspace/packages/theme-core/tests/Fixtures/manifests/valid.json';
+	private const MANIFEST = __DIR__ . '/../Fixtures/manifests/valid.json';
 
 	public function set_up(): void {
 		parent::set_up();

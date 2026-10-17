@@ -118,19 +118,22 @@ export function browserResult(result, reportText = '') {
   }
 }
 
+/** The checkout as the shared PHP container sees it (the same path as on the host); '/workspace' in unit tests. */
+const ROOT_DIR = process.env.JOO_ROOT ?? '/workspace';
+
 async function testPlugin(entry, ctx, io) {
   const { wp, sh, runHealth, browserSmoke } = io;
   const notes = [];
   const out = { key: entry.key, name: entry.name, group: entry.group, result: 'PASS', notes };
-  const snapshot = `/workspace/artifacts/matrix/${entry.key}.sql`;
-  const directory = sh('mkdir -p /workspace/artifacts/matrix');
+  const snapshot = `${ROOT_DIR}/artifacts/matrix/${entry.key}.sql`;
+  const directory = sh(`mkdir -p ${ROOT_DIR}/artifacts/matrix`);
   if (directory.status !== 0)
     return { ...out, result: 'FAIL', notes: ['could not create the matrix snapshot directory'] };
   const dump = wp('db', 'export', snapshot, '--porcelain');
   if (dump.status !== 0)
     return { ...out, result: 'FAIL', notes: ['could not snapshot the database: ' + dump.stderr.trim()] };
 
-  const before = Number(sh('stat -c %s /var/log/php/wp-debug.log 2>/dev/null || echo 0').stdout.trim() || 0);
+  const before = Number(sh('stat -c %s wp-content/debug.log 2>/dev/null || echo 0').stdout.trim() || 0);
   const cleanupFailure = (description, result) => {
     if (result.status !== 0) {
       notes.push(`${description}: ${(result.stderr || result.stdout || 'command failed').trim()}`);
@@ -139,7 +142,7 @@ async function testPlugin(entry, ctx, io) {
   };
   let installed = false;
   try {
-    const manualZip = `/workspace/tests/matrix/vendor/${entry.key}.zip`;
+    const manualZip = `${ROOT_DIR}/tests/matrix/vendor/${entry.key}.zip`;
     const install =
       entry.source === 'manual'
         ? wp('plugin', 'install', manualZip, '--activate')
@@ -187,7 +190,7 @@ async function testPlugin(entry, ctx, io) {
       }
     }
 
-    const log = sh(`tail -c +$((${before} + 1)) /var/log/php/wp-debug.log 2>/dev/null || true`).stdout;
+    const log = sh(`tail -c +$((${before} + 1)) wp-content/debug.log 2>/dev/null || true`).stdout;
     const problems = phpProblems(log);
     if (problems.length) notes.push(`php log: ${problems.length} problem(s), first: ${problems[0].slice(0, 160)}`);
     if (entry.tier === 3) {

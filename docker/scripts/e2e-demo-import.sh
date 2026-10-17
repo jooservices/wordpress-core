@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Exercises the downloadable demo importer on the ticket's clean shared WordPress site.
 set -euo pipefail
-cd /var/www/html
+cd "${JOO_SITE_DIR:?}"
 
-package="${DEMO_PACKAGE:-/workspace/artifacts/package/jooservices-demo-content.zip}"
+package="${DEMO_PACKAGE:-${JOO_ROOT:?}/artifacts/package/jooservices-demo-content.zip}"
 [[ -f "$package" ]] || { echo "ERROR: demo package missing: $package" >&2; exit 1; }
 
 package_hash="$(sha256sum "$package" | awk '{print $1}')"

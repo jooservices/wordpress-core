@@ -1,7 +1,7 @@
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { chromium } from '@playwright/test';
+import { launchBrowser } from './lib/browser.mjs';
 
 /** @typedef {{ width: number; height: number }} Viewport */
 /** @typedef {{ url: () => string }} PreviewRequest */
@@ -83,7 +83,7 @@ export async function captureMarketplacePreview({
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
-  const browser = await chromium.launch();
+  const browser = await launchBrowser();
   try {
     await captureMarketplacePreview({
       browser,
