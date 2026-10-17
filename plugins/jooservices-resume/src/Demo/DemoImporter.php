@@ -886,13 +886,14 @@ final class DemoImporter {
 	private function snapshot( array $expected ): array {
 		$ids         = get_posts(
 			array(
-				'post_type'        => array_values( get_post_types() ),
-				'post_status'      => array_keys( get_post_stati() ),
-				'posts_per_page'   => -1,
-				'fields'           => 'ids',
-				'meta_key'         => self::MARKER_META,
-				'meta_value'       => (string) $this->ledgerHash(),
-				'suppress_filters' => true,
+				'post_type'      => array_values( get_post_types() ),
+				'post_status'    => array_keys( get_post_stati() ),
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'meta_key'       => self::MARKER_META,
+				'meta_value'     => (string) $this->ledgerHash(),
+				'no_found_rows'  => true,
+				'lang'           => '', // Multilingual plugins (Polylang) skip their language filter for an empty value.
 			)
 		);
 		$post_counts = array();
