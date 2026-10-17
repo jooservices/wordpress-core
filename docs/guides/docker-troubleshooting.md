@@ -29,4 +29,4 @@ make test-e2e THEME=jooservices ARGS="path/to/spec.ts --project=desktop"
 
 ## Browser tests no longer run in Docker
 
-The browser runs on the Dev VM (`docker/scripts/e2e-vm.sh`), so `Target crashed` from Docker memory pressure no longer applies to E2E. If a run cannot start, check `ssh dev true`, that port 9300 is free on the VM (`ss -ltn`), that no other process holds the WordPress lock, and that `workspaces-wp-web` is running. `403 Forbidden` on the WebSocket means the test did not go through the loopback forwarder.
+The browser runs on the Dev VM (`scripts/docker/e2e-vm`), so `Target crashed` from Docker memory pressure no longer applies to E2E. If a run cannot start, check `ssh dev true`, that `workspaces-wp-web` is running (`scripts/docker/shared web-up`) and that the site is registered (`scripts/docker/web-site list`). `403 Forbidden` on the browser WebSocket means the test did not go through the loopback forwarder of `e2e-vm`.
