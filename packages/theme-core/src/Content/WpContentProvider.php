@@ -116,7 +116,8 @@ final class WpContentProvider implements ContentProviderInterface {
 					$this->pinnedCompany()
 				);
 			},
-			array( 'profile', 'companies' ),
+			// The settings tag too: the owner is chosen by the setting content.profile_user_id.
+			array( 'profile', 'companies', 'settings' ),
 			'content'
 		);
 		return $result instanceof Profile ? $result : null;
@@ -514,20 +515,38 @@ final class WpContentProvider implements ContentProviderInterface {
 	 * @param int $id Post id.
 	 */
 	private function company( int $id ): Company {
-		$to   = (string) get_post_meta( $id, '_joo_company_to', true );
-		$logo = (int) get_post_meta( $id, '_joo_company_logo_id', true );
+		$to      = (string) get_post_meta( $id, '_joo_company_to', true );
+		$logo    = (int) get_post_meta( $id, '_joo_company_logo_id', true );
+		$summary = Text::plain( (string) get_post_meta( $id, '_joo_company_summary', true ) );
 		return new Company(
 			$id,
 			Text::plain( get_the_title( $id ) ),
-			Text::plain( (string) get_post_meta( $id, '_joo_company_role', true ) ),
+			$this->currentRole( $id, Text::plain( (string) get_post_meta( $id, '_joo_company_role', true ) ) ),
 			(string) get_post_meta( $id, '_joo_company_from', true ),
 			$to,
 			'' === $to,
 			(bool) get_post_meta( $id, '_joo_company_pinned', true ),
-			Text::plain( (string) get_post( $id )?->post_excerpt ),
+			'' !== $summary ? $summary : Text::plain( (string) get_post( $id )?->post_excerpt ),
 			(string) get_post_meta( $id, '_joo_company_url', true ),
 			$logo > 0 ? $this->image( $logo, 'thumbnail' ) : null
 		);
+	}
+
+	/**
+	 * The title of the newest role of a company (the resume plugin stores the roles newest first as JSON, either {"v":1,"items":[...]} or a plain list), or the
+	 * single role field when the company has no roles. Only the public role title is read; the plugin stays independent
+	 * of the theme core.
+	 *
+	 * @param int    $id     Company post id.
+	 * @param string $legacy The single role field.
+	 */
+	private function currentRole( int $id, string $legacy ): string {
+		$roles = json_decode( (string) get_post_meta( $id, '_joo_company_roles', true ), true );
+		// Versioned envelope with an items list, or a plain list.
+		$roles = is_array( $roles ) && isset( $roles['items'] ) && is_array( $roles['items'] ) ? $roles['items'] : $roles;
+		$first = is_array( $roles ) && isset( $roles[0] ) && is_array( $roles[0] ) ? $roles[0] : array();
+		$title = Text::plain( (string) ( $first['title'] ?? '' ) );
+		return '' !== $title ? $title : $legacy;
 	}
 
 	/**

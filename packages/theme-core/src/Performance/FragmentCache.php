@@ -55,7 +55,10 @@ final class FragmentCache {
 		add_action( 'profile_update', fn() => $this->bump( 'profile' ) );
 		add_action( 'updated_user_meta', fn() => $this->bump( 'profile' ) );
 		add_action( 'added_user_meta', fn() => $this->bump( 'profile' ) );
-		add_action( 'updated_option', array( $this, 'onOptionChange' ) );
+		// A first save after a reset is an add_option() and a reset may delete the row: all three change the settings.
+		foreach ( array( 'updated_option', 'added_option', 'deleted_option' ) as $hook ) {
+			add_action( $hook, array( $this, 'onOptionChange' ) );
+		}
 		foreach ( array( 'added_post_meta', 'updated_post_meta', 'deleted_post_meta' ) as $hook ) {
 			add_action( $hook, array( $this, 'onPostMeta' ), 10, 3 );
 		}

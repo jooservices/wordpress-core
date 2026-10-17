@@ -17,6 +17,32 @@ describe('wxr generator', () => {
   const one = build(42);
   const two = build(42);
 
+  it('gives every company the fields of the resume plugin as valid JSON and the About page the resume block', () => {
+    const doc = new XMLParser({ ignoreAttributes: false }).parse(one.xml);
+    const items = [doc.rss.channel.item].flat();
+    const companies = items.filter((i) => i['wp:post_type'] === 'joo_company');
+    const metaOf = (item) =>
+      Object.fromEntries([item['wp:postmeta']].flat().map((m) => [m['wp:meta_key'], m['wp:meta_value']]));
+    for (const company of companies) {
+      const meta = metaOf(company);
+      expect(meta._joo_company_summary.length, company['title']).toBeGreaterThan(0);
+      expect(meta._joo_company_summary.length).toBeLessThanOrEqual(200);
+      for (const key of ['roles', 'achievements', 'technologies']) {
+        expect(Array.isArray(JSON.parse(meta[`_joo_company_${key}`])), key).toBe(true);
+      }
+      const roles = JSON.parse(meta._joo_company_roles);
+      expect(roles.length).toBeGreaterThan(0);
+      for (const role of roles) expect(Object.keys(role).sort()).toEqual(['from', 'summary', 'title', 'to']);
+      expect(typeof JSON.parse(meta._joo_company_custom)).toBe('object');
+    }
+    const definitions = JSON.parse(one.settings.options.joo_resume_custom_fields);
+    expect(definitions.filter((d) => d.public).map((d) => d.key)).toEqual(['team_size', 'focus']);
+    expect(definitions.find((d) => !d.public).key).toBe('internal_note');
+    const about = items.find((i) => i['wp:post_name'] === 'about');
+    expect(about['content:encoded']).toContain('<!-- wp:joo/resume /-->');
+    expect(about['content:encoded']).not.toContain('wp:joo/companies');
+  });
+
   it('is byte-identical across runs', () => {
     expect(one.xml).toBe(two.xml);
     expect(one.media.map((m) => m.buffer.toString('base64'))).toEqual(

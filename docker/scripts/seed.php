@@ -74,6 +74,12 @@ WP_CLI::log( sprintf( 'Removed %d previous demo posts.', count( $old ) ) );
 $settings = json_decode( (string) file_get_contents( $dir . '/settings.json' ), true );
 $menus    = json_decode( (string) file_get_contents( $dir . '/menus.json' ), true );
 
+// The custom field definitions must exist before the companies are imported: the resume plugin drops custom values
+// that have no definition when it sanitises them.
+if ( isset( $settings['options']['joo_resume_custom_fields'] ) ) {
+	update_option( 'joo_resume_custom_fields', $settings['options']['joo_resume_custom_fields'], false );
+}
+
 // 2. Users.
 $users = array();
 $ensure_user = static function ( string $login, string $role, string $name ) use ( &$users ) {
@@ -255,6 +261,8 @@ foreach ( $items as $item ) {
 			update_post_meta( $id, '_yoast_wpseo_primary_category', $term_ids[ 'category:' . $v ] ?? 0 );
 		} elseif ( '_joo_company_pinned' === $k ) {
 			update_post_meta( $id, $k, '1' === $v );
+		} elseif ( in_array( $k, array( '_joo_company_roles', '_joo_company_achievements', '_joo_company_technologies', '_joo_company_custom' ), true ) ) {
+			update_post_meta( $id, $k, wp_slash( $v ) ); // JSON strings: update_post_meta() would strip the backslashes.
 		} else {
 			update_post_meta( $id, $k, $v );
 		}

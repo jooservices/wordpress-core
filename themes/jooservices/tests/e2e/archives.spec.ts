@@ -42,7 +42,7 @@ test.describe('archives, search and pages', () => {
   test('the About page is full width and lists the companies', async ({ page }) => {
     await page.goto('/about/');
     await expect(page.locator('#joo-rail')).toHaveCount(0);
-    await expect(page.locator('.joo-main .joo-company').first()).toBeVisible();
+    await expect(page.locator('.joo-main .joo-resume__item').first()).toBeVisible();
   });
 
   test('the Vietnamese posts are tagged for translation', async ({ page }) => {

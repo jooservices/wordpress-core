@@ -126,9 +126,11 @@ test.describe('Resume front end', () => {
     await runAxe(page, { include: 'main' });
     await noHorizontalScroll(page);
     await page.goto(pages.rich);
-    await expect(page.locator('.joo-resume__roles li')).toHaveCount(2);
-    await expect(page.locator('.joo-resume__achievements li')).toHaveCount(10);
-    await expect(page.locator('.joo-resume__tags li')).toHaveCount(3);
+    // Only the companies of this test: the demo companies have roles, achievements and technologies of their own.
+    const marked = page.locator('.joo-resume__item').filter({ hasText: MARK });
+    await expect(marked.locator('.joo-resume__roles li')).toHaveCount(2);
+    await expect(marked.locator('.joo-resume__achievements li')).toHaveCount(10);
+    await expect(marked.locator('.joo-resume__tags li')).toHaveCount(3);
     await runAxe(page, { include: 'main' });
     await noHorizontalScroll(page);
   });
