@@ -4,7 +4,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 ROOT="$(cd "$SCRIPT_DIR/../.." && pwd -P)"
 
 usage() {
-  echo "Usage: shared-db.sh create JOOS-<number> | drop JOOS-<number> (drop requires CONFIRM=JOOS-<number>)" >&2
+  echo "Usage: shared-db.sh create JOOS-<number>|staging | drop JOOS-<number>|staging (drop requires CONFIRM=<the same name>)" >&2
   exit 2
 }
 
@@ -12,9 +12,12 @@ usage() {
 action="$1"
 ticket="$2"
 [[ "$action" == create || "$action" == drop ]] || usage
-[[ "$ticket" =~ ^JOOS-([0-9]+)$ ]] || usage
-ticket_number="${BASH_REMATCH[1]}"
-database="wp_JOOS_${ticket_number}"
+if [[ "$ticket" == staging ]]; then
+  database="wp_staging"
+else
+  [[ "$ticket" =~ ^JOOS-([0-9]+)$ ]] || usage
+  database="wp_JOOS_${BASH_REMATCH[1]}"
+fi
 username="$database"
 
 if [[ "$action" == drop && "${CONFIRM:-}" != "$ticket" ]]; then

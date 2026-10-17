@@ -5,7 +5,7 @@
 
 WEB_NAME="${WP_WEB_NAME:-workspaces-wp-web}"
 JOO_SITE_PORT="${JOO_SITE_PORT:-8082}"
-JOO_SITE_HOST="$(printf '%s' "$ticket" | tr 'A-Z' 'a-z').jooservices-wp-themes"
+if [[ "$ticket" == staging ]]; then JOO_SITE_HOST="jooservices-wp-themes"; else JOO_SITE_HOST="$(printf '%s' "$ticket" | tr 'A-Z' 'a-z').jooservices-wp-themes"; fi
 SITE_URL="http://$JOO_SITE_HOST.localhost:$JOO_SITE_PORT"
 JOO_SITE_DIR="$ROOT/artifacts/wp"
 JOO_ROOT="$ROOT"

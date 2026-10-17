@@ -46,6 +46,18 @@ Tools that open a browser (`screenshots`, `critical`, `marketplace-preview`, `so
 
 Known limit: layout-shift budgets are measured in a browser reached over an ssh tunnel; slower resource delivery shifts layout more than on a local browser, so `make test-matrix` can report CLS above its 0.02 budget (0.03 to 0.07 measured on the home, search and single pages) that a local browser would not.
 
+## Staging site (the project checkout)
+
+The project checkout (`projects/jooservices-wp-themes`, branch `develop`) is the local staging the owner reviews: `http://jooservices-wp-themes.localhost:8082` (`.localhost`, not `.local`, which macOS resolves through mDNS and takes about 5 seconds). It is one more site of `wp-web` (vhost `jooservices-wp-themes.localhost`, database `wp_staging`, shared Mailpit); no container is added. A worktree differs only in being temporary and ticket-sized.
+
+| Command (in the project checkout) | What it does |
+|---|---|
+| `make staging-up` | Creates the site; seeds it from the stored snapshot **once**; never reseeds an existing site |
+| `make staging-update` | After a merge into `develop`: rebuilds assets, runs `core update-db` and the data migrations, clears caches, health check |
+| `make staging-reseed CONFIRM=yes` | Replaces the content with the pristine snapshot (a backup is taken first) |
+
+Rules: staging runs only in the main checkout (not a worktree), only on `develop`, and only with a clean working tree, so it shows committed code only; merge a ticket into `develop` in that checkout, then run `make staging-update`. Before anything that can change the content, a dump is written to `Workspaces/artifacts/jooservices-wp-themes/staging-backups/` (the newest 5 are kept).
+
 ## Owner demo
 
-The owner demo is not part of this setup. It becomes one more site of `wp-web` (own vhost, own database, shared Mailpit); see the follow-up ticket JOOS-127.
+The owner demo moved to the shared services (JOOS-127) and is now the content of the staging site.

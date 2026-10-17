@@ -36,10 +36,15 @@ if [[ -z "$ticket" ]]; then
   branch="$(git -C "$ROOT" branch --show-current)"
   if [[ "$branch" =~ (JOOS-[0-9]+) ]]; then ticket="${BASH_REMATCH[1]}"; fi
 fi
-[[ "$ticket" =~ ^JOOS-[0-9]+$ ]] || {
+[[ "$ticket" =~ ^(JOOS-[0-9]+|staging)$ ]] || {
   echo "ERROR: run this target from a JOOS ticket worktree or set JOOS_TICKET." >&2
   exit 2
 }
+# The staging site is the project checkout itself: it must be the main checkout (not a worktree) on develop.
+if [[ "$ticket" == staging ]]; then
+  [[ "$(git -C "$ROOT" rev-parse --git-dir)" == "$(git -C "$ROOT" rev-parse --git-common-dir)" ]] || { echo "ERROR: staging runs only in the project checkout, not in a worktree." >&2; exit 2; }
+  [[ "$(git -C "$ROOT" branch --show-current)" == develop ]] || { echo "ERROR: staging runs only from the develop branch of the project checkout." >&2; exit 2; }
+fi
 
 source "$ROOT/docker/scripts/site-lib.sh"
 cd "$ROOT"
@@ -134,6 +139,21 @@ seed_demo() {
   fi
 }
 
+# Staging keeps the content the owner reviews: a database dump is taken before anything that can change it (migrations,
+# a reseed). The newest 5 dumps are kept in the local artifact folder.
+staging_backup() {
+  local dir="$workspaces_root/artifacts/jooservices-wp-themes/staging-backups" out
+  mkdir -p "$dir"
+  out="$dir/wp_staging-$(date -u +%Y%m%dT%H%M%SZ).sql.gz"
+  wpx db export - </dev/null | gzip > "$out"
+  ls -1t "$dir"/wp_staging-*.sql.gz | tail -n +6 | while read -r old; do rm -f "$old"; done
+  echo "Backed up staging to $out"
+}
+
+staging_require_clean() {
+  [[ -z "$(git -C "$ROOT" status --porcelain)" ]] || { echo "ERROR: the staging checkout has uncommitted changes; staging must show committed develop only." >&2; exit 2; }
+}
+
 health_check() {
   local values
   values="$(wpx eval-file "$ROOT/docker/scripts/health-values.php" </dev/null)"
@@ -148,6 +168,37 @@ case "$action" in
   seed|seed-reset|seed-live)
     ensure_site
     seed_demo
+    ;;
+  staging-up)
+    # Staging is seeded once and never reseeded by itself (that would wipe the content under review).
+    staging_require_clean
+    ensure_site
+    if [[ -z "$(wpx option get joo_demo_checksum 2>/dev/null </dev/null || true)" ]]; then
+      seed_demo
+    else
+      echo "Staging already holds content: not reseeded."
+    fi
+    echo "Staging ready at $SITE_URL"
+    ;;
+  staging-update)
+    # After a merge into develop: rebuild assets, bring the data up to date, clear caches, check health.
+    staging_require_clean
+    ensure_site
+    wpx core update-db </dev/null
+    wpx cache flush </dev/null
+    wpx transient delete --all </dev/null
+    wpx rewrite flush </dev/null 2>/dev/null || true
+    health_check
+    echo "Staging updated: $SITE_URL ($(git -C "$ROOT" rev-parse --short HEAD))"
+    ;;
+  staging-reseed)
+    [[ "${CONFIRM:-}" == yes ]] || { echo "staging-reseed replaces the staging content with the pristine seed snapshot. A backup is taken first. Re-run with CONFIRM=yes." >&2; exit 2; }
+    staging_require_clean
+    ensure_site
+    staging_backup
+    action=seed-reset
+    seed_demo
+    echo "Staging reseeded at $SITE_URL"
     ;;
   integration)
     ensure_site
