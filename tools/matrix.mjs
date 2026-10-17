@@ -1,22 +1,20 @@
 // Compatibility matrix: test the active theme with selected plugins and report the exact runtime.
 // Usage: make test-matrix THEME=jooservices [WP_VERSION=6.6] [WP_PHP_VERSION=8.3] [ARGS="--child-theme"]
 // Add --runtime-only to check the selected runtime without installing plugins.
-import { execFileSync, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { run as runHealth } from './health.mjs';
 import { browserResult, readRuntime, prepareChildTheme, removeChildTheme, runMatrix } from './matrix-core.mjs';
 
 export * from './matrix-core.mjs';
 
-const webName = process.env.WP_WEB_NAME ?? 'workspaces-wp-web';
-// The shared wp-web container (one at a time; the caller holds the WordPress lock).
-const webx = (...args) =>
-  spawnSync('docker', ['exec', '-i', '-u', 'www-data', '-w', '/var/www/html', webName, ...args], {
-    encoding: 'utf8',
-    input: '',
-  });
-const wp = (...args) => webx('wp', ...args);
-const sh = (script) => webx('bash', '-c', script);
+// WP-CLI and shell commands run in the shared PHP CLI container, in this worktree's site folder (JOO_SITE_DIR).
+const rt = (...args) => spawnSync('bash', ['./docker/scripts/runtime.sh', ...args], { encoding: 'utf8', input: '' });
+const wp = (...args) => rt('wp', ...args);
+const sh = (script) => rt('sh', script);
+const root = process.env.JOO_ROOT ?? '/workspace';
+// The checkout as wp-web (where Playwright runs) sees it.
+const webRoot = process.env.JOO_WEB_ROOT ?? '/workspace';
 
 export function browserSmoke(
   plugin,
@@ -47,7 +45,7 @@ export function browserSmoke(
         E2E_BASE_URL: ctx.browserBase,
         MATRIX_PLUGIN: `${plugin} (${theme})`,
         MATRIX_PATHS: JSON.stringify(ctx.paths),
-        PLAYWRIGHT_JSON_OUTPUT_NAME: `/workspace/${json}`,
+        PLAYWRIGHT_JSON_OUTPUT_NAME: `${webRoot}/${json}`,
       },
     }
   );
@@ -71,25 +69,11 @@ const defaultIO = {
   prepareChildTheme: (parent) => prepareChildTheme(parent, wp),
   removeChildTheme: (child) => removeChildTheme(child, wp, console.error),
   readJson: (path) => JSON.parse(readFileSync(path, 'utf8')),
-  readValues: () =>
-    JSON.parse(
-      execFileSync(
-        'docker',
-        [
-          'exec',
-          '-i',
-          '-u',
-          'www-data',
-          '-w',
-          '/var/www/html',
-          webName,
-          'wp',
-          'eval-file',
-          '/scripts/health-values.php',
-        ],
-        { encoding: 'utf8', input: '' }
-      )
-    ),
+  readValues: () => {
+    const result = wp('eval-file', `${root}/docker/scripts/health-values.php`);
+    if (result.status !== 0) throw new Error(`could not read the health values: ${result.stderr}`);
+    return JSON.parse(result.stdout);
+  },
   hasZip: (key) => existsSync(`tests/matrix/vendor/${key}.zip`),
   mkdir: (path) => mkdirSync(path, { recursive: true }),
   write: (path, content) => writeFileSync(path, content),

@@ -66,17 +66,71 @@ ensure_site() {
   site_up
 }
 
+# Seed snapshots: the demo content is generated and seeded ONCE per (dataset, WordPress version, code that shapes the data)
+# and stored as a local artifact; every other worktree imports it (database dump + cloned uploads) instead of seeding.
+snap_root="$workspaces_root/artifacts/jooservices-wp-themes/snapshots"
+snapshot_dir() {
+  local code
+  code="$(cd "$ROOT" && find tools/wxr-generator docker/scripts/seed.php docker/scripts/seed.sh plugins/jooservices-resume/src packages/theme-core/src -type f -print0 | sort -z | xargs -0 shasum -a 256 | shasum -a 256 | cut -c1-12)"
+  printf '%s/%s-wp%s-%s' "$snap_root" "${DEMO_SET:-$theme}" "$(wpx core version)" "$code"
+}
+snapshot_import() { # $1 = snapshot dir
+  wpx db reset --yes >/dev/null
+  wpx db import "$1/db.sql"
+  wpx search-replace "http://seed.localhost" "$SITE_URL" --all-tables --precise --quiet
+  rm -rf "$JOO_SITE_DIR/wp-content/uploads"
+  if [[ -d "$1/uploads" ]]; then cp -cR "$1/uploads" "$JOO_SITE_DIR/wp-content/uploads"; else mkdir -p "$JOO_SITE_DIR/wp-content/uploads"; fi
+  local admin
+  admin="$(wpx user list --role=administrator --field=ID </dev/null | head -1)"
+  wpx user update "$admin" --user_pass="$WP_ADMIN_PASSWORD" --skip-email >/dev/null
+  wpx core update-db >/dev/null
+  wpx theme activate "$theme" >/dev/null
+  wpx plugin activate jooservices-resume >/dev/null 2>&1 || true
+  wpx rewrite flush >/dev/null 2>&1 || true
+  echo "Imported the seed snapshot $(basename "$1") (checksum $(wpx option get joo_demo_checksum | cut -c1-8))."
+}
+snapshot_export() { # $1 = snapshot dir
+  local tmp="$1.tmp.$$"
+  mkdir -p "$tmp"
+  wpx search-replace "$SITE_URL" "http://seed.localhost" --all-tables --precise --export="$tmp/db.sql" --quiet
+  if [[ -d "$JOO_SITE_DIR/wp-content/uploads" ]]; then cp -cR "$JOO_SITE_DIR/wp-content/uploads" "$tmp/uploads"; fi
+  printf '{"wordpress":"%s","checksum":"%s","created":"%s","theme":"%s"}\n' "$(wpx core version)" "$(wpx option get joo_demo_checksum)" "$(date -u +%FT%TZ)" "$theme" > "$tmp/manifest.json"
+  rm -rf "$1"; mv "$tmp" "$1"
+  echo "Stored the seed snapshot $(basename "$1") in $snap_root"
+}
+
 seed_demo() {
+  local dir seeded=0
   if [[ "$action" == seed-live ]]; then
     rt node tools/live-import.mjs --source "${SOURCE:-artifacts/live/jooservices.com.json}" --out artifacts/demo/live
-    DEMO_SET=live site_script seed.sh "$theme" --reset
-    return
-  fi
-  rt node tools/wxr-generator/generate.mjs --out "artifacts/demo/$theme" >/dev/null
-  if [[ "$action" == seed-reset ]]; then
-    site_script seed.sh "$theme" --reset
+    export DEMO_SET=live
   else
-    site_script seed.sh "$theme"
+    rt node tools/wxr-generator/generate.mjs --out "artifacts/demo/$theme" >/dev/null
+  fi
+  dir="$(snapshot_dir)"
+  if [[ ! -f "$dir/manifest.json" ]]; then
+    mkdir -p "$snap_root"
+    if mkdir "$dir.lock" 2>/dev/null; then   # the first worktree to need it generates the snapshot, the others wait
+      trap 'rmdir "$dir.lock" 2>/dev/null; restore_sources' EXIT
+      if [[ "$action" == seed-live || "$action" == seed-reset ]]; then site_script seed.sh "$theme" --reset; else site_script seed.sh "$theme"; fi
+      snapshot_export "$dir"
+      rmdir "$dir.lock"; trap restore_sources EXIT
+      seeded=1
+    else
+      echo "Waiting for another worktree to generate the seed snapshot ..."
+      for _ in $(seq 1 600); do [[ -f "$dir/manifest.json" ]] && break; sleep 2; done
+      [[ -f "$dir/manifest.json" ]] || { echo "ERROR: the seed snapshot was not produced in time (stale lock $dir.lock?)." >&2; exit 1; }
+    fi
+  fi
+  ((seeded)) && return 0
+  # Import unless this site already holds exactly this dataset (seed-reset always starts from the pristine snapshot).
+  local current wanted
+  current="$(wpx option get joo_demo_checksum 2>/dev/null </dev/null || true)"
+  wanted="$(sed -n 's/.*"checksum":"\([^"]*\)".*/\1/p' "$dir/manifest.json")"
+  if [[ "$action" != seed-reset && "$action" != seed-live && "$current" == "$wanted" ]]; then
+    echo "Demo content is up to date (checksum ${current:0:8})."
+  else
+    snapshot_import "$dir"
   fi
 }
 

@@ -11,7 +11,7 @@ JOO_SITE_DIR="$ROOT/artifacts/wp"
 JOO_ROOT="$ROOT"
 JOO_WORKSPACES="$workspaces_root"
 JOO_WEB_ROOT="/var/www/html/${ROOT#"$workspaces_root"/}"   # this checkout as wp-web sees it
-export JOO_SITE_HOST JOO_SITE_PORT JOO_SITE_DIR JOO_ROOT JOO_WORKSPACES
+export JOO_SITE_HOST JOO_SITE_PORT JOO_SITE_DIR JOO_ROOT JOO_WORKSPACES JOO_WEB_ROOT
 export WP_SITE_URL="$SITE_URL" WP_VERSION="${WP_VERSION:-$(get_env WP_VERSION)}" THEME="${theme:-jooservices}"
 export WORDPRESS_DB_HOST=mariadb:3306 WORDPRESS_DB_NAME="$(get_env DB_NAME)" WORDPRESS_DB_USER="$(get_env DB_USER)" WORDPRESS_DB_PASSWORD="$(get_env DB_PASSWORD)"
 export WP_ADMIN_USER="$(get_env WP_ADMIN_USER)" WP_ADMIN_PASSWORD="$(get_env WP_ADMIN_PASSWORD)" WP_ADMIN_EMAIL="$(get_env WP_ADMIN_EMAIL)"
