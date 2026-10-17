@@ -20,7 +20,7 @@ use JOOservices\ThemeCore\Kernel;
 
 final class AssetsTest extends IntegrationTestCase {
 
-	private const MANIFEST = '/workspace/packages/theme-core/tests/Fixtures/manifests/valid.json';
+	private const MANIFEST = __DIR__ . '/../Fixtures/manifests/valid.json';
 
 	private string $tmpTheme = '';
 
@@ -272,7 +272,7 @@ final class AssetsTest extends IntegrationTestCase {
 	}
 
 	public function test_asset_manifest_reader(): void {
-		$manifest = AssetManifest::fromFile( '/workspace/packages/theme-core/resources/build/assets.json', 'https://x.test/build/' );
+		$manifest = AssetManifest::fromFile( __DIR__ . '/../../resources/build/assets.json', 'https://x.test/build/' );
 		$this->assertTrue( $manifest->has( 'runtime' ) );
 		$this->assertMatchesRegularExpression( '#^https://x\.test/build/js/runtime-[A-Za-z0-9]+\.js$#', $manifest->url( 'runtime' ) );
 		$this->assertSame( '', $manifest->url( 'nope' ) );

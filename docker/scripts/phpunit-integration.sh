@@ -1,32 +1,34 @@
 #!/usr/bin/env bash
-# Runs the wp-phpunit integration suites inside the wordpress container (called by `make test-integration`).
+# Runs the wp-phpunit integration suites in the shared PHP CLI container (called by `make test-integration`).
+# Environment: JOO_ROOT (checkout), JOO_SITE_DIR (this worktree's WordPress site), WORDPRESS_DB_*, JOO_TEST_THEME, COVERAGE.
 # The tests library must match the WordPress series; when the repository's wp-phpunit does not, the matching
-# release is installed into /tmp (needs network).
+# release is installed under artifacts/wp-tests-lib (needs network).
 set -euo pipefail
-cd /workspace
-WP_VER="$(cd /var/www/html && wp core version)"
+ROOT="${JOO_ROOT:?}"
+cd "$ROOT"
+WP_VER="$(cd "${JOO_SITE_DIR:?}" && wp core version)"
 SERIES="${WP_VER%.*}"
-LOCKED="$(php -r '$i=json_decode(file_get_contents("/workspace/vendor/composer/installed.json"),true);foreach(($i["packages"]??$i) as $p){if($p["name"]==="wp-phpunit/wp-phpunit"){echo $p["version"];}}')"
+LOCKED="$(php -r '$i=json_decode(file_get_contents(getenv("JOO_ROOT")."/vendor/composer/installed.json"),true);foreach(($i["packages"]??$i) as $p){if($p["name"]==="wp-phpunit/wp-phpunit"){echo $p["version"];}}')"
 LOCKED_SERIES="$(printf '%s' "${LOCKED#v}" | cut -d. -f1,2)"
 if [ "$LOCKED_SERIES" = "$SERIES" ]; then
-  export WP_TESTS_DIR="/workspace/vendor/wp-phpunit/wp-phpunit"
+  export WP_TESTS_DIR="$ROOT/vendor/wp-phpunit/wp-phpunit"
 else
-  LIB="/tmp/wp-phpunit-${SERIES}"
+  LIB="$ROOT/artifacts/wp-tests-lib/${SERIES}"
   if [ ! -f "${LIB}/vendor/wp-phpunit/wp-phpunit/includes/functions.php" ]; then
     mkdir -p "$LIB" && cd "$LIB"
     printf '{"name":"joowt/wp-tests-lib","require":{"wp-phpunit/wp-phpunit":"%s.*"},"config":{"platform":{"php":"8.1.99"}}}' "$SERIES" > composer.json
     composer install --no-interaction --no-progress --quiet
-    cd /workspace
+    cd "$ROOT"
   fi
   export WP_TESTS_DIR="${LIB}/vendor/wp-phpunit/wp-phpunit"
 fi
-export WP_PHPUNIT__TESTS_CONFIG=/workspace/tests/wp-tests-config.php
-mkdir -p /workspace/artifacts/reports/integration
+export WP_PHPUNIT__TESTS_CONFIG="$ROOT/tests/wp-tests-config.php"
+mkdir -p "$ROOT/artifacts/reports/integration"
 echo "WordPress ${WP_VER} (tests lib ${WP_TESTS_DIR})"
 PHP_FLAGS=(-d error_reporting=24575)
 if [ "${COVERAGE:-0}" = "1" ]; then
-  PHP_FLAGS+=(-d pcov.enabled=1 -d pcov.directory=/workspace)
-  mkdir -p /workspace/artifacts/reports/cov
+  PHP_FLAGS+=(-d pcov.enabled=1 -d pcov.directory="$ROOT")
+  mkdir -p "$ROOT/artifacts/reports/cov"
 fi
 
 run_suite() {
@@ -34,11 +36,11 @@ run_suite() {
   shift
   local coverage=()
   if [ "${COVERAGE:-0}" = "1" ]; then
-    coverage+=(--coverage-php "/workspace/artifacts/reports/cov/integration-${WP_VER}-${suite}.cov")
+    coverage+=(--coverage-php "$ROOT/artifacts/reports/cov/integration-${WP_VER}-${suite}.cov")
   fi
-  php "${PHP_FLAGS[@]}" /workspace/vendor/bin/phpunit -c /workspace/phpunit-integration.xml.dist \
+  php "${PHP_FLAGS[@]}" "$ROOT/vendor/bin/phpunit" -c "$ROOT/phpunit-integration.xml.dist" \
     --testsuite "$suite" \
-    --log-junit "/workspace/artifacts/reports/integration/junit-${WP_VER}-${suite}.xml" \
+    --log-junit "$ROOT/artifacts/reports/integration/junit-${WP_VER}-${suite}.xml" \
     "${coverage[@]}" "$@"
 }
 

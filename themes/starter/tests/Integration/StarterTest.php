@@ -15,7 +15,7 @@ use JOOservices\ThemeCore\Kernel;
 
 final class StarterTest extends IntegrationTestCase {
 
-	private const DIR = '/workspace/themes/starter';
+	private const DIR = __DIR__ . '/../..';
 
 	public function set_up(): void {
 		parent::set_up();

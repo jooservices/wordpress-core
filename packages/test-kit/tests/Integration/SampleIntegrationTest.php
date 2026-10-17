@@ -31,6 +31,6 @@ final class SampleIntegrationTest extends IntegrationTestCase {
 	}
 
 	public function test_resume_plugin_file_is_loaded_when_present(): void {
-		$this->assertFileExists( '/workspace/plugins/jooservices-resume/jooservices-resume.php' );
+		$this->assertFileExists( dirname( __DIR__, 4 ) . '/plugins/jooservices-resume/jooservices-resume.php' );
 	}
 }

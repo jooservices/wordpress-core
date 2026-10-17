@@ -23,7 +23,7 @@ use JOOservices\ThemeCore\Lazy\SectionLazy;
 
 final class LazyTest extends IntegrationTestCase {
 
-	private const MANIFEST = '/workspace/packages/theme-core/tests/Fixtures/manifests/perf.json';
+	private const MANIFEST = __DIR__ . '/../Fixtures/manifests/perf.json';
 
 	public function set_up(): void {
 		parent::set_up();

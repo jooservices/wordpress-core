@@ -29,7 +29,7 @@ use JOOservices\ThemeCore\Seo\YieldPolicy;
 
 final class SeoTest extends IntegrationTestCase {
 
-	private const MANIFEST = '/workspace/packages/theme-core/tests/Fixtures/manifests/perf.json';
+	private const MANIFEST = __DIR__ . '/../Fixtures/manifests/perf.json';
 
 	public function set_up(): void {
 		parent::set_up();
@@ -425,7 +425,7 @@ final class SeoTest extends IntegrationTestCase {
 	}
 
 	public function test_hreflang_is_reciprocal_and_has_x_default(): void {
-		$printer = $this->boot( array(), '/workspace/packages/theme-core/tests/Fixtures/manifests/multilang.json' );
+		$printer = $this->boot( array(), __DIR__ . '/../Fixtures/manifests/multilang.json' );
 		$en      = self::factory()->post->create( array( 'post_title' => 'English' ) );
 		$vi      = self::factory()->post->create( array( 'post_title' => 'Tiếng Việt' ) );
 		update_post_meta( $en, '_joo_lang', 'en' );
@@ -444,7 +444,7 @@ final class SeoTest extends IntegrationTestCase {
 	}
 
 	public function test_single_language_posts_print_no_hreflang_and_unpublished_translations_are_skipped(): void {
-		$printer = $this->boot( array(), '/workspace/packages/theme-core/tests/Fixtures/manifests/multilang.json' );
+		$printer = $this->boot( array(), __DIR__ . '/../Fixtures/manifests/multilang.json' );
 		$en      = self::factory()->post->create();
 		update_post_meta( $en, '_joo_lang', 'en' );
 		$this->assertStringNotContainsString( 'hreflang', $this->head( $printer, get_permalink( $en ) ) );
@@ -455,7 +455,7 @@ final class SeoTest extends IntegrationTestCase {
 	}
 
 	public function test_translation_of_cannot_point_to_itself_or_to_another_translation(): void {
-		$this->boot( array(), '/workspace/packages/theme-core/tests/Fixtures/manifests/multilang.json' );
+		$this->boot( array(), __DIR__ . '/../Fixtures/manifests/multilang.json' );
 		$a = self::factory()->post->create();
 		$b = self::factory()->post->create();
 		$c = self::factory()->post->create();

@@ -22,7 +22,7 @@ use JOOservices\ThemeCore\Seo\Schema\GraphPrinter;
 
 final class ContentBlocksTest extends IntegrationTestCase {
 
-	private const FIXTURES = '/workspace/packages/theme-core/tests/Fixtures/manifests/';
+	private const FIXTURES = __DIR__ . '/../Fixtures/manifests/';
 
 	/**
 	 * Block names registered by the core library.

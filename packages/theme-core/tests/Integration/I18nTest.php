@@ -20,7 +20,7 @@ use JOOservices\ThemeCore\Kernel;
 
 final class I18nTest extends IntegrationTestCase {
 
-	private const FIXTURES = '/workspace/packages/theme-core/tests/Fixtures/manifests/';
+	private const FIXTURES = __DIR__ . '/../Fixtures/manifests/';
 
 	public function set_up(): void {
 		parent::set_up();

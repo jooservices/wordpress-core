@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Idempotent WordPress install and theme activation. Runs inside the wordpress container as www-data.
-# Environment: THEME (slug), WP_SITE_URL, WP_ADMIN_USER, WP_ADMIN_PASSWORD, WP_ADMIN_EMAIL
+# Idempotent WordPress install and theme activation. Runs in the shared PHP CLI container, in the site folder.
+# Environment: JOO_ROOT, JOO_SITE_DIR, THEME (slug), WP_SITE_URL, WP_ADMIN_USER, WP_ADMIN_PASSWORD, WP_ADMIN_EMAIL, WORDPRESS_DB_*
 set -euo pipefail
-cd /var/www/html
+cd "${JOO_SITE_DIR:?}"
 THEME="${THEME:-jooservices}"
 : "${WP_SITE_URL:?}" "${WP_ADMIN_USER:?}" "${WP_ADMIN_PASSWORD:?}" "${WP_ADMIN_EMAIL:?}"
 
-bash /scripts/wait-for-db.sh 120
+bash "${JOO_ROOT:?}/docker/scripts/wait-for-db.sh" 120
 
 if [ ! -d "wp-content/themes/${THEME}" ]; then
   echo "ERROR: theme '${THEME}' not found. Available: $(ls wp-content/themes | tr '\n' ' ')" >&2

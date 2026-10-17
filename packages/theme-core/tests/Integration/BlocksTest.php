@@ -25,7 +25,7 @@ use JOOservices\ThemeCore\Kernel;
 
 final class BlocksTest extends IntegrationTestCase {
 
-	private const FIXTURES = '/workspace/packages/theme-core/tests/Fixtures';
+	private const FIXTURES = __DIR__ . '/../Fixtures';
 
 	public function set_up(): void {
 		parent::set_up();

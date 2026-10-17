@@ -13,12 +13,13 @@ if ( ! $joo_tests_dir || ! is_file( $joo_tests_dir . '/includes/functions.php' )
 	exit( 1 );
 }
 
-require_once '/workspace/vendor/autoload.php';
+$joo_root = dirname( __DIR__ ); // The worktree (or any checkout) this bootstrap belongs to.
+require_once $joo_root . '/vendor/autoload.php';
 require_once __DIR__ . '/worktree-autoload.php';
 require_once $joo_tests_dir . '/includes/functions.php';
 
 // Core is loaded exactly like a theme would load it (core.php), before WordPress finishes booting.
-$joo_core = '/workspace/packages/theme-core/core.php';
+$joo_core = $joo_root . '/packages/theme-core/core.php';
 if ( is_file( $joo_core ) ) {
 	define( 'JOO_CORE_THROW', true );
 	require_once $joo_core;
@@ -26,8 +27,8 @@ if ( is_file( $joo_core ) ) {
 
 tests_add_filter(
 	'muplugins_loaded',
-	static function (): void {
-		$plugin = '/workspace/plugins/jooservices-resume/jooservices-resume.php';
+	static function () use ( $joo_root ): void {
+		$plugin = $joo_root . '/plugins/jooservices-resume/jooservices-resume.php';
 		if ( is_file( $plugin ) ) {
 			require_once $plugin;
 		}
@@ -36,10 +37,10 @@ tests_add_filter(
 
 tests_add_filter(
 	'after_setup_theme',
-	static function (): void {
+	static function () use ( $joo_root ): void {
 		$theme = getenv( 'JOO_TEST_THEME' );
 		if ( $theme ) {
-			$dir = '/workspace/themes/' . $theme;
+			$dir = $joo_root . '/themes/' . $theme;
 			if ( is_file( $dir . '/functions.php' ) ) {
 				require_once $dir . '/functions.php';
 			}
@@ -55,7 +56,7 @@ require $joo_tests_dir . '/includes/bootstrap.php';
 // but do not repeat the theme's one-time supports/editor setup after wp_loaded.
 $joo_theme = getenv( 'JOO_TEST_THEME' );
 if ( $joo_theme && isset( $GLOBALS['wp_filter']['after_setup_theme'] ) && $GLOBALS['wp_filter']['after_setup_theme'] instanceof WP_Hook ) {
-	$joo_theme_functions = realpath( '/workspace/themes/' . $joo_theme . '/functions.php' );
+	$joo_theme_functions = realpath( $joo_root . '/themes/' . $joo_theme . '/functions.php' );
 	if ( $joo_theme_functions ) {
 		foreach ( $GLOBALS['wp_filter']['after_setup_theme']->callbacks as $priority => $callbacks ) {
 			foreach ( $callbacks as $callback ) {

@@ -1,6 +1,6 @@
 // Generates assets/critical/{context}.css for a theme from the running demo.
 // Usage: node tools/critical.mjs --theme jooservices [--base http://127.0.0.1:8082] [--max-gzip 14336]
-import { chromium } from '@playwright/test';
+import { launchBrowser } from './lib/browser.mjs';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fromRoot } from './lib/paths.mjs';
@@ -47,7 +47,7 @@ const targets = {
 };
 
 mkdirSync(outDir, { recursive: true });
-const browser = await chromium.launch();
+const browser = await launchBrowser();
 let failed = false;
 for (const [context, url] of Object.entries(targets)) {
   if (!url) {

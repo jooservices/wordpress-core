@@ -1,8 +1,8 @@
 // Screenshot gallery of the running showcase, or selected buyer-guide screenshots.
 // Usage: node tools/screenshots.mjs --theme jooservices [--base URL] [--output DIR] [--views home,about]
-import { chromium } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { launchBrowser } from './lib/browser.mjs';
 import { fromRoot } from './lib/paths.mjs';
 
 export const VIEWS = [
@@ -109,9 +109,9 @@ export async function captureScreenshots(options, browser) {
  * @param {Array<string>} argv
  * @param {() => Promise<unknown>} [launch]
  */
-export async function runScreenshotCli(argv, launch = () => chromium.launch()) {
+export async function runScreenshotCli(argv, launch = () => launchBrowser()) {
   const options = screenshotOptions(argv);
-  const browser = /** @type {Awaited<ReturnType<typeof chromium.launch>>} */ (await launch());
+  const browser = /** @type {import('@playwright/test').Browser} */ (await launch());
   try {
     const count = await captureScreenshots(options, browser);
     console.log(`${count} screenshots in ${options.output}`);

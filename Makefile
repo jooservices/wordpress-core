@@ -3,10 +3,7 @@
 SHELL := /bin/bash
 THEME ?= jooservices
 JOOS_TICKET ?= $(shell git branch --show-current | sed -nE 's/.*(JOOS-[0-9]+).*/\1/p')
-WP_SITE_URL ?= $(shell bash ./docker/scripts/site-url.sh url)
-WP_PORT = $(shell bash ./docker/scripts/site-url.sh port "$(WP_SITE_URL)")
-E2E_BASE_URL = $(shell bash ./docker/scripts/site-url.sh internal "$(WP_SITE_URL)")
-export JOOS_TICKET WP_VERSION WP_PHP_VERSION WP_SITE_URL WP_PORT E2E_BASE_URL MATRIX_VARIANT
+export JOOS_TICKET WP_VERSION WP_PHP_VERSION MATRIX_VARIANT
 
 .PHONY: test-marketplace critical screenshots plugins-off plugins-on plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-e2e-demo demo-package demo health perf test-matrix package docs clean hooks release
 
@@ -41,22 +38,22 @@ shared-db-create: ## Create this ticket's shared MariaDB database and scoped use
 shared-db-drop: ## Drop only this ticket's shared MariaDB database (CONFIRM=JOOS-<n>)
 	@test -n "$(JOOS_TICKET)" || { echo "run from a JOOS ticket branch or pass JOOS_TICKET=JOOS-<n>"; exit 2; }
 	@CONFIRM="$(CONFIRM)" bash ./docker/scripts/shared-db.sh drop $(JOOS_TICKET)
-up: ## Start the Docker stack and install WordPress + THEME
+up: ## Create this worktree's WordPress site on the shared wp-web, install WordPress + THEME
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh up $(THEME)
 install-wp: ## Install WordPress and activate THEME (idempotent)
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh install $(THEME)
-down: ## Stop the Docker stack (keeps data)
+down: ## Take this worktree's site offline (removes its vhost; keeps the folder and database)
 	@bash ./docker/scripts/wp-task.sh down $(THEME)
-reset: ## Remove the shared test WordPress, this ticket's uploads, and database (needs CONFIRM=yes)
+reset: ## Remove this worktree's site (vhost, folder, uploads) and drop its database (needs CONFIRM=yes)
 	@CONFIRM="$(CONFIRM)" bash ./docker/scripts/wp-task.sh reset $(THEME)
-shell: ## Shell in the WordPress container
+shell: ## Shell in the shared PHP CLI container, in this site's folder
 	@bash ./docker/scripts/wp-task.sh shell $(THEME)
 wp: ## Run WP-CLI: make wp ARGS="core version"
 	@bash ./docker/scripts/wp-task.sh wp $(THEME) $(ARGS)
-logs: ## Follow container logs (SERVICE=wordpress)
-	@bash ./docker/scripts/wp-task.sh logs $(THEME) $(SERVICE)
+logs: ## Follow the shared wp-web logs
+	@bash ./docker/scripts/wp-task.sh logs $(THEME)
 link-core: ## Link packages/theme-core into themes/$(THEME)/core
 	$(call require_theme)
 	@ln -sfn ../../packages/theme-core themes/$(THEME)/core
@@ -91,7 +88,7 @@ coverage: ## Merged unit + integration coverage (pcov in Docker) with the thresh
 	@$(PHP) -d memory_limit=1G vendor/bin/phpcov merge --clover artifacts/reports/unit/clover.xml --html artifacts/reports/unit/html --text artifacts/reports/unit/summary.txt artifacts/reports/cov >/dev/null
 	@./tools/coverage-gate.sh artifacts/reports/unit/clover.xml
 	@$(PHP_NODE) node_modules/vitest/vitest.mjs run --coverage $(VITEST_ARGS)
-test-integration: ## wp-phpunit in the serialized shared WordPress container (WP_VERSION=6.6 for minimum version)
+test-integration: ## wp-phpunit against this worktree's site (WP_VERSION=6.6 for the minimum version)
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh integration $(THEME) $(ARGS)
 test-e2e: ## Playwright E2E on the Dev VM against the shared test site (THEME=..., ARGS="specs/shared")
@@ -102,10 +99,10 @@ test-e2e-demo: demo-package ## Import, diff, idempotence, and rollback on a clea
 	@bash ./docker/scripts/wp-task.sh e2e-demo $(THEME)
 demo-package: ## Build the licence-clean Tier B buyer demo import ZIP
 	@$(PHP_NODE) tools/demo-package.mjs
-test-marketplace: ## WordPress Theme Check and Plugin Check in the serialized shared test site
+test-marketplace: ## WordPress Theme Check and Plugin Check on this worktree's site
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh marketplace $(THEME)
-screenshots: ## Capture showcase screenshots in the serialized shared WordPress stack
+screenshots: ## Capture showcase screenshots of this worktree's site (browser on the Dev VM)
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh screenshots $(THEME) $(ARGS)
 critical: ## Regenerate the critical CSS from the running demo (THEME=...)

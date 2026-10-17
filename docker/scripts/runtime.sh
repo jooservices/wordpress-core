@@ -1,48 +1,18 @@
 #!/usr/bin/env bash
-# Runs a tool in the shared Workspaces CLI runtimes (project workspaces-cli-shared) with this checkout mounted at
-# /workspace. Nothing stays running: the container is removed afterwards.
-#   php|composer|wp   PHP 8.5 image (WP_PHP_CLI=8.3 selects the 8.3 image)
-#   php-node          Node 24 in the PHP image (tools that need PHP and Node in one process)
-#   node|npm|npx      the same PHP image (Node 24, npm, npx are in it)
-#   playwright        Playwright with the browser on the Dev VM (see e2e-vm.sh), not in Docker
-#   e2e               the php-8.5-e2e service (shares the wp-web network); used by e2e-vm.sh
+# Runs a tool in the shared, long-lived Workspaces containers (docker exec; nothing is created per call).
+#   php|composer     PHP image (WP_PHP_CLI=8.3 or 8.1..8.5 selects the version; default 8.5)
+#   wp               WP-CLI in the PHP image (default PHP 8.3, the WordPress target) in the site folder (JOO_SITE_DIR)
+#   sh               a shell command in the PHP image (PHP 8.3) in the site folder
+#   php-node         Node 24 in the PHP image (tools that need PHP and Node in one process)
+#   node|npm|npx     Node 24 / npm / npx (they live in the PHP image)
+#   playwright       Playwright with the browser on the Dev VM (the test process is a docker exec into wp-web)
+# The working directory is the repository root unless stated otherwise.
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 ROOT="$(cd "$SCRIPT_DIR/../.." && pwd -P)"
 tool="${1:-}"
-[[ -n "$tool" ]] || { echo "Usage: runtime.sh php|composer|wp|php-node|node|npm|npx|playwright <command> [args ...]" >&2; exit 2; }
+[[ -n "$tool" ]] || { echo "Usage: runtime.sh php|composer|wp|sh|php-node|node|npm|npx|playwright <command> [args ...]" >&2; exit 2; }
 shift
-
-php_service="php-${WP_PHP_CLI:-8.5}-app"
-case "$tool" in
-  php | composer | wp)
-    service="$php_service"
-    command=("$tool" "$@")
-    ;;
-  php-node)
-    service="$php_service"
-    command=(node "$@")
-    ;;
-  node)
-    service="$php_service"
-    command=(node "$@")
-    ;;
-  npm | npx)
-    service="$php_service"
-    command=("$tool" "$@")
-    ;;
-  e2e)
-    service=php-8.5-e2e
-    command=("$@")
-    ;;
-  playwright)
-    exec bash "$SCRIPT_DIR/e2e-vm.sh" "$@"
-    ;;
-  *)
-    echo "Unsupported shared runtime: $tool" >&2
-    exit 2
-    ;;
-esac
 
 workspaces_root="$ROOT"
 while [[ "$workspaces_root" != / && ( ! -f "$workspaces_root/dockers/compose.yaml" || ! -f "$workspaces_root/.env" ) ]]; do
@@ -53,15 +23,21 @@ done
   exit 2
 }
 
-version="${service#php-}"; version="${version%-app}"; [[ "$service" != php-8.5-e2e ]] || version=8.5
-if [[ "$service" == php-* ]] && ! docker image inspect "workspaces/php-app:$version" >/dev/null 2>&1; then
-  "$workspaces_root/scripts/docker/env-run" --cli --profile cli build "$service" >&2
-fi
-
-compose=("$workspaces_root/scripts/docker/env-run" --cli --profile cli run --rm --no-deps --volume "$ROOT:/workspace" --workdir /workspace --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --env TMPDIR=/tmp --env NPM_CONFIG_UPDATE_NOTIFIER=false)
-for name in E2E_BASE_URL E2E_THEME E2E_ENGINES CI WP_VERSION WP_PHP_VERSION MATRIX_VARIANT MATRIX_PLUGIN MATRIX_PATHS MATRIX_CLS PLAYWRIGHT_JSON_OUTPUT_NAME PW_TEST_CONNECT_WS_ENDPOINT; do
-  value="${!name:-}"
-  if [[ -n "$value" ]]; then compose+=(--env "$name"); fi
-done
-export COMPOSE_PROGRESS=quiet
-exec "${compose[@]}" "$service" "${command[@]}"
+export RUNTIME_PASS_ENV="E2E_BASE_URL E2E_THEME E2E_ENGINES E2E_ALLOW_CONSOLE CI WP_VERSION WP_PHP_VERSION MATRIX_VARIANT MATRIX_PLUGIN MATRIX_PATHS MATRIX_CLS PLAYWRIGHT_JSON_OUTPUT_NAME PW_TEST_CONNECT_WS_ENDPOINT JOO_ROOT JOO_SITE_DIR JOO_WORKSPACES JOO_TEST_THEME COVERAGE THEME WP_SITE_URL WP_ADMIN_USER WP_ADMIN_PASSWORD WP_ADMIN_EMAIL WORDPRESS_DB_HOST WORDPRESS_DB_NAME WORDPRESS_DB_USER WORDPRESS_DB_PASSWORD DEMO_SET SEED_DIR SEED_RESET SNAPSHOT_KEY WP_CLI_CACHE_DIR"
+site="${JOO_SITE_DIR:-$ROOT}"
+runtime="$workspaces_root/scripts/docker/runtime"
+php_lang="php${WP_PHP_CLI:+@$WP_PHP_CLI}"
+wp_lang="php@${WP_PHP_CLI:-8.3}"
+case "$tool" in
+  php | composer) cd "$ROOT"; exec "$runtime" "$php_lang" "$tool" "$@" ;;
+  wp) cd "$site"; exec "$runtime" "$wp_lang" wp "$@" ;;
+  sh) cd "$site"; exec "$runtime" "$wp_lang" sh -c "$@" ;;
+  php-node) cd "$ROOT"; exec "$runtime" "$php_lang" node "$@" ;;
+  node) cd "$ROOT"; exec "$runtime" node node "$@" ;;
+  npm | npx) cd "$ROOT"; exec "$runtime" node "$tool" "$@" ;;
+  playwright)
+    cd "$ROOT"
+    exec "$workspaces_root/scripts/docker/e2e-vm" ${JOO_SITE_HOST:+--site "$JOO_SITE_HOST"} --port "${JOO_SITE_PORT:-8082}" -- "$@"
+    ;;
+  *) echo "Unsupported shared runtime: $tool" >&2; exit 2 ;;
+esac

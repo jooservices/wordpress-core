@@ -21,7 +21,7 @@ use JOOservices\ThemeCore\Seo\Schema\GraphPrinter;
 
 final class SchemaTest extends IntegrationTestCase {
 
-	private const MANIFEST = '/workspace/packages/theme-core/tests/Fixtures/manifests/perf.json';
+	private const MANIFEST = __DIR__ . '/../Fixtures/manifests/perf.json';
 
 	/**
 	 * Owner user id.

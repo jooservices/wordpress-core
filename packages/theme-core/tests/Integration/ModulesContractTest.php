@@ -17,7 +17,7 @@ use JOOservices\ThemeCore\Tests\Fixtures\Modules\BadRegisterModule;
 final class ModulesContractTest extends ModuleContractTest {
 
 	protected function manifest(): string {
-		return '/workspace/packages/theme-core/tests/Fixtures/manifests/perf.json';
+		return __DIR__ . '/../Fixtures/manifests/perf.json';
 	}
 
 	protected function modules(): array {

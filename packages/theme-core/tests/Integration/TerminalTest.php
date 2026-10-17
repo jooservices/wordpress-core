@@ -18,7 +18,7 @@ use JOOservices\ThemeCore\Terminal\FsBuilder;
 
 final class TerminalTest extends IntegrationTestCase {
 
-	private const FIXTURES = '/workspace/packages/theme-core/tests/Fixtures/manifests/';
+	private const FIXTURES = __DIR__ . '/../Fixtures/manifests/';
 
 	public function set_up(): void {
 		parent::set_up();

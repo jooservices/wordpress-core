@@ -14,4 +14,4 @@
 ## Notes
 - Core already sets `loading` and `fetchpriority` on images since WordPress 6.3; the lazy-load policy (module `lazy`) hooks that API instead of reimplementing it.
 - Removal of callbacks that WordPress registers at several priorities (for example `wp_oembed_add_discovery_links`) is priority-agnostic.
-- In Docker the container also listens on `WP_PORT` so loopback requests to the site URL work.
+- On the shared wp-web the container also listens on the published port (8082) for every site vhost, so loopback requests to the site URL work.
