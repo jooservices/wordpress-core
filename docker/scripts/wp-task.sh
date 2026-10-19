@@ -29,15 +29,15 @@ get_env() {
 if [[ ! -f "$ROOT/.env" ]]; then
   JOOS_TICKET="${JOOS_TICKET:-}" "$ROOT/docker/scripts/init-env.sh"
 fi
-[[ -f "$ROOT/.env" ]] || { echo "ERROR: run make init-env from a JOOS ticket branch first." >&2; exit 2; }
+[[ -f "$ROOT/.env" ]] || { echo "ERROR: run make init-env from a JOOS or JOOWT ticket branch first." >&2; exit 2; }
 
 ticket="${JOOS_TICKET:-}"
 if [[ -z "$ticket" ]]; then
   branch="$(git -C "$ROOT" branch --show-current)"
-  if [[ "$branch" =~ (JOOS-[0-9]+) ]]; then ticket="${BASH_REMATCH[1]}"; fi
+  if [[ "$branch" =~ (JOOS|JOOWT)-([0-9]+) ]]; then ticket="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}"; fi
 fi
-[[ "$ticket" =~ ^(JOOS-[0-9]+|staging)$ ]] || {
-  echo "ERROR: run this target from a JOOS ticket worktree or set JOOS_TICKET." >&2
+[[ "$ticket" =~ ^((JOOS|JOOWT)-[0-9]+|staging)$ ]] || {
+  echo "ERROR: run this target from a JOOS or JOOWT ticket worktree or set JOOS_TICKET." >&2
   exit 2
 }
 # The staging site is the project checkout itself: it must be the main checkout (not a worktree) on develop.

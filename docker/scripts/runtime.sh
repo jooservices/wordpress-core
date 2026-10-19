@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Runs a tool in the shared, long-lived Workspaces containers (docker exec; nothing is created per call).
 #   php|composer     PHP image (WP_PHP_CLI=8.3 or 8.1..8.5 selects the version; default 8.5)
-#   wp               WP-CLI in the PHP image (default PHP 8.3, the WordPress target) in the site folder (JOO_SITE_DIR)
-#   sh               a shell command in the PHP image (PHP 8.3) in the site folder
+#   wp               WP-CLI in the PHP image (WP_PHP_CLI, then WP_PHP_VERSION, default 8.3) in the site folder (JOO_SITE_DIR)
+#   sh               a shell command in the selected PHP image in the site folder
 #   php-node         Node 24 in the PHP image (tools that need PHP and Node in one process)
 #   node|npm|npx     Node 24 / npm / npx (they live in the PHP image)
 #   playwright       Playwright with the browser on the Dev VM (the test process is a docker exec into wp-web)
@@ -30,11 +30,11 @@ if [[ "${JOOS_HOST_TOOLS:-}" == 1 || ! -f "$workspaces_root/dockers/compose.yaml
   esac
 fi
 
-export RUNTIME_PASS_ENV="E2E_BASE_URL E2E_THEME E2E_ENGINES E2E_ALLOW_CONSOLE CI WP_VERSION WP_PHP_VERSION MATRIX_VARIANT MATRIX_PLUGIN MATRIX_PATHS MATRIX_CLS PLAYWRIGHT_JSON_OUTPUT_NAME PW_TEST_CONNECT_WS_ENDPOINT JOO_ROOT JOO_SITE_DIR JOO_WORKSPACES JOO_TEST_THEME COVERAGE THEME WP_SITE_URL WP_ADMIN_USER WP_ADMIN_PASSWORD WP_ADMIN_EMAIL WORDPRESS_DB_HOST WORDPRESS_DB_NAME WORDPRESS_DB_USER WORDPRESS_DB_PASSWORD DEMO_SET SEED_DIR SEED_RESET SNAPSHOT_KEY WP_CLI_CACHE_DIR"
+export RUNTIME_PASS_ENV="E2E_BASE_URL E2E_THEME E2E_ENGINES E2E_ALLOW_CONSOLE CI WP_VERSION WP_PHP_VERSION PHP_ERROR_REPORTING MATRIX_VARIANT MATRIX_PLUGIN MATRIX_PATHS MATRIX_CLS PLAYWRIGHT_JSON_OUTPUT_NAME PW_TEST_CONNECT_WS_ENDPOINT JOO_ROOT JOO_SITE_DIR JOO_WORKSPACES JOO_TEST_THEME COVERAGE THEME WP_SITE_URL WP_ADMIN_USER WP_ADMIN_PASSWORD WP_ADMIN_EMAIL WORDPRESS_DB_HOST WORDPRESS_DB_NAME WORDPRESS_DB_USER WORDPRESS_DB_PASSWORD DEMO_SET SEED_DIR SEED_RESET SNAPSHOT_KEY WP_CLI_CACHE_DIR"
 site="${JOO_SITE_DIR:-$ROOT}"
 runtime="$workspaces_root/scripts/docker/runtime"
 php_lang="php${WP_PHP_CLI:+@$WP_PHP_CLI}"
-wp_lang="php@${WP_PHP_CLI:-8.3}"
+wp_lang="php@${WP_PHP_CLI:-${WP_PHP_VERSION:-8.3}}"
 case "$tool" in
   php | composer) cd "$ROOT"; exec "$runtime" "$php_lang" "$tool" "$@" ;;
   wp) cd "$site"; exec "$runtime" "$wp_lang" wp "$@" ;;
