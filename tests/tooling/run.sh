@@ -15,6 +15,19 @@ expect_fail "phpcs" php -d error_reporting=24575 vendor/bin/phpcs --standard=php
 printf "<?php\n/**\n * Clean file.\n *\n * @package JOOservices\n */\n\ndeclare(strict_types=1);\n\ndefined( 'ABSPATH' ) || exit;\n" > "$TMP/good.php"
 expect_pass "phpcs" php -d error_reporting=24575 vendor/bin/phpcs --standard=phpcs.xml.dist "$TMP/good.php"
 
+# PHPStan: core must stay compatible with PHP 8.1.
+cp tests/tooling/fixtures/php-82-readonly.php "$TMP/php-input.php"
+cat > "$TMP/phpstan-php81.neon" <<'NEON'
+includes:
+  - ../phpstan-core.neon
+parameters:
+  paths:
+    - php-input.php
+NEON
+expect_fail "PHPStan PHP 8.1" php -d error_reporting=24575 vendor/bin/phpstan analyse -c "$TMP/phpstan-php81.neon" --no-progress --memory-limit=1G
+printf '<?php\nfinal class Php81Compatible {}\n' > "$TMP/php-input.php"
+expect_pass "PHPStan PHP 8.1" php -d error_reporting=24575 vendor/bin/phpstan analyse -c "$TMP/phpstan-php81.neon" --no-progress --memory-limit=1G
+
 # ESLint
 cp tests/tooling/fixtures/bad.js "$TMP/bad.js"
 expect_fail "eslint" npx eslint "$TMP/bad.js"
