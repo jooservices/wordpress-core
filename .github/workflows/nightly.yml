@@ -1,8 +1,7 @@
+# Manual only (no schedule): these jobs need the Workspaces shared Docker and the Dev VM browser, which a hosted runner does not have; see docs/ci.md.
 # Nightly: plugin compatibility, selected WordPress/PHP runtime cells, and a scaffolded theme smoke test.
 name: nightly
 on:
-  schedule:
-    - cron: '17 2 * * *'
   workflow_dispatch:
 permissions:
   contents: read

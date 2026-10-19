@@ -1,4 +1,7 @@
 # Continuous integration for pull requests and pushes to develop and main.
+# Runs on a hosted runner with the host tools (docker/scripts/runtime.sh falls back to php, composer and node outside
+# Workspaces). The WordPress gates (integration, E2E, perf, matrix, package, marketplace) need the Workspaces shared
+# Docker and the Dev VM browser, so they run on WSL: see docs/ci.md.
 name: ci
 on:
   pull_request:
@@ -12,6 +15,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   static:
+    name: Static analysis
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -34,6 +38,7 @@ jobs:
       - run: node tools/docs-check.mjs
       - run: make test-tooling
   unit:
+    name: Unit tests
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -49,119 +54,3 @@ jobs:
       - run: composer install --no-interaction --prefer-dist
       - run: npm ci
       - run: make test-unit
-  integration:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 40
-    strategy:
-      fail-fast: false
-      matrix:
-        wp: ['latest', '6.6']
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-      - run: npm ci
-      - run: make init-env
-      - run: WP_VERSION=${{ matrix.wp }} make up THEME=jooservices
-      - run: WP_VERSION=${{ matrix.wp }} make test-integration THEME=jooservices
-      - run: WP_VERSION=${{ matrix.wp }} make test-integration THEME=jooservices TEST_THEME=jooservices ARGS="--testsuite theme-integration"
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: integration-${{ matrix.wp }}
-          path: artifacts/reports/integration
-  e2e:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 40
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium webkit
-      - run: make init-env
-      - run: make demo THEME=jooservices
-      - run: E2E_ENGINES=webkit E2E_THEME=jooservices make test-e2e THEME=jooservices
-      - run: make perf THEME=jooservices
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-reports
-          path: |
-            artifacts/reports/e2e
-            artifacts/reports/perf
-  package:
-    needs: [static, unit, integration, e2e]
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-      - run: npm ci
-      - run: node tools/release.mjs --theme jooservices --wp 7.1.3
-      - uses: actions/upload-artifact@v4
-        with:
-          name: jooservices-themeforest-release
-          path: artifacts/release/jooservices/
-  marketplace:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 35
-    env:
-      WP_ENV_PORT: '18888'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-      - run: npm ci
-      - name: Build the installable theme
-        run: make package THEME=jooservices
-      - name: Install wp-env
-        run: npm install --global @wordpress/env@11.17.0
-      - name: Configure isolated WordPress checker site
-        run: |
-          cat > "$RUNNER_TEMP/wp-env-marketplace.json" <<EOF
-          {
-            "\$schema": "https://schemas.wp.org/trunk/wp-env.json",
-            "core": null,
-            "phpVersion": "8.3",
-            "port": 18888,
-            "plugins": [
-              "https://downloads.wordpress.org/plugin/theme-check.latest-stable.zip",
-              "https://downloads.wordpress.org/plugin/plugin-check.latest-stable.zip",
-              "${GITHUB_WORKSPACE}/artifacts/plugins/jooservices-resume"
-            ],
-            "themes": ["${GITHUB_WORKSPACE}/artifacts/package/jooservices"]
-          }
-          EOF
-      - name: Start isolated WordPress site
-        run: wp-env --config="$RUNNER_TEMP/wp-env-marketplace.json" start
-      - name: Run official Theme Check
-        run: |
-          mkdir -p artifacts/reports/marketplace
-          wp-env --config="$RUNNER_TEMP/wp-env-marketplace.json" run cli wp theme activate jooservices
-          wp-env --config="$RUNNER_TEMP/wp-env-marketplace.json" run cli wp theme-check run jooservices --format=json | tee artifacts/reports/marketplace/theme-check.json
-      - name: Run official Plugin Check
-        run: wp-env --config="$RUNNER_TEMP/wp-env-marketplace.json" run cli wp plugin check jooservices-resume --format=json --require=./wp-content/plugins/plugin-check/cli.php | tee artifacts/reports/marketplace/plugin-check.json
-      - name: Upload marketplace check reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: marketplace-checks
-          path: artifacts/reports/marketplace
-      - name: Stop isolated WordPress site
-        if: always()
-        run: wp-env --config="$RUNNER_TEMP/wp-env-marketplace.json" stop

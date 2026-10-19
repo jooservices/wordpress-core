@@ -18,10 +18,17 @@ workspaces_root="$ROOT"
 while [[ "$workspaces_root" != / && ( ! -f "$workspaces_root/dockers/compose.yaml" || ! -f "$workspaces_root/.env" ) ]]; do
   workspaces_root="$(dirname "$workspaces_root")"
 done
-[[ -f "$workspaces_root/dockers/compose.yaml" && -f "$workspaces_root/.env" ]] || {
-  echo "ERROR: could not locate the Workspaces root shared Docker configuration." >&2
-  exit 2
-}
+
+# Outside Workspaces (a GitHub runner, a contributor's machine) or with JOOS_HOST_TOOLS=1 the tools that need no
+# WordPress site run from the host: php, composer, node, npm, npx. The site tools (wp, sh, playwright) need the shared runtimes.
+if [[ "${JOOS_HOST_TOOLS:-}" == 1 || ! -f "$workspaces_root/dockers/compose.yaml" || ! -f "$workspaces_root/.env" ]]; then
+  cd "$ROOT"
+  case "$tool" in
+    php | composer | npm | npx) exec "$tool" "$@" ;;
+    php-node | node) exec node "$@" ;;
+    *) echo "ERROR: '$tool' needs the Workspaces shared runtimes (not found; JOOS_HOST_TOOLS=${JOOS_HOST_TOOLS:-unset})." >&2; exit 2 ;;
+  esac
+fi
 
 export RUNTIME_PASS_ENV="E2E_BASE_URL E2E_THEME E2E_ENGINES E2E_ALLOW_CONSOLE CI WP_VERSION WP_PHP_VERSION MATRIX_VARIANT MATRIX_PLUGIN MATRIX_PATHS MATRIX_CLS PLAYWRIGHT_JSON_OUTPUT_NAME PW_TEST_CONNECT_WS_ENDPOINT JOO_ROOT JOO_SITE_DIR JOO_WORKSPACES JOO_TEST_THEME COVERAGE THEME WP_SITE_URL WP_ADMIN_USER WP_ADMIN_PASSWORD WP_ADMIN_EMAIL WORDPRESS_DB_HOST WORDPRESS_DB_NAME WORDPRESS_DB_USER WORDPRESS_DB_PASSWORD DEMO_SET SEED_DIR SEED_RESET SNAPSHOT_KEY WP_CLI_CACHE_DIR"
 site="${JOO_SITE_DIR:-$ROOT}"
