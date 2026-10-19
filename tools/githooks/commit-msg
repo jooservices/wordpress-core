@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# Enforces: JOOWT-<n> or JOOS-<n>: <imperative summary> (first line <= 72 chars after the prefix).
+# Accepts either form (header at most 120 chars, same rules as .github/commitlint.config.mjs):
+#   JOOWT-<n> or JOOS-<n>: <imperative summary>                      (first line <= 72 chars after the prefix)
+#   <type>(<scope>)?: <Sentence-case subject> (KEY-n)               (Conventional Commits, used by AI Flow)
 first="$(head -1 "$1")"
 case "$first" in Merge\ *|Revert\ *|fixup!*|squash!*) exit 0 ;; esac
-if ! printf '%s' "$first" | grep -Eq '^(JOOWT|JOOS)-[0-9]+: .{1,72}$'; then
-  echo "ERROR: commit message must match ^(JOOWT|JOOS)-[0-9]+: .{1,72}\$" >&2
-  echo "       example: JOOS-12: add Docker health checks" >&2
-  exit 1
-fi
+types='feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert'
+if printf '%s' "$first" | grep -Eq '^(JOOWT|JOOS)-[0-9]+: .{1,72}$'; then exit 0; fi
+if [ "${#first}" -le 120 ] && [ "${#first}" -ge 10 ] && printf '%s' "$first" | grep -Eq "^($types)(\([a-z0-9._/-]+\))?!?: [A-Z][^.]*[^.]$"; then exit 0; fi
+echo "ERROR: commit message must be one of:" >&2
+echo "       JOOWT-<n>: <summary>             e.g. JOOS-12: add Docker health checks" >&2
+echo "       <type>(<scope>): <Subject>       e.g. feat(seo): Add image sitemap (JOOWT-300), header <= 120 chars" >&2
+exit 1

@@ -1,9 +1,10 @@
-# Continuous integration. The repository has no remote yet: this file is kept ready and is not run by any local tool.
+# Continuous integration for pull requests and pushes to develop and main.
 name: ci
 on:
   pull_request:
+    branches: [main, develop]
   push:
-    branches: [main]
+    branches: [main, develop]
 permissions:
   contents: read
 concurrency:

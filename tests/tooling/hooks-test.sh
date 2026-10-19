@@ -13,6 +13,9 @@ check() { desc="$1"; want="$2"; shift 2; "$@" >/dev/null 2>&1; got=$?; if { [ "$
 echo 'a' > a.txt && git add a.txt
 check "bad commit message rejected" reject git commit -q -m "fix stuff"
 check "good commit message accepted" ok git commit -q -m "JOOWT-1: add a.txt"
+check "conventional commit accepted" ok git commit -q --allow-empty -m "feat(seo): Add the image sitemap (JOOWT-9)"
+check "conventional lower-case subject rejected" reject git commit -q --allow-empty -m "feat(seo): add the image sitemap"
+check "conventional unknown type rejected" reject git commit -q --allow-empty -m "feature: Add the image sitemap"
 # the secret is assembled at runtime so this file itself passes the secrets scan
 printf '%s%s = "%s"\n' pass word "$(printf 'c3VwZXJzZWNyZXQ5OTk4' | base64 -d)" > s.txt && git add s.txt
 check "staged secret rejected" reject git commit -q -m "JOOWT-2: add secret"
