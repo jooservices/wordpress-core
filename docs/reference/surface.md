@@ -88,6 +88,9 @@ REST namespace: `joo/v1`.
 - `_joo_primary_category`
 - `_joo_demo`
 - `_joo_reading_cache`
+- `_joo_demo_import_id`
+- `_joo_translation_of_slug`
+- `_joo_primary_category_slug`
 - `_joo_company_role`
 - `_joo_company_from`
 - `_joo_company_to`
