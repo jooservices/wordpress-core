@@ -10,7 +10,6 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `joo_demo_checksum`
 - `joo_resume_version`
 - `joo_resume_flush_rewrite`
-- `joo_settings_schema_version`
 - `joo_resume_custom_fields`
 - `joo_resume_settings`
 
@@ -36,6 +35,9 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 ## postMetaInternal
 
 - `_joo_reading_cache`
+- `_joo_demo_import_id`
+- `_joo_translation_of_slug`
+- `_joo_primary_category_slug`
 - `_joo_company_role`
 - `_joo_company_from`
 - `_joo_company_to`
@@ -70,7 +72,6 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `joo_short_bio`
 - `joo_avatar_id`
 - `joo_socials`
-- `joo_dismissed_notices`
 
 ## postTypes
 
@@ -86,6 +87,8 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `/profile`
 - `/fragment/(?P<name>[a-z0-9-]+)`
 - `/terminal/fs`
+- `/resume`
+- `/resume/json-resume`
 
 ## blocks
 
@@ -106,11 +109,7 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `joo/terminal-dock`
 - `joo/reading-progress`
 - `joo/not-found`
-- `joo/term-chips`
-- `joo/archive-count`
-- `joo/term-intro`
-- `joo/term-image`
-- `joo/author-stats`
+- `joo/resume`
 
 ## customElements
 
@@ -142,12 +141,12 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `joo/seo/og`
 - `joo/seo/graph/pieces`
 - `joo/seo/schema/{piece}`
+- `joo/seo/schema/article_type`
 - `joo/seo/yield`
 - `joo/content/featured_exclusion_limit`
 - `joo/seo/block_author_enumeration`
 - `joo/seo/x_default`
 - `joo/seo/profile_page`
-- `joo/lazy/policy`
 - `joo/lazy/should_lazy`
 - `joo/lazy/embed_providers`
 - `joo/assets/register`
@@ -165,7 +164,6 @@ Generated from `docs/spec/naming-registry.json` by `node tools/check-registry.mj
 - `joo/profile/url`
 - `joo/i18n/locales`
 - `joo/terminal/commands`
-- `joo/terminal/fs`
 - `joo/compat/report`
 - `joo/perf/image_formats`
 - `joo/lazy/provider`
