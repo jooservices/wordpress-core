@@ -6,11 +6,18 @@ cd "$(dirname "$0")/.."
 fail=0
 gate() {
   prefix="$1"; min="$2"
-  out="$(php tools/coverage-check.php "$clover" "$prefix" "$min" 2>&1)"; code=$?
+  out="$(bash ./docker/scripts/runtime.sh php tools/coverage-check.php "$clover" "$prefix" "$min" 2>&1)"; code=$?
   case $code in
     0) echo "ok:   $out" ;;
     1) echo "FAIL: $out"; fail=1 ;;
-    *) echo "skip: $prefix has no statements yet" ;;
+    2)
+      if [[ "$out" == *"no statements found under"* ]]; then
+        echo "skip: $prefix has no statements yet"
+      else
+        echo "ERROR: $out"; fail=1
+      fi
+      ;;
+    *) echo "ERROR: coverage check exited $code: $out"; fail=1 ;;
   esac
 }
 gate packages/theme-core/src 85
