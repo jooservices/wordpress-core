@@ -18,6 +18,13 @@ namespace JOOservices\ThemeCore\Support;
 final class Hooks {
 
 	/**
+	 * Deprecated hooks already reported during this request.
+	 *
+	 * @var array<string, true>
+	 */
+	private static array $deprecatedHooks = array();
+
+	/**
 	 * Hook name pattern.
 	 */
 	private const NAME_PATTERN = '#^joo/[a-z0-9_]+(/[a-z0-9_-]+)+$#';
@@ -47,16 +54,19 @@ final class Hooks {
 	}
 
 	/**
-	 * Triggers a deprecation notice when something is attached to a deprecated hook.
+	 * Logs a deprecation notice once per request in debug mode when a callback is attached.
 	 *
 	 * @param string $hook        Hook name.
 	 * @param string $since       Version in which it was deprecated.
 	 * @param string $replacement Replacement hook.
 	 */
 	public static function deprecated( string $hook, string $since, string $replacement = '' ): void {
-		if ( has_filter( $hook ) ) {
-			_deprecated_hook( $hook, $since, $replacement ); // phpcs:ignore WordPress.Security.EscapeOutput
+		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG || isset( self::$deprecatedHooks[ $hook ] ) || ! has_filter( $hook ) ) {
+			return;
 		}
+
+		self::$deprecatedHooks[ $hook ] = true;
+		_deprecated_hook( $hook, $since, $replacement ); // phpcs:ignore WordPress.Security.EscapeOutput
 	}
 
 	/**
