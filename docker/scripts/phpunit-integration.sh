@@ -78,3 +78,8 @@ if [[ -n "${JOO_TEST_THEME:-}" && ! -d "$ROOT/tests/fixtures/themes/$JOO_TEST_TH
     run_directory "$JOO_TEST_THEME" "$theme_tests" "theme-$JOO_TEST_THEME"
   fi
 fi
+
+# The portfolio fixture boots its own manifest; a separate process keeps the selected theme's global hooks isolated.
+if [[ "${JOO_TEST_THEME:-}" != portfolio ]]; then
+  JOO_TEST_THEME= run_suite portfolio-fixture-integration "$@"
+fi
