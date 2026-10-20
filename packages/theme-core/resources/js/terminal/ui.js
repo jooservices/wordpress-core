@@ -31,7 +31,7 @@ export function safeUrl(url) {
  * Mounts the terminal into a panel element.
  * @param {HTMLElement} panel Empty panel container.
  * @param {{shell: object, onClose: () => void, navigate?: (url: string) => void, shortcuts?: string[]}} options Options.
- * @returns {{run: (cmd: string) => void, focus: () => void, destroy: () => void}} Controller.
+ * @returns {{run: (cmd: string) => void, output: (value: string, style?: string) => void, focus: () => void, destroy: () => void}} Controller.
  */
 export function mountTerminal(panel, { shell, onClose, navigate = (url) => window.location.assign(url), shortcuts }) {
   const title = el('b', 'joo-term__title');
@@ -129,6 +129,10 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
     syncPrompt();
     scroll();
   };
+  const output = (value, style = 'dim') => {
+    log.append(plainLine([text(value, style)]));
+    scroll();
+  };
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -191,6 +195,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
     ]),
     plainLine([
       text(t('terminal.hint', 'Type '), 'dim'),
+      /* eslint-disable joo/no-untranslated-string -- the labels are command names, which are never translated */
       link('help', 'help'),
       text(' · ', 'dim'),
       link('ls', 'ls'),
@@ -198,7 +203,8 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
       link('tree', 'tree'),
       text(' · ', 'dim'),
       link('cat README.md', 'cat README.md'),
+      /* eslint-enable joo/no-untranslated-string */
     ])
   );
-  return { run, focus: () => input.focus(), destroy: () => announcer.destroy() };
+  return { run, output, focus: () => input.focus(), destroy: () => announcer.destroy() };
 }

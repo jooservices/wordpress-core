@@ -2,6 +2,7 @@
 // the DOM, the network or location (the dock applies results). Output blocks:
 //   { kind: 'lines', lines: [[span, ...], ...] }   span: { text, style?: 'dim'|'err'|'ok'|'mark'|'ps', cmd?: string }
 //   { kind: 'cols', items: [span, ...] }
+import { t } from 'joo-runtime';
 import { display, list, pathOf, resolve } from './fs.js';
 
 /**
@@ -121,7 +122,15 @@ export class Shell {
     this.cursor = this.history.length;
     if (/(&&|\|\||;|\||>|<)/.test(raw.replace(/(["'])(?:\\.|(?!\1).)*\1/g, ''))) {
       result.blocks.push(
-        line(text('bash: syntax error: unsupported operator (pipes, redirects and && are not available)', 'err'))
+        line(
+          text(
+            t(
+              'terminal.shell.syntax_error',
+              'bash: syntax error: unsupported operator (pipes, redirects and && are not available)'
+            ),
+            'err'
+          )
+        )
       );
       result.exitCode = 2;
       return result;
@@ -141,8 +150,10 @@ export class Shell {
       result.blocks.push(
         line(
           text(
-            `bash: ${name}: command not found` +
-              (best && best.score > 0.4 ? `. Did you mean '${best.key}'?` : ". Try 'help'."),
+            t('terminal.shell.not_found', 'bash: {name}: command not found.').replace('{name}', name) +
+              (best && best.score > 0.4
+                ? ' ' + t('terminal.shell.suggest', "Did you mean '{command}'?").replace('{command}', best.key)
+                : ' ' + t('terminal.shell.try_help', "Try 'help'.")),
             'err'
           )
         )
@@ -153,7 +164,17 @@ export class Shell {
       command.run({ shell: this, args: tokens, result });
     } catch (error) {
       result.exitCode = 1;
-      result.blocks.push(line(text(`error: ${error instanceof Error ? error.message : String(error)}`, 'err')));
+      result.blocks.push(
+        line(
+          text(
+            t('terminal.shell.error', 'error: {message}').replace(
+              '{message}',
+              error instanceof Error ? error.message : String(error)
+            ),
+            'err'
+          )
+        )
+      );
     }
     return result;
   }

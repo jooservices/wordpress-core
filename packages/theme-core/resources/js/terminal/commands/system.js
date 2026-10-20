@@ -85,6 +85,7 @@ export const commands = [
     completion: 'none',
     readonly: true,
     run({ shell, args, result }) {
+      /* eslint-disable joo/no-untranslated-string -- uname prints fixed system identifiers, not prose */
       result.blocks.push(
         line(
           text(
@@ -94,6 +95,7 @@ export const commands = [
           )
         )
       );
+      /* eslint-enable joo/no-untranslated-string */
     },
   },
   {
@@ -151,6 +153,7 @@ export const commands = [
     completion: 'none',
     readonly: true,
     run({ shell, args, result }) {
+      // eslint-disable-next-line joo/no-untranslated-string -- a file path, not prose
       if (args[0] && shell.commands.has(args[0])) result.blocks.push(line(text('/usr/bin/' + args[0])));
       else result.exitCode = 1;
     },

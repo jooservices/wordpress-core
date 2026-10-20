@@ -5,6 +5,12 @@ import { t } from 'joo-runtime';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+/** Abbreviated month name from the runtime config (index 0-11). */
+const monthName = (index) => {
+  const name = MONTHS[index] ?? MONTHS[0];
+  return t(`terminal.month.${name.toLowerCase()}`, name);
+};
+
 /** Error line "cmd: arg: message". */
 export const fail = (result, message, code = 1) => {
   result.exitCode = code;
@@ -39,7 +45,7 @@ export function humanSize(node) {
 export function shortDate(node) {
   const date = (node.post?.d ?? '2026-01-01').split('-');
   const day = String(Number(date[2]));
-  return `${MONTHS[Number(date[1]) - 1] ?? 'Jan'} ${day.padStart(2, ' ')}`;
+  return `${monthName(Number(date[1]) - 1)} ${day.padStart(2, ' ')}`;
 }
 
 /** One line of `ls -l`. */
@@ -48,6 +54,7 @@ export function longLine(shell, node) {
   const count = node.t === 'd' ? String(Object.keys(node.k).length + 2) : '1';
   const real = target(shell.fs.root, node) ?? node;
   const spans = [
+    // eslint-disable-next-line joo/no-untranslated-string -- `ls -l` columns: the group name is a fixed identifier
     text(`${mode} ${count} ${shell.fs.site.user} joo ${humanSize(real).padStart(5, ' ')} ${shortDate(real)} `),
     nameSpan(shell, node),
   ];

@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import globals from 'globals';
 import jsdoc from 'eslint-plugin-jsdoc';
+import joo from './tools/eslint/joo-plugin.mjs';
 
 const unsafeHtml = [
   {
@@ -62,5 +63,12 @@ export default [
         'navigator',
       ],
     },
+  },
+  {
+    // User-visible strings must come from the runtime config that PHP fills with __() (JOOWT-277).
+    files: ['packages/theme-core/resources/js/**/*.js', 'packages/theme-core/resources/blocks/*/view.js'],
+    ignores: ['**/*.test.js', '**/__fixtures__/**'],
+    plugins: { joo },
+    rules: { 'joo/no-untranslated-string': 'error' },
   },
 ];

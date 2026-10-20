@@ -93,7 +93,11 @@ export class JooTerminal extends HTMLElement {
         onClose: () => this.close(),
         shortcuts: config().terminalShortcuts,
       });
-      if (failed) this.api.run('echo fs: failed to load (close and reopen to retry); help still works');
+      if (failed)
+        this.api.output(
+          t('terminal.fs_failed', 'fs: failed to load (close and reopen to retry); help still works'),
+          'err'
+        );
       if (this.isOpen()) this.api.focus();
     } catch {
       loading.textContent = t('terminal.failed', 'The terminal could not be loaded.');
