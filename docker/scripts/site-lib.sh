@@ -19,7 +19,7 @@ export WP_CLI_CACHE_DIR="$workspaces_root/artifacts/wpcli-cache"   # core downlo
 export PATH="$ROOT/docker/scripts:$PATH"
 
 rt() { bash "$ROOT/docker/scripts/runtime.sh" "$@"; }
-wpx() { rt wp "$@"; }                       # WP-CLI in the shared PHP 8.3 container, in this site's folder
+wpx() { rt wp "$@"; }                       # WP-CLI in the selected shared PHP CLI container, in this site's folder
 site_script() { local s="$1"; shift; rt sh "bash '$ROOT/docker/scripts/$s' \"\$@\"" _ "$@" 2>&1; }
 
 # Runs a command in wp-web (Node, same network as the site, *.localhost host entries) in this checkout's folder.

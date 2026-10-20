@@ -38,7 +38,7 @@ final class TerminalTest extends IntegrationTestCase {
 				unregister_block_type( $name );
 			}
 		}
-		unset( $_SERVER['REQUEST_URI'] );
+		$_SERVER['REQUEST_URI'] = '';
 		Kernel::reset();
 		$GLOBALS['wp_rest_server'] = null;
 		parent::tear_down();
@@ -331,8 +331,7 @@ final class TerminalTest extends IntegrationTestCase {
 		}
 		$reflection = new \ReflectionClass( FsBuilder::class );
 		$method     = $reflection->getMethod( 'capSize' );
-		$method->setAccessible( true );
-		$data = array(
+		$data       = array(
 			'v'     => 1,
 			'nodes' => array(),
 		);
