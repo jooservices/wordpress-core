@@ -101,7 +101,7 @@ final class JOO_Core_I18n_Scan_Visitor extends NodeVisitorAbstract {
 }
 
 $root  = dirname( __DIR__ );
-$paths = array_slice( $argv, 1 );
+$paths = array_slice( $argv ?? array(), 1 );
 
 if ( array() === $paths ) {
 	$paths    = array();
