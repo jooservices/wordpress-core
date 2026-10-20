@@ -72,7 +72,7 @@ const schemaKeywordNames = new Set([
   'writeOnly',
 ]);
 
-/** @type {Array<{label: string, kind: string, json: string, expectedAjvValid: boolean, expectedDifference?: {ajvValid: boolean, runtimeValid: boolean, reason: string}}>} */
+/** @type {Array<{label: string, kind: string, json: string, expectedAjvValid: boolean}>} */
 const samples = [];
 
 function addFileSample(path, kind, expectedAjvValid) {
@@ -116,11 +116,6 @@ samples.push({
   kind: 'Invalid edge case',
   json: JSON.stringify(emptyArrayObjectSample),
   expectedAjvValid: false,
-  expectedDifference: {
-    ajvValid: false,
-    runtimeValid: true,
-    reason: 'PHP associative decoding represents both an empty JSON array and empty JSON object as an empty array.',
-  },
 });
 
 const numericObjectKeySample = {
@@ -135,12 +130,6 @@ samples.push({
   kind: 'Valid edge case',
   json: JSON.stringify(numericObjectKeySample),
   expectedAjvValid: true,
-  expectedDifference: {
-    ajvValid: true,
-    runtimeValid: false,
-    reason:
-      'PHP associative decoding converts the numeric object key to integer key 0, which the runtime list check classifies as an array.',
-  },
 });
 
 const runtime = spawnSync('php', ['tools/schema-validator-probe.php'], {
@@ -228,14 +217,7 @@ const outcomes = samples.map((sample, index) => {
     throw new Error(`${sample.label}: Ajv result was ${ajvValid}, expected ${sample.expectedAjvValid}.`);
   }
   const difference = ajvValid !== runtimeResult.valid;
-  if (sample.expectedDifference) {
-    if (
-      ajvValid !== sample.expectedDifference.ajvValid ||
-      runtimeResult.valid !== sample.expectedDifference.runtimeValid
-    ) {
-      throw new Error(`${sample.label}: observed validators no longer match the documented differential.`);
-    }
-  } else if (difference) {
+  if (difference) {
     throw new Error(
       `${sample.label}: unexpected Ajv/runtime difference (Ajv ${ajvValid}, runtime ${runtimeResult.valid}).`
     );
@@ -257,8 +239,6 @@ const resultRows = outcomes.map((outcome) => {
     : 'No';
   return `| ${outcome.kind} | \`${outcome.label}\` | ${ajvDecision} | ${runtimeDecision} | ${difference} |`;
 });
-const differences = outcomes.filter((outcome) => outcome.difference);
-const differenceDetails = differences.map((outcome) => `- **${outcome.label}:** ${outcome.expectedDifference.reason}`);
 const manifestKeywords = [...keywords.entries()].filter(([, files]) => files.has(manifestSchemaPath));
 const manifestUnsupported = manifestKeywords
   .filter(([keyword]) => !supported.has(keyword) && !annotations.has(keyword))
@@ -270,7 +250,7 @@ const report = `# Core schema keyword and runtime gap inventory
 
 This report inventories the JSON Schema resources validated by \`tools/validate-schemas.mjs\`: the theme manifest, block, and resume company schemas. \`packages/theme-core/schema/settings.schema.json\` is a settings descriptor consumed by the settings tooling, not a JSON Schema resource; its descriptor fields are checked separately by \`tools/validate-schemas.mjs\` and are not counted as JSON Schema keywords. The runtime \`SchemaValidator\` validates only the manifest schema.
 
-The Ajv side uses the same strict Ajv 2020 configuration as \`tools/validate-schemas.mjs\`. The runtime side calls \`SchemaValidator::validate()\` after PHP's production-style associative \`json_decode\`. The input set contains every spec example and theme manifest discovered by the schema tool, every invalid manifest fixture, and two focused representation edge cases.
+The Ajv side uses the same strict Ajv 2020 configuration as \`tools/validate-schemas.mjs\`. The runtime side calls \`SchemaValidator::validate()\` with PHP's object-preserving \`json_decode\`, matching production validation before manifest values are normalized for runtime use. The input set contains every spec example and theme manifest discovered by the schema tool, every invalid manifest fixture, and two focused representation edge cases.
 
 ## Keyword inventory
 
@@ -286,9 +266,9 @@ The manifest schema uses ${manifestUnsupported.length ? `unimplemented validatio
 | --- | --- | --- | --- | --- |
 ${resultRows.join('\n')}
 
-${differences.length ? `Observed differences:\n\n${differenceDetails.join('\n')}` : 'No differences were observed.'}
+No differences were observed.
 
-The two edge-case differences are recorded as expected findings. Other differences, or a change to either edge-case decision, fail the differential check so the report and test cannot silently drift.
+The differential check fails on any Ajv/runtime decision difference, including the focused representation edge cases.
 `;
 
 const reportPath = fromRoot('docs/dev-reports/core-schema-gap.md');

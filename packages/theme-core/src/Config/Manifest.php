@@ -19,7 +19,7 @@ final class Manifest {
 	/**
 	 * Manifest data.
 	 *
-	 * @var array<string, mixed>
+	 * @var array<array-key, mixed>
 	 */
 	private array $data;
 
@@ -40,7 +40,7 @@ final class Manifest {
 	/**
 	 * Creates a manifest.
 	 *
-	 * @param array<string, mixed> $data         Data.
+	 * @param array<array-key, mixed> $data         Data.
 	 * @param list<string>         $errors       Validation errors.
 	 * @param string               $fallbackSlug Slug used when the manifest has none (theme directory name).
 	 */
@@ -137,7 +137,7 @@ final class Manifest {
 	/**
 	 * Module toggles declared by the theme.
 	 *
-	 * @return array<string, bool>
+	 * @return array<array-key, bool>
 	 */
 	public function modules(): array {
 		$modules = $this->get( 'modules', array() );
@@ -147,7 +147,7 @@ final class Manifest {
 	/**
 	 * Raw data.
 	 *
-	 * @return array<string, mixed>
+	 * @return array<array-key, mixed>
 	 */
 	public function raw(): array {
 		return $this->data;

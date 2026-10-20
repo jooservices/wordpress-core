@@ -37,8 +37,8 @@ try {
 		if ( ! is_array( $sample ) || ! isset( $sample['label'], $sample['json'] ) ) {
 			throw new RuntimeException( 'Each sample must contain a label and raw JSON string.' );
 		}
-		$data = json_decode( (string) $sample['json'], true, 512, JSON_THROW_ON_ERROR );
-		if ( ! is_array( $data ) ) {
+		$data = json_decode( (string) $sample['json'], false, 512, JSON_THROW_ON_ERROR );
+		if ( ! ( $data instanceof stdClass ) ) {
 			throw new RuntimeException( sprintf( 'Sample %s must be a JSON object.', $sample['label'] ) );
 		}
 		$errors    = $validator->validate( $data, $schema );

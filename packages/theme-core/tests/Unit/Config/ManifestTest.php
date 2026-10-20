@@ -117,6 +117,17 @@ final class ManifestTest extends UnitTestCase {
 		$this->assertTrue( $this->loader()->parse( $json )->isValid() );
 	}
 
+	public function test_manifest_validation_distinguishes_json_arrays_and_objects(): void {
+		$loader  = $this->loader();
+		$invalid = $loader->parse( '{"schema":1,"slug":"edge-case","name":"Edge case","core":"^0.1","features":[]}' );
+		$valid   = $loader->parse( '{"schema":1,"slug":"edge-case","name":"Edge case","core":"^0.1","features":{},"modules":{"0":true}}' );
+
+		$this->assertFalse( $invalid->isValid() );
+		$this->assertStringContainsString( '/features: expected object, got array', $invalid->errors()[0] );
+		$this->assertTrue( $valid->isValid(), implode( '; ', $valid->errors() ) );
+		$this->assertSame( array( 0 => true ), $valid->modules() );
+	}
+
 	public function test_missing_file_and_oversized_file(): void {
 		$loader = $this->loader();
 		$this->assertStringContainsString( 'not found', $loader->load( '/nonexistent/joo-theme.json' )->errors()[0] );
