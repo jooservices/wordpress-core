@@ -13,6 +13,8 @@ use JOOservices\TestKit\ModuleContract;
 use JOOservices\TestKit\ModuleContractTest;
 use JOOservices\ThemeCore\Kernel;
 use JOOservices\ThemeCore\Tests\Fixtures\Modules\BadRegisterModule;
+use JOOservices\ThemeCore\Tests\Fixtures\Modules\DependentModule;
+use JOOservices\ThemeCore\Tests\Fixtures\Modules\FailingModule;
 
 final class ModulesContractTest extends ModuleContractTest {
 
@@ -47,5 +49,21 @@ final class ModulesContractTest extends ModuleContractTest {
 		$this->assertNotEmpty( $violations );
 		$duplicates = ModuleContract::dependencyViolations( array( BadRegisterModule::class, BadRegisterModule::class ) );
 		$this->assertNotEmpty( $duplicates );
+	}
+
+	public function test_a_failed_module_blocks_its_dependent_and_site_health_reports_it(): void {
+		add_filter(
+			'joo/core/modules',
+			static fn( array $modules ) => array_merge( $modules, array( FailingModule::class, DependentModule::class ) )
+		);
+		Kernel::boot( $this->manifest() );
+		do_action( 'after_setup_theme' );
+
+		$this->assertSame( 'failed', Kernel::status()['failing'] );
+		$this->assertSame( 'blocked', Kernel::status()['dependent'] );
+		$tests  = apply_filters( 'site_status_tests', array( 'direct' => array() ) );
+		$result = ( $tests['direct']['joo_modules_status']['test'] )();
+		$this->assertSame( 'critical', $result['status'] );
+		$this->assertStringContainsString( 'dependent (blocked)', $result['description'] );
 	}
 }
