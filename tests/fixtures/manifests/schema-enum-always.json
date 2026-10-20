@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "slug": "schema-enum-always",
+  "name": "Schema Enum Always",
+  "core": "^0.1",
+  "seo": {
+    "yield": "always"
+  }
+}
