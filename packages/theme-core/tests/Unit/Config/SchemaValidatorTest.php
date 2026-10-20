@@ -31,6 +31,25 @@ final class SchemaValidatorTest extends TestCase {
 		$this->assertSame( array( '/n: expected integer, got string' ), $errors );
 	}
 
+	public function test_json_objects_keep_their_identity_during_validation(): void {
+		$schema       = array(
+			'type'       => 'object',
+			'properties' => array(
+				'features' => array( 'type' => 'object' ),
+				'modules'  => array(
+					'type'                 => 'object',
+					'additionalProperties' => array( 'type' => 'boolean' ),
+				),
+			),
+		);
+		$array_value  = json_decode( '{"features":[]}', false, 512, JSON_THROW_ON_ERROR );
+		$object_value = json_decode( '{"features":{},"modules":{"0":true}}', false, 512, JSON_THROW_ON_ERROR );
+
+		$this->assertInstanceOf( \stdClass::class, $array_value );
+		$this->assertCount( 1, $this->v->validate( $array_value, $schema ) );
+		$this->assertSame( array(), $this->v->validate( $object_value, $schema ) );
+	}
+
 	public function test_required_and_additional_properties(): void {
 		$schema = array(
 			'type'                 => 'object',
