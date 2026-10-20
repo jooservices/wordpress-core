@@ -3,7 +3,7 @@
 - Machine: WSL (`wsl`)
 - Date: 2026-10-20
 - Branch: `JOOWT-288-core-r11-4-gates-g6-to-g9-for-starter-an`
-- Source commit tested: `1bd6483881aae786a2c5219e3b535d66c781d336`
+- Source commit tested: `c336f08432b3ccb3c6cc53a01b45d20e94121f68`
 - Runtime: WordPress 7.1.3, PHP 8.3.30, MariaDB 12.3.3; site database `wp_JOOWT_288`
 
 ## Results
@@ -13,12 +13,12 @@
 | starter | G6 | `make demo THEME=starter` | PASS, 17/17 health checks |
 | starter | G6 | `make health THEME=starter` | PASS, 17/17 checks |
 | starter | G7 | `make perf THEME=starter` | BLOCKED, missing `themes/starter/budgets.json` |
-| starter | G8 | `MATRIX_VARIANT=joowt288-retry make test-matrix THEME=starter` | FAIL, 22 pass, 1 fail, 2 unsupported |
+| starter | G8 | `MATRIX_VARIANT=joowt288-rebased make test-matrix THEME=starter` | FAIL, 22 pass, 1 fail, 2 unsupported |
 | starter | G9 | `make package THEME=starter` | PASS, 275 files, 477 KB |
 | jooservices | G6 | `make demo THEME=jooservices` | PASS, 17/17 health checks |
 | jooservices | G6 | `make health THEME=jooservices` | PASS, 17/17 checks |
 | jooservices | G7 | `make perf THEME=jooservices` | BLOCKED, Chromium executable absent from shared runtime cache |
-| jooservices | G8 | `MATRIX_VARIANT=joowt288-retry make test-matrix THEME=jooservices` | FAIL, 0 pass, 23 fail, 2 unsupported |
+| jooservices | G8 | `MATRIX_VARIANT=joowt288-rebased make test-matrix THEME=jooservices` | FAIL, 0 pass, 23 fail, 2 unsupported |
 | jooservices | G9 | `make package THEME=jooservices` | PASS, 311 files, 836 KB |
 
 ## Package checksums
@@ -34,9 +34,9 @@
 - Starter G7: `tools/perf.mjs` exits before Lighthouse measurement with `ENOENT` reading `themes/starter/budgets.json`.
 - Jooservices G7: Lighthouse exits before measurement with `ENOENT` spawning `/tmp/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome`.
 - Starter G8: `woocommerce` (WooCommerce 11.2.1) records a PHP notice from `_load_textdomain_just_in_time`; `wp-rocket` and `wpml` are unsupported because licensed ZIPs are not present.
-- Jooservices G8: all 23 testable plugin rows fail the browser CLS budget (all fail `home`; some also fail other routes); `wp-rocket` and `wpml` are unsupported for missing licensed ZIPs. WooCommerce also records the PHP notice.
+- Jooservices G8: all 23 testable plugin rows fail the browser CLS budget; route-specific results are in `artifacts/reports/matrix/jooservices-joowt288-rebased-2026-10-20.md`. `wp-rocket` and `wpml` are unsupported for missing licensed ZIPs. WooCommerce also records the PHP notice.
 
-The retained run manifest is `artifacts/reports/JOOWT-288/run-manifest.md`. Final matrix JSON and Markdown reports are retained under `artifacts/reports/matrix/`. The first starter matrix attempt failed because the shared web user could not create the missing E2E report directory; the retry is the final G8 result.
+The retained run manifest is `artifacts/reports/JOOWT-288/run-manifest.md`. The final matrix JSON and Markdown reports for variant `joowt288-rebased` are retained under `artifacts/reports/matrix/`.
 
 Supplementary `make lint` passed.
 
