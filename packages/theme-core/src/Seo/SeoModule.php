@@ -51,7 +51,7 @@ final class SeoModule extends AbstractModule {
 	 * @return list<string>
 	 */
 	public function dependencies(): array {
-		return array( 'admin', 'compat', 'i18n' );
+		return array( 'admin', 'compat', 'perf' );
 	}
 
 	/**

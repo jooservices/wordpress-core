@@ -13,7 +13,17 @@ if ( ! $joo_tests_dir || ! is_file( $joo_tests_dir . '/includes/functions.php' )
 	exit( 1 );
 }
 
-$joo_root = dirname( __DIR__ ); // The worktree (or any checkout) this bootstrap belongs to.
+$joo_root      = dirname( __DIR__ ); // The worktree (or any checkout) this bootstrap belongs to.
+$joo_theme     = getenv( 'JOO_TEST_THEME' );
+$joo_theme_dir = null;
+if ( is_string( $joo_theme ) && 1 === preg_match( '/^[a-z][a-z0-9-]{1,30}$/', $joo_theme ) ) {
+	foreach ( array( $joo_root . '/themes/' . $joo_theme, $joo_root . '/tests/fixtures/themes/' . $joo_theme ) as $candidate ) {
+		if ( is_file( $candidate . '/functions.php' ) ) {
+			$joo_theme_dir = $candidate;
+			break;
+		}
+	}
+}
 require_once $joo_root . '/vendor/autoload.php';
 require_once __DIR__ . '/worktree-autoload.php';
 require_once $joo_tests_dir . '/includes/functions.php';
@@ -37,13 +47,9 @@ tests_add_filter(
 
 tests_add_filter(
 	'after_setup_theme',
-	static function () use ( $joo_root ): void {
-		$theme = getenv( 'JOO_TEST_THEME' );
-		if ( $theme ) {
-			$dir = $joo_root . '/themes/' . $theme;
-			if ( is_file( $dir . '/functions.php' ) ) {
-				require_once $dir . '/functions.php';
-			}
+	static function () use ( $joo_theme_dir ): void {
+		if ( null !== $joo_theme_dir && is_file( $joo_theme_dir . '/functions.php' ) ) {
+			require_once $joo_theme_dir . '/functions.php';
 		}
 	},
 	1
@@ -55,8 +61,8 @@ require $joo_tests_dir . '/includes/bootstrap.php';
 // cases replay after_setup_theme after Kernel::reset(); retain core callbacks,
 // but do not repeat the theme's one-time supports/editor setup after wp_loaded.
 $joo_theme = getenv( 'JOO_TEST_THEME' );
-if ( $joo_theme && isset( $GLOBALS['wp_filter']['after_setup_theme'] ) && $GLOBALS['wp_filter']['after_setup_theme'] instanceof WP_Hook ) {
-	$joo_theme_functions = realpath( $joo_root . '/themes/' . $joo_theme . '/functions.php' );
+if ( null !== $joo_theme_dir && $joo_theme && isset( $GLOBALS['wp_filter']['after_setup_theme'] ) && $GLOBALS['wp_filter']['after_setup_theme'] instanceof WP_Hook ) {
+	$joo_theme_functions = realpath( $joo_theme_dir . '/functions.php' );
 	if ( $joo_theme_functions ) {
 		foreach ( $GLOBALS['wp_filter']['after_setup_theme']->callbacks as $priority => $callbacks ) {
 			foreach ( $callbacks as $callback ) {
