@@ -449,8 +449,45 @@ final class ContentTest extends IntegrationTestCase {
 	public function test_the_routes_are_registered(): void {
 		$this->boot();
 		$routes = rest_get_server()->get_routes();
-		foreach ( array( '/joo/v1/companies', '/joo/v1/categories/tree', '/joo/v1/topics', '/joo/v1/featured', '/joo/v1/related/(?P<post_id>\d+)', '/joo/v1/profile' ) as $route ) {
+		foreach ( array( '/joo/v1/terminal/fs', '/joo/v1/companies', '/joo/v1/categories/tree', '/joo/v1/topics', '/joo/v1/featured', '/joo/v1/related/(?P<post_id>\d+)', '/joo/v1/profile', '/joo/v1/fragment/(?P<name>[a-z0-9-]{1,64})' ) as $route ) {
 			$this->assertArrayHasKey( $route, $routes, $route );
+		}
+	}
+
+	public function test_public_routes_allow_only_get_and_have_public_permission_callbacks(): void {
+		$this->boot();
+		$routes   = rest_get_server()->get_routes();
+		$expected = array(
+			'/joo/v1/terminal/fs'                        => array( 'lang' ),
+			'/joo/v1/companies'                          => array( 'page', 'per_page', 'exclude_pinned' ),
+			'/joo/v1/categories/tree'                    => array( 'hide_empty' ),
+			'/joo/v1/topics'                             => array( 'limit', 'strategy' ),
+			'/joo/v1/featured'                           => array( 'limit' ),
+			'/joo/v1/related/(?P<post_id>\d+)'           => array( 'post_id', 'limit' ),
+			'/joo/v1/profile'                            => array(),
+			'/joo/v1/fragment/(?P<name>[a-z0-9-]{1,64})' => array( 'name' ),
+		);
+		foreach ( $expected as $route => $args ) {
+			$this->assertArrayHasKey( $route, $routes, $route );
+			$endpoint = $routes[ $route ][0];
+			$this->assertSame( array( 'GET' => true ), $endpoint['methods'], $route . ' methods' );
+			$this->assertSame( '__return_true', $endpoint['permission_callback'], $route . ' permission callback' );
+			$this->assertEqualsCanonicalizing( $args, array_keys( $endpoint['args'] ?? array() ), $route . ' arguments' );
+		}
+
+		$paths = array( '/terminal/fs', '/companies', '/categories/tree', '/topics', '/featured', '/related/1', '/profile', '/fragment/companies' );
+		foreach ( $paths as $path ) {
+			$response = rest_do_request( new \WP_REST_Request( 'GET', '/joo/v1' . $path ) );
+			$this->assertSame( 200, $response->get_status(), 'GET must be accepted for ' . $path );
+			$this->assertStringContainsString( 'public, max-age=300, stale-while-revalidate=600', $response->get_headers()['Cache-Control'], $path . ' cache policy' );
+			$this->assertArrayHasKey( 'ETag', $response->get_headers(), $path . ' ETag' );
+		}
+		foreach ( $paths as $path ) {
+			foreach ( array( 'POST', 'PUT', 'DELETE' ) as $method ) {
+				$request  = new \WP_REST_Request( $method, '/joo/v1' . $path );
+				$response = rest_do_request( $request );
+				$this->assertNotSame( 200, $response->get_status(), $method . ' must not be accepted for ' . $path );
+			}
 		}
 	}
 
@@ -486,6 +523,7 @@ final class ContentTest extends IntegrationTestCase {
 	public function test_argument_validation_returns_400(): void {
 		$this->boot();
 		$this->assertSame( 400, $this->get( '/companies', array( 'per_page' => 50 ) )->get_status() );
+		$this->assertSame( 400, $this->get( '/companies', array( 'page' => 1001 ) )->get_status() );
 		$this->assertSame( 400, $this->get( '/companies', array( 'page' => 0 ) )->get_status() );
 		$this->assertSame( 400, $this->get( '/topics', array( 'limit' => 99 ) )->get_status() );
 		$this->assertSame( 400, $this->get( '/topics', array( 'strategy' => 'random' ) )->get_status() );
@@ -526,8 +564,69 @@ final class ContentTest extends IntegrationTestCase {
 		foreach ( array( '/companies', '/categories/tree', '/topics', '/featured', '/related/' . $draft, '/profile' ) as $route ) {
 			$bodies .= wp_json_encode( $this->get( $route, array( 'exclude_pinned' => false ) )->get_data() );
 		}
+		$bodies .= wp_json_encode( rest_do_request( new \WP_REST_Request( 'GET', '/joo/v1/terminal/fs' ) )->get_data() );
+		foreach ( array( $draft, $priv, $prot ) as $id ) {
+			$request = new \WP_REST_Request( 'GET', '/joo/v1/fragment/related' );
+			$request->set_query_params(
+				array(
+					'post'  => $id,
+					'limit' => 8,
+				)
+			);
+			$bodies .= wp_json_encode( rest_do_request( $request )->get_data() );
+		}
 		foreach ( array( 'Hiddenco', 'Draft post', 'Private post', 'Protected post', 'Secret cat', 'hidden-tag' ) as $secret ) {
 			$this->assertStringNotContainsString( $secret, $bodies, $secret );
+		}
+	}
+
+	public function test_public_routes_do_not_expose_account_email_or_login_fields(): void {
+		$login = 'private-login-joowt269';
+		$email = 'private-joowt269@example.test';
+		$user  = self::factory()->user->create(
+			array(
+				'role'          => 'subscriber',
+				'user_login'    => $login,
+				'user_email'    => $email,
+				'user_nicename' => 'public-author-joowt269',
+				'display_name'  => 'Public Author',
+			)
+		);
+		add_filter( 'joo/settings/value', static fn( $value, $key ) => 'content.profile_user_id' === $key ? $user : $value, 10, 2 );
+		$this->company( 'Publicco', '2024-01' );
+		$post = self::factory()->post->create(
+			array(
+				'post_title'  => 'Public article',
+				'post_author' => $user,
+			)
+		);
+		$this->boot();
+
+		$responses = array();
+		foreach ( array( '/companies', '/categories/tree', '/topics', '/featured', '/related/' . $post, '/profile' ) as $route ) {
+			$responses[] = $this->get( $route )->get_data();
+		}
+		$responses[] = rest_do_request( new \WP_REST_Request( 'GET', '/joo/v1/terminal/fs' ) )->get_data();
+		$responses[] = rest_do_request( new \WP_REST_Request( 'GET', '/joo/v1/fragment/companies' ) )->get_data();
+		$json        = (string) wp_json_encode( $responses );
+		$this->assertStringNotContainsString( $login, $json );
+		$this->assertStringNotContainsString( $email, $json );
+
+		$keys    = array();
+		$collect = static function ( $value ) use ( &$collect, &$keys ): void {
+			if ( ! is_array( $value ) ) {
+				return;
+			}
+			foreach ( $value as $key => $item ) {
+				if ( is_string( $key ) ) {
+					$keys[] = strtolower( $key );
+				}
+				$collect( $item );
+			}
+		};
+		$collect( $responses );
+		foreach ( array( 'email', 'user_email', 'login', 'user_login', 'user_id', 'author_id' ) as $key ) {
+			$this->assertNotContains( $key, $keys, $key . ' is not part of the public REST schema' );
 		}
 	}
 

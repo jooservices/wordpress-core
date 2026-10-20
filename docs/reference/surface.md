@@ -12,7 +12,7 @@ REST namespace: `joo/v1`.
 - `/featured`
 - `/related/(?P<post_id>\d+)`
 - `/profile`
-- `/fragment/(?P<name>[a-z0-9-]+)`
+- `/fragment/(?P<name>[a-z0-9-]{1,64})`
 - `/terminal/fs`
 - `/resume`
 - `/resume/json-resume`

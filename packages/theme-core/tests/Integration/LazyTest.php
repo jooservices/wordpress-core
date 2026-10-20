@@ -20,6 +20,7 @@ use JOOservices\ThemeCore\Lazy\FragmentLazy;
 use JOOservices\ThemeCore\Lazy\ImageLazy;
 use JOOservices\ThemeCore\Lazy\Policy;
 use JOOservices\ThemeCore\Lazy\SectionLazy;
+use JOOservices\ThemeCore\Performance\FragmentCache;
 
 final class LazyTest extends IntegrationTestCase {
 
@@ -295,6 +296,8 @@ final class LazyTest extends IntegrationTestCase {
 		$data = $response->get_data();
 		$this->assertSame( $renderer( array( 'limit' => 3 ) ), $data['html'], 'REST and inline HTML are byte-identical' );
 		$this->assertSame( md5( $data['html'] ), $data['etag'] );
+		$this->assertStringContainsString( 'public, max-age=300', $response->get_headers()['Cache-Control'] );
+		$this->assertStringStartsWith( 'W/"', $response->get_headers()['ETag'] );
 	}
 
 	public function test_fragment_endpoint_validation_and_unknown_names(): void {
@@ -342,6 +345,102 @@ final class LazyTest extends IntegrationTestCase {
 				)
 			)->get_status()
 		);
+		$this->assertSame( 404, rest_do_request( new \WP_REST_Request( 'GET', '/joo/v1/fragment/' . str_repeat( 'a', 65 ) ) )->get_status() );
+	}
+
+	public function test_comment_snapshot_route_never_returns_draft_private_or_protected_content(): void {
+		$this->singular();
+		$this->assertSame( 400, rest_do_request( new \WP_REST_Request( 'GET', '/joo/v1/fragment/comments' ) )->get_status(), 'snapshot parent is required' );
+		$this->assertSame( 400, rest_do_request( new \WP_REST_Request( 'GET', '/joo/v1/fragment/related' ) )->get_status(), 'related post is required' );
+		$fragments = $this->service( FragmentLazy::class );
+		$hidden    = array(
+			array(
+				'post_status' => 'draft',
+				'post_title'  => 'Draft comments parent',
+			),
+			array(
+				'post_status' => 'private',
+				'post_title'  => 'Private comments parent',
+			),
+			array(
+				'post_status'   => 'publish',
+				'post_password' => 'secret',
+				'post_title'    => 'Protected comments parent',
+			),
+		);
+		foreach ( $hidden as $post_args ) {
+			$post = self::factory()->post->create( $post_args );
+			$args = array(
+				'post'  => $post,
+				'cpage' => 1,
+			);
+			$fragments->wrap( 'comments', $args, static fn() => '<p>private comment snapshot</p>' );
+			$request = new \WP_REST_Request( 'GET', '/joo/v1/fragment/comments' );
+			$request->set_query_params( $args );
+			$this->assertSame( 404, rest_do_request( $request )->get_status(), $post_args['post_title'] );
+		}
+	}
+
+	public function test_comment_snapshots_are_not_created_for_logged_in_requests(): void {
+		$post = $this->singular();
+		$user = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $user );
+		$html = '<div class="wp-block-comments"><form><input value="private@example.test"></form></div>';
+		$this->assertSame( $html, $this->service( SectionLazy::class )->filter( $html, array( 'blockName' => 'core/comments' ) ) );
+		wp_set_current_user( 0 );
+
+		$request = new \WP_REST_Request( 'GET', '/joo/v1/fragment/comments' );
+		$request->set_query_params(
+			array(
+				'post'  => $post,
+				'cpage' => 1,
+			)
+		);
+		$this->assertSame( 404, rest_do_request( $request )->get_status() );
+	}
+
+	public function test_comment_fragments_use_private_no_store_headers(): void {
+		$post = $this->singular();
+		wp_set_current_user( 0 );
+		$legacy_args = array(
+			'cpage' => 1,
+			'post'  => $post,
+		);
+		$this->service( FragmentCache::class )->put(
+			'snapshot:comments:' . md5( (string) wp_json_encode( $legacy_args ) ),
+			'<div>legacy personalized comments</div>',
+			DAY_IN_SECONDS,
+			array( 'posts' ),
+			'lazy'
+		);
+		$legacy_request = new \WP_REST_Request( 'GET', '/joo/v1/fragment/comments' );
+		$legacy_request->set_query_params(
+			array(
+				'post'  => $post,
+				'cpage' => 1,
+			)
+		);
+		$this->assertSame( 404, rest_do_request( $legacy_request )->get_status(), 'previously cached personalized snapshots are not reused' );
+		$this->service( FragmentLazy::class )->wrap(
+			'comments',
+			array(
+				'post'  => $post,
+				'cpage' => 1,
+			),
+			static fn() => '<div>Public comments</div>'
+		);
+		$request = new \WP_REST_Request( 'GET', '/joo/v1/fragment/comments' );
+		$request->set_query_params(
+			array(
+				'post'  => $post,
+				'cpage' => 1,
+			)
+		);
+		$response = rest_do_request( $request );
+		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 'private, no-store', $response->get_headers()['Cache-Control'] );
+		$this->assertSame( 'Cookie, Accept-Encoding', $response->get_headers()['Vary'] );
+		$this->assertArrayNotHasKey( 'ETag', $response->get_headers() );
 	}
 
 	public function test_snapshot_fragments_return_what_was_rendered_with_the_page(): void {
@@ -374,6 +473,12 @@ final class LazyTest extends IntegrationTestCase {
 		$this->singular();
 		$this->expectException( \InvalidArgumentException::class );
 		$this->service( FragmentLazy::class )->register( 'Bad Name', static fn() => '' );
+	}
+
+	public function test_fragment_names_are_bounded_at_registration(): void {
+		$this->singular();
+		$this->expectException( \InvalidArgumentException::class );
+		$this->service( FragmentLazy::class )->register( str_repeat( 'a', 65 ), static fn() => '' );
 	}
 
 	public function test_sections_get_the_content_visibility_class_when_lazy(): void {

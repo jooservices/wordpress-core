@@ -381,9 +381,14 @@ final class TerminalTest extends IntegrationTestCase {
 		$this->assertSame( 200, $response->get_status() );
 		$this->assertArrayHasKey( '/route/in-route.md', $this->byPath( $response->get_data() ) );
 		$this->assertStringContainsString( 'max-age=300', $response->get_headers()['Cache-Control'] );
+		$this->assertStringStartsWith( 'W/"', $response->get_headers()['ETag'] );
+		$this->assertSame( 'Accept-Encoding', $response->get_headers()['Vary'] );
 		$bad = new \WP_REST_Request( 'GET', '/joo/v1/terminal/fs' );
 		$bad->set_query_params( array( 'lang' => 'x;drop' ) );
 		$this->assertSame( 400, rest_do_request( $bad )->get_status() );
+		$too_long = new \WP_REST_Request( 'GET', '/joo/v1/terminal/fs' );
+		$too_long->set_query_params( array( 'lang' => str_repeat( 'a', 64 ) ) );
+		$this->assertSame( 400, rest_do_request( $too_long )->get_status() );
 		$ok = new \WP_REST_Request( 'GET', '/joo/v1/terminal/fs' );
 		$ok->set_query_params( array( 'lang' => 'vi' ) );
 		$this->assertSame( 200, rest_do_request( $ok )->get_status() );

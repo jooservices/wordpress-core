@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace JOOservices\ThemeCore\Http;
 
 /**
- * Adds Cache-Control and a weak ETag to GET responses of the joo/v1 namespace and answers conditional
- * requests with 304. The routes only expose published public content, so responses may be cached publicly.
+ * Adds Cache-Control and a weak ETag to cacheable GET responses of the joo/v1 namespace and answers conditional
+ * requests with 304. The comments snapshot route is private and must not be cached.
  *
  * @api
  */
@@ -38,6 +38,11 @@ final class CacheHeaders {
 	public function filter( $result, $server, $request ) {
 		unset( $server );
 		if ( ! $result instanceof \WP_HTTP_Response || 'GET' !== $request->get_method() || 0 !== strpos( $request->get_route(), '/joo/v1/' ) || 200 !== $result->get_status() ) {
+			return $result;
+		}
+		if ( '/joo/v1/fragment/comments' === $request->get_route() ) {
+			$result->header( 'Cache-Control', 'private, no-store' );
+			$result->header( 'Vary', 'Cookie, Accept-Encoding' );
 			return $result;
 		}
 		$etag = $this->etag( $result->get_data() );
