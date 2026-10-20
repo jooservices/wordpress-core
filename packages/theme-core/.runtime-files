@@ -7,7 +7,9 @@ src/**
 schema/**
 languages/*.mo
 resources/build/**
-resources/editor/*.js
+resources/editor/blocks.js
+resources/editor/panels.js
+resources/editor/serp.js
 resources/admin/*.js
 resources/admin/*.css
 resources/critical/**
