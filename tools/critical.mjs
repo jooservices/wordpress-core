@@ -1,10 +1,9 @@
 // Generates assets/critical/{context}.css for a theme from the running demo.
-// Usage: node tools/critical.mjs --theme jooservices [--base http://127.0.0.1:8082] [--max-gzip 14336]
+// Usage: node tools/critical.mjs --theme jooservices [--base http://127.0.0.1:8082] [--max-gzip 14336] [--output-dir DIR]
 import { launchBrowser } from './lib/browser.mjs';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { fromRoot } from './lib/paths.mjs';
-import { extractCriticalRules, localizeSiteUrls, mergeAndMinify } from './lib/critical.mjs';
+import { criticalOutputDirectory, extractCriticalRules, localizeSiteUrls, mergeAndMinify } from './lib/critical.mjs';
 
 const args = Object.fromEntries(
   process.argv
@@ -20,7 +19,7 @@ const base = String(
   args.base ?? process.env.E2E_BASE_URL ?? process.env.WP_SITE_URL ?? 'http://127.0.0.1:8082'
 ).replace(/\/$/, '');
 const maxGzip = Number(args['max-gzip'] ?? 14 * 1024);
-const outDir = fromRoot('themes', theme, 'assets', 'critical');
+const outDir = criticalOutputDirectory(theme, args['output-dir']);
 const viewports = [
   { width: 390, height: 844 },
   { width: 820, height: 1180 },

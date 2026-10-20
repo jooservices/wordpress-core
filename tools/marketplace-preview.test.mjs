@@ -7,7 +7,7 @@ const makeBrowser = ({
   postPath = '/story/',
   requestUrl = 'http://showcase.test/wp-content/themes/jooservices/style.css',
 } = {}) => {
-  const calls = { directories: [], gotos: [], screenshots: [], viewports: [] };
+  const calls = { directories: [], gotos: [], selectors: [], screenshots: [], viewports: [] };
   const page = {
     on: vi.fn((event, listener) => {
       if (event === 'request') page.requestListener = listener;
@@ -19,9 +19,12 @@ const makeBrowser = ({
       return response;
     }),
     evaluate: vi.fn(async () => true),
-    locator: vi.fn(() => ({
-      first: () => ({ getAttribute: async () => postPath }),
-    })),
+    locator: vi.fn((selector) => {
+      calls.selectors.push(selector);
+      return {
+        first: () => ({ getAttribute: async () => postPath }),
+      };
+    }),
     screenshot: vi.fn(async (options) => calls.screenshots.push(options)),
   };
   const browser = { newPage: vi.fn(async () => page) };
@@ -53,6 +56,7 @@ describe('marketplace preview capture', () => {
       '/tmp/jooservices/previews/04_mobile-home.png',
     ]);
     expect(result.externalRequests).toEqual([]);
+    expect(calls.selectors).toEqual(['.wp-block-post-title a']);
     expect(calls.gotos).toEqual([
       'http://showcase.test',
       'http://showcase.test',

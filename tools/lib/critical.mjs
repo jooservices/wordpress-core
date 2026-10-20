@@ -2,6 +2,13 @@
 // A style rule is kept when one of its selectors matches an element that intersects the viewport.
 import { transform } from 'lightningcss';
 import { gzipSync } from 'node:zlib';
+import { resolve } from 'node:path';
+import { fromRoot } from './paths.mjs';
+
+/** Resolve the critical CSS output directory from the repository root. */
+export function criticalOutputDirectory(theme, outputDirectory) {
+  return outputDirectory ? resolve(fromRoot(), outputDirectory) : fromRoot('themes', theme, 'assets', 'critical');
+}
 
 /**
  * Make same-site asset URLs portable across local and production hosts.
