@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JOOservices\ThemeCore\Terminal;
 
 use JOOservices\ThemeCore\Assets\AssetRegistry;
+use JOOservices\ThemeCore\Config\Manifest;
 use JOOservices\ThemeCore\Config\Settings;
 use JOOservices\ThemeCore\Container\Container;
 use JOOservices\ThemeCore\Content\WpContentProvider;
@@ -62,7 +63,17 @@ final class TerminalModule extends AbstractModule {
 		if ( null === $this->container ) {
 			return;
 		}
-		$c = $this->container;
+		$c         = $this->container;
+		$shortcuts = $c->get( Manifest::class )->get( 'terminal.shortcuts', array( 'ls', 'tree', 'help', 'find . -type f' ) );
+		add_filter(
+			'joo/assets/runtime_config',
+			static function ( $data ) use ( $shortcuts ) {
+				if ( is_array( $data ) ) {
+					$data['terminalShortcuts'] = $shortcuts;
+				}
+				return $data;
+			}
+		);
 		$c->get( FsRoute::class )->hook();
 		/** @var AssetRegistry $assets */
 		$assets = $c->get( AssetRegistry::class );

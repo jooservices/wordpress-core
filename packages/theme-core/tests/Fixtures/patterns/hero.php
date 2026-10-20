@@ -1,8 +1,8 @@
 <?php
 /**
  * Title: Hero
- * Slug: jooservices/hero
- * Categories: jooservices
+ * Slug: fixture/hero
+ * Categories:
  * Keywords: hero, intro
  * Description: A hero section.
  * Viewport Width: 1200

@@ -178,6 +178,8 @@ final class TerminalTest extends IntegrationTestCase {
 		$this->assertSame( 'Joo Blog', $data['site']['name'] );
 		$this->assertSame( home_url( '/' ), $data['site']['home'] );
 		$this->assertNotSame( '', $data['site']['host'] );
+		$config = apply_filters( 'joo/assets/runtime_config', array() );
+		$this->assertSame( array( 'ls', 'tree', 'help', 'find . -type f' ), $config['terminalShortcuts'] );
 	}
 
 	public function test_only_published_public_content_appears_and_titles_are_plain_text(): void {
@@ -473,6 +475,7 @@ final class TerminalTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'role="search"', $html );
 		$this->assertStringContainsString( 'Prompt caching', $html );
 		$this->assertStringContainsString( '<script type="application/json" class="joo-404__index">', $html );
+		$this->assertStringContainsString( 'placeholder="/example-path"', $html );
 	}
 
 	public function test_404_suggestion_scoring_and_path_limits(): void {

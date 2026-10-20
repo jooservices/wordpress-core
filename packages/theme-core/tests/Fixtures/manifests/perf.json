@@ -3,6 +3,10 @@
   "slug": "fixture-theme",
   "name": "Fixture",
   "core": "^0.1",
+  "content": {
+    "provider": "wp",
+    "profilePagePath": "about"
+  },
   "modules": {
     "seo": true,
     "lazy": true

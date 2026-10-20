@@ -17,7 +17,7 @@ Optional files: `view.js` (script module) and `style.css`; the build writes hash
 `resources/editor/blocks.js` gives every block a `ServerSideRender` preview and inspector controls generated from `x-joo.controls` in `block.json` (`range`, `toggle`, `select`, `text`, `number`, `color`). Unknown types and controls for undeclared attributes are ignored.
 
 ## Patterns, scheme
-`PatternLoader` registers the `jooservices` pattern category, patterns from manifest folders (`blocks.patterns`) and can remove the core patterns (`blocks.removeCorePatterns`). `ThemeScheme` adds `data-theme` to `<html>` (the no-JS default) and prints one inline script (<= 300 bytes, nonce through `joo/assets/inline_script_nonce`) that applies the stored choice (`localStorage` key `joo-theme`) or the system preference before first paint. With a single scheme no script is printed.
+`PatternLoader` registers the `theme-core` pattern category by default; themes can choose its ID and label with `blocks.patternCategory` and `blocks.patternCategoryLabel`. Patterns come from manifest folders (`blocks.patterns`) and core patterns can be removed with `blocks.removeCorePatterns`. The `joo` block category is labelled `Theme Core` by default and can be named with `blocks.categoryLabel`. `ThemeScheme` adds `data-theme` to `<html>` (the no-JS default) and prints one inline script (<= 300 bytes, nonce through `joo/assets/inline_script_nonce`) that applies the stored choice (`localStorage` key `joo-theme`) or the system preference before first paint. With a single scheme no script is printed.
 
 ## Content blocks (C12)
 | Block | Notes |

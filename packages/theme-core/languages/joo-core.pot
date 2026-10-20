@@ -7,7 +7,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-16T12:18:06+00:00\n"
+"POT-Creation-Date: 2026-10-20T02:21:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: joo-core\n"
@@ -192,6 +192,7 @@ msgstr ""
 
 #: src/Admin/SettingsPage.php:271
 #: src/Blocks/Blocks/TagList.php:172
+#: src/Blocks/EditorBundle.php:122
 #: src/Seo/Breadcrumbs/TrailBuilder.php:204
 msgid "Tags"
 msgstr ""
@@ -346,9 +347,9 @@ msgstr ""
 msgid "Settings saved."
 msgstr ""
 
-#: src/Blocks/BlockRegistrar.php:82
-#: src/Blocks/PatternLoader.php:57
-msgid "JOOservices"
+#: src/Blocks/BlockRegistrar.php:81
+#: src/Blocks/PatternLoader.php:58
+msgid "Theme Core"
 msgstr ""
 
 #: src/Blocks/Blocks/CategoryTree.php:151
@@ -392,6 +393,194 @@ msgstr ""
 
 #: src/Blocks/CodeEnhancer.php:43
 msgid "Copy"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:77
+msgid "About page"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:78
+msgid "Author archive"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:79
+msgid "Autoplay"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:80
+msgid "Avatar size"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:81
+msgid "Chevron"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:82
+msgid "Chips"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:83
+msgid "Cloud"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:84
+msgid "Collapsed"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:85
+msgid "Companies per page"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:86
+msgid "Curated"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:87
+msgid "Current company label"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:88
+msgid "Dot"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:89
+msgid "Dropdown"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:90
+msgid "Expanded levels"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:91
+msgid "Hide current language"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:92
+msgid "Hide empty categories"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:93
+msgid "Interval (ms)"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:94
+msgid "Label"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:95
+msgid "Label length"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:96
+msgid "Link the category"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:97
+msgid "Link to"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:98
+msgid "List"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:99
+msgid "List label"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:100
+msgid "Maximum depth"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:101
+msgid "Minimum headings"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:102
+msgid "Most posts"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:103
+msgid "Most used"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:104
+msgid "Name"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:105
+msgid "Order"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:106
+msgid "Posts"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:107
+msgid "Separator"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:108
+msgid "Show bio"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:109
+msgid "Show counts"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:110
+msgid "Show description"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:111
+msgid "Show descriptions"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:112
+msgid "Show excerpt"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:113
+msgid "Show excerpts"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:114
+msgid "Show home"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:115
+msgid "Show images"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:116
+msgid "Show intro"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:117
+msgid "Show meta"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:118
+msgid "Show social links"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:119
+msgid "Site setting"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:120
+msgid "Slash"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:121
+msgid "Style"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:123
+msgid "Title"
+msgstr ""
+
+#: src/Blocks/EditorBundle.php:124
+msgid "Topics"
 msgstr ""
 
 #: src/Blocks/HeadingAnchors.php:161
@@ -501,23 +690,23 @@ msgstr ""
 msgid "Tier 3: use the Canvas page template; core content filters skip builder pages."
 msgstr ""
 
-#: src/Content/ContentModule.php:117
+#: src/Content/ContentModule.php:110
 msgid "Featured"
 msgstr ""
 
-#: src/Content/ContentModule.php:122
+#: src/Content/ContentModule.php:115
 msgid "Featured post"
 msgstr ""
 
-#: src/Content/ContentModule.php:123
+#: src/Content/ContentModule.php:116
 msgid "Shown in the featured slider on the home page."
 msgstr ""
 
-#: src/Content/ContentModule.php:133
+#: src/Content/ContentModule.php:126
 msgid "Featured order"
 msgstr ""
 
-#: src/Content/ContentModule.php:134
+#: src/Content/ContentModule.php:127
 msgid "Lower numbers come first."
 msgstr ""
 
@@ -564,6 +753,306 @@ msgstr ""
 
 #: src/I18n/JsStrings.php:60
 msgid "The terminal could not be loaded."
+msgstr ""
+
+#: src/I18n/JsStrings.php:61
+msgid "list the commands"
+msgstr ""
+
+#: src/I18n/JsStrings.php:62
+msgid "Read-only shell. Categories are directories, posts are files. Nothing is sent anywhere."
+msgstr ""
+
+#: src/I18n/JsStrings.php:63
+msgid "Tab completes · ↑/↓ history · click names to run them"
+msgstr ""
+
+#: src/I18n/JsStrings.php:64
+msgid "manual entry of a command"
+msgstr ""
+
+#: src/I18n/JsStrings.php:65
+msgid "What manual page do you want?"
+msgstr ""
+
+#: src/I18n/JsStrings.php:66
+msgid "No manual entry for {command}"
+msgstr ""
+
+#: src/I18n/JsStrings.php:67
+msgid "who writes here"
+msgstr ""
+
+#: src/I18n/JsStrings.php:68
+msgid "show the host name"
+msgstr ""
+
+#: src/I18n/JsStrings.php:69
+msgid "show the user"
+msgstr ""
+
+#: src/I18n/JsStrings.php:70
+msgid "current date and time"
+msgstr ""
+
+#: src/I18n/JsStrings.php:71
+msgid "system name"
+msgstr ""
+
+#: src/I18n/JsStrings.php:72
+msgid "print text"
+msgstr ""
+
+#: src/I18n/JsStrings.php:73
+msgid "clear the screen (Ctrl+L)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:74
+msgid "commands typed in this tab"
+msgstr ""
+
+#: src/I18n/JsStrings.php:75
+msgid "close the terminal"
+msgstr ""
+
+#: src/I18n/JsStrings.php:76
+msgid "alias of exit"
+msgstr ""
+
+#: src/I18n/JsStrings.php:77
+msgid "where a command lives"
+msgstr ""
+
+#: src/I18n/JsStrings.php:78
+msgid "about this site"
+msgstr ""
+
+#: src/I18n/JsStrings.php:79
+msgid "OS: WordPress · block theme"
+msgstr ""
+
+#: src/I18n/JsStrings.php:80
+msgid "Site: {site}"
+msgstr ""
+
+#: src/I18n/JsStrings.php:81
+msgid "Posts: {posts} · Directories: {directories}"
+msgstr ""
+
+#: src/I18n/JsStrings.php:82
+msgid "Shell: joo-sh (read-only)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:83
+msgid "always offline by design"
+msgstr ""
+
+#: src/I18n/JsStrings.php:84
+msgid "ping: connect: Network is unreachable (this shell is offline by design)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:85
+msgid "not available"
+msgstr ""
+
+#: src/I18n/JsStrings.php:86
+msgid "{user} is not in the sudoers file. This incident will be reported to /dev/null."
+msgstr ""
+
+#: src/I18n/JsStrings.php:87
+msgid "refused: the file system is read-only"
+msgstr ""
+
+#: src/I18n/JsStrings.php:88
+msgid "{command}: cannot modify '{path}': Read-only file system"
+msgstr ""
+
+#: src/I18n/JsStrings.php:89
+msgid "The file system is read-only. Try cat."
+msgstr ""
+
+#: src/I18n/JsStrings.php:90
+msgid "go to that view on the site (post, category, tag, page)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:91
+msgid "xdg-open: {path}: No such file or directory → 404"
+msgstr ""
+
+#: src/I18n/JsStrings.php:92
+msgid "no viewer for {name}; use cat"
+msgstr ""
+
+#: src/I18n/JsStrings.php:93
+msgid "opening {path} …"
+msgstr ""
+
+#: src/I18n/JsStrings.php:94
+msgid "alias of open"
+msgstr ""
+
+#: src/I18n/JsStrings.php:95
+msgid "fake HTTP response for a path (no network)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:96
+msgid "curl: try 'curl --help' for more information"
+msgstr ""
+
+#: src/I18n/JsStrings.php:97
+msgid "(simulated, no network)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:98
+msgid "→ open {path}"
+msgstr ""
+
+#: src/I18n/JsStrings.php:99
+msgid "change the site theme"
+msgstr ""
+
+#: src/I18n/JsStrings.php:100
+msgid "usage: theme dark|light"
+msgstr ""
+
+#: src/I18n/JsStrings.php:101
+msgid "theme → {theme}"
+msgstr ""
+
+#: src/I18n/JsStrings.php:102
+msgid "change the site language (for example lang en, lang vi)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:103
+msgid "usage: lang <code> (for example en or vi)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:104
+msgid "lang → {language}"
+msgstr ""
+
+#: src/I18n/JsStrings.php:105
+msgid "{command}: cannot access '{path}': No such file or directory"
+msgstr ""
+
+#: src/I18n/JsStrings.php:106
+msgid "category: "
+msgstr ""
+
+#: src/I18n/JsStrings.php:107
+msgid "date: "
+msgstr ""
+
+#: src/I18n/JsStrings.php:108
+msgid "read: "
+msgstr ""
+
+#: src/I18n/JsStrings.php:109
+msgid "tags: "
+msgstr ""
+
+#: src/I18n/JsStrings.php:110
+msgid "list directory (categories) and posts"
+msgstr ""
+
+#: src/I18n/JsStrings.php:111
+msgid "(empty)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:112
+msgid "total {count}"
+msgstr ""
+
+#: src/I18n/JsStrings.php:113
+msgid "change directory (cd .., cd ~, cd -)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:114
+msgid "bash: cd: {path}: No such file or directory"
+msgstr ""
+
+#: src/I18n/JsStrings.php:115
+msgid "bash: cd: {path}: Not a directory"
+msgstr ""
+
+#: src/I18n/JsStrings.php:116
+msgid "print working directory"
+msgstr ""
+
+#: src/I18n/JsStrings.php:117
+msgid "show a post summary or page"
+msgstr ""
+
+#: src/I18n/JsStrings.php:118
+msgid "cat: missing file operand"
+msgstr ""
+
+#: src/I18n/JsStrings.php:119
+msgid "cat: {path}: No such file or directory"
+msgstr ""
+
+#: src/I18n/JsStrings.php:120
+msgid "cat: {path}: Is a directory"
+msgstr ""
+
+#: src/I18n/JsStrings.php:121
+msgid "first lines of a file"
+msgstr ""
+
+#: src/I18n/JsStrings.php:122
+msgid "head: missing file operand"
+msgstr ""
+
+#: src/I18n/JsStrings.php:123
+msgid "head: cannot open '{path}' for reading: No such file or directory"
+msgstr ""
+
+#: src/I18n/JsStrings.php:124
+msgid "head: error reading '{path}': Is a directory"
+msgstr ""
+
+#: src/I18n/JsStrings.php:125
+msgid "directory tree"
+msgstr ""
+
+#: src/I18n/JsStrings.php:126
+msgid "{path} [error opening dir]"
+msgstr ""
+
+#: src/I18n/JsStrings.php:127
+msgid "{directories} directories, {files} files"
+msgstr ""
+
+#: src/I18n/JsStrings.php:128
+msgid "find files and directories by name"
+msgstr ""
+
+#: src/I18n/JsStrings.php:129
+msgid "find: '{path}': No such file or directory"
+msgstr ""
+
+#: src/I18n/JsStrings.php:130
+msgid "(no matches)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:131
+msgid "search titles, excerpts and tags"
+msgstr ""
+
+#: src/I18n/JsStrings.php:132
+msgid "Usage: grep [OPTION]... PATTERN [FILE]..."
+msgstr ""
+
+#: src/I18n/JsStrings.php:133
+msgid "grep: {path}: No such file or directory"
+msgstr ""
+
+#: src/I18n/JsStrings.php:134
+msgid "(no match)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:135
+msgid "(no match. grep is case-sensitive, try -i)"
 msgstr ""
 
 #: src/I18n/LanguageTagging.php:123
@@ -710,6 +1199,10 @@ msgstr ""
 
 #: src/Seo/SeoModule.php:261
 msgid "SEO output is consistent"
+msgstr ""
+
+#: src/Terminal/FsBuilder.php:149
+msgid "Categories are directories, posts are .md files, tags are virtual directories of links. Nothing you type leaves this page."
 msgstr ""
 
 #: resources/blocks/author-box/block.json

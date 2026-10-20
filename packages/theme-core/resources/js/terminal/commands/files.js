@@ -1,9 +1,17 @@
 // ls, cd, pwd, cat, head, tree, find, grep.
 import { list, pathOf, target, walk } from '../fs.js';
 import { line, lines, link, parseFlags, text } from '../shell.js';
-import { escapeRegExp, fail, globToRegExp, longLine, nameSpan } from './util.js';
+import { escapeRegExp, fail, globToRegExp, longLine, message, nameSpan } from './util.js';
 
-const missing = (result, cmd, arg) => fail(result, `${cmd}: cannot access '${arg}': No such file or directory`, 2);
+const missing = (result, cmd, arg) =>
+  fail(
+    result,
+    message('terminal.command.file.missing', "{command}: cannot access '{path}': No such file or directory", {
+      command: cmd,
+      path: arg,
+    }),
+    2
+  );
 
 /** Text of a post, page or file as output lines. */
 export function fileLines(shell, node) {
@@ -13,14 +21,17 @@ export function fileLines(shell, node) {
     const rows = [
       [text('# ' + p.title, 'ok')],
       [
-        text('category: ', 'dim'),
+        text(message('terminal.file.category', 'category: '), 'dim'),
         text(pathOf(file.parent) + '  '),
-        text('date: ', 'dim'),
+        text(message('terminal.file.date', 'date: '), 'dim'),
         text(p.d + '  '),
-        text('read: ', 'dim'),
+        text(message('terminal.file.read', 'read: '), 'dim'),
         text(p.m + ' min'),
       ],
-      [text('tags: ', 'dim'), ...p.tg.flatMap((tag) => [link('#' + tag, 'cd /tags/' + tag, 'symlink'), text(' ')])],
+      [
+        text(message('terminal.file.tags', 'tags: '), 'dim'),
+        ...p.tg.flatMap((tag) => [link('#' + tag, 'cd /tags/' + tag, 'symlink'), text(' ')]),
+      ],
       [],
       [text(p.ex)],
       [],
@@ -39,7 +50,7 @@ export const commands = [
   {
     name: 'ls',
     usage: 'ls [-lastr] [path]',
-    summary: 'list directory (categories) and posts',
+    summary: message('terminal.command.ls.summary', 'list directory (categories) and posts'),
     completion: 'path',
     readonly: true,
     run({ shell, args, result }) {
@@ -56,11 +67,16 @@ export const commands = [
       if (flags.S) items.sort((a, b) => (b.post?.m ?? 0) - (a.post?.m ?? 0));
       if (flags.r) items.reverse();
       if (!items.length) {
-        result.blocks.push(line(text('(empty)', 'dim')));
+        result.blocks.push(line(text(message('terminal.command.empty', '(empty)'), 'dim')));
         return undefined;
       }
       if (flags.l)
-        result.blocks.push(lines([[text(`total ${items.length}`, 'dim')], ...items.map((n) => longLine(shell, n))]));
+        result.blocks.push(
+          lines([
+            [text(message('terminal.command.total', 'total {count}', { count: items.length }), 'dim')],
+            ...items.map((n) => longLine(shell, n)),
+          ])
+        );
       else result.blocks.push({ kind: 'cols', items: items.map((n) => nameSpan(shell, n)) });
       return undefined;
     },
@@ -68,7 +84,7 @@ export const commands = [
   {
     name: 'cd',
     usage: 'cd [path|-|~]',
-    summary: 'change directory (cd .., cd ~, cd -)',
+    summary: message('terminal.command.cd.summary', 'change directory (cd .., cd ~, cd -)'),
     completion: 'path',
     readonly: true,
     run({ shell, args, result }) {
@@ -81,8 +97,16 @@ export const commands = [
         return;
       }
       const node = arg ? shell.lookup(arg) : shell.fs.root;
-      if (!node) return fail(result, `bash: cd: ${arg}: No such file or directory`);
-      if (node.t !== 'd') return fail(result, `bash: cd: ${arg}: Not a directory`);
+      if (!node)
+        return fail(
+          result,
+          message('terminal.command.cd.missing', 'bash: cd: {path}: No such file or directory', { path: arg })
+        );
+      if (node.t !== 'd')
+        return fail(
+          result,
+          message('terminal.command.cd.not_directory', 'bash: cd: {path}: Not a directory', { path: arg })
+        );
       shell.prevCwd = shell.cwd;
       shell.cwd = node;
     },
@@ -90,7 +114,7 @@ export const commands = [
   {
     name: 'pwd',
     usage: 'pwd',
-    summary: 'print working directory',
+    summary: message('terminal.command.pwd.summary', 'print working directory'),
     completion: 'none',
     readonly: true,
     run({ shell, result }) {
@@ -100,15 +124,20 @@ export const commands = [
   {
     name: 'cat',
     usage: 'cat <file...>',
-    summary: 'show a post summary or page',
+    summary: message('terminal.command.cat.summary', 'show a post summary or page'),
     completion: 'path',
     readonly: true,
     run({ shell, args, result }) {
-      if (!args.length) return fail(result, 'cat: missing file operand');
+      if (!args.length) return fail(result, message('terminal.command.cat.missing', 'cat: missing file operand'));
       for (const arg of args) {
         const node = shell.lookup(arg);
-        if (!node) fail(result, `cat: ${arg}: No such file or directory`);
-        else if (node.t === 'd') fail(result, `cat: ${arg}: Is a directory`);
+        if (!node)
+          fail(
+            result,
+            message('terminal.command.cat.not_found', 'cat: {path}: No such file or directory', { path: arg })
+          );
+        else if (node.t === 'd')
+          fail(result, message('terminal.command.cat.is_directory', 'cat: {path}: Is a directory', { path: arg }));
         else result.blocks.push(lines(fileLines(shell, node)));
       }
       return undefined;
@@ -117,15 +146,29 @@ export const commands = [
   {
     name: 'head',
     usage: 'head <file>',
-    summary: 'first lines of a file',
+    summary: message('terminal.command.head.summary', 'first lines of a file'),
     completion: 'path',
     readonly: true,
     run({ shell, args, result }) {
       const { args: operands } = parseFlags(args);
-      if (!operands[0]) return fail(result, 'head: missing file operand');
+      if (!operands[0]) return fail(result, message('terminal.command.head.missing', 'head: missing file operand'));
       const node = shell.lookup(operands[0]);
-      if (!node) return fail(result, `head: cannot open '${operands[0]}' for reading: No such file or directory`);
-      if (node.t === 'd') return fail(result, `head: error reading '${operands[0]}': Is a directory`);
+      if (!node)
+        return fail(
+          result,
+          message(
+            'terminal.command.head.not_found',
+            "head: cannot open '{path}' for reading: No such file or directory",
+            { path: operands[0] }
+          )
+        );
+      if (node.t === 'd')
+        return fail(
+          result,
+          message('terminal.command.head.is_directory', "head: error reading '{path}': Is a directory", {
+            path: operands[0],
+          })
+        );
       const file = target(shell.fs.root, node);
       if (file.post)
         result.blocks.push(lines([[text('# ' + file.post.title, 'ok')], [text(file.post.ex.slice(0, 120) + '…')]]));
@@ -144,7 +187,7 @@ export const commands = [
   {
     name: 'tree',
     usage: 'tree [-L n] [path]',
-    summary: 'directory tree',
+    summary: message('terminal.command.tree.summary', 'directory tree'),
     completion: 'path',
     readonly: true,
     run({ shell, args, result }) {
@@ -155,7 +198,12 @@ export const commands = [
         else if (args[i][0] !== '-') operands.push(args[i]);
       }
       const node = operands[0] ? shell.lookup(operands[0]) : shell.cwd;
-      if (!node) return fail(result, `${operands[0]} [error opening dir]`, 2);
+      if (!node)
+        return fail(
+          result,
+          message('terminal.command.tree.not_found', '{path} [error opening dir]', { path: operands[0] }),
+          2
+        );
       let dirs = 0;
       let files = 0;
       const rows = [[link(operands[0] ?? '.', node === shell.fs.root ? 'cd ~' : 'cd ' + pathOf(node), 'dir')]];
@@ -174,7 +222,18 @@ export const commands = [
         });
       };
       if (node.t === 'd') walkDir(node, '', 0);
-      rows.push([], [text(`${dirs} directories, ${files} files`, 'dim')]);
+      rows.push(
+        [],
+        [
+          text(
+            message('terminal.command.tree.count', '{directories} directories, {files} files', {
+              directories: dirs,
+              files,
+            }),
+            'dim'
+          ),
+        ]
+      );
       result.blocks.push(lines(rows));
       return undefined;
     },
@@ -182,7 +241,7 @@ export const commands = [
   {
     name: 'find',
     usage: 'find [path] -name <glob> [-type f|d]',
-    summary: 'find files and directories by name',
+    summary: message('terminal.command.find.summary', 'find files and directories by name'),
     completion: 'path',
     readonly: true,
     run({ shell, args, result }) {
@@ -195,7 +254,12 @@ export const commands = [
         else if (args[i][0] !== '-') path = args[i];
       }
       const start = shell.lookup(path);
-      if (!start) return fail(result, `find: '${path}': No such file or directory`, 1);
+      if (!start)
+        return fail(
+          result,
+          message('terminal.command.find.not_found', "find: '{path}': No such file or directory", { path }),
+          1
+        );
       const rows = [];
       const base = pathOf(shell.cwd);
       walk(start, (n) => {
@@ -210,22 +274,30 @@ export const commands = [
             : full;
         rows.push([link(shown, (n.t === 'd' ? 'cd ' : 'cat ') + full, n.t === 'd' ? 'dir' : 'file')]);
       });
-      result.blocks.push(rows.length ? lines(rows) : line(text('(no matches)', 'dim')));
+      result.blocks.push(
+        rows.length ? lines(rows) : line(text(message('terminal.command.find.no_matches', '(no matches)'), 'dim'))
+      );
       return undefined;
     },
   },
   {
     name: 'grep',
     usage: 'grep [-rin] <text> [path]',
-    summary: 'search titles, excerpts and tags',
+    summary: message('terminal.command.grep.summary', 'search titles, excerpts and tags'),
     completion: 'path',
     readonly: true,
     run({ shell, args, result }) {
       const { flags, args: operands } = parseFlags(args);
-      if (!operands.length) return fail(result, 'Usage: grep [OPTION]... PATTERN [FILE]...', 2);
+      if (!operands.length)
+        return fail(result, message('terminal.command.grep.usage', 'Usage: grep [OPTION]... PATTERN [FILE]...'), 2);
       const pattern = operands[0];
       const start = operands[1] ? shell.lookup(operands[1]) : shell.cwd;
-      if (!start) return fail(result, `grep: ${operands[1]}: No such file or directory`, 2);
+      if (!start)
+        return fail(
+          result,
+          message('terminal.command.grep.not_found', 'grep: {path}: No such file or directory', { path: operands[1] }),
+          2
+        );
       const re = new RegExp(escapeRegExp(pattern), flags.i ? 'i' : '');
       const rows = [];
       const seen = new Set();
@@ -251,7 +323,14 @@ export const commands = [
       });
       if (!rows.length) {
         result.exitCode = 1;
-        rows.push([text(flags.i ? '(no match)' : '(no match. grep is case-sensitive, try -i)', 'dim')]);
+        rows.push([
+          text(
+            flags.i
+              ? message('terminal.command.grep.no_match', '(no match)')
+              : message('terminal.command.grep.case_sensitive', '(no match. grep is case-sensitive, try -i)'),
+            'dim'
+          ),
+        ]);
       }
       result.blocks.push(lines(rows));
       return undefined;
