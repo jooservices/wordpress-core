@@ -46,14 +46,14 @@ Tools that open a browser (`screenshots`, `critical`, `marketplace-preview`, `so
 
 CLS is measured in the Dev VM browser over an SSH tunnel. The tunnel affects timing, but an over-budget result needs source evidence before it is treated as an artifact. On 2026-10-20, a quiet WSL run on WordPress 7.1.3 / PHP 8.3.30 reproduced real shifts with no third-party plugins: the `<joo-lazy>` wrapper caused home CLS 0.03368, category 0.02768 and tag 0.06474. The wrapper had an intrinsic-size hint but did not enforce a block size. The search page also shifted because the theme's terminal dock added its 40px desktop flex slot when its custom element initialized.
 
-The fix reserves each fragment's registered minimum block size and the terminal dock's desktop slot before initialization. The existing 0.02 budget remains. A fresh rerun on the quiet WSL host on 2026-10-20 used WordPress 7.1.3, PHP 8.3.30 and MariaDB 12.3.3. The baseline had only the first-party `jooservices-resume` plugin active. The baseline command `make test-matrix THEME=jooservices ARGS="--runtime-only"` passed (1 pass, 0 fail), and `make test-matrix THEME=jooservices ARGS="--group forms"` passed all three Forms plugins (3 pass, 0 fail). The browser was HeadlessChrome 156 on Linux x86_64. Fresh Playwright JSON and matrix summaries are retained in `artifacts/reports/e2e/joowt-240-rerun-2026-10-20/`.
+The fix reserves each fragment's registered minimum block size and the terminal dock's desktop slot before initialization. The existing 0.02 budget remains. A fresh rerun on the quiet WSL host on 2026-10-20 used WordPress 7.1.3, PHP 8.3.30 and MariaDB 12.3.3. The baseline had only the first-party `jooservices-resume` plugin active. The baseline command `make test-matrix THEME=jooservices ARGS="--runtime-only"` passed (1 pass, 0 fail), and `make test-matrix THEME=jooservices ARGS="--group forms"` passed all three Forms plugins (3 pass, 0 fail). The browser was HeadlessChrome 156 on Linux x86_64. Fresh Playwright JSON and matrix summaries are retained in `artifacts/reports/e2e/joowt-240-verification-2026-10-20/`; the Forms report uses matrix variant `joowt-240-verification-2026-10-20`.
 
 | Matrix case | Home CLS | Category CLS | Tag CLS | Result |
 | --- | ---: | ---: | ---: | --- |
-| No third-party plugins (Resume only) | 0.00142353 | 0.00096432 | 0.00119585 | PASS |
-| Contact Form 7 6.2.2 | 0.00142353 | 0.00070943 | 0.00096871 | PASS |
+| No third-party plugins (Resume only) | 0.00101616 | 0.00070943 | 0.00096644 | PASS |
+| Contact Form 7 6.2.2 | 0.00142353 | 0.00116970 | 0.00070943 | PASS |
 | WPForms Lite 2.0.2.2 | 0.00077247 | 0.00116970 | 0.00070943 | PASS |
-| Fluent Forms 6.2.16 | 0.00101616 | 0.00116970 | 0.00096871 | PASS |
+| Fluent Forms 6.2.16 | 0.00142353 | 0.00116970 | 0.00096644 | PASS |
 
 All values are below the unchanged 0.02 budget. Captured sources were shared core/theme elements, including `joo-lazy`, with no form element reported as a shift source. The Playwright JSON attachments retain the source nodes, rectangles, timestamps and viewport dimensions. All three form-plugin cells emitted non-fatal WordPress.org update-check TLS warnings and passed.
 
