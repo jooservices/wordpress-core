@@ -1,0 +1,43 @@
+{
+  "$comment": "Performance budgets checked by make perf THEME=starter using Lighthouse. Keep these thresholds aligned with the jooservices theme and docs/reference/budgets.md.",
+  "pages": [
+    {
+      "name": "home",
+      "path": "/"
+    },
+    {
+      "name": "single",
+      "path": "/ai/wordpress-mcp-v1/"
+    },
+    {
+      "name": "category",
+      "path": "/category/ai/"
+    },
+    {
+      "name": "search",
+      "path": "/?s=docker",
+      "noindex": true
+    },
+    {
+      "name": "about",
+      "path": "/about/"
+    }
+  ],
+  "scores": {
+    "performance": 0.9,
+    "accessibility": 0.95,
+    "best-practices": 0.9,
+    "seo": 0.95
+  },
+  "metrics": {
+    "cumulative-layout-shift": 0.02,
+    "total-blocking-time": 200,
+    "largest-contentful-paint": 2700
+  },
+  "bytes": {
+    "css": 30720,
+    "js": 61440,
+    "fonts": 102400,
+    "html": 61440
+  }
+}

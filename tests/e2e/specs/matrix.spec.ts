@@ -94,7 +94,9 @@ for (const [name, path] of Object.entries(paths)) {
     expect(head.canonicals, 'at most one canonical').toBeLessThanOrEqual(1);
     expect(head.ogTitles, 'no duplicate og:title').toBeLessThanOrEqual(1);
     expect(head.descriptions, 'no duplicate meta description').toBeLessThanOrEqual(1);
-    expect(head.cls, 'layout shift budget').toBeLessThanOrEqual(CLS_BUDGET);
+    expect(head.cls, `layout shift budget; sources: ${JSON.stringify(head.clsEntries)}`).toBeLessThanOrEqual(
+      CLS_BUDGET
+    );
     expect(errors, 'console errors').toEqual([]);
   });
 }

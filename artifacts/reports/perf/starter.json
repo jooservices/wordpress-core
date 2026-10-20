@@ -1,0 +1,112 @@
+[
+  {
+    "name": "home",
+    "scores": {
+      "performance": 1,
+      "accessibility": 0.98,
+      "best-practices": 1,
+      "seo": 1
+    },
+    "metrics": {
+      "cumulative-layout-shift": 0.001765931334483492,
+      "total-blocking-time": 0,
+      "largest-contentful-paint": 1732.3442
+    },
+    "bytes": {
+      "css": 4450,
+      "js": 23624,
+      "fonts": 0,
+      "html": 19090
+    },
+    "crawlable": 1,
+    "problems": []
+  },
+  {
+    "name": "single",
+    "scores": {
+      "performance": 1,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    },
+    "metrics": {
+      "cumulative-layout-shift": 0.0003500328180851207,
+      "total-blocking-time": 0,
+      "largest-contentful-paint": 1654.971
+    },
+    "bytes": {
+      "css": 8765,
+      "js": 25928,
+      "fonts": 0,
+      "html": 19052
+    },
+    "crawlable": 1,
+    "problems": []
+  },
+  {
+    "name": "category",
+    "scores": {
+      "performance": 1,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    },
+    "metrics": {
+      "cumulative-layout-shift": 0.006757859616399866,
+      "total-blocking-time": 0,
+      "largest-contentful-paint": 1505.58585
+    },
+    "bytes": {
+      "css": 4157,
+      "js": 22101,
+      "fonts": 0,
+      "html": 17193
+    },
+    "crawlable": 1,
+    "problems": []
+  },
+  {
+    "name": "search",
+    "scores": {
+      "performance": 1,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 0.58
+    },
+    "metrics": {
+      "cumulative-layout-shift": 0.0003500328180851207,
+      "total-blocking-time": 0,
+      "largest-contentful-paint": 1510.85355
+    },
+    "bytes": {
+      "css": 3506,
+      "js": 22102,
+      "fonts": 0,
+      "html": 17035
+    },
+    "crawlable": 0,
+    "problems": []
+  },
+  {
+    "name": "about",
+    "scores": {
+      "performance": 1,
+      "accessibility": 0.96,
+      "best-practices": 1,
+      "seo": 1
+    },
+    "metrics": {
+      "cumulative-layout-shift": 0.01484003480952388,
+      "total-blocking-time": 0,
+      "largest-contentful-paint": 1505.7663
+    },
+    "bytes": {
+      "css": 5628,
+      "js": 22100,
+      "fonts": 0,
+      "html": 17393
+    },
+    "crawlable": 1,
+    "problems": []
+  }
+]

@@ -10,6 +10,7 @@ import {
   runMatrix,
   runtimeLabel,
   skipReason,
+  woocommerceEarlyTextdomainNotices,
 } from './matrix.mjs';
 
 describe('matrix helpers', () => {
@@ -38,6 +39,15 @@ describe('matrix helpers', () => {
       ['mkdir', 'artifacts/reports/e2e', { recursive: true }],
       ['chmod', 'artifacts/reports/e2e', 0o1777],
     ]);
+  });
+  it('allows only the WooCommerce early text-domain notice in its own matrix row', () => {
+    const notice =
+      '[a] PHP Notice:  Function _load_textdomain_just_in_time was called <strong>incorrectly</strong>. Translation loading for the <code>woocommerce</code> domain was triggered too early.';
+    expect(woocommerceEarlyTextdomainNotices(notice)).toHaveLength(1);
+    expect(phpProblems(notice)).toHaveLength(1);
+    expect(phpProblems(notice, { plugin: 'woocommerce' })).toEqual([]);
+    expect(phpProblems(`${notice}\n[b] PHP Warning:  unrelated`, { plugin: 'woocommerce' })).toHaveLength(1);
+    expect(phpProblems(notice, { plugin: 'yoast' })).toHaveLength(1);
   });
   it('counts passing, failing, skipped, unsupported and blocked cells', () => {
     expect(

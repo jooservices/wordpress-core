@@ -1,6 +1,9 @@
 const OFFLINE =
   /could not resolve|connection refused|timed out|curl error|unable to connect|download failed|no route|could not establish a secure connection to WordPress\.org/i;
 const MATRIX_DIR = 'artifacts/reports/matrix';
+const WOOCOMMERCE_EARLY_TEXTDOMAIN_NOTICE = new RegExp(
+  'PHP Notice: {2}Function _load_textdomain_just_in_time was called .*Translation loading for the <code>woocommerce</code> domain was triggered too early\\.'
+);
 const WORDPRESS_ORG_TLS_WARNING = /PHP Warning: .*WordPress could not establish a secure connection to WordPress\.org/;
 const WP_CLI_SYMFONY_DEPRECATION = /PHP Deprecated: .* in phar:\/\/.*\/wp-cli\.phar\/vendor\/symfony\/finder\//i;
 
@@ -32,16 +35,21 @@ export function selectPlugins(plugins, { only = [], group = '' } = {}) {
   });
 }
 
-/** Counts PHP problems in a log excerpt. */
-export function phpProblems(log) {
+/** Counts PHP problems in a log excerpt, allowing one documented WooCommerce-only notice. */
+export function phpProblems(log, { plugin = '' } = {}) {
   return log
     .split('\n')
     .filter(
       (line) =>
         /PHP (Fatal error|Warning|Notice|Deprecated|Parse error)/.test(line) &&
         !WORDPRESS_ORG_TLS_WARNING.test(line) &&
-        !WP_CLI_SYMFONY_DEPRECATION.test(line)
+        !WP_CLI_SYMFONY_DEPRECATION.test(line) &&
+        !(plugin === 'woocommerce' && WOOCOMMERCE_EARLY_TEXTDOMAIN_NOTICE.test(line))
     );
+}
+
+export function woocommerceEarlyTextdomainNotices(log) {
+  return log.split('\n').filter((line) => WOOCOMMERCE_EARLY_TEXTDOMAIN_NOTICE.test(line));
 }
 
 export function wordpressOrgWarnings(log) {
@@ -240,7 +248,13 @@ async function testPlugin(entry, ctx, io) {
       notes.push(
         `environment warning: WP-CLI bundled Symfony Finder emitted PHP Deprecated (${wpCliSymfonyDeprecationsInLog.length} warning(s))`
       );
-    const problems = phpProblems(log);
+    const knownWooNotices = entry.key === 'woocommerce' ? woocommerceEarlyTextdomainNotices(log) : [];
+    if (knownWooNotices.length) {
+      notes.push(
+        `known third-party notice: WooCommerce loaded its own text domain before init (${knownWooNotices.length} notice(s))`
+      );
+    }
+    const problems = phpProblems(log, { plugin: entry.key });
     if (problems.length) notes.push(`php log: ${problems.length} problem(s), first: ${problems[0].slice(0, 160)}`);
     if (entry.tier === 3) {
       notes.push('Basic compatibility only; no custom page-builder or shop design is included.');

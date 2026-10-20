@@ -1,0 +1,112 @@
+[
+  {
+    "name": "home",
+    "scores": {
+      "performance": 0.96,
+      "accessibility": 0.98,
+      "best-practices": 1,
+      "seo": 1
+    },
+    "metrics": {
+      "cumulative-layout-shift": 0.0107213452162547,
+      "total-blocking-time": 0,
+      "largest-contentful-paint": 2481.8192
+    },
+    "bytes": {
+      "css": 16213,
+      "js": 27077,
+      "fonts": 100140,
+      "html": 26801
+    },
+    "crawlable": 1,
+    "problems": []
+  },
+  {
+    "name": "single",
+    "scores": {
+      "performance": 0.96,
+      "accessibility": 0.97,
+      "best-practices": 1,
+      "seo": 1
+    },
+    "metrics": {
+      "cumulative-layout-shift": 0,
+      "total-blocking-time": 0,
+      "largest-contentful-paint": 2481.3033999999993
+    },
+    "bytes": {
+      "css": 20523,
+      "js": 27977,
+      "fonts": 100140,
+      "html": 25915
+    },
+    "crawlable": 1,
+    "problems": []
+  },
+  {
+    "name": "category",
+    "scores": {
+      "performance": 0.97,
+      "accessibility": 0.98,
+      "best-practices": 1,
+      "seo": 1
+    },
+    "metrics": {
+      "cumulative-layout-shift": 0.003993199687974841,
+      "total-blocking-time": 0,
+      "largest-contentful-paint": 2331.5846
+    },
+    "bytes": {
+      "css": 15921,
+      "js": 25554,
+      "fonts": 100140,
+      "html": 24641
+    },
+    "crawlable": 1,
+    "problems": []
+  },
+  {
+    "name": "search",
+    "scores": {
+      "performance": 0.97,
+      "accessibility": 0.98,
+      "best-practices": 1,
+      "seo": 0.58
+    },
+    "metrics": {
+      "cumulative-layout-shift": 0.003993199687974841,
+      "total-blocking-time": 0,
+      "largest-contentful-paint": 2255.9542
+    },
+    "bytes": {
+      "css": 15268,
+      "js": 25554,
+      "fonts": 100140,
+      "html": 24562
+    },
+    "crawlable": 0,
+    "problems": []
+  },
+  {
+    "name": "about",
+    "scores": {
+      "performance": 0.98,
+      "accessibility": 0.98,
+      "best-practices": 1,
+      "seo": 1
+    },
+    "metrics": {
+      "cumulative-layout-shift": 0.01388332345736473,
+      "total-blocking-time": 0,
+      "largest-contentful-paint": 2104.2438
+    },
+    "bytes": {
+      "css": 13796,
+      "js": 22705,
+      "fonts": 100140,
+      "html": 22057
+    },
+    "crawlable": 1,
+    "problems": []
+  }
+]
