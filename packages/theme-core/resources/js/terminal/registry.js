@@ -1,4 +1,5 @@
 // Command registry. Every command: { name, usage, summary, completion: 'path'|'none'|'enum:a,b', readonly, hidden?, run({shell, args, result}) }.
+// `usage` is English-only by design: it is shell syntax (command names, flags, <placeholders>) shown by `help` and `man`, like a real man page; `summary` is translated.
 // (Commands live in a few grouped modules instead of one file each; the metadata keeps `man` and `help` in sync.)
 import { commands as files } from './commands/files.js';
 import { commands as site } from './commands/site.js';

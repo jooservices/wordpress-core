@@ -6,7 +6,9 @@ const TEXT_PROPERTIES = new Set(['textContent', 'innerText', 'title', 'placehold
 const TEXT_ATTRIBUTES = new Set(['aria-label', 'aria-description', 'aria-valuetext', 'title', 'placeholder', 'alt']);
 // Function name => index of the argument that carries visible text.
 const TEXT_FUNCTIONS = { text: 0, link: 0, el: 2, fail: 1 };
-const TEXT_METHODS = { createTextNode: 0 };
+const TEXT_METHODS = { createTextNode: 0, insertAdjacentText: 1 };
+// DOM methods that show every string argument as text.
+const TEXT_VARIADIC = new Set(['append', 'prepend', 'before', 'after', 'replaceWith', 'replaceChildren']);
 
 /**
  * Literal pieces of an expression that would be shown as written (calls such as t() are trusted).
@@ -63,6 +65,7 @@ export default {
           if (name === 'setAttribute' && args[0]?.type === 'Literal' && TEXT_ATTRIBUTES.has(args[0].value))
             check(args[1]);
           else if (Object.hasOwn(TEXT_METHODS, name)) check(args[TEXT_METHODS[name]]);
+          else if (TEXT_VARIADIC.has(name)) args.forEach(check);
         }
       },
     };

@@ -20,8 +20,13 @@ tester.run('no-untranslated-string', rule, {
     "text(message('k', 'Posts: {posts}', { posts }), 'dim');",
     "el('p', 'joo-note', t('k', 'Retry'));",
     "document.createTextNode(t('k', 'Present'));",
+    "el.append(node, t('k', 'Present'));",
+    "el.insertAdjacentText('beforeend', t('k', 'Present'));",
   ],
   invalid: [
+    { code: "el.append('Hello world');", errors: [{ messageId: 'untranslated' }] },
+    { code: "el.prepend(node, 'Hello world');", errors: [{ messageId: 'untranslated' }] },
+    { code: "el.insertAdjacentText('beforeend', 'Hello world');", errors: [{ messageId: 'untranslated' }] },
     { code: "el.textContent = 'Copied';", errors: [{ messageId: 'untranslated' }] },
     { code: "el.title = 'Close terminal';", errors: [{ messageId: 'untranslated' }] },
     { code: "el.setAttribute('aria-label', 'Pause autoplay');", errors: [{ messageId: 'untranslated' }] },
