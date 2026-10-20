@@ -19,6 +19,8 @@ expect_pass "phpcs" php -d error_reporting=24575 vendor/bin/phpcs --standard=php
 expect_pass "core i18n" php tools/check-core-i18n.php
 expect_fail "core i18n" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded.php
 expect_fail "core i18n template" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-template.php
+expect_fail "core i18n block comment" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-block-comment.php
+expect_fail "core i18n single word" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-open.php
 
 # PHPStan: core must stay compatible with PHP 8.1.
 cp tests/tooling/fixtures/php-82-readonly.php "$TMP/php-input.php"

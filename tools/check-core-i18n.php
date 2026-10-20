@@ -208,9 +208,17 @@ function output_template( Node\Expr $expression ): string {
  * @return list<string>
  */
 function visible_html_strings( string $fragment ): array {
+	$visible = array();
+	if ( preg_match_all( '#<!--\s*wp:[a-z0-9/-]+\s+(\{.*?\})\s*/?-->#is', $fragment, $blockComments ) ) {
+		foreach ( $blockComments[1] as $json ) {
+			$attributes = json_decode( $json, true );
+			if ( is_array( $attributes ) ) {
+				block_attribute_strings( $attributes, $visible );
+			}
+		}
+	}
 	$fragment = preg_replace( '#<!--.*?-->#s', '', $fragment ) ?? $fragment;
 	$fragment = preg_replace( '#<(script|style)\b[^>]*>.*?</\1\s*>#is', '', $fragment ) ?? $fragment;
-	$visible  = array();
 
 	foreach ( array( 'aria-label', 'aria-description', 'aria-roledescription', 'placeholder', 'title', 'alt' ) as $attribute ) {
 		$pattern = '/\b' . preg_quote( $attribute, '/' ) . '\s*=\s*(["\'])(.*?)\1/is';
@@ -244,6 +252,23 @@ function visible_html_strings( string $fragment ): array {
 }
 
 /**
+ * Collect user-facing string attributes from a decoded WordPress block comment.
+ *
+ * @param array<mixed> $attributes Decoded block attributes.
+ * @param array<mixed> $visible    Collected strings.
+ */
+function block_attribute_strings( array $attributes, array &$visible ): void {
+	$keys = array_merge( joo_core_display_keys(), array( 'arialabel', 'buttontext', 'content', 'linklabel', 'placeholdertext' ) );
+	foreach ( $attributes as $key => $value ) {
+		if ( is_array( $value ) ) {
+			block_attribute_strings( $value, $visible );
+		} elseif ( is_string( $value ) && is_string( $key ) && in_array( strtolower( $key ), $keys, true ) ) {
+			$visible[] = html_entity_decode( strip_tags( $value ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		}
+	}
+}
+
+/**
  * Whether a literal resembles user-facing prose or a label.
  */
 function is_translatable_text( string $text ): bool {
@@ -251,7 +276,7 @@ function is_translatable_text( string $text ): bool {
 	if ( '' === $text || ! preg_match( '/\p{L}/u', $text ) ) {
 		return false;
 	}
-	if ( preg_match( '/^(?:[a-z][a-z0-9:_-]*=(?:[^ ]+)?\s*)+$/i', $text ) || in_array( strtolower( $text ), array( 'open', 'hidden', 'required', 'disabled', 'checked', 'selected' ), true ) ) {
+	if ( preg_match( '/^(?:[a-z][a-z0-9:_-]*=(?:[^ ]+)?\s*)+$/i', $text ) || in_array( strtolower( $text ), array( 'hidden', 'required', 'disabled', 'checked', 'selected' ), true ) ) {
 		return false;
 	}
 
