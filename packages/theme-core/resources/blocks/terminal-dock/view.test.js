@@ -133,7 +133,9 @@ describe('terminal dock', () => {
     render(markup());
     tab().click();
     await flush();
-    expect(panel().textContent).toContain('fs: failed to load');
+    const error = panel().querySelector('.joo-term__err');
+    expect(error?.textContent).toBe('fs: failed to load (close and reopen to retry); help still works');
+    expect(panel().textContent).not.toContain('unsupported operator');
     expect(document.querySelector('.joo-term__input')).not.toBeNull();
   });
 

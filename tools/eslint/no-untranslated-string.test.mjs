@@ -18,6 +18,9 @@ tester.run('no-untranslated-string', rule, {
     "el.textContent = ' · ';",
     "el.textContent = '× ' + count;",
     "text(message('k', 'Posts: {posts}', { posts }), 'dim');",
+    "el.textContent = String(t('k', 'Hello world'));",
+    "text(format(t('k', 'Hello world')));",
+    "iframe.title = frame.getAttribute('title') || t('embed.title', 'Video');",
     "el('p', 'joo-note', t('k', 'Retry'));",
     "document.createTextNode(t('k', 'Present'));",
     "el.append(node, t('k', 'Present'));",
@@ -40,8 +43,13 @@ tester.run('no-untranslated-string', rule, {
     },
     { code: "el.title = node.title || 'Video';", errors: [{ messageId: 'untranslated' }] },
     { code: "document.createTextNode('Did you mean ' + x);", errors: [{ messageId: 'untranslated' }] },
+    { code: "el.textContent = String('Hello world');", errors: [{ messageId: 'untranslated' }] },
+    { code: "text(format('Hello world'));", errors: [{ messageId: 'untranslated' }] },
+    { code: "button.value = 'Search';", errors: [{ messageId: 'untranslated' }] },
+    { code: "el['textContent'] = 'Hello world';", errors: [{ messageId: 'untranslated' }] },
     { code: "text('Blocked: not a link', 'err');", errors: [{ messageId: 'untranslated' }] },
     { code: "el('button', '', 'Retry');", errors: [{ messageId: 'untranslated' }] },
+    { code: "el['insertAdjacentText']('beforeend', 'Hello world');", errors: [{ messageId: 'untranslated' }] },
   ],
 });
 
