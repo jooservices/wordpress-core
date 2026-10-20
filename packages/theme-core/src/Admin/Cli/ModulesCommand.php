@@ -50,6 +50,9 @@ final class ModulesCommand {
 	 * @param array<string, string> $assoc_args Flags.
 	 */
 	public function list( array $args, array $assoc_args ): void {
+		if ( ! CapabilityGuard::check() ) {
+			return;
+		}
 		unset( $args );
 		$registry = Kernel::registry();
 		$rows     = array();
