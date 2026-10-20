@@ -15,17 +15,31 @@ const type = (value) => {
 };
 const key = (init) => input().dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init }));
 
-const start = (fs = data) => {
+const start = (fs = data, shortcuts) => {
   document.head.replaceChildren();
   document.body.replaceChildren(Object.assign(document.createElement('div'), { className: 'panel' }));
   navigate = vi.fn();
   closed = 0;
-  api = mountTerminal(panel(), { shell: createShell(fs), onClose: () => (closed += 1), navigate });
+  api = mountTerminal(panel(), { shell: createShell(fs), onClose: () => (closed += 1), navigate, shortcuts });
 };
 
 beforeEach(() => start());
 
 describe('terminal UI', () => {
+  it('uses generic shortcuts by default and theme-provided shortcuts when present', () => {
+    expect([...document.querySelectorAll('.joo-term__chip')].map((chip) => chip.textContent)).toEqual([
+      'ls',
+      'tree',
+      'help',
+      'find . -type f',
+    ]);
+    start(data, ['ls', 'grep -ri docker .']);
+    expect([...document.querySelectorAll('.joo-term__chip')].map((chip) => chip.textContent)).toEqual([
+      'ls',
+      'grep -ri docker .',
+    ]);
+  });
+
   it('shows a banner, a prompt and the structure (log region, labelled input)', () => {
     expect(logText()).toContain('jooservices.com');
     expect(document.querySelector('.joo-term__prompt').textContent).toBe('viet@jooservices:~$');

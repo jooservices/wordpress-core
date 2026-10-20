@@ -19,7 +19,8 @@ use JOOservices\ThemeCore\Kernel;
 
 final class SidebarBlocksTest extends IntegrationTestCase {
 
-	private const MANIFEST = __DIR__ . '/../Fixtures/manifests/perf.json';
+	private const MANIFEST         = __DIR__ . '/../Fixtures/manifests/perf.json';
+	private const GENERIC_MANIFEST = __DIR__ . '/../Fixtures/manifests/blocks.json';
 
 	private const BLOCKS = array( 'joo/profile-card', 'joo/companies', 'joo/category-tree', 'joo/top-topics', 'joo/tag-list' );
 
@@ -46,11 +47,11 @@ final class SidebarBlocksTest extends IntegrationTestCase {
 		parent::tear_down();
 	}
 
-	private function boot( array $settings = array() ): void {
+	private function boot( array $settings = array(), string $manifest = self::MANIFEST ): void {
 		if ( array() !== $settings ) {
 			add_filter( 'joo/settings/value', static fn( $v, $key ) => array_key_exists( $key, $settings ) ? $settings[ $key ] : $v, 10, 2 );
 		}
-		Kernel::boot( self::MANIFEST );
+		Kernel::boot( $manifest );
 		do_action( 'after_setup_theme' );
 		Kernel::container()->get( BlockRegistrar::class )->register();
 	}
@@ -143,11 +144,32 @@ final class SidebarBlocksTest extends IntegrationTestCase {
 		$this->assertStringContainsString( '<h3 class="joo-block-title">About me</h3>', $small );
 	}
 
-	public function test_profile_card_renders_nothing_without_the_resume_plugin(): void {
+	public function test_profile_card_renders_standard_wp_profile_without_the_resume_plugin(): void {
 		unregister_post_type( 'joo_company' );
 		$this->boot();
-		$this->assertSame( '', trim( do_blocks( '<!-- wp:joo/profile-card /-->' ) ) );
+		$html = do_blocks( '<!-- wp:joo/profile-card /-->' );
+		$this->assertStringContainsString( esc_html( get_userdata( 1 )->display_name ), $html );
 		( new \JOOservices\Resume\PostTypes\Company() )->register();
+	}
+
+	public function test_profile_card_uses_the_author_archive_without_a_configured_about_path(): void {
+		$this->boot( array(), self::GENERIC_MANIFEST );
+		wp_update_user(
+			array(
+				'ID'           => 1,
+				'display_name' => 'Generic Author',
+			)
+		);
+		$about = self::factory()->post->create(
+			array(
+				'post_type' => 'page',
+				'post_name' => 'about',
+			)
+		);
+		wp_cache_flush();
+		$html = do_blocks( '<!-- wp:joo/profile-card /-->' );
+		$this->assertStringContainsString( 'href="' . esc_url( get_author_posts_url( 1 ) ) . '"', $html );
+		$this->assertStringNotContainsString( 'href="' . esc_url( get_permalink( $about ) ) . '"', $html );
 	}
 
 	public function test_companies_show_the_pinned_one_separately_and_page_the_rest(): void {

@@ -1,6 +1,7 @@
 // Shared helpers of the command modules (pure).
 import { list, pathOf, stat, target } from '../fs.js';
 import { line, link, text } from '../shell.js';
+import { t } from 'joo-runtime';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -9,6 +10,14 @@ export const fail = (result, message, code = 1) => {
   result.exitCode = code;
   result.blocks.push(line(text(message, 'err')));
 };
+
+/** Translates command copy and replaces named values in the translated text. */
+export function message(key, fallback, values = {}) {
+  return Object.entries(values).reduce(
+    (output, [name, value]) => output.replaceAll(`{${name}}`, String(value)),
+    t(key, fallback)
+  );
+}
 
 /** Clickable name of a node: directories run `cd`, files run `cat`. */
 export function nameSpan(shell, node, label) {

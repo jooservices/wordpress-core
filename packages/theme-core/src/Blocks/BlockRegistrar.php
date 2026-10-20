@@ -70,16 +70,19 @@ final class BlockRegistrar {
 	}
 
 	/**
-	 * Adds the JOOservices block category.
+	 * Adds the theme core block category.
 	 *
 	 * @param array<int, array<string, string>> $categories Categories.
 	 * @return array<int, array<string, string>>
 	 */
 	public function category( $categories ): array {
+		/** @var Manifest $manifest */
+		$manifest     = $this->container->get( Manifest::class );
+		$title        = (string) $manifest->get( 'blocks.categoryLabel', __( 'Theme Core', 'joo-core' ) );
 		$categories   = is_array( $categories ) ? $categories : array();
 		$categories[] = array(
 			'slug'  => 'joo',
-			'title' => __( 'JOOservices', 'joo-core' ),
+			'title' => $title,
 		);
 		return $categories;
 	}

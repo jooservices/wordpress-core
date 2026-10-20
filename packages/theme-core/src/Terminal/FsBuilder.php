@@ -146,7 +146,7 @@ final class FsBuilder {
 		$nodes[] = array(
 			'p'    => '/README.md',
 			't'    => 'f',
-			'text' => Text::plain( get_bloginfo( 'name' ) ) . ' - ' . Text::plain( get_bloginfo( 'description' ) ) . "\n\n" . (string) $this->settings->get( 'terminal.banner', 'read-only shell' ) . "\nCategories are directories, posts are .md files, tags are virtual directories of links. Nothing you type leaves this page.",
+			'text' => Text::plain( get_bloginfo( 'name' ) ) . ' - ' . Text::plain( get_bloginfo( 'description' ) ) . "\n\n" . (string) $this->settings->get( 'terminal.banner', 'read-only shell' ) . "\n" . __( 'Categories are directories, posts are .md files, tags are virtual directories of links. Nothing you type leaves this page.', 'joo-core' ),
 		);
 		$nodes[] = array(
 			'p'      => '/.config',

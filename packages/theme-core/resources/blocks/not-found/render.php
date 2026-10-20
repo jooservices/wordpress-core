@@ -43,7 +43,7 @@ $joo_json    = wp_json_encode( $joo_index, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HE
 	<?php endif; ?>
 	<form class="joo-404__retry" hidden>
 		<label for="joo-404-path"><?php echo esc_html__( 'Try another path', 'joo-core' ); ?></label>
-		<input id="joo-404-path" name="path" autocomplete="off" placeholder="/ai/prompt-caching">
+		<input id="joo-404-path" name="path" autocomplete="off" placeholder="<?php echo esc_attr( (string) $data['placeholder'] ); ?>">
 		<button type="submit">curl -i</button>
 		<p class="joo-404__result" role="status"></p>
 	</form>

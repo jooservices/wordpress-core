@@ -346,6 +346,16 @@
           "type": "string",
           "maxLength": 120
         },
+        "shortcuts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "minItems": 1,
+          "description": "Terminal command chips. Defaults to ls, tree, help and find . -type f."
+        },
         "maxPosts": {
           "type": "integer",
           "minimum": 50,
@@ -357,6 +367,29 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "categoryLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Editor display label for the joo block category. Defaults to Theme Core."
+        },
+        "patternCategory": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,40}$",
+          "description": "Pattern category ID used when a pattern file does not declare a category. Defaults to theme-core."
+        },
+        "patternCategoryLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Editor display label for the pattern category. Defaults to Theme Core."
+        },
+        "notFoundPlaceholder": {
+          "type": "string",
+          "pattern": "^/[a-z0-9/_-]*$",
+          "maxLength": 120,
+          "description": "Example path shown in the not-found retry input. Defaults to /example-path."
+        },
         "disabled": {
           "type": "array",
           "items": {
@@ -384,6 +417,11 @@
         "provider": {
           "type": "string",
           "enum": ["wp", "null"]
+        },
+        "profilePagePath": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Optional page path used by the profile-card block. Empty uses the profile's author URL."
         }
       }
     }

@@ -78,8 +78,10 @@ final class BlocksTest extends IntegrationTestCase {
 
 	public function test_the_block_category_is_added(): void {
 		$this->boot();
-		$slugs = array_column( apply_filters( 'block_categories_all', array(), new \WP_Block_Editor_Context() ), 'slug' );
+		$categories = apply_filters( 'block_categories_all', array(), new \WP_Block_Editor_Context() );
+		$slugs      = array_column( $categories, 'slug' );
 		$this->assertContains( 'joo', $slugs );
+		$this->assertSame( 'Theme Core', $categories[ array_search( 'joo', $slugs, true ) ]['title'] );
 	}
 
 	public function test_malicious_attributes_are_escaped(): void {
@@ -228,6 +230,25 @@ final class BlocksTest extends IntegrationTestCase {
 		$this->assertSame( array(), $boom['controls'], 'a block without x-joo only gets the preview' );
 	}
 
+	public function test_custom_control_labels_and_options_are_translated_before_serialization(): void {
+		$this->boot();
+		$translate = static function ( $translation, $text, $domain ) {
+			return 'joo-core' === $domain ? 'Translated ' . $text : $translation;
+		};
+		add_filter( 'gettext', $translate, 10, 3 );
+		try {
+			$descriptions = Kernel::container()->get( EditorBundle::class )->descriptions();
+		} finally {
+			remove_filter( 'gettext', $translate, 10 );
+		}
+		$names       = array_column( $descriptions, 'name' );
+		$profileCard = $descriptions[ array_search( 'joo/profile-card', $names, true ) ];
+		$controls    = array_column( $profileCard['controls'], null, 'attribute' );
+		$this->assertSame( 'Translated Title', $controls['title']['label'] );
+		$this->assertSame( 'Translated Link to', $controls['linkTo']['label'] );
+		$this->assertSame( 'Translated About page', $controls['linkTo']['options'][0][1] );
+	}
+
 	public function test_the_theme_scheme_prints_one_small_script_and_a_no_js_default(): void {
 		$this->boot();
 		$head = $this->capture( 'wp_head' );
@@ -254,15 +275,15 @@ final class BlocksTest extends IntegrationTestCase {
 		$this->boot( 'blocks.json', false );
 		$loader = Kernel::container()->get( PatternLoader::class );
 		$loader->register();
-		$this->assertTrue( \WP_Block_Pattern_Categories_Registry::get_instance()->is_registered( 'jooservices' ) );
+		$this->assertTrue( \WP_Block_Pattern_Categories_Registry::get_instance()->is_registered( 'theme-core' ) );
 		$slugs = $loader->fromDirectory( self::FIXTURES . '/patterns' );
-		$this->assertSame( array( 'jooservices/hero' ), $slugs, 'the pattern without a slug is skipped' );
-		$pattern = \WP_Block_Patterns_Registry::get_instance()->get_registered( 'jooservices/hero' );
-		$this->assertSame( array( 'jooservices' ), $pattern['categories'] );
+		$this->assertSame( array( 'fixture/hero' ), $slugs, 'the pattern without a slug is skipped' );
+		$pattern = \WP_Block_Patterns_Registry::get_instance()->get_registered( 'fixture/hero' );
+		$this->assertSame( array( 'theme-core' ), $pattern['categories'] );
 		$this->assertSame( 1200, $pattern['viewportWidth'] );
 		$this->assertStringContainsString( 'Hero pattern', $pattern['content'] );
 		$this->assertSame( array(), $loader->fromDirectory( self::FIXTURES . '/patterns' ), 'registering twice is a no-op' );
-		unregister_block_pattern( 'jooservices/hero' );
+		unregister_block_pattern( 'fixture/hero' );
 	}
 
 	public function test_html_helpers_escape(): void {

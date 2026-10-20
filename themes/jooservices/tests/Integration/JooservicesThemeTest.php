@@ -159,6 +159,39 @@ final class JooservicesThemeTest extends IntegrationTestCase {
 		}
 	}
 
+	public function test_theme_manifest_preserves_existing_rendered_block_snapshot_values(): void {
+		$manifest = Kernel::container()->get( Manifest::class );
+		$this->assertSame( '/ai/prompt-caching', $manifest->get( 'blocks.notFoundPlaceholder' ) );
+		$this->assertSame( 'about', $manifest->get( 'content.profilePagePath' ) );
+		$this->assertSame( array( 'ls', 'tree', 'help', 'grep -ri docker .' ), $manifest->get( 'terminal.shortcuts' ) );
+		$categories  = apply_filters( 'block_categories_all', array(), new \WP_Block_Editor_Context() );
+		$jooCategory = array_values( array_filter( $categories, static fn( $category ) => 'joo' === $category['slug'] ) )[0] ?? null;
+		$this->assertSame( 'JOOservices', $jooCategory['title'] ?? null );
+
+		wp_update_user(
+			array(
+				'ID'           => 1,
+				'display_name' => 'Snapshot Owner',
+			)
+		);
+		$about = self::factory()->post->create(
+			array(
+				'post_type'  => 'page',
+				'post_name'  => 'about',
+				'post_title' => 'About',
+			)
+		);
+		wp_cache_flush();
+		$profile = do_blocks( '<!-- wp:joo/profile-card /-->' );
+		$this->assertStringContainsString( '<a class="joo-profile__who" href="' . esc_url( get_permalink( $about ) ) . '">', $profile );
+
+		$notFound = do_blocks( '<!-- wp:joo/not-found /-->' );
+		preg_match( '/<input id="joo-404-path"[^>]+>/', $notFound, $match );
+		$this->assertSame( '<input id="joo-404-path" name="path" autocomplete="off" placeholder="/ai/prompt-caching">', $match[0] ?? '' );
+		$config = apply_filters( 'joo/assets/runtime_config', array() );
+		$this->assertSame( array( 'ls', 'tree', 'help', 'grep -ri docker .' ), $config['terminalShortcuts'] );
+	}
+
 	public function test_buyer_options_change_frontend_output(): void {
 		$settings = Kernel::container()->get( Settings::class );
 		$options  = new BuyerOptions( $settings );

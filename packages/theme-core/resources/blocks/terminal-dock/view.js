@@ -77,6 +77,7 @@ export class JooTerminal extends HTMLElement {
       this.api = module.mountTerminal(this.panel, {
         shell: module.createShell(failed ? { nodes: [], site: {} } : data, extra),
         onClose: () => this.close(),
+        shortcuts: config().terminalShortcuts,
       });
       if (failed) this.api.run('echo fs: failed to load (close and reopen to retry); help still works');
       this.api.focus();
