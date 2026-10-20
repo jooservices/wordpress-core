@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const baseURL = process.env.E2E_BASE_URL ?? 'http://127.0.0.1:8082';
 const theme = process.env.E2E_THEME ?? '';
-const reports = '../../artifacts/reports/e2e';
+const reports = process.env.E2E_REPORT_DIR ?? '../../artifacts/reports/e2e';
 const fixtureSpecs = theme ? new URL(`../fixtures/themes/${theme}/tests/e2e/`, import.meta.url) : null;
 const fixtureTheme = fixtureSpecs ? existsSync(fileURLToPath(fixtureSpecs)) : false;
 

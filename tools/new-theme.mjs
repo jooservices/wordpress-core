@@ -75,7 +75,7 @@ export function plan({ root = ROOT, name, title, from = 'starter' }) {
         const rel = relative(source, path);
         const renamed = rel
           .split('/')
-          .map((part) => part.replaceAll(from, name))
+          .map((part) => part.replaceAll(studly(from), studly(name)).replaceAll(from, name))
           .join('/');
         out.push({
           from: path,
@@ -125,11 +125,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     });
     writeFileSync(phpcsPath, tooling.phpcs);
     writeFileSync(deptracPath, tooling.deptrac);
-    const registry = join(ROOT, 'tests/matrix/themes.json');
-    const list = existsSync(registry) ? JSON.parse(readFileSync(registry, 'utf8')) : { themes: [] };
-    if (!list.themes.includes(args.name)) list.themes.push(String(args.name));
-    list.themes.sort();
-    writeFileSync(registry, `{\n  "themes": [${list.themes.map((t) => JSON.stringify(t)).join(', ')}]\n}\n`);
     console.log(`Created themes/${args.name} (${files.length} files).`);
     console.log(`Next: make demo THEME=${args.name}   then   make health THEME=${args.name}`);
   } catch (error) {
