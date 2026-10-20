@@ -15,10 +15,10 @@ Supplementary `make lint` passed on this worktree (headers, core i18n, PHPCS, ES
 
 ## Release blockers
 
-- Starter G7 stops before measurement because `tools/perf.mjs` reads `themes/starter/budgets.json`, which is not present.
-- Jooservices G7 stops because `/tmp/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome` is absent from the shared runtime cache.
-- Starter G8 fails the `woocommerce` row (WooCommerce 11.2.1) on a PHP notice from `_load_textdomain_just_in_time`.
-- Jooservices G8 fails all 23 testable plugin rows on the browser CLS budget; every row fails `home`, and several also fail category, tag, search, or single routes. The failing keys are `yoast`, `rankmath`, `aioseo`, `seopress`, `litespeed-cache`, `w3-total-cache`, `autoptimize`, `polylang`, `translatepress`, `cf7`, `wpforms`, `fluentform`, `jetpack`, `site-kit`, `smush`, `shortpixel`, `ewww`, `tablepress`, `acf`, `akismet`, `wordfence`, `woocommerce`, and `elementor`.
+- Starter G7 stops before measurement because `tools/perf.mjs` reads `themes/starter/budgets.json`, which is not present. Follow-up: [JOOWT-303](https://jooservices.atlassian.net/browse/JOOWT-303).
+- Jooservices G7 stops because `/tmp/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome` is absent from the shared runtime cache. Follow-up: [JOOWT-304](https://jooservices.atlassian.net/browse/JOOWT-304).
+- Starter G8 fails the `woocommerce` row (WooCommerce 11.2.1) on a PHP notice from `_load_textdomain_just_in_time`. Follow-up: [JOOWT-302](https://jooservices.atlassian.net/browse/JOOWT-302).
+- Jooservices G8 fails all 23 testable plugin rows on the browser CLS budget; every row fails `home`, and several also fail category, tag, search, or single routes. The failing keys are `yoast`, `rankmath`, `aioseo`, `seopress`, `litespeed-cache`, `w3-total-cache`, `autoptimize`, `polylang`, `translatepress`, `cf7`, `wpforms`, `fluentform`, `jetpack`, `site-kit`, `smush`, `shortpixel`, `ewww`, `tablepress`, `acf`, `akismet`, `wordfence`, `woocommerce`, and `elementor`. Follow-up: [JOOWT-301](https://jooservices.atlassian.net/browse/JOOWT-301).
 - Both matrices report `wp-rocket` and `wpml` as unsupported because their licensed ZIPs are absent from `tests/matrix/vendor/`.
 
 The first starter matrix attempt could not create `artifacts/reports/e2e` as `www-data` and is retained as a setup diagnostic. After preparing that ignored evidence directory, the full matrix was rerun; the counts above come from the valid retry. The jooservices CLS failures are consistent with the documented sensitivity of tunnel-based browser measurements, but they remain gate failures on this run.
@@ -30,4 +30,4 @@ The first starter matrix attempt could not create `artifacts/reports/e2e` as `ww
 - Per-plugin browser JSON: `artifacts/reports/e2e/`.
 - Package artifacts and checksums: `artifacts/package/` and `artifacts/reports/release/core-0.1.0/JOOWT-288.md`.
 
-The R11.4 release gates are **blocked**: G6 and G9 pass for both themes, while G7 is unavailable for both and G8 has the failures listed above. This report does not declare the release ready. Existing G2-G5 evidence files remain under `artifacts/reports/release/core-0.1.0/`; JOOWT-288 did not rerun those gates.
+Release readiness remains **blocked by follow-up Bugs [JOOWT-303](https://jooservices.atlassian.net/browse/JOOWT-303), [JOOWT-304](https://jooservices.atlassian.net/browse/JOOWT-304), [JOOWT-302](https://jooservices.atlassian.net/browse/JOOWT-302), and [JOOWT-301](https://jooservices.atlassian.net/browse/JOOWT-301)**. G6 and G9 pass for both themes; G7 is unavailable for both and G8 has the failures listed above. This report does not declare the release ready. Existing G2-G5 evidence files remain under `artifacts/reports/release/core-0.1.0/`; JOOWT-288 did not rerun those gates.
