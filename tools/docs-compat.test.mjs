@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { licensedTestingSection, resultsFromCompatibilityMarkdown } from './docs-compat.mjs';
+import { licensedTestingSection, resultsFromCompatibilityMarkdown, resultsFromPluginReports } from './docs-compat.mjs';
 
 const licensedPlugins = [
   {
@@ -51,5 +51,47 @@ describe('licensed plugin documentation', () => {
 
     expect(results.get('wp-rocket')).toMatchObject({ result: 'SKIPPED', notes: ['License not available'] });
     expect(results.get('wpml')).toMatchObject({ result: 'PASS', version: '4.7', date: '2026-10-15' });
+  });
+});
+
+describe('plugin compatibility report selection', () => {
+  it('uses the latest Jooservices report and ignores newer reports from other themes', () => {
+    const reports = [
+      {
+        file: 'jooservices-earlier.json',
+        doc: {
+          kind: 'plugins',
+          theme: 'jooservices',
+          date: '2026-10-19',
+          testedAt: '2026-10-19T12:00:00.000Z',
+          results: [{ key: 'tablepress', notes: ['older Jooservices run'] }],
+        },
+      },
+      {
+        file: 'jooservices-final.json',
+        doc: {
+          kind: 'plugins',
+          theme: 'jooservices',
+          date: '2026-10-20',
+          testedAt: '2026-10-20T12:00:00.000Z',
+          results: [{ key: 'tablepress', notes: ['Jooservices result'] }],
+        },
+      },
+      {
+        file: 'starter-final.json',
+        doc: {
+          kind: 'plugins',
+          theme: 'starter',
+          date: '2026-10-20',
+          testedAt: '2026-10-20T15:00:00.000Z',
+          results: [{ key: 'tablepress', notes: ['Starter-only result'] }],
+        },
+      },
+    ];
+
+    expect(resultsFromPluginReports(reports).get('tablepress')).toMatchObject({
+      notes: ['Jooservices result'],
+      date: '2026-10-20',
+    });
   });
 });
