@@ -11,7 +11,7 @@ The browser audit ran on the seeded ticket worktree site through `make test-e2e`
 
 For fragment-capable sidebar blocks, the test scrolls the `<joo-lazy>` wrapper when lazy loading is enabled and audits the inline block when it is disabled.
 
-The keyboard walkthrough used Tab to reach every visible block control and checked for a visible focus indicator. It also activated the search dialog, theme toggle, slider arrows, companies pager, category tree toggle, TOC disclosure and TOC link with the keyboard. The reading progress block has no interactive controls.
+The keyboard walkthrough used Tab to reach every visible block control and checked for a visible focus indicator. It rejects transparent outlines and counts a box shadow only when its focused value differs from that control's unfocused value. It also activated the search dialog, theme toggle, slider arrows, companies pager, category tree toggle, TOC disclosure and TOC link with the keyboard. The reading progress block has no interactive controls.
 
 ## Findings
 

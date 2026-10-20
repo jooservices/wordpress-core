@@ -130,18 +130,35 @@ async function walkKeyboard(page: Page, blocks: Block[]): Promise<void> {
     if (active instanceof HTMLElement && active !== document.body) active.blur();
   });
 
+  const unfocusedBoxShadows = await page.evaluate(() => {
+    const shadows: Record<string, string> = {};
+
+    document.querySelectorAll<HTMLElement>('[data-core-a11y-target]').forEach((element) => {
+      const id = element.getAttribute('data-core-a11y-target');
+      if (id !== null) shadows[id] = window.getComputedStyle(element).boxShadow;
+    });
+
+    return shadows;
+  });
+
   for (let tab = 0; tab < Math.min(500, tabStops + 5); tab++) {
     await page.keyboard.press('Tab');
-    const focus = await page.evaluate(() => {
+    const focus = await page.evaluate((baselineShadows) => {
       const active = document.activeElement;
       const id = active?.getAttribute('data-core-a11y-target');
       if (id === null || id === undefined) return null;
 
       const style = window.getComputedStyle(active);
-      const visibleOutline = style.outlineStyle !== 'none' && Number.parseFloat(style.outlineWidth) > 0;
-      const visibleShadow = style.boxShadow !== 'none';
+      const outlineColor = style.outlineColor.trim().toLowerCase();
+      const transparentOutlineColor =
+        outlineColor === 'transparent' ||
+        /,\s*0(?:\.0+)?\s*\)$/.test(outlineColor) ||
+        /\/\s*0(?:\.0+)?%?\s*\)$/.test(outlineColor);
+      const visibleOutline =
+        style.outlineStyle !== 'none' && Number.parseFloat(style.outlineWidth) > 0 && !transparentOutlineColor;
+      const visibleShadow = style.boxShadow !== 'none' && style.boxShadow !== baselineShadows[id];
       return { id, hasIndicator: visibleOutline || visibleShadow };
-    });
+    }, unfocusedBoxShadows);
 
     if (focus) {
       reached.add(focus.id);
@@ -220,13 +237,20 @@ test.describe('theme-core block accessibility', () => {
 
     const theme = page.locator('.wp-block-joo-theme-toggle').first();
     const themeButton = theme.locator('button');
-    const schemes = (await theme.getAttribute('data-schemes'))?.split(',') ?? [];
+    const schemesAttribute = await theme.getAttribute('data-schemes');
+    expect(schemesAttribute, 'seeded theme toggle declares its available schemes').not.toBeNull();
+    const schemes = (schemesAttribute ?? '')
+      .split(',')
+      .map((scheme) => scheme.trim())
+      .filter(Boolean);
+    expect(schemes.length, 'seeded fixture exposes multiple theme schemes').toBeGreaterThan(1);
     const beforeTheme = await page.locator('html').getAttribute('data-theme');
+    expect(beforeTheme, 'seeded page has an active theme before toggling').not.toBeNull();
     await themeButton.focus();
     await page.keyboard.press('Space');
-    if (schemes.length > 1) {
-      await expect.poll(() => page.locator('html').getAttribute('data-theme')).not.toBe(beforeTheme);
-    }
+    const pageTheme = page.locator('html');
+    await expect.poll(() => pageTheme.getAttribute('data-theme')).not.toBe(beforeTheme);
+    expect(schemes).toContain(await pageTheme.getAttribute('data-theme'));
 
     const slider = page.locator('.wp-block-joo-featured-slider');
     const track = slider.locator('.joo-slider__track');
