@@ -82,3 +82,8 @@
     aspect-ratio: auto;
   }
 }
+
+.joo-arrow:dir(rtl) {
+  display: inline-block;
+  transform: scaleX(-1);
+}

@@ -56,14 +56,14 @@ $count = count( $cards );
 </div>
 <?php if ( $count > 1 ) : ?>
 <div class="joo-slider__controls" hidden>
-	<button type="button" class="joo-slider__prev" aria-label="<?php echo esc_attr__( 'Previous slide', 'joo-core' ); ?>">←</button>
+	<button type="button" class="joo-slider__prev" aria-label="<?php echo esc_attr__( 'Previous slide', 'joo-core' ); ?>"><span class="joo-arrow" aria-hidden="true">←</span></button>
 	<span class="joo-slider__dots">
 	<?php foreach ( $cards as $i => $card ) : ?>
 		<button type="button" class="joo-slider__dot" aria-label="<?php echo esc_attr( sprintf( /* translators: %d: slide number. */ __( 'Go to slide %d', 'joo-core' ), $i + 1 ) ); ?>"></button>
 	<?php endforeach; ?>
 	</span>
 	<button type="button" class="joo-slider__pause" aria-label="<?php echo esc_attr__( 'Pause autoplay', 'joo-core' ); ?>" hidden>❚❚</button>
-	<button type="button" class="joo-slider__next" aria-label="<?php echo esc_attr__( 'Next slide', 'joo-core' ); ?>">→</button>
+	<button type="button" class="joo-slider__next" aria-label="<?php echo esc_attr__( 'Next slide', 'joo-core' ); ?>"><span class="joo-arrow" aria-hidden="true">→</span></button>
 </div>
 <?php endif; ?>
 </joo-slider>

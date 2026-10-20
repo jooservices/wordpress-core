@@ -51,14 +51,14 @@ $joo_url      = static fn( int $n ): string => '?' . Companies::QUERY_VAR . '=' 
 			<?php
 			if ( $current_page > 1 ) :
 				?>
-				<a rel="prev" href="<?php echo esc_attr( $joo_url( $current_page - 1 ) ); ?>" aria-label="<?php echo esc_attr__( 'Previous page', 'joo-core' ); ?>">←</a><?php endif; ?>
+				<a rel="prev" href="<?php echo esc_attr( $joo_url( $current_page - 1 ) ); ?>" aria-label="<?php echo esc_attr__( 'Previous page', 'joo-core' ); ?>"><span class="joo-arrow" aria-hidden="true">←</span></a><?php endif; ?>
 			<?php for ( $n = 1; $n <= $total; $n++ ) : ?>
 				<a href="<?php echo esc_attr( $joo_url( $n ) ); ?>"<?php echo $n === $current_page ? ' aria-current="page"' : ''; ?>><?php echo $n; ?></a>
 			<?php endfor; ?>
 			<?php
 			if ( $current_page < $total ) :
 				?>
-				<a rel="next" href="<?php echo esc_attr( $joo_url( $current_page + 1 ) ); ?>" aria-label="<?php echo esc_attr__( 'Next page', 'joo-core' ); ?>">→</a><?php endif; ?>
+				<a rel="next" href="<?php echo esc_attr( $joo_url( $current_page + 1 ) ); ?>" aria-label="<?php echo esc_attr__( 'Next page', 'joo-core' ); ?>"><span class="joo-arrow" aria-hidden="true">→</span></a><?php endif; ?>
 		</nav>
 		<?php endif; ?>
 	</joo-companies>
