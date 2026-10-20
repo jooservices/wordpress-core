@@ -40,7 +40,22 @@ describe('matrix helpers', () => {
   });
   it('runs matrix health through wp-task on the shared web runtime and parses JSON output', () => {
     const output = [{ name: 'home', path: '/', ok: false, problems: ['status 500'] }];
-    let invocation;
+    /** @type {{ command: string; args: string[]; options: { input?: string } } | null} */
+    let invocation = null;
+    const spawn = /** @type {typeof import('node:child_process').spawnSync} */ (
+      (command, args, options) => {
+        invocation = { command, args, options };
+        const stdout = JSON.stringify(output);
+        return {
+          pid: 1,
+          output: [null, stdout, ''],
+          signal: null,
+          status: 1,
+          stdout,
+          stderr: '',
+        };
+      }
+    );
     const results = runHealthViaWeb(
       {
         theme: 'starter',
@@ -48,12 +63,12 @@ describe('matrix helpers', () => {
         extra: { 'first-post': '/hello/' },
         seoActive: true,
       },
-      (command, args, options) => {
-        invocation = { command, args, options };
-        return { status: 1, stdout: JSON.stringify(output), stderr: '' };
-      }
+      spawn
     );
     expect(results).toEqual(output);
+    if (invocation === null) {
+      throw new Error('runHealthViaWeb did not invoke the spawnSync dependency');
+    }
     expect(invocation.command).toBe('bash');
     expect(invocation.args).toEqual([
       './docker/scripts/wp-task.sh',
