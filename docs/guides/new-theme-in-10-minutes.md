@@ -48,4 +48,4 @@ Corrections from earlier walk-throughs; this independent replay confirmed them a
 - The previous instruction to run `make i18n THEME=acme` was removed. That target does not generate a custom theme catalog and failed on untranslated strings in the bundled catalogs (18.26 s).
 - The sample CSS first failed Stylelint in 8.82 s; it was changed to use the theme accent token. The planner test now uses a temporary copy of the real starter so an existing `themes/acme` directory cannot break the suite.
 - In the earlier replay, a custom CSS sample failed Stylelint because its class lacked an approved prefix. The guide now documents the accepted `joo-`, `wp-`, `is-` and `has-` prefixes; the corrected sample and lint pass.
-- The first analysis run failed after 8.24 s because PHPStan found `$argv` might be undefined in `tools/check-core-i18n.php`; the CLI script now defaults it to an empty array.
+- An earlier analysis run failed after 8.24 s because PHPStan found `$argv` might be undefined in `tools/check-core-i18n.php`. The `$argv ?? array()` guard was already present on `develop` before this ticket, so it is baseline context rather than a change from this walkthrough.
