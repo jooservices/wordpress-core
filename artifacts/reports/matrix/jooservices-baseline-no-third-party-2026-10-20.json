@@ -1,0 +1,33 @@
+{
+  "kind": "runtime",
+  "theme": "jooservices",
+  "variant": "baseline-no-third-party",
+  "date": "2026-10-20",
+  "testedAt": "2026-10-20T08:45:15.252Z",
+  "runtime": {
+    "wordpress": "7.1.3",
+    "php": "8.3.30",
+    "database": "12.3.3-MariaDB-ubu2404"
+  },
+  "counts": {
+    "pass": 0,
+    "fail": 1,
+    "skipped": 0,
+    "unsupported": 0,
+    "blocked": 0
+  },
+  "results": [
+    {
+      "key": "runtime",
+      "name": "Theme health and browser smoke",
+      "result": "FAIL",
+      "notes": [
+        "browser runtime (jooservices): home: Error: layout shift budget",
+        "browser runtime (jooservices): category: Error: layout shift budget",
+        "browser runtime (jooservices): tag: Error: layout shift budget",
+        "browser runtime (jooservices): search: Error: layout shift budget",
+        "browser runtime (jooservices): single: Error: layout shift budget"
+      ]
+    }
+  ]
+}

@@ -12,6 +12,8 @@ import {
   runMatrix,
   runtimeLabel,
   skipReason,
+  wpCliSymfonyDeprecations,
+  wordpressOrgWarnings,
 } from './matrix-core.mjs';
 
 const good = (stdout = '') => ({ status: 0, stdout, stderr: '' });
@@ -84,6 +86,19 @@ describe('matrix core helpers', () => {
     expect(skipReason({ source: 'wporg', slug: '' }, { hasZip: false })).toBe('no slug');
     expect(skipReason({ source: 'wporg', slug: 'seo' }, { hasZip: false })).toBeNull();
     expect(phpProblems('PHP Warning: bad\nclean\nPHP Deprecated: old')).toHaveLength(2);
+    const wordpressOrgWarning =
+      'PHP Warning: wp_update_plugins(): Something is wrong (WordPress could not establish a secure connection to WordPress.org.)';
+    expect(phpProblems(`${wordpressOrgWarning}\nPHP Warning: plugin issue`)).toEqual(['PHP Warning: plugin issue']);
+    expect(wordpressOrgWarnings(wordpressOrgWarning)).toEqual([wordpressOrgWarning]);
+    const wpCliDeprecation =
+      'PHP Deprecated: Return type of Symfony\\Component\\Finder\\Finder::getIterator() should be compatible in phar:///usr/local/lib/wp-cli.phar/vendor/symfony/finder/Iterator.php on line 32';
+    const pluginPharDeprecation =
+      'PHP Deprecated: Return type of Symfony\\Component\\Finder\\Finder::getIterator() should be compatible in phar:///plugin/vendor/symfony/finder/Iterator.php on line 32';
+    expect(phpProblems(`${wpCliDeprecation}\n${pluginPharDeprecation}\nPHP Warning: plugin issue`)).toEqual([
+      pluginPharDeprecation,
+      'PHP Warning: plugin issue',
+    ]);
+    expect(wpCliSymfonyDeprecations(wpCliDeprecation)).toEqual([wpCliDeprecation]);
     expect(runtimeLabel({})).toBe('WordPress unknown / PHP unknown / database unknown');
     expect(
       resultCounts([
@@ -259,6 +274,44 @@ describe('runMatrix', () => {
       io: fakeIO({ plugins: [plugin], dumpFailure: true }),
     });
     expect(snapshot.report.results[0].notes[0]).toContain('could not snapshot');
+  });
+
+  it('classifies WordPress.org TLS download failures as blocked', async () => {
+    const plugin = { key: 'one', name: 'One', group: 'Other', tier: 1, slug: 'one', source: 'wporg' };
+    const offline = fakeIO({
+      plugins: [plugin],
+      installFailure: bad(
+        'The package could not be installed: WordPress could not establish a secure connection to WordPress.org.'
+      ),
+    });
+    const { report } = await runMatrix({ args: ['--only', 'one'], env: {}, io: offline });
+    expect(report.results[0].result).toBe('BLOCKED');
+  });
+
+  it('records WordPress.org update-check TLS warnings without failing plugin compatibility', async () => {
+    const plugin = { key: 'one', name: 'One', group: 'SEO', tier: 1, slug: 'one', source: 'wporg' };
+    const io = fakeIO({
+      plugins: [plugin],
+      phpLog:
+        'PHP Warning: wp_update_plugins(): Something is wrong (WordPress could not establish a secure connection to WordPress.org.)',
+    });
+    const { report, exitCode } = await runMatrix({ args: ['--only', 'one', '--no-browser'], env: {}, io });
+    expect(exitCode).toBe(0);
+    expect(report.results[0].result).toBe('PASS');
+    expect(report.results[0].notes[0]).toContain('WordPress.org update check could not establish TLS');
+  });
+
+  it('records WP-CLI PHAR Symfony Finder deprecations without failing plugin compatibility', async () => {
+    const plugin = { key: 'one', name: 'One', group: 'Forms', tier: 1, slug: 'one', source: 'wporg' };
+    const io = fakeIO({
+      plugins: [plugin],
+      phpLog:
+        'PHP Deprecated: Return type of Symfony\\Component\\Finder\\Finder::getIterator() should be compatible in phar:///usr/local/lib/wp-cli.phar/vendor/symfony/finder/Iterator.php on line 32',
+    });
+    const { report, exitCode } = await runMatrix({ args: ['--only', 'one', '--no-browser'], env: {}, io });
+    expect(exitCode).toBe(0);
+    expect(report.results[0].result).toBe('PASS');
+    expect(report.results[0].notes[0]).toContain('WP-CLI bundled Symfony Finder emitted PHP Deprecated');
   });
 
   it('fails a plugin cell when its database snapshot cannot be restored', async () => {

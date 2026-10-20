@@ -1,5 +1,8 @@
-const OFFLINE = /could not resolve|connection refused|timed out|curl error|unable to connect|download failed|no route/i;
+const OFFLINE =
+  /could not resolve|connection refused|timed out|curl error|unable to connect|download failed|no route|could not establish a secure connection to WordPress\.org/i;
 const MATRIX_DIR = 'artifacts/reports/matrix';
+const WORDPRESS_ORG_TLS_WARNING = /PHP Warning: .*WordPress could not establish a secure connection to WordPress\.org/;
+const WP_CLI_SYMFONY_DEPRECATION = /PHP Deprecated: .* in phar:\/\/.*\/wp-cli\.phar\/vendor\/symfony\/finder\//i;
 
 /** Classifies a plugin entry before any work: returns a skip reason or null. */
 export function skipReason(entry, { hasZip }) {
@@ -11,7 +14,22 @@ export function skipReason(entry, { hasZip }) {
 
 /** Counts PHP problems in a log excerpt. */
 export function phpProblems(log) {
-  return log.split('\n').filter((line) => /PHP (Fatal error|Warning|Notice|Deprecated|Parse error)/.test(line));
+  return log
+    .split('\n')
+    .filter(
+      (line) =>
+        /PHP (Fatal error|Warning|Notice|Deprecated|Parse error)/.test(line) &&
+        !WORDPRESS_ORG_TLS_WARNING.test(line) &&
+        !WP_CLI_SYMFONY_DEPRECATION.test(line)
+    );
+}
+
+export function wordpressOrgWarnings(log) {
+  return log.split('\n').filter((line) => WORDPRESS_ORG_TLS_WARNING.test(line));
+}
+
+export function wpCliSymfonyDeprecations(log) {
+  return log.split('\n').filter((line) => WP_CLI_SYMFONY_DEPRECATION.test(line));
 }
 
 /** Formats the runtime facts captured from the selected WordPress container. */
@@ -176,6 +194,7 @@ async function testPlugin(entry, ctx, io) {
       }
       const health = await runHealth({
         base: ctx.base,
+        theme,
         table: ctx.table,
         extra: ctx.values,
         seoActive: entry.group === 'SEO',
@@ -191,6 +210,16 @@ async function testPlugin(entry, ctx, io) {
     }
 
     const log = sh(`tail -c +$((${before} + 1)) wp-content/debug.log 2>/dev/null || true`).stdout;
+    const wordpressOrgWarningsInLog = wordpressOrgWarnings(log);
+    if (wordpressOrgWarningsInLog.length)
+      notes.push(
+        `environment warning: WordPress.org update check could not establish TLS (${wordpressOrgWarningsInLog.length} warning(s))`
+      );
+    const wpCliSymfonyDeprecationsInLog = wpCliSymfonyDeprecations(log);
+    if (wpCliSymfonyDeprecationsInLog.length)
+      notes.push(
+        `environment warning: WP-CLI bundled Symfony Finder emitted PHP Deprecated (${wpCliSymfonyDeprecationsInLog.length} warning(s))`
+      );
     const problems = phpProblems(log);
     if (problems.length) notes.push(`php log: ${problems.length} problem(s), first: ${problems[0].slice(0, 160)}`);
     if (entry.tier === 3) {
@@ -226,7 +255,7 @@ async function testRuntime(ctx, io) {
       notes.push(`could not activate ${theme}: ${activate.stderr.trim()}`);
       continue;
     }
-    const health = await runHealth({ base: ctx.base, table: ctx.table, extra: ctx.values, seoActive });
+    const health = await runHealth({ base: ctx.base, theme, table: ctx.table, extra: ctx.values, seoActive });
     for (const result of health.filter((row) => !row.ok))
       notes.push(`${theme} health ${result.name}: ${result.problems.join(', ')}`);
     if (ctx.browser) {

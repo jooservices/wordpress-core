@@ -1,6 +1,14 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { browserSmoke, phpProblems, renderMarkdown, resultCounts, runtimeLabel, skipReason } from './matrix.mjs';
+import {
+  browserSmoke,
+  phpProblems,
+  renderMarkdown,
+  resultCounts,
+  runHealthViaWeb,
+  runtimeLabel,
+  skipReason,
+} from './matrix.mjs';
 
 describe('matrix helpers', () => {
   it('skips licensed plugins without a zip and records why', () => {
@@ -29,6 +37,51 @@ describe('matrix helpers', () => {
       'WordPress 7.1.3 / PHP 8.3.35 / 12.3.3-MariaDB'
     );
     expect(runtimeLabel({})).toBe('WordPress unknown / PHP unknown / database unknown');
+  });
+  it('runs matrix health through wp-task on the shared web runtime and parses JSON output', () => {
+    const output = [{ name: 'home', path: '/', ok: false, problems: ['status 500'] }];
+    /** @type {{ command: string; args: string[]; options: { input?: string } } | null} */
+    let invocation = null;
+    const spawn = /** @type {typeof import('node:child_process').spawnSync} */ (
+      (command, args, options) => {
+        invocation = { command, args, options };
+        const stdout = JSON.stringify(output);
+        return {
+          pid: 1,
+          output: [null, stdout, ''],
+          signal: null,
+          status: 1,
+          stdout,
+          stderr: '',
+        };
+      }
+    );
+    const results = runHealthViaWeb(
+      {
+        theme: 'starter',
+        base: 'http://starter.localhost:8082',
+        extra: { 'first-post': '/hello/' },
+        seoActive: true,
+      },
+      spawn
+    );
+    expect(results).toEqual(output);
+    if (invocation === null) {
+      throw new Error('runHealthViaWeb did not invoke the spawnSync dependency');
+    }
+    expect(invocation.command).toBe('bash');
+    expect(invocation.args).toEqual([
+      './docker/scripts/wp-task.sh',
+      'matrix-health',
+      'starter',
+      '--base',
+      'http://starter.localhost:8082',
+      '--values',
+      '{"first-post":"/hello/"}',
+      '--json',
+      '--seo-active',
+    ]);
+    expect(invocation.options.input).toBe('');
   });
   it('renders a plugin report with counts and escaped notes', () => {
     const md = renderMarkdown({
@@ -75,6 +128,9 @@ describe('matrix helpers', () => {
           expect(command).toBe('bash');
           expect(args).toContain('playwright');
           expect(options.env?.E2E_BASE_URL).toBe('http://wordpress');
+          expect(options.env?.PLAYWRIGHT_JSON_OUTPUT_NAME).toMatch(
+            /\/artifacts\/reports\/e2e\/runtime-jooservices-playwright\.json$/
+          );
           return /** @type {any} */ ({
             pid: 1,
             output: [null, 'runner output', 'first line\nlast line'],

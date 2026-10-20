@@ -122,7 +122,7 @@ snapshot_import() { # $1 = snapshot dir
   wpx db import "$1/db.sql"
   wpx search-replace "http://seed.localhost" "$SITE_URL" --all-tables --precise --quiet
   rm -rf "$JOO_SITE_DIR/wp-content/uploads"
-  if [[ -d "$1/uploads" ]]; then cp -cR "$1/uploads" "$JOO_SITE_DIR/wp-content/uploads"; else mkdir -p "$JOO_SITE_DIR/wp-content/uploads"; fi
+  if [[ -d "$1/uploads" ]]; then cp -R "$1/uploads" "$JOO_SITE_DIR/wp-content/uploads"; else mkdir -p "$JOO_SITE_DIR/wp-content/uploads"; fi
   local admin
   admin="$(wpx user list --role=administrator --field=ID </dev/null | head -1)"
   wpx user update "$admin" --user_pass="$WP_ADMIN_PASSWORD" --skip-email >/dev/null
@@ -137,7 +137,7 @@ snapshot_export() { # $1 = snapshot dir
   local tmp="$1.tmp.$$"
   mkdir -p "$tmp"
   wpx search-replace "$SITE_URL" "http://seed.localhost" --all-tables --precise --export="$tmp/db.sql" --quiet
-  if [[ -d "$JOO_SITE_DIR/wp-content/uploads" ]]; then cp -cR "$JOO_SITE_DIR/wp-content/uploads" "$tmp/uploads"; fi
+  if [[ -d "$JOO_SITE_DIR/wp-content/uploads" ]]; then cp -R "$JOO_SITE_DIR/wp-content/uploads" "$tmp/uploads"; fi
   printf '{"wordpress":"%s","checksum":"%s","created":"%s","theme":"%s"}\n' "$(wpx core version)" "$(wpx option get joo_demo_checksum)" "$(date -u +%FT%TZ)" "$theme" > "$tmp/manifest.json"
   rm -rf "$1"; mv "$tmp" "$1"
   echo "Stored the seed snapshot $(basename "$1") in $snap_root"
@@ -203,10 +203,12 @@ health_check() {
 }
 
 case "$action" in
-  test-migrations|integration|e2e|e2e-demo|matrix|marketplace|screenshots|critical|health)
+  test-migrations|integration|e2e|e2e-demo|matrix|matrix-health|marketplace|screenshots|critical|health)
     if [[ -z "${WP_TASK_LOCK_OWNER_PID:-}" ]]; then
       acquire_shared_wp_test_lock || exit $?
-      if wp_task_run_capped "$action" "$WP_TASK_OPERATION_CAP_SECONDS" \
+      operation_cap="$WP_TASK_OPERATION_CAP_SECONDS"
+      if [[ "$action" == matrix ]]; then operation_cap="$WP_TASK_MATRIX_OPERATION_CAP_SECONDS"; fi
+      if wp_task_run_capped "$action" "$operation_cap" \
         env WP_TASK_LOCK_OWNER_PID="$$" bash "$ROOT/docker/scripts/wp-task.sh" "$action" "$theme" "$@"; then
         exit 0
       else
@@ -304,6 +306,39 @@ case "$action" in
     ensure_site
     seed_demo
     node tools/matrix.mjs --theme "$theme" "$@"
+    ;;
+  matrix-health)
+    health_base="$SITE_URL"
+    health_values='{}'
+    health_seo=0
+    while (($#)); do
+      case "$1" in
+        --base)
+          health_base="${2:?health base URL is required}"
+          shift 2
+          ;;
+        --values)
+          health_values="${2:?health values are required}"
+          shift 2
+          ;;
+        --seo-active)
+          health_seo=1
+          shift
+          ;;
+        --json)
+          shift
+          ;;
+        *)
+          echo "ERROR: unsupported matrix health argument: $1" >&2
+          exit 2
+          ;;
+      esac
+    done
+    if ((health_seo)); then
+      webx node tools/health.mjs --base "$health_base" --values "$health_values" --seo-active --json
+    else
+      webx node tools/health.mjs --base "$health_base" --values "$health_values" --json
+    fi
     ;;
   marketplace)
     acquire_shared_wp_test_lock || exit $?
