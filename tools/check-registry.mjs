@@ -1,9 +1,9 @@
-// Checks the naming registry: uniqueness, prefixes, agreement with the settings descriptor and
-// (when code exists) that every joo/ hook, meta key, REST route, block and custom element used in source is registered.
+// Checks registry uniqueness, prefixes, settings agreement, and source agreement for public hooks and surfaces.
 // Usage: node tools/check-registry.mjs [--fix-docs]
 import { readFileSync, readdirSync, writeFileSync, statSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { fromRoot, ROOT } from './lib/paths.mjs';
+import { surfaceRegistryDrift } from './docs-reference.mjs';
 
 const registry = JSON.parse(readFileSync(fromRoot('docs/spec/naming-registry.json'), 'utf8'));
 const settings = JSON.parse(readFileSync(fromRoot('packages/theme-core/schema/settings.schema.json'), 'utf8'));
@@ -69,6 +69,7 @@ const files = [
   ...walk(fromRoot('packages/theme-core/resources')),
   ...walk(fromRoot('plugins/jooservices-resume/src')),
   ...walk(fromRoot('plugins/jooservices-resume')),
+  ...walk(fromRoot('docker/scripts')),
   ...walk(fromRoot('themes')),
 ].filter(
   (f) =>
@@ -104,6 +105,8 @@ for (const file of new Set(files)) {
     if (!settingKeys.has(m[1])) unknown.add(`${rel}: setting ${m[1]}`);
 }
 for (const item of [...unknown].sort()) fail(`not in registry: ${item}`);
+const source = [...new Set(files)].map((file) => readFileSync(file, 'utf8')).join('\n');
+for (const item of surfaceRegistryDrift(registry, source)) fail(`registry entry is not in code: ${item}`);
 
 // 4. docs
 if (process.argv.includes('--fix-docs')) {
