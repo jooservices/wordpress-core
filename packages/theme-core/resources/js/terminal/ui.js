@@ -138,8 +138,11 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
   });
   input.addEventListener('keydown', (event) => {
     if (event.key === 'Tab') {
-      event.preventDefault();
+      if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey || input.value.trim() === '') return;
       const done = shell.complete(input.value);
+      // Nothing to complete: let Tab move focus on so the input is never a keyboard trap.
+      if (!done.candidates.length && done.line === input.value) return;
+      event.preventDefault();
       if (done.candidates.length) {
         echo(input.value);
         const cols = el('div', 'joo-term__cols');

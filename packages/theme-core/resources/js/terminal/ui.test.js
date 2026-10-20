@@ -84,6 +84,21 @@ describe('terminal UI', () => {
     expect(logText()).toContain('research-and-development/');
   });
 
+  it('lets Tab leave the input when there is nothing to complete', () => {
+    const press = (init) => {
+      const e = new KeyboardEvent('keydown', { key: 'Tab', cancelable: true, bubbles: true, ...init });
+      input().dispatchEvent(e);
+      return e;
+    };
+    input().value = '';
+    expect(press({}).defaultPrevented).toBe(false);
+    input().value = 'zzzz-nothing';
+    expect(press({}).defaultPrevented).toBe(false);
+    input().value = 'cat ai';
+    expect(press({ shiftKey: true }).defaultPrevented).toBe(false);
+    expect(press({}).defaultPrevented).toBe(true);
+  });
+
   it('navigates the history with the arrow keys and clears with Ctrl+L', () => {
     type('pwd');
     type('date');
