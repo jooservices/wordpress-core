@@ -1,6 +1,7 @@
 // Builds JS (esbuild, ES modules) and CSS (Lightning CSS) with content-hashed names and writes assets.json.
 // Usage: node tools/build-assets.mjs --root packages/theme-core [--src resources] [--out resources/build] [--watch]
 //   JS entries:  <src>/js/*.js and <src>/blocks/*/view.js   -> logical names "name" and "blocks/<slug>/view"
+//                <src>/js/terminal/engine.js                 -> logical name "terminal-engine"
 //   CSS entries: <src>/css/*.css and <src>/blocks/*/style.css -> logical names "name" and "blocks/<slug>/style"
 // Size guards (gzip): JS entry <= 25 KB, CSS entry <= 30 KB; override in <root>/build.config.json.
 import { build } from 'esbuild';
@@ -8,8 +9,8 @@ import { bundleAsync } from 'lightningcss';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, relative, resolve } from 'node:path';
-import { gzipSync } from 'node:zlib';
 import { ROOT } from './lib/paths.mjs';
+import { gzipSize } from './lib/gzip-size.mjs';
 
 const args = new Map();
 for (let i = 2; i < process.argv.length; i += 1) {
@@ -64,7 +65,24 @@ const jsEntries = [
   ...blockEntries(join(src, 'blocks'), 'view.js'),
 ];
 const logicalJs = (file) =>
-  file.includes('/blocks/') ? `blocks/${basename(dirname(file))}/view` : basename(file, '.js');
+  file.endsWith('/terminal/engine.js')
+    ? 'terminal-engine'
+    : file.includes('/blocks/')
+      ? `blocks/${basename(dirname(file))}/view`
+      : basename(file, '.js');
+
+function recordJsOutputs(result) {
+  for (const [file, meta] of Object.entries(result.metafile.outputs)) {
+    if (!meta.entryPoint) continue;
+    const abs = resolve(file);
+    const logical = logicalJs(resolve(ROOT, meta.entryPoint));
+    const buffer = readFileSync(abs);
+    const gzip = gzipSize(buffer);
+    assets[logical] = { type: 'js', file: relative(out, abs), size: buffer.length, gzip };
+    if (gzip > config.maxJsGzip) problems.push(`${logical}: ${gzip} B gzip exceeds ${config.maxJsGzip} B`);
+  }
+}
+
 if (jsEntries.length) {
   const result = await build({
     entryPoints: jsEntries.map((f) => ({ in: f, out: logicalJs(f) })),
@@ -82,15 +100,29 @@ if (jsEntries.length) {
     write: true,
     logLevel: 'warning',
   });
-  for (const [file, meta] of Object.entries(result.metafile.outputs)) {
-    if (!meta.entryPoint) continue;
-    const abs = resolve(file);
-    const logical = logicalJs(resolve(ROOT, meta.entryPoint));
-    const buffer = readFileSync(abs);
-    const gzip = gzipSync(buffer).length;
-    assets[logical] = { type: 'js', file: relative(out, abs), size: buffer.length, gzip };
-    if (gzip > config.maxJsGzip) problems.push(`${logical}: ${gzip} B gzip exceeds ${config.maxJsGzip} B`);
-  }
+  recordJsOutputs(result);
+}
+
+// Measure the pure terminal engine as a standalone bundle; splitting it with the full terminal would
+// move its code into a shared chunk and make the entry's own gzip value misleading.
+const terminalEngine = join(src, 'js', 'terminal', 'engine.js');
+if (existsSync(terminalEngine)) {
+  const result = await build({
+    entryPoints: [{ in: terminalEngine, out: 'terminal-engine' }],
+    outdir: join(out, 'js'),
+    bundle: true,
+    splitting: false,
+    format: 'esm',
+    target: 'es2022',
+    minify: true,
+    legalComments: 'none',
+    external: ['joo-runtime'],
+    entryNames: '[name]-[hash]',
+    metafile: true,
+    write: true,
+    logLevel: 'warning',
+  });
+  recordJsOutputs(result);
 }
 
 // CSS
@@ -103,7 +135,7 @@ for (const file of cssEntries) {
   const target = join(out, 'css', `${name}-${hash(code)}.css`);
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, code);
-  const gzip = gzipSync(code).length;
+  const gzip = gzipSize(code);
   assets[name] = { type: 'css', file: relative(out, target), size: code.length, gzip };
   if (gzip > config.maxCssGzip) problems.push(`${name}: ${gzip} B gzip exceeds ${config.maxCssGzip} B`);
 }

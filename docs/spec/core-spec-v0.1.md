@@ -63,7 +63,7 @@ Contexts: front-end modules add hooks on `wp_head`, `wp_enqueue_scripts`, `templ
 Levels debug/info/warning/error. A module that throws in `register()` or `boot()` is caught, logged (error_log only when `WP_DEBUG_LOG` or setting `core.debug`), marked `failed`; its dependents are `blocked`; the front-end renders normally (HTTP 200); admins with `edit_theme_options` see an admin notice and Site Health entry. Invalid manifest or unsupported PHP/WP: notice, no module boots, front-end continues with plain WordPress.
 
 ## 9. Budgets
-Boot: < 3 ms, < 1.5 MB peak for an empty module set. Frontend runtime JS <= 3 KB gzip; slider <= 5 KB; TOC <= 3 KB; companies <= 2.5 KB; tree <= 2 KB; terminal engine <= 5 KB (loaded on demand). Critical CSS <= 14 KB gzip per template. Page budgets and Lighthouse thresholds: `docs/definition-of-done.md` (G7).
+Boot: < 3 ms, < 1.5 MB peak for an empty module set. Frontend runtime JS <= 3 KiB gzip; slider <= 5 KiB; TOC <= 3 KiB; companies <= 2.5 KiB; tree <= 2 KiB; pure terminal engine <= 5 KiB and complete on-demand terminal bundle (engine, built-in commands and UI) <= 9 KiB gzip (ADR 0012). Critical CSS <= 14 KiB gzip per template. Current JavaScript measurements and exact byte limits are recorded in `docs/reference/budgets.md`. Page budgets and Lighthouse thresholds: `docs/definition-of-done.md` (G7).
 
 ## 10. Compatibility policy
 Tiers 1 (automatically tested), 2 (compatible by standards), 3 (basic: page builders, WooCommerce). Yield modes for SEO: `auto|never|always`; lazy loading yields to other optimisers unless `lazy.yield_to_plugins` is false.

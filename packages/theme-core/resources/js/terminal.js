@@ -1,7 +1,6 @@
 // Terminal entry (loaded on first open): engine, commands, UI and the factory the dock uses.
-import { buildFs } from './terminal/fs.js';
-import { createRegistry, registerCommand } from './terminal/registry.js';
-import { Shell } from './terminal/shell.js';
+import { createRegistry } from './terminal/registry.js';
+import { buildFs, registerCommand, Shell } from './terminal/engine.js';
 import { mountTerminal, safeUrl } from './terminal/ui.js';
 
 /**
