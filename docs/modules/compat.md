@@ -1,6 +1,6 @@
 # Compatibility module
 
-`Compat\Detector` finds plugins by constants, already loaded classes/functions (never autoloading) and the active plugin list, using the table in `Compat\Signatures` (30 plugins, tier 1/2/3). `active()`, `version()`, `provides($capability)`; results are cached per request and the probe is injectable for tests.
+`Compat\Detector` finds plugins by constants, already loaded classes/functions (never autoloading) and the active plugin list, using the table in `Compat\Signatures` (31 plugins, tier 1/2/3). `active()`, `version()`, `provides($capability)`; results are cached per request and the probe is injectable for tests.
 
 ## Adapters (`AdapterInterface`)
 `AdapterRegistry` boots every adapter whose plugin is active; a failing adapter is logged and isolated. Add or replace adapters with `joo/compat/adapters`.

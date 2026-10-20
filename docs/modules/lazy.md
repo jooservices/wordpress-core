@@ -3,7 +3,7 @@
 Everything below is switchable: `lazy.enabled` (master), `lazy.images|iframes|fragments|sections|comments|terminal`, `lazy.eager_count`, `lazy.embed_thumbnails` (`local|remote`), `lazy.yield_to_plugins`. A post can override with the editor panel (`_joo_lazy_override`: default/on/off).
 
 ## Decision (`Lazy\Policy::decide`)
-Order: master/module off → non-front-end context → post override `off` → per-type switch (skipped when override is `on`) → yield to an optimisation plugin (`joo/lazy/provider` filter, images and iframes) → LCP / first `lazy.eager_count` images stay eager → lazy. Every decision has a `reason` (visible in `wp joo perf`).
+Order: master/module off → non-front-end context → post override `off` → per-type switch (skipped when override is `on`) → yield to an optimisation plugin (`joo/lazy/provider` filter, images and iframes) → LCP / first `lazy.eager_count` images stay eager → lazy. Every `Decision` carries a `reason` code (`Decision::$reason`); no WP-CLI command prints it.
 
 ## Pieces
 | Piece | Class | Result |
@@ -17,6 +17,6 @@ Order: master/module off → non-front-end context → post override `off` → p
 Renderer fragments use the same function inline and over REST (byte-identical). Snapshot fragments (template-bound blocks) store the rendered HTML in `FragmentCache` when an anonymous request renders a published, unprotected post. The comments fragment is served with `Cache-Control: private, no-store`; snapshots for draft, private, or password-protected posts are never returned.
 
 ## Client
-`<joo-lazy>` (~1 KB gz) and `<joo-embed>` (~0.6 KB gz) are script modules loaded only when such an element exists. Fragment HTML is inserted through a sanitising `safeFragment`.
+`<joo-lazy>` and `<joo-embed>` are small script modules loaded only when such an element exists. Fragment HTML is inserted through a sanitising `safeFragment`.
 
 Browser checks (scroll triggers, CLS, no-JS) run in the theme e2e (T10.2).
