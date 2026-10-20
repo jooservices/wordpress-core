@@ -19,7 +19,7 @@ Nothing in the repository pushes or deploys; these are the manual steps.
 - Home, a post, a category, search and a missing URL answer 200, 200, 200, 200 and 404.
 - `/wp-sitemap.xml` (or the SEO plugin's sitemap) and `/robots.txt` load; robots.txt has one `Sitemap:` line.
 - View source of a post: one `<title>`, one canonical, one JSON-LD `BlogPosting` (or the SEO plugin's graph, never both).
-- `wp joo doctor` returns 0 or only warnings; Tools, Site Health shows no critical entry from JOOservices.
+- `wp --user="$(wp user list --role=administrator --field=ID | head -n1)" joo doctor` returns 0 or only warnings; Tools, Site Health shows no critical entry from JOOservices.
 - Lighthouse on mobile: performance 90+, accessibility 95+, SEO 95+ (the repository's `make perf` uses the same budgets on a demo).
 - The terminal opens and lists the posts.
 

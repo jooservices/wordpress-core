@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JOOservices\ThemeCore\Admin\Cli;
 
 use JOOservices\ThemeCore\Container\Container;
+use JOOservices\ThemeCore\Config\Settings;
 
 /**
  * Registers the `wp joo` commands (only loaded when WP-CLI is running).
@@ -30,6 +31,8 @@ final class Commands {
 		\WP_CLI::add_command( 'joo settings', new SettingsCommand( $container ) );
 		\WP_CLI::add_command( 'joo modules', new ModulesCommand( $container ) );
 		\WP_CLI::add_command( 'joo doctor', new DoctorCommand( $container ) );
-		\WP_CLI::add_command( 'joo cache', new CacheCommand() );
+		/** @var Settings $settings */
+		$settings = $container->get( Settings::class );
+		\WP_CLI::add_command( 'joo cache', new CacheCommand( $settings->repository() ) );
 	}
 }
