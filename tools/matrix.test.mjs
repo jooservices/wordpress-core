@@ -25,8 +25,13 @@ describe('matrix helpers', () => {
   it('makes E2E reports writable to the shared browser runtime with sticky permissions', () => {
     const calls = [];
     prepareReportDirectory('artifacts/reports/e2e', {
-      makeDirectory: (...args) => calls.push(['mkdir', ...args]),
-      setMode: (...args) => calls.push(['chmod', ...args]),
+      makeDirectory: (...args) => {
+        calls.push(['mkdir', ...args]);
+        return 'artifacts/reports/e2e';
+      },
+      setMode: (...args) => {
+        calls.push(['chmod', ...args]);
+      },
     });
     expect(calls).toEqual([
       ['mkdir', 'artifacts/reports/e2e', { recursive: true }],
