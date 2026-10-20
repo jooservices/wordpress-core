@@ -41,24 +41,24 @@ Manual test steps:
 | Rank Math SEO | SEO | wporg | 1.0.280 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (1 warning(s)) |
 | All in One SEO | SEO | wporg | 5.0.3 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (1 warning(s)) |
 | SEOPress | SEO | wporg | 10.3 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
-| LiteSpeed Cache | Cache | wporg | 7.9.1 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
+| LiteSpeed Cache | Cache | wporg | 7.9.1 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (2 warning(s)) |
 | WP Rocket | Cache | manual |  | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | NOT RUN | Licensed package has not been tested; no compatibility claim is made. |
 | W3 Total Cache | Cache | wporg | 2.10.7 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (1 warning(s)) |
-| Autoptimize | Cache | wporg | 3.1.16 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
-| Polylang | Multilingual | wporg | 3.9.0 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (2 warning(s)) |
+| Autoptimize | Cache | wporg | 3.1.16 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (1 warning(s)) |
+| Polylang | Multilingual | wporg | 3.9.0 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (1 warning(s)) |
 | WPML | Multilingual | manual |  | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | NOT RUN | Licensed package has not been tested; no compatibility claim is made. |
-| TranslatePress | Multilingual | wporg | 3.3.8 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
+| TranslatePress | Multilingual | wporg | 3.3.8 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (1 warning(s)) |
 | Contact Form 7 | Forms | wporg | 6.2.2 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
-| WPForms Lite | Forms | wporg | 2.0.2.2 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
-| Fluent Forms | Forms | wporg | 6.2.16 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (1 warning(s)) |
-| Jetpack | Other | wporg | 16.3.1 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (1 warning(s)) |
-| Site Kit by Google | Other | wporg | 1.190.0 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (1 warning(s)) |
-| Smush | Images | wporg | 4.3.4 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (1 warning(s)) |
+| WPForms Lite | Forms | wporg | 2.0.2.2 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (2 warning(s)) |
+| Fluent Forms | Forms | wporg | 6.2.16 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (2 warning(s)) |
+| Jetpack | Other | wporg | 16.3.1 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
+| Site Kit by Google | Other | wporg | 1.190.0 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
+| Smush | Images | wporg | 4.3.5 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
 | ShortPixel Image Optimizer | Images | wporg | 6.6.1 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
-| EWWW Image Optimizer | Images | wporg | 8.9.0 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (2 warning(s)) |
-| TablePress | Other | wporg | 3.4.1 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (1 warning(s)) |
-| Advanced Custom Fields | Other | wporg | 6.8.10 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (2 warning(s)) |
-| Akismet | Other | wporg | 5.7.2 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (2 warning(s)) |
+| EWWW Image Optimizer | Images | wporg | 8.9.0 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
+| TablePress | Other | wporg | 3.4.1 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
+| Advanced Custom Fields | Other | wporg | 6.8.10 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
+| Akismet | Other | wporg | 5.7.2 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS | environment warning: WordPress.org update check could not establish TLS (1 warning(s)) |
 | Wordfence | Security | wporg | 9.0.2 | WordPress 7.1.3; PHP 8.3.30; 12.3.3-MariaDB-ubu2404 | 2026-10-20 | PASS |  |
 
 ## Tier 3: basic support

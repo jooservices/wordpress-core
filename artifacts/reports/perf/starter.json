@@ -2,21 +2,21 @@
   {
     "name": "home",
     "scores": {
-      "performance": 0.96,
+      "performance": 1,
       "accessibility": 0.98,
       "best-practices": 1,
       "seo": 1
     },
     "metrics": {
-      "cumulative-layout-shift": 0.008627665733909955,
+      "cumulative-layout-shift": 0.001765931334483492,
       "total-blocking-time": 0,
-      "largest-contentful-paint": 2481.3505999999998
+      "largest-contentful-paint": 1732.3442
     },
     "bytes": {
-      "css": 16213,
-      "js": 27077,
-      "fonts": 100140,
-      "html": 26801
+      "css": 4450,
+      "js": 23624,
+      "fonts": 0,
+      "html": 19090
     },
     "crawlable": 1,
     "problems": []
@@ -24,21 +24,21 @@
   {
     "name": "single",
     "scores": {
-      "performance": 0.96,
+      "performance": 1,
       "accessibility": 1,
       "best-practices": 1,
       "seo": 1
     },
     "metrics": {
-      "cumulative-layout-shift": 0,
+      "cumulative-layout-shift": 0.0003500328180851207,
       "total-blocking-time": 0,
-      "largest-contentful-paint": 2482.1193999999996
+      "largest-contentful-paint": 1654.971
     },
     "bytes": {
-      "css": 20523,
-      "js": 27977,
-      "fonts": 100140,
-      "html": 25961
+      "css": 8765,
+      "js": 25928,
+      "fonts": 0,
+      "html": 19052
     },
     "crawlable": 1,
     "problems": []
@@ -46,21 +46,21 @@
   {
     "name": "category",
     "scores": {
-      "performance": 0.97,
-      "accessibility": 0.98,
+      "performance": 1,
+      "accessibility": 1,
       "best-practices": 1,
       "seo": 1
     },
     "metrics": {
-      "cumulative-layout-shift": 0.004109074597942085,
+      "cumulative-layout-shift": 0.006757859616399866,
       "total-blocking-time": 0,
-      "largest-contentful-paint": 2332.1535999999996
+      "largest-contentful-paint": 1505.58585
     },
     "bytes": {
-      "css": 15920,
-      "js": 25554,
-      "fonts": 100140,
-      "html": 24641
+      "css": 4157,
+      "js": 22101,
+      "fonts": 0,
+      "html": 17193
     },
     "crawlable": 1,
     "problems": []
@@ -68,21 +68,21 @@
   {
     "name": "search",
     "scores": {
-      "performance": 0.97,
-      "accessibility": 0.98,
+      "performance": 1,
+      "accessibility": 1,
       "best-practices": 1,
       "seo": 0.58
     },
     "metrics": {
-      "cumulative-layout-shift": 0.004109074597942085,
+      "cumulative-layout-shift": 0.0003500328180851207,
       "total-blocking-time": 0,
-      "largest-contentful-paint": 2255.8081999999995
+      "largest-contentful-paint": 1510.85355
     },
     "bytes": {
-      "css": 15268,
-      "js": 25554,
-      "fonts": 100140,
-      "html": 24562
+      "css": 3506,
+      "js": 22102,
+      "fonts": 0,
+      "html": 17035
     },
     "crawlable": 0,
     "problems": []
@@ -90,21 +90,21 @@
   {
     "name": "about",
     "scores": {
-      "performance": 0.98,
-      "accessibility": 0.98,
+      "performance": 1,
+      "accessibility": 0.96,
       "best-practices": 1,
       "seo": 1
     },
     "metrics": {
-      "cumulative-layout-shift": 0.01388332345736473,
+      "cumulative-layout-shift": 0.01484003480952388,
       "total-blocking-time": 0,
-      "largest-contentful-paint": 2105.7666
+      "largest-contentful-paint": 1505.7663
     },
     "bytes": {
-      "css": 13796,
-      "js": 22705,
-      "fonts": 100140,
-      "html": 22057
+      "css": 5628,
+      "js": 22100,
+      "fonts": 0,
+      "html": 17393
     },
     "crawlable": 1,
     "problems": []

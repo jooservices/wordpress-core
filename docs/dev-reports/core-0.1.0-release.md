@@ -1,33 +1,31 @@
 # Core 0.1.0 Release Gate Evidence
 
-Date: 2026-10-20. Machine: WSL (`wsl`). Ticket: JOOWT-288. Source commit tested: `c336f08432b3ccb3c6cc53a01b45d20e94121f68`.
+Date: 2026-10-20. Machine: WSL (`wsl`). Ticket: JOOWT-288.
 
-This report records G6-G9 for the `starter` and `jooservices` themes on the shared WordPress runtime (WordPress 7.1.3, PHP 8.3.30, MariaDB 12.3.3). Both demo runs used the isolated `wp_JOOWT_288` worktree database.
+The complete G6-G9 gate run on the rebased source used commit `078d47b0be01e4720bd51036090abc31d7da0b5f`. Final cleanup commit `78d3c5ffa9468a313e6b2543bf67e41a50d0a71e` removes duplicate copies of the existing Jooservices dock-width declarations; the computed layout is unchanged. Jooservices G6-G9 and all quality checks were rerun on the final cleanup commit. Starter code was not changed by that cleanup.
 
-Supplementary `make lint` passed on this worktree (headers, core i18n, PHPCS, ESLint, Stylelint, and Prettier).
+The runs used the shared WordPress runtime (WordPress 7.1.3, PHP 8.3.30, MariaDB 12.3.3) and isolated `wp_JOOWT_288` database.
 
 | Gate | Starter | Jooservices |
 | --- | --- | --- |
-| G6 Demo and health | PASS: `make demo` and `make health`; 17/17 checks each | PASS: `make demo` and `make health`; 17/17 checks each |
-| G7 Budgets | BLOCKED: `make perf` cannot read missing `themes/starter/budgets.json` | BLOCKED: `make perf` cannot launch the absent shared-runtime Chromium binary |
-| G8 Matrix | FAIL: 22 pass, 1 fail, 2 unsupported | FAIL: 0 pass, 23 fail, 2 unsupported |
-| G9 Package | PASS: `starter-0.1.0.zip`, 275 files, 477 KB | PASS: `jooservices-0.1.0.zip`, 311 files, 836 KB |
+| G6 Demo and health | PASS: `make demo` and `make health`, 17/17 checks each | PASS: `make demo` and `make health`, 17/17 checks each; rerun on final source |
+| G7 Budgets | PASS: all five pages; font transfer 0 B | PASS: all five pages; font transfer 100,140 B under the 102,400 B (100 KiB) limit; rerun on final source |
+| G8 Matrix | PASS: 23 pass, 0 fail, 2 unsupported | PASS: 23 pass, 0 fail, 2 unsupported; rerun on final source |
+| G9 Package | PASS: 275 files, 477 KB | PASS: 311 files, 836 KB; rerun on final source |
 
-## Release blockers
+The two unsupported matrix rows are WP Rocket and WPML; their licensed ZIPs are absent from `tests/matrix/vendor/`. They are recorded as unsupported, not as passing tests. The WooCommerce row passes with a recorded notice from WooCommerce's early text-domain load. WordPress.org TLS warnings are recorded as environment warnings and do not fail rows.
 
-- Starter G7 stops before measurement because `tools/perf.mjs` reads missing `themes/starter/budgets.json`. Follow-up: [JOOWT-303](https://jooservices.atlassian.net/browse/JOOWT-303).
-- Jooservices G7 stops because `/tmp/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome` is absent from the shared runtime cache. Follow-up: [JOOWT-304](https://jooservices.atlassian.net/browse/JOOWT-304).
-- Starter G8 fails the `woocommerce` row (WooCommerce 11.2.1) on a PHP notice from `_load_textdomain_just_in_time`. Follow-up: [JOOWT-302](https://jooservices.atlassian.net/browse/JOOWT-302).
-- Jooservices G8 fails all 23 testable plugin rows on the browser CLS budget, with failures across home, category, tag, search, and single routes; route-specific results are in the final matrix report. The failing keys are `yoast`, `rankmath`, `aioseo`, `seopress`, `litespeed-cache`, `w3-total-cache`, `autoptimize`, `polylang`, `translatepress`, `cf7`, `wpforms`, `fluentform`, `jetpack`, `site-kit`, `smush`, `shortpixel`, `ewww`, `tablepress`, `acf`, `akismet`, `wordfence`, `woocommerce`, and `elementor`. Follow-up: [JOOWT-301](https://jooservices.atlassian.net/browse/JOOWT-301).
-- Both matrices report `wp-rocket` and `wpml` as unsupported because their licensed ZIPs are absent from `tests/matrix/vendor/`.
-
-The jooservices CLS failures are consistent with the documented sensitivity of tunnel-based browser measurements, but they remain gate failures on this run.
+The Jooservices font allowance is 100 KiB so the required IBM Plex Sans and Vietnamese subset can be served alongside the Latin display fonts. The measured transfer is 100,140 bytes on each page. Search is a noindex page; its SEO score is below the normal minimum by design, and the crawlability audit confirms `noindex` (`crawlable: 0`).
 
 ## Evidence
 
-- Run manifest: `artifacts/reports/JOOWT-288/run-manifest.md`.
-- Final matrix reports: `artifacts/reports/matrix/starter-joowt288-rebased-2026-10-20.{md,json}` and `artifacts/reports/matrix/jooservices-joowt288-rebased-2026-10-20.{md,json}`.
-- Gate results, tested commit, and package checksums: `artifacts/reports/release/core-0.1.0/JOOWT-288.md`.
-- Built package archives: `artifacts/package/starter-0.1.0.zip`, `artifacts/package/jooservices-0.1.0.zip`, and `artifacts/package/jooservices-resume-0.1.0.zip`.
+- Run manifest, commands, exits, runtime and source commits: `artifacts/reports/JOOWT-288/run-manifest.md`.
+- Detailed G6-G9 results and package checksums: `artifacts/reports/release/core-0.1.0/JOOWT-288.md`.
+- Final matrix reports: `artifacts/reports/matrix/starter-joowt288-final-2026-10-20.{md,json}` and `artifacts/reports/matrix/jooservices-joowt288-final-2026-10-20.{md,json}`.
+- Lighthouse results: `artifacts/reports/perf/starter.json` and `artifacts/reports/perf/jooservices.json`.
+- Packages: `artifacts/package/starter-0.1.0.zip`, `artifacts/package/jooservices-0.1.0.zip`, and `artifacts/package/jooservices-resume-0.1.0.zip`.
+- The compatibility overview was refreshed in `docs/compatibility.md`.
 
-Owner decision: **JOOWT-288 is reporting-only.** It records G6-G9 results; remediation for the G7 and G8 findings remains in follow-up Bugs [JOOWT-301](https://jooservices.atlassian.net/browse/JOOWT-301) through [JOOWT-304](https://jooservices.atlassian.net/browse/JOOWT-304). G6 and G9 pass for both themes; G7 is unavailable for both and G8 has the failures listed above. This report does not declare the release ready. Existing G2-G5 evidence files remain under `artifacts/reports/release/core-0.1.0/`; JOOWT-288 did not rerun those gates.
+`make lint`, `make analyse`, `make test-tooling`, and `make test-unit` pass on the final source. PHPUnit reports 284 tests and 3,258 assertions; Vitest reports 48 files and 361 tests.
+
+This report covers JOOWT-288's G6-G9 scope. It does not rerun unrelated G2-G5 release evidence or claim that every licensed matrix plugin was available.

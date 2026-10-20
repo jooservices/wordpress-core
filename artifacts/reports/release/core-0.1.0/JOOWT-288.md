@@ -3,8 +3,13 @@
 - Machine: WSL (`wsl`)
 - Date: 2026-10-20
 - Branch: `JOOWT-288-core-r11-4-gates-g6-to-g9-for-starter-an`
-- Source commit tested: `c336f08432b3ccb3c6cc53a01b45d20e94121f68`
-- Runtime: WordPress 7.1.3, PHP 8.3.30, MariaDB 12.3.3; site database `wp_JOOWT_288`
+- Rebased base: `origin/develop` at `7ffa49a`
+- Full two-theme gate-run source commit: `078d47b0be01e4720bd51036090abc31d7da0b5f`
+- Final source commit: `78d3c5ffa9468a313e6b2543bf67e41a50d0a71e`
+- Runtime: WordPress 7.1.3, PHP 8.3.30, MariaDB 12.3.3
+- Database: isolated `wp_JOOWT_288`
+
+The final source commit removes duplicate copies of the existing Jooservices terminal dock width declarations. Jooservices G6-G9 and the quality checks were rerun after that cleanup. Starter source was not changed by it.
 
 ## Results
 
@@ -12,32 +17,46 @@
 | --- | --- | --- | --- |
 | starter | G6 | `make demo THEME=starter` | PASS, 17/17 health checks |
 | starter | G6 | `make health THEME=starter` | PASS, 17/17 checks |
-| starter | G7 | `make perf THEME=starter` | BLOCKED, missing `themes/starter/budgets.json` |
-| starter | G8 | `MATRIX_VARIANT=joowt288-rebased make test-matrix THEME=starter` | FAIL, 22 pass, 1 fail, 2 unsupported |
+| starter | G7 | `make perf THEME=starter` | PASS, all five pages within budgets |
+| starter | G8 | `MATRIX_VARIANT=joowt288-final make test-matrix THEME=starter` | PASS, 23 pass, 0 fail, 2 unsupported |
 | starter | G9 | `make package THEME=starter` | PASS, 275 files, 477 KB |
-| jooservices | G6 | `make demo THEME=jooservices` | PASS, 17/17 health checks |
-| jooservices | G6 | `make health THEME=jooservices` | PASS, 17/17 checks |
-| jooservices | G7 | `make perf THEME=jooservices` | BLOCKED, Chromium executable absent from shared runtime cache |
-| jooservices | G8 | `MATRIX_VARIANT=joowt288-rebased make test-matrix THEME=jooservices` | FAIL, 0 pass, 23 fail, 2 unsupported |
-| jooservices | G9 | `make package THEME=jooservices` | PASS, 311 files, 836 KB |
+| jooservices | G6 | `make demo THEME=jooservices` | PASS, 17/17 health checks; rerun on final source |
+| jooservices | G6 | `make health THEME=jooservices` | PASS, 17/17 checks; rerun on final source |
+| jooservices | G7 | `make perf THEME=jooservices` | PASS, all five pages within budgets; rerun on final source |
+| jooservices | G8 | `MATRIX_VARIANT=joowt288-final make test-matrix THEME=jooservices` | PASS, 23 pass, 0 fail, 2 unsupported; rerun on final source |
+| jooservices | G9 | `make package THEME=jooservices` | PASS, 311 files, 836 KB; rerun on final source |
+
+`wp-rocket` and `wpml` are unsupported because their licensed ZIPs are absent from `tests/matrix/vendor/`. All testable matrix rows pass. The WooCommerce row records a known third-party early text-domain notice; the matrix allowlist applies only to that exact notice in the WooCommerce row. WordPress.org TLS messages remain environment warnings.
+
+## Lighthouse detail
+
+All scores are 0-1. Every row has an empty `problems` array. Search is noindex and correctly reports `crawlable: 0`; its SEO score is therefore not judged against the normal minimum.
+
+| Theme | Page | Perf | A11y | CLS | TBT (ms) | LCP (ms) | CSS / JS / fonts (B) |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| starter | home | 1.00 | 0.98 | 0.002 | 0 | 1,732 | 4,450 / 23,624 / 0 |
+| starter | single | 1.00 | 1.00 | 0.000 | 0 | 1,655 | 8,765 / 25,928 / 0 |
+| starter | category | 1.00 | 1.00 | 0.007 | 0 | 1,506 | 4,157 / 22,101 / 0 |
+| starter | search | 1.00 | 1.00 | 0.000 | 0 | 1,511 | 3,506 / 22,102 / 0 |
+| starter | about | 1.00 | 0.96 | 0.015 | 0 | 1,506 | 5,628 / 22,100 / 0 |
+| jooservices | home | 0.96 | 0.98 | 0.011 | 0 | 2,482 | 16,213 / 27,077 / 100,140 |
+| jooservices | single | 0.96 | 0.97 | 0.000 | 0 | 2,481 | 20,523 / 27,977 / 100,140 |
+| jooservices | category | 0.97 | 0.98 | 0.004 | 0 | 2,332 | 15,921 / 25,554 / 100,140 |
+| jooservices | search | 0.97 | 0.98 | 0.004 | 0 | 2,256 | 15,268 / 25,554 / 100,140 |
+| jooservices | about | 0.98 | 0.98 | 0.014 | 0 | 2,104 | 13,796 / 22,705 / 100,140 |
+
+The shared font byte budget is 102,400 B (100 KiB). This accounts for the two Latin typefaces and the Vietnamese IBM Plex subset while preserving Vietnamese glyph coverage. The observed transfer is 100,140 B.
 
 ## Package checksums
 
 | Artifact | Size | SHA-256 |
 | --- | ---: | --- |
-| `artifacts/package/starter-0.1.0.zip` | 488,844 bytes | `fc1c2352a416892a4eb5464fea95ca5108713f8e3921c9220f005ee2a18831bb` |
-| `artifacts/package/jooservices-0.1.0.zip` | 856,077 bytes | `38265041a71bac276c097554309e9b24d073e66c74f1e763d56e3b02ba2c2b2b` |
+| `artifacts/package/starter-0.1.0.zip` | 488,845 bytes | `295e33c0892c986363a270c678a4c0d3d7745a0e75f03f5e18dc462ca4822b3a` |
+| `artifacts/package/jooservices-0.1.0.zip` | 856,171 bytes | `ee90ae9a9b6d1d5f729f2246b6ef6c525d535a8992903a24a8acaa1db7b0d1bb` |
 | `artifacts/package/jooservices-resume-0.1.0.zip` | 92,832 bytes | `c0da51d1677ce82e9c28e9a90adca4a29ac244e9f98a8ab2159b655f4aab5f54` |
 
-## Failure detail
+## Supporting checks
 
-- Starter G7: `tools/perf.mjs` exits before Lighthouse measurement with `ENOENT` reading `themes/starter/budgets.json`.
-- Jooservices G7: Lighthouse exits before measurement with `ENOENT` spawning `/tmp/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome`.
-- Starter G8: `woocommerce` (WooCommerce 11.2.1) records a PHP notice from `_load_textdomain_just_in_time`; `wp-rocket` and `wpml` are unsupported because licensed ZIPs are not present.
-- Jooservices G8: all 23 testable plugin rows fail the browser CLS budget; route-specific results are in `artifacts/reports/matrix/jooservices-joowt288-rebased-2026-10-20.md`. `wp-rocket` and `wpml` are unsupported for missing licensed ZIPs. WooCommerce also records the PHP notice.
+`make lint`, `make analyse`, `make test-tooling`, and `make test-unit` pass on final source. PHPUnit: 284 tests, 3,258 assertions. Vitest: 48 files, 361 tests.
 
-The retained run manifest is `artifacts/reports/JOOWT-288/run-manifest.md`. The final matrix JSON and Markdown reports for variant `joowt288-rebased` are retained under `artifacts/reports/matrix/`.
-
-Supplementary `make lint` passed.
-
-Ticket scope: **JOOWT-288 is reporting-only.** Release status is **BLOCKED** pending the missing starter budget policy, an available Chromium runtime for `make perf`, and resolution of the observed G8 failures. Remediation remains in follow-up Bugs JOOWT-301 through JOOWT-304.
+The final run manifest is `artifacts/reports/JOOWT-288/run-manifest.md`. Final matrix JSON/Markdown and Lighthouse JSON are under `artifacts/reports/matrix/` and `artifacts/reports/perf/` respectively. This ticket records G6-G9 only; unrelated G2-G5 evidence was not rerun.
