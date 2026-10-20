@@ -18,6 +18,10 @@ define require_theme
 	@if [ ! -d "themes/$(THEME)" ] && [ ! -d "tests/fixtures/themes/$(THEME)" ]; then echo "theme not found: themes/$(THEME) or tests/fixtures/themes/$(THEME)"; exit 1; fi
 endef
 
+define require_test_theme
+	@test -d themes/$(THEME) || test -d tests/fixtures/themes/$(THEME) || { echo "test theme not found: themes/$(THEME) or tests/fixtures/themes/$(THEME)"; exit 1; }
+endef
+
 PHP := bash ./docker/scripts/runtime.sh php -d error_reporting=24575
 COMPOSER := bash ./docker/scripts/runtime.sh composer
 NODE := bash ./docker/scripts/runtime.sh node
@@ -102,10 +106,10 @@ coverage: ## Merged unit + integration coverage (pcov in Docker) with the thresh
 	@./tools/coverage-gate.sh artifacts/reports/unit/clover.xml
 	@$(PHP_NODE) node_modules/vitest/vitest.mjs run --coverage $(VITEST_ARGS)
 test-integration: ## wp-phpunit against this worktree's site (WP_VERSION=6.6 for the minimum version)
-	$(call require_theme)
+	$(call require_test_theme)
 	@bash ./docker/scripts/wp-task.sh integration $(THEME) $(ARGS)
 test-e2e: ## Playwright E2E on the Dev VM against the shared test site (THEME=..., ARGS="specs/shared")
-	$(call require_theme)
+	$(call require_test_theme)
 	@bash ./docker/scripts/wp-task.sh e2e $(THEME) $(ARGS)
 test-e2e-demo: demo-package ## Import, diff, idempotence, and rollback on a clean shared WordPress site
 	$(call require_theme)

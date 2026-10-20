@@ -127,11 +127,15 @@ export async function useRtl(page: Page): Promise<void> {
 
 /** Read WP_ADMIN_USER / WP_ADMIN_PASSWORD from the repository .env (never printed). */
 export async function adminCredentials(): Promise<{ user: string; password: string }> {
+  const user = process.env.WP_ADMIN_USER ?? '';
+  const password = process.env.WP_ADMIN_PASSWORD ?? '';
+  if (user && password) return { user, password };
+
   const { readFileSync } = await import('node:fs');
   // The repository .env (three levels above this file), never a parent directory's.
   const text = readFileSync(new URL('../../../.env', import.meta.url), 'utf8');
   const get = (key: string) => (text.match(new RegExp(`^${key}=(.*)$`, 'm')) ?? [])[1]?.trim() ?? '';
-  return { user: get('WP_ADMIN_USER'), password: get('WP_ADMIN_PASSWORD') };
+  return { user: user || get('WP_ADMIN_USER'), password: password || get('WP_ADMIN_PASSWORD') };
 }
 
 /** Log in to wp-admin (fails the test when the login does not succeed). */

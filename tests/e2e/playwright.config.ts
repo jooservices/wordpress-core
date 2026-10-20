@@ -1,18 +1,19 @@
 import { defineConfig, devices } from '@playwright/test';
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const baseURL = process.env.E2E_BASE_URL ?? 'http://127.0.0.1:8082';
 const theme = process.env.E2E_THEME ?? '';
 const reports = '../../artifacts/reports/e2e';
+const fixtureSpecs = theme ? new URL(`../fixtures/themes/${theme}/tests/e2e/`, import.meta.url) : null;
+const fixtureTheme = fixtureSpecs ? existsSync(fileURLToPath(fixtureSpecs)) : false;
 
 export default defineConfig({
-  // Shared specs plus the specs of the theme under test (themes/<slug>/tests/e2e).
+  // Fixture themes run their own consumer smoke suite; packaged themes also run the shared suite.
   testDir: '../..',
-  testMatch: [
-    'tests/e2e/specs/**/*.spec.ts',
-    ...(theme
-      ? [`themes/${theme}/tests/e2e/**/*.spec.ts`, `tests/fixtures/themes/${theme}/tests/e2e/**/*.spec.ts`]
-      : []),
-  ],
+  testMatch: fixtureTheme
+    ? [`tests/fixtures/themes/${theme}/tests/e2e/**/*.spec.ts`]
+    : ['tests/e2e/specs/**/*.spec.ts', ...(theme ? [`themes/${theme}/tests/e2e/**/*.spec.ts`] : [])],
   // Admin specs change shared settings and share one WordPress session store: run one test at a time.
   fullyParallel: false,
   retries: process.env.CI ? 2 : 0,

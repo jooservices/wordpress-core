@@ -50,5 +50,9 @@ for suite in kit-integration core-integration plugin-integration; do
   JOO_TEST_THEME= run_suite "$suite" "$@"
 done
 
-# Only theme integration tests need the selected live theme booted by the test bootstrap.
-JOO_TEST_THEME="${JOO_TEST_THEME:-}" run_suite theme-integration "$@"
+# Fixture themes have their own isolated suite so package themes and a fixture core symlink are not scanned with them.
+if [[ -n "${JOO_TEST_THEME:-}" && -d "$ROOT/tests/fixtures/themes/$JOO_TEST_THEME" ]]; then
+  run_suite theme-fixtures "$@"
+else
+  JOO_TEST_THEME="${JOO_TEST_THEME:-}" run_suite theme-integration "$@"
+fi

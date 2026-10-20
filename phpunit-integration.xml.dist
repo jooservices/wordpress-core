@@ -20,5 +20,6 @@
     <testsuite name="core-integration"><directory>packages/theme-core/tests/Integration</directory></testsuite>
     <testsuite name="plugin-integration"><directory>plugins/jooservices-resume/tests/Integration</directory></testsuite>
     <testsuite name="theme-integration"><directory>themes/jooservices/tests/Integration</directory><directory>themes/starter/tests/Integration</directory><directory>tests/fixtures/themes/portfolio/tests/Integration</directory></testsuite>
+    <testsuite name="theme-fixtures"><directory>tests/fixtures/themes/magazine/tests/Integration</directory></testsuite>
   </testsuites>
 </phpunit>

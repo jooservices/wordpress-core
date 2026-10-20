@@ -3,6 +3,7 @@ vendor
 artifacts
 **/build/**
 themes/*/core
+tests/fixtures/themes/*/core
 package-lock.json
 composer.lock
 *.md
