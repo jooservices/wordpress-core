@@ -6,7 +6,7 @@ Base: origin/develop
 Commit at start: 93518f1aec777f38e51606dbd1470de89eb50217
 Date (UTC): 2026-10-19T23:28:10Z
 
-Initial gate run. Each command is executed through the shared Workspaces runtime; direct Node commands use the project wrapper that delegates to `/home/joos/Workspaces/scripts/docker/runtime`.
+Initial gate run. The direct Node commands used the project wrapper that delegates to `/home/joos/Workspaces/scripts/docker/runtime`; the initial Make commands used host tools.
 
 ## make lint
 
