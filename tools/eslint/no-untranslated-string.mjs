@@ -57,7 +57,8 @@ function literals(node) {
   }
 }
 
-export default {
+/** @satisfies {import('eslint').Rule.RuleModule} */
+const rule = {
   meta: {
     type: 'problem',
     docs: { description: 'Require user-visible JavaScript strings to come from the translated runtime config.' },
@@ -85,7 +86,12 @@ export default {
           check(args[TEXT_FUNCTIONS[callee.name]]);
         } else if (callee.type === 'MemberExpression') {
           const name = memberName(callee);
-          if (name === 'setAttribute' && args[0]?.type === 'Literal' && TEXT_ATTRIBUTES.has(args[0].value))
+          if (
+            name === 'setAttribute' &&
+            args[0]?.type === 'Literal' &&
+            typeof args[0].value === 'string' &&
+            TEXT_ATTRIBUTES.has(args[0].value)
+          )
             check(args[1]);
           else if (Object.hasOwn(TEXT_METHODS, name)) check(args[TEXT_METHODS[name]]);
           else if (TEXT_VARIADIC.has(name)) args.forEach(check);
@@ -94,3 +100,5 @@ export default {
     };
   },
 };
+
+export default rule;
