@@ -46,7 +46,16 @@ Tools that open a browser (`screenshots`, `critical`, `marketplace-preview`, `so
 
 CLS is measured in the Dev VM browser over an SSH tunnel. The tunnel affects timing, but an over-budget result needs source evidence before it is treated as an artifact. On 2026-10-20, a quiet WSL run on WordPress 7.1.3 / PHP 8.3.30 reproduced real shifts with no third-party plugins: the `<joo-lazy>` wrapper caused home CLS 0.03368, category 0.02768 and tag 0.06474. The wrapper had an intrinsic-size hint but did not enforce a block size. The search page also shifted because the theme's terminal dock added its 40px desktop flex slot when its custom element initialized.
 
-The fix reserves each fragment's registered minimum block size and the terminal dock's desktop slot before initialization. The existing 0.02 budget remains. After the fix, the no-third-party runtime matrix passed (1 pass, 0 fail); home/category/tag CLS were 0.00142/0.00117/0.00120. The Forms matrix passed for Contact Form 7 6.2.2, WPForms Lite 2.0.2.2 and Fluent Forms 6.2.16; across those three runs, home/category/tag CLS ranged from 0.00077–0.00142, 0.00117–0.00117 and 0.00071–0.00120 respectively. The measurements include the layout-shift sources in each Playwright JSON attachment.
+The fix reserves each fragment's registered minimum block size and the terminal dock's desktop slot before initialization. The existing 0.02 budget remains. A repeat on the quiet WSL host on 2026-10-20 used WordPress 7.1.3, PHP 8.3.30 and MariaDB 12.3.3; the baseline had only the first-party `jooservices-resume` plugin active. The no-third-party runtime matrix passed (1 pass, 0 fail), and the Forms matrix passed (3 pass, 0 fail):
+
+| Matrix case | Home CLS | Category CLS | Tag CLS | Result |
+| --- | ---: | ---: | ---: | --- |
+| No third-party plugins (Resume only) | 0.00077247 | 0.00116970 | 0.00096871 | PASS |
+| Contact Form 7 6.2.2 | 0.00142353 | 0.00070943 | 0.00119585 | PASS |
+| WPForms Lite 2.0.2.2 | 0.00142353 | 0.00070943 | 0.00070943 | PASS |
+| Fluent Forms 6.2.16 | 0.00142353 | 0.00116970 | 0.00119585 | PASS |
+
+All values are below the unchanged 0.02 budget. Captured source nodes were shared core/theme elements, with no form element reported as a shift source. The Playwright JSON attachments retain the source nodes, rectangles, timestamps and viewport dimensions. Contact Form 7 and Fluent Forms emitted WordPress.org update-check TLS warnings; both matrix cells passed.
 
 ## Staging site (the project checkout)
 
