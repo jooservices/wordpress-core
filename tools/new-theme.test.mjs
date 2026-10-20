@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -57,7 +57,9 @@ describe('new-theme', () => {
   });
 
   describe('the steps the guide relies on, planned from the real starter', () => {
-    const files = plan({ name: 'acme', title: 'Acme Co' });
+    const root = mkdtempSync(join(tmpdir(), 'joo-theme-plan-'));
+    cpSync(join(ROOT, 'themes/starter'), join(root, 'themes/starter'), { recursive: true });
+    const files = plan({ root, name: 'acme', title: 'Acme Co' });
     const byPath = (suffix) => files.find((f) => f.to.endsWith(suffix));
 
     it('leaves no starter name in any file name or text', () => {

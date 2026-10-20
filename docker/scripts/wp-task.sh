@@ -80,6 +80,8 @@ theme_source() {
 }
 
 restore_theme_source=0
+snapshot_lock_dir=""
+snapshot_temp_dir=""
 restore_sources() {
   if ((restore_theme_source)); then
     restore_theme_source=0
@@ -88,6 +90,14 @@ restore_sources() {
   fi
 }
 cleanup_wp_task() {
+  if [[ -n "$snapshot_lock_dir" ]]; then
+    rmdir "$snapshot_lock_dir" 2>/dev/null || true
+    snapshot_lock_dir=""
+  fi
+  if [[ -n "$snapshot_temp_dir" ]]; then
+    rm -rf "$snapshot_temp_dir"
+    snapshot_temp_dir=""
+  fi
   restore_sources
   wp_task_lock_release
 }
@@ -122,7 +132,7 @@ snapshot_import() { # $1 = snapshot dir
   wpx db import "$1/db.sql"
   wpx search-replace "http://seed.localhost" "$SITE_URL" --all-tables --precise --quiet
   rm -rf "$JOO_SITE_DIR/wp-content/uploads"
-  if [[ -d "$1/uploads" ]]; then cp -R "$1/uploads" "$JOO_SITE_DIR/wp-content/uploads"; else mkdir -p "$JOO_SITE_DIR/wp-content/uploads"; fi
+  if [[ -d "$1/uploads" ]]; then cp -a "$1/uploads" "$JOO_SITE_DIR/wp-content/uploads"; else mkdir -p "$JOO_SITE_DIR/wp-content/uploads"; fi
   local admin
   admin="$(wpx user list --role=administrator --field=ID </dev/null | head -1)"
   wpx user update "$admin" --user_pass="$WP_ADMIN_PASSWORD" --skip-email >/dev/null
@@ -135,11 +145,13 @@ snapshot_import() { # $1 = snapshot dir
 }
 snapshot_export() { # $1 = snapshot dir
   local tmp="$1.tmp.$$"
+  snapshot_temp_dir="$tmp"
   mkdir -p "$tmp"
   wpx search-replace "$SITE_URL" "http://seed.localhost" --all-tables --precise --export="$tmp/db.sql" --quiet
-  if [[ -d "$JOO_SITE_DIR/wp-content/uploads" ]]; then cp -R "$JOO_SITE_DIR/wp-content/uploads" "$tmp/uploads"; fi
+  if [[ -d "$JOO_SITE_DIR/wp-content/uploads" ]]; then cp -a "$JOO_SITE_DIR/wp-content/uploads" "$tmp/uploads"; fi
   printf '{"wordpress":"%s","checksum":"%s","created":"%s","theme":"%s"}\n' "$(wpx core version)" "$(wpx option get joo_demo_checksum)" "$(date -u +%FT%TZ)" "$theme" > "$tmp/manifest.json"
   rm -rf "$1"; mv "$tmp" "$1"
+  snapshot_temp_dir=""
   echo "Stored the seed snapshot $(basename "$1") in $snap_root"
 }
 
@@ -155,10 +167,11 @@ seed_demo() {
   if [[ ! -f "$dir/manifest.json" ]]; then
     mkdir -p "$snap_root"
     if mkdir "$dir.lock" 2>/dev/null; then   # the first worktree to need it generates the snapshot, the others wait
-      trap 'rmdir "$dir.lock" 2>/dev/null; restore_sources' EXIT
+      snapshot_lock_dir="$dir.lock"
       if [[ "$action" == seed-live || "$action" == seed-reset ]]; then site_script seed.sh "$theme" --reset; else site_script seed.sh "$theme"; fi
       snapshot_export "$dir"
-      rmdir "$dir.lock"; trap restore_sources EXIT
+      rmdir "$snapshot_lock_dir"
+      snapshot_lock_dir=""
       seeded=1
     else
       echo "Waiting for another worktree to generate the seed snapshot ..."

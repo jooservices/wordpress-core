@@ -2,13 +2,49 @@
 
 Prerequisites: Docker running, `make init-env` and `make deps` done once.
 
-1. **Scaffold** (10 seconds): `make new-theme NAME=acme TITLE="Acme Co"`. It copies `themes/starter`, renames the slug, text domain, namespace and files, links the core (`themes/acme/core`), and registers the text domain in `phpcs.xml.dist` and the folder in `deptrac.yaml`. Then run `npm install` once so `package-lock.json` learns the new `@jooservices/theme-acme` workspace (otherwise `npm ci`, `make deps` and CI fail with "Missing: @jooservices/theme-acme"), and commit the lockfile with the theme.
-2. **Run it** (about 20 seconds after the images are built): `make demo THEME=acme`. It seeds the same deterministic demo content for every theme and finishes with `make health`.
-3. **Look**: open the `WP_SITE_URL` from the worktree `.env` (defaults to `http://127.0.0.1:8082`); admin credentials stay in `.env`.
-4. **Change the look**: edit `themes/acme/theme.json` (palette, fonts, sizes) and the templates and parts in `themes/acme/templates` and `parts`. The block markup of the core blocks (`joo/*`) gives you the structure; create `themes/acme/assets/src/css/` (the scaffold has no `assets` folder) for your CSS and build with `node tools/build-assets.mjs --root themes/acme --src assets/src --out assets/build` (output is git-ignored). The shipped Vietnamese `.mo` still carries the starter header; run `make i18n THEME=acme` to regenerate it.
-5. **Check**: `make lint`, `make analyse`, `make test-integration THEME=acme TEST_THEME=acme`, `E2E_THEME=acme make test-e2e THEME=acme ARGS="specs/shared"`.
-6. **Prove the core stayed untouched**: `tools/check-core-untouched.sh <base> HEAD acme` fails when one commit changes both the theme and `packages/theme-core`.
+1. **Scaffold**: `make new-theme NAME=acme TITLE="Acme Co"`. It copies `themes/starter`, renames the slug, text domain, namespace and filenames, links the core (`themes/acme/core`), and registers the text domain in `phpcs.xml.dist` and the folder in `deptrac.yaml`. Then update the workspace lockfile with `bash docker/scripts/runtime.sh npm install`; commit `package-lock.json` together with the theme. Without the lockfile entry, `npm ci`, `make deps` and CI fail with `Missing: @jooservices/theme-acme`.
+2. **Run it**: `make demo THEME=acme`. This builds the assets, installs WordPress and the theme, seeds deterministic demo content, and finishes with the health checks.
+3. **Look**: open the `WP_SITE_URL` printed by `make demo`. The URL is ticket-scoped; admin credentials stay in `.env`.
+4. **Change the look**: edit `themes/acme/theme.json` (palette, fonts and sizes), templates and parts under `themes/acme/templates` and `themes/acme/parts`. The core blocks (`joo/*`) provide the structure. The scaffold has no `assets` folder, so create `themes/acme/assets/src/css/` for your CSS and build with `bash docker/scripts/runtime.sh node tools/build-assets.mjs --root themes/acme --src assets/src --out assets/build` (output is git-ignored).
 
-The generated `acme` theme passes lint, `tools/check-headers.php`, the shared e2e specs and `make health` without changes.
+   The generated `languages/acme-vi.mo` is copied from the starter catalog and keeps its `starter` metadata. `make i18n` only rebuilds the bundled core, plugin, starter and jooservices catalogs; it does not regenerate a new theme's catalog.
 
-Keep theme PHP under 50 lines (`functions.php` boots the core from `joo-theme.json`); everything else is configuration, templates and CSS.
+5. **Check**: run `make lint`, `make analyse`, and `make test-integration THEME=acme TEST_THEME=acme`. For browser checks, the shared container needs a writable report directory; use a unique `/tmp` path and the common API, HTTP, SEO and smoke specs:
+
+   ```sh
+   E2E_REPORT_DIR="/tmp/acme-e2e-$$" E2E_THEME=acme make test-e2e THEME=acme ARGS="tests/e2e/specs/shared/content-api.spec.ts tests/e2e/specs/shared/http.spec.ts tests/e2e/specs/shared/seo.spec.ts tests/e2e/specs/shared/smoke.spec.ts"
+   ```
+
+   The full `specs/shared` directory also contains release RTL evidence and view-level accessibility checks. On an uncustomized starter scaffold, those checks fail on contrast and tap-target requirements, and the RTL test writes to `artifacts/evidence/JOOWT-279`, which the shared web user cannot create. Run them after the theme styling and evidence output are ready.
+
+6. **Prove the core stayed untouched**: after committing the theme, run `tools/check-core-untouched.sh origin/develop HEAD acme`. It fails when one commit changes both the theme and `packages/theme-core`.
+
+Keep theme PHP under 50 lines (`functions.php` boots the core from `joo-theme.json`); put the rest in configuration, templates, parts and CSS.
+
+## Walk-through record
+
+Literal run on WSL on 2026-10-20. Times are wall-clock seconds from `time -p`; the demo measurement was after the images were already available.
+
+| Step | Result | Time |
+| --- | --- | ---: |
+| Environment | `make init-env` and `make deps` passed. `make deps` passed again after the generated workspace was added to the lockfile. | 0.05 s; 9.60 s; 9.65 s |
+| Scaffold and lockfile | `make new-theme` created 34 files. `npm install` added the new workspace entry; `make deps` then passed. | 0.19 s; 1.94 s |
+| Demo | `make demo THEME=acme` completed and health reported 17/17 checks. The first run found the WSL copy error below. | 36.50 s failed; 16.83 s and 17.35 s passed |
+| Look | The printed worktree URL returned HTTP 200. | 0.07 s |
+| Custom CSS | Built one asset, 70 B (84 B gzip). | 0.19 s |
+| Lint | `make lint` passed for the generated theme and repository. | 12.24 s |
+| Analysis | `make analyse` passed after fixing the analyzer's `$argv` warning. | 12.33 s |
+| Unit tests | `make test-unit`: 283 PHPUnit tests and 342 Vitest tests passed. | 8.90 s |
+| Integration | `make test-integration THEME=acme TEST_THEME=acme` passed, including the generated theme tests. | 42.48 s |
+| Browser checks | The focused API, HTTP, SEO and smoke suite passed 66/66 tests. | 94.67 s |
+| Core proof | The command passed and reported 0 committed theme changes; the scaffold was intentionally uncommitted. Run it after committing a theme to check that commit. | 0.01 s |
+
+Corrections from the walk-through:
+
+- The first demo attempt failed because GNU `cp` on WSL rejects macOS's `-cR` option. The snapshot code now uses portable `cp -a`; its failure cleanup also removes the lock and temporary export directory.
+- The initial integration run failed after 40.05 s because it loaded `acme` while running the portfolio fixture in the same process. The runner now executes the selected generated theme tests and the portfolio fixture in separate processes.
+- The full `specs/shared` browser suite took 161.84 s and failed 23 of 102 checks on the untouched scaffold. The guide now selects the 66 shared API, HTTP, SEO and smoke checks that pass for a new theme.
+- The first browser run stopped after 78.53 s because `www-data` could not create its report folder. The guide now sets `E2E_REPORT_DIR` to a writable `/tmp` path through the project runtime wrapper.
+- The previous instruction to run `make i18n THEME=acme` was removed. That target does not generate a custom theme catalog and failed on untranslated strings in the bundled catalogs (18.26 s).
+- The sample CSS first failed Stylelint in 8.82 s; it was changed to use the theme accent token. The planner test now uses a temporary copy of the real starter so an existing `themes/acme` directory cannot break the suite.
+- The first analysis run failed after 8.24 s because PHPStan found `$argv` might be undefined in `tools/check-core-i18n.php`; the CLI script now defaults it to an empty array.

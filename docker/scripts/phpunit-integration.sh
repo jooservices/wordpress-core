@@ -44,6 +44,18 @@ run_suite() {
     "${coverage[@]}" "$@"
 }
 
+run_directory() {
+  local theme="$1" directory="$2" label="$3"
+  local coverage=()
+  if [ "${COVERAGE:-0}" = "1" ]; then
+    coverage+=(--coverage-php "$ROOT/artifacts/reports/cov/integration-${WP_VER}-${label}.cov")
+  fi
+  JOO_TEST_THEME="$theme" php "${PHP_FLAGS[@]}" "$ROOT/vendor/bin/phpunit" -c "$ROOT/phpunit-integration.xml.dist" \
+    "$directory" \
+    --log-junit "$ROOT/artifacts/reports/integration/junit-${WP_VER}-${label}.xml" \
+    "${coverage[@]}"
+}
+
 # Core fixtures boot their own manifests. Loading the live theme into those
 # processes leaves its hooks in WP_UnitTestCase's baseline and duplicates them.
 for suite in kit-integration core-integration plugin-integration; do
@@ -54,5 +66,15 @@ done
 if [[ -n "${JOO_TEST_THEME:-}" && -d "$ROOT/tests/fixtures/themes/$JOO_TEST_THEME" ]]; then
   run_suite "theme-fixture-$JOO_TEST_THEME" "$@"
 else
+  # Only built-in theme integration tests need the selected live theme booted by the test bootstrap.
   JOO_TEST_THEME="${JOO_TEST_THEME:-}" run_suite theme-integration "$@"
+fi
+
+# A generated theme's tests are outside the static PHPUnit XML suite. Run them in their own process so fixture tests
+# don't inherit registered blocks from the selected live theme.
+if [[ -n "${JOO_TEST_THEME:-}" && ! -d "$ROOT/tests/fixtures/themes/$JOO_TEST_THEME" && "$JOO_TEST_THEME" != starter && "$JOO_TEST_THEME" != jooservices ]]; then
+  theme_tests="$ROOT/themes/$JOO_TEST_THEME/tests/Integration"
+  if [[ -d "$theme_tests" ]]; then
+    run_directory "$JOO_TEST_THEME" "$theme_tests" "theme-$JOO_TEST_THEME"
+  fi
 fi
