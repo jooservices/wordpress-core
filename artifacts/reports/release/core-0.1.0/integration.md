@@ -1,18 +1,17 @@
 # Core 0.1.0 integration test report
 
-- Date: 2026-10-20
+- Date: 2026-10-21
 - Repository: `wordpress-core`
 - Branch: `JOOWT-233-core-r1-3-integration-suite-on-wordpress`
-- Source commit tested: `41e84129f948f939d37edc1d75807b65d77a83fa` (`chore(core): Refresh integration evidence after QA rework (JOOWT-233)`)
-- Validation: ran both endpoints from the source commit above on WSL after the QA session could not execute them; ran `make lint` on the same worktree.
+- Source commit tested: `65b1370e196187aaa71d8ba225f9192bd1ef260e` (`chore(core): Record verified integration rerun after QA feedback (JOOWT-233)`; report-only changes follow)
 - Runtime: WSL shared Workspaces PHP runtime, PHP 8.3.30, PHPUnit 9.6.38
 - Theme: `starter`
-- Locking: the two version runs were sequential and used the repository's shared per-host WordPress test lock.
-- Result: **Pass on both endpoints**
+- Locking: the 6.6 and latest runs were sequential; each `make test-integration` target acquired the repository's shared per-host WordPress test lock.
+- Result: **Pass on both requested endpoints**
 
 ## Commands and results
 
-`WP_VERSION=6.6` resolved to WordPress 6.6.10. `WP_VERSION=latest` resolved to WordPress 7.1.3 on the run date. Both commands ran the same five PHPUnit suites.
+`WP_VERSION=6.6` resolved to WordPress 6.6.10. `WP_VERSION=latest` resolved to WordPress 7.1.3 on the run date. Both commands ran the five integration suites below.
 
 | Command | WordPress | PHPUnit suite | Tests | Assertions | Skipped | Failures | Result |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
@@ -29,13 +28,13 @@
 | same | 7.1.3 | `portfolio-fixture-integration` | 4 | 45 | 0 | 0 | Pass |
 | **Latest total** | **7.1.3** | **All suites** | **418** | **2,512** | **15** | **0** | **Pass** |
 
-The `theme-integration` suite includes 7 starter tests; all 7 passed on each WordPress version. Its 15 skipped tests are the jooservices-only cases listed below. Across all suites, 403 tests passed and 15 were skipped per WordPress version.
+The `theme-integration` suite includes 7 starter tests; all 7 passed on both versions. Its 15 skipped tests are jooservices-only cases listed below. Across all five suites, 403 tests passed and 15 were skipped for each WordPress version.
 
 ## Skipped tests and reasons
 
-The same 15 tests were skipped on WordPress 6.6.10 and 7.1.3. No skipped test lacks a reason.
+The same 15 tests were skipped on WordPress 6.6.10 and 7.1.3. The source gives an explicit reason for every skipped case.
 
-`JooservicesThemeTest` (14 tests): each was skipped by `set_up()` because the selected theme is `starter`. The source reason is: “Run with JOO_TEST_THEME=jooservices (make test-integration THEME=jooservices TEST_THEME=jooservices).”
+`JooservicesThemeTest` (14 tests): each case was skipped in `set_up()` because the selected theme is `starter`. The source reason is: “Run with JOO_TEST_THEME=jooservices (make test-integration THEME=jooservices TEST_THEME=jooservices).”
 
 - `JooservicesThemeTest::test_the_manifest_is_valid_and_every_module_booted`
 - `JooservicesThemeTest::test_theme_php_stays_within_the_line_budget`
@@ -54,11 +53,10 @@ The same 15 tests were skipped on WordPress 6.6.10 and 7.1.3. No skipped test la
 
 `ReleaseUpgradeTest::test_update_from_previous_release_keeps_theme_settings_and_company_data` was skipped because its test setup says: “Run with JOO_TEST_THEME=jooservices to verify the release upgrade path.”
 
-The WordPress test library also reports that its `ajax`, `ms-files`, and `external-http` groups are not run unless explicitly selected with `--group`; these are not repository suite test cases and did not appear as skipped cases in the JUnit reports.
+The WordPress test library reports that its `ajax`, `ms-files`, and `external-http` groups are not run unless explicitly selected with `--group`; these are not skipped cases in the five repository suites above.
 
 ## Findings
 
-- The portfolio fixture previously shared a PHPUnit process with the selected live theme, so WordPress's global block registry and REST hooks leaked between theme manifests. Its tests now run as a separate suite/process, and fixture setup clears and registers its own core blocks.
-- The site bootstrap resolves the requested stable version, then compares it with the installed core and downloads the requested version when they differ. This run confirmed the same site switched from 6.6.10 to 7.1.3 for the latest-version command.
-- The 6.6.10 site setup emitted a non-fatal `wp_update_themes()` warning because it could not establish a secure connection to WordPress.org while checking themes. WordPress 6.6.10 was downloaded and verified, and all integration suites passed.
-- `make lint` passed on this rebased worktree after the report refresh.
+- The portfolio fixture runs in its own PHPUnit process so its manifest and block registry are isolated from the selected live theme.
+- `site-bootstrap.sh` resolves a stable version for `6.6` or `latest`, then installs it when it differs from the current site version. The two runs confirmed 6.6.10 and 7.1.3 respectively.
+- `make lint` was run on the same rebased worktree after refreshing this report.
