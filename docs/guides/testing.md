@@ -4,7 +4,7 @@ Install dependencies in the shared developer runtimes with `make deps`. `make li
 
 | Level | Command | Where it runs | Notes |
 |---|---|---|---|
-| PHP lint and analysis | `make lint`, `make analyse` | `docker exec` in the shared `workspaces-cli-php-8.5` container (PHP 8.5 CLI), the worktree as working directory | Includes Node 24 CLI for PHP tooling subprocesses; PHPStan targets PHP 8.3 (`phpVersion: 80300`); PHPCS/PHPCompatibility targets `8.3-`. |
+| PHP lint and analysis | `make lint`, `make analyse` | `docker exec` in the shared `workspaces-cli-php-8.5` container (PHP 8.5 CLI), the worktree as working directory | Includes Node 24 CLI for PHP tooling subprocesses; PHPStan targets PHP 8.1 (`phpVersion: 80100`) for core and PHP 8.3 for other code; PHPCS/PHPCompatibility targets `8.3-`. |
 | JavaScript checks | `make lint`, `make analyse` | the same shared container (Node 24 and npm included) | ESLint, Stylelint, Prettier, and TypeScript use the lockfile dependencies. |
 | PHP unit | `make test-unit` | The same shared container | PHPUnit 9.6 + Brain Monkey; PCOV is enabled only for coverage runs. |
 | JavaScript unit | `make test-unit` | The same shared container | Vitest and jsdom. Helpers live in `packages/test-kit/js/dom.js`. |
@@ -13,7 +13,7 @@ Install dependencies in the shared developer runtimes with `make deps`. `make li
 | Compatibility matrix | `make test-matrix THEME=jooservices` | Host orchestrator, shared WordPress (`wp-web`) and the Dev VM | Tests Tier 1 and basic Tier 3 plugins. Use `ARGS="--runtime-only"` for a runtime smoke, `ARGS="--child-theme"` to repeat plugin checks with a temporary child theme, or `ARGS="--only yoast,cf7"` to select plugins. |
 | Tooling self-tests | `make test-tooling` | Host | Proves configured quality tools fail on a violation. |
 
-The shared PHP container runs PHP 8.5 for current tooling and coverage support. PHPStan and PHPCS enforce PHP 8.3 compatibility, so syntax or APIs introduced after 8.3 must fail the gates. PHP 8.5 is not the source compatibility target. WordPress tasks build the active theme and core assets before the site is created, so integration and browser runs do not depend on generated files from a previous checkout. Integration runs each test suite in its own PHPUnit process: core and plugin fixtures do not inherit the selected theme's boot hooks, while the theme suite runs with the selected theme.
+The shared PHP container runs PHP 8.5 for current tooling and coverage support. PHPStan enforces PHP 8.1 compatibility for core and PHP 8.3 compatibility for the remaining analyzed code; PHPCS/PHPCompatibility targets `8.3-`. PHP 8.5 is not the source compatibility target. WordPress tasks build the active theme and core assets before the site is created, so integration and browser runs do not depend on generated files from a previous checkout. Integration runs each test suite in its own PHPUnit process: core and plugin fixtures do not inherit the selected theme's boot hooks, while the theme suite runs with the selected theme.
 
 `WP_VERSION` selects the WordPress core of the worktree's site (6.6, 6.7, 6.8, latest, a full version) and `WP_PHP_VERSION` the PHP CLI container for PHP tests (8.1 to 8.5; the web server runs PHP 8.3). For example, `WP_VERSION=6.6 WP_PHP_VERSION=8.1 make test-matrix THEME=jooservices ARGS="--runtime-only"` records a runtime-only check. `MATRIX_VARIANT` names the report.
 

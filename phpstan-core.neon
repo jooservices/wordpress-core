@@ -1,6 +1,6 @@
 # Core: strict, no baseline allowed (see docs/guides/static-analysis.md).
 parameters:
-  phpVersion: 80300
+  phpVersion: 80100
   level: 8
   paths:
     - packages/theme-core/src
