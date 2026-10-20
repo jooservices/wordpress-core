@@ -1,5 +1,6 @@
 // Terminal panel UI: output log, prompt, keyboard handling and result effects. Nothing here talks to the network.
 import { t } from 'joo-runtime';
+import { createAnnouncer, formatAnnouncement } from './announcer.js';
 import { plainLine, renderBlocks } from './render.js';
 import { link, text } from './shell.js';
 
@@ -30,7 +31,7 @@ export function safeUrl(url) {
  * Mounts the terminal into a panel element.
  * @param {HTMLElement} panel Empty panel container.
  * @param {{shell: object, onClose: () => void, navigate?: (url: string) => void, shortcuts?: string[]}} options Options.
- * @returns {{run: (cmd: string) => void, focus: () => void}} Controller.
+ * @returns {{run: (cmd: string) => void, focus: () => void, destroy: () => void}} Controller.
  */
 export function mountTerminal(panel, { shell, onClose, navigate = (url) => window.location.assign(url), shortcuts }) {
   const title = el('b', 'joo-term__title');
@@ -50,8 +51,15 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
 
   const log = el('div', 'joo-term__log');
   log.setAttribute('role', 'log');
-  log.setAttribute('aria-live', 'polite');
+  log.setAttribute('aria-label', t('terminal.output', 'Terminal output'));
+  log.setAttribute('aria-live', 'off');
   log.tabIndex = 0;
+
+  const status = el('p', 'joo-term__status');
+  status.setAttribute('role', 'status');
+  status.setAttribute('aria-live', 'polite');
+  status.setAttribute('aria-atomic', 'true');
+  const announcer = createAnnouncer(status);
 
   const form = el('form', 'joo-term__form');
   const label = el('label', 'joo-term__prompt');
@@ -63,7 +71,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
   input.spellcheck = false;
   input.setAttribute('aria-label', t('terminal.input', 'Terminal command'));
   form.append(label, input);
-  panel.replaceChildren(bar, chips, log, form);
+  panel.replaceChildren(bar, chips, log, form, status);
 
   const syncPrompt = () => {
     label.textContent = shell.prompt();
@@ -75,6 +83,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
   const echo = (command) => log.append(plainLine([text(shell.prompt() + ' ', 'ps'), text(command)]));
 
   const apply = (result) => {
+    const messages = [];
     for (const effect of result.effects ?? []) {
       if (effect.type === 'clear') log.replaceChildren();
       else if (effect.type === 'close') onClose();
@@ -84,26 +93,39 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
         const alt = document.querySelector(`link[rel="alternate"][hreflang="${CSS.escape(effect.value)}"]`);
         const url = alt ? safeUrl(alt.getAttribute('href') ?? '') : null;
         if (url) navigate(url);
-        else
-          log.append(
-            plainLine([
-              text(t('terminal.lang_unavailable', 'This page has no translation. Use the language switcher.'), 'dim'),
-            ])
-          );
+        else {
+          const message = t('terminal.lang_unavailable', 'This page has no translation. Use the language switcher.');
+          log.append(plainLine([text(message, 'dim')]));
+          messages.push(message);
+        }
       }
     }
     if (result.navigate) {
       const url = safeUrl(result.navigate.url);
       if (url) navigate(url);
-      else log.append(plainLine([text(t('terminal.blocked', 'Blocked: not a link on this site.'), 'err')]));
+      else {
+        const message = t('terminal.blocked', 'Blocked: not a link on this site.');
+        log.append(plainLine([text(message, 'err')]));
+        messages.push(message);
+      }
     }
+    return messages;
   };
 
   const run = (command) => {
     echo(command);
     const result = shell.run(command);
-    log.append(renderBlocks(result.blocks));
-    apply(result);
+    const output = renderBlocks(result.blocks);
+    const outputText = output.textContent ?? '';
+    log.append(output);
+    const messages = apply(result);
+    const hasOutput = command.trim() !== '' || outputText.trim() !== '' || messages.length > 0;
+    if (hasOutput && !(result.effects ?? []).some((effect) => effect.type === 'close')) {
+      const cleared = (result.effects ?? []).some((effect) => effect.type === 'clear');
+      announcer.announce(
+        formatAnnouncement(command, cleared ? 'Terminal output cleared.' : [outputText, ...messages].join(' '))
+      );
+    }
     syncPrompt();
     scroll();
   };
@@ -123,6 +145,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
         const cols = el('div', 'joo-term__cols');
         for (const c of done.candidates) cols.append(el('span', 'joo-term__dim', c));
         log.append(cols);
+        announcer.announce(formatAnnouncement('completion', done.candidates.join(', ')));
         scroll();
       }
       input.value = done.line;
@@ -135,11 +158,15 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
     } else if (event.ctrlKey && event.key === 'l') {
       event.preventDefault();
       log.replaceChildren();
+      announcer.announce(formatAnnouncement('clear', 'Terminal output cleared.'));
     } else if (event.ctrlKey && event.key === 'c') {
       event.preventDefault();
       echo(input.value + '^C');
       input.value = '';
+      announcer.announce(formatAnnouncement('cancel', 'Command canceled.'));
     } else if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
       onClose();
     }
   });
@@ -170,5 +197,5 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
       link('cat README.md', 'cat README.md'),
     ])
   );
-  return { run, focus: () => input.focus() };
+  return { run, focus: () => input.focus(), destroy: () => announcer.destroy() };
 }

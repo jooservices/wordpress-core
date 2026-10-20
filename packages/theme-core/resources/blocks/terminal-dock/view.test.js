@@ -104,6 +104,30 @@ describe('terminal dock', () => {
     expect(document.activeElement).toBe(tab());
   });
 
+  it('returns focus to the element that opened it by shortcut', async () => {
+    render(`<button id="opener">Open</button>${markup()}`);
+    const opener = document.querySelector('#opener');
+    opener.focus();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: '`', bubbles: true, cancelable: true }));
+    await flush();
+    const input = document.querySelector('.joo-term__input');
+    expect(document.activeElement).toBe(input);
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    expect(document.querySelector('joo-terminal').dataset.state).toBe('closed');
+    expect(document.activeElement).toBe(opener);
+  });
+
+  it('does not move focus into the terminal after it closes while loading', async () => {
+    render(markup());
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: '`', bubbles: true, cancelable: true }));
+    const loading = panel().querySelector('[role="status"]');
+    expect(document.activeElement).toBe(loading);
+    loading.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    await flush();
+    expect(panel().hidden).toBe(true);
+    expect(document.activeElement).toBe(tab());
+  });
+
   it('keeps working when the file system cannot be loaded', async () => {
     globalThis.fetch = vi.fn().mockResolvedValue({ ok: false, status: 500 });
     render(markup());

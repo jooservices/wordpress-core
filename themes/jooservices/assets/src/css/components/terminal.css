@@ -105,14 +105,15 @@
   white-space: nowrap;
 }
 
-.joo-term__input,
-.joo-term__input:focus-visible {
-  outline: 0;
-}
-
 .joo-term__input {
   color: rgb(230 237 245);
   caret-color: rgb(205 217 232);
+}
+
+.joo-term__input:focus-visible {
+  outline: 2px solid var(--joo-term-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .joo-term__cmd,

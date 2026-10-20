@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import data from './__fixtures__/demo-fs.json';
 import { createShell, mountTerminal, safeUrl } from '../terminal.js';
 
@@ -24,6 +24,10 @@ const start = (fs = data, shortcuts) => {
 };
 
 beforeEach(() => start());
+afterEach(() => {
+  api?.destroy?.();
+  vi.useRealTimers();
+});
 
 describe('terminal UI', () => {
   it('uses generic shortcuts by default and theme-provided shortcuts when present', () => {
@@ -45,7 +49,9 @@ describe('terminal UI', () => {
     expect(document.querySelector('.joo-term__prompt').textContent).toBe('viet@jooservices:~$');
     const log = document.querySelector('.joo-term__log');
     expect(log.getAttribute('role')).toBe('log');
-    expect(log.getAttribute('aria-live')).toBe('polite');
+    expect(log.getAttribute('aria-live')).toBe('off');
+    expect(document.querySelector('.joo-term__status').getAttribute('aria-live')).toBe('polite');
+    expect(document.querySelector('.joo-term__status').getAttribute('aria-atomic')).toBe('true');
     expect(document.querySelector('label[for="joo-term-input"]')).not.toBeNull();
     expect(document.querySelector('.joo-term__title').textContent).toBe('viet@jooservices:~');
   });
@@ -108,6 +114,18 @@ describe('terminal UI', () => {
     expect(logText()).toBe('');
     type('exit');
     expect(closed).toBe(1);
+  });
+
+  it('announces concise output through a polite status without making the full log live', () => {
+    vi.useFakeTimers();
+    type('help');
+    const status = document.querySelector('.joo-term__status');
+    expect(status.textContent).toBe('');
+    vi.advanceTimersByTime(200);
+    expect(status.textContent).toMatch(/^Command help\./);
+    expect(status.textContent.length).toBeLessThanOrEqual(240);
+    expect(document.querySelector('.joo-term__log').getAttribute('aria-live')).toBe('off');
+    vi.useRealTimers();
   });
 
   it('renders hostile content as text only', () => {
