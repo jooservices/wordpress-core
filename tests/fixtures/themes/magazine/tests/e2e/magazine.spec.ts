@@ -41,8 +41,9 @@ function pathFrom(link: string): string {
   return `${url.pathname}${url.search}`;
 }
 
-test.beforeAll(async ({ browser }) => {
-  context = await browser.newContext();
+test.beforeAll(async ({ browser, baseURL }) => {
+  // A standalone context does not inherit the project baseURL, so pass it for relative navigation.
+  context = await browser.newContext({ baseURL });
   adminPage = await context.newPage();
   await loginAsAdmin(adminPage);
   await expect(adminPage.locator('#wpadminbar')).toBeVisible();
