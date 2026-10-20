@@ -1,0 +1,12 @@
+<testsuites id="" name="" tests="4" failures="0" skipped="0" errors="0" time="13.355111999999998">
+<testsuite name="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" timestamp="2026-10-20T19:40:02.040Z" hostname="webkit" tests="4" failures="0" skipped="0" time="12.656" errors="0">
+<testcase name="core blocks in RTL › the fixture covers every core block" classname="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" time="0.005">
+</testcase>
+<testcase name="core blocks in RTL › every block mirrors, does not overlap, and leaves screenshots as evidence" classname="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" time="9.546">
+</testcase>
+<testcase name="core blocks in RTL › the terminal dock opens at the left edge in RTL" classname="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" time="1.72">
+</testcase>
+<testcase name="core blocks in RTL › keeps the LTR icons in LTR" classname="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" time="1.385">
+</testcase>
+</testsuite>
+</testsuites>
