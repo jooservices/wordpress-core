@@ -24,6 +24,12 @@ final class PortfolioFixtureTest extends IntegrationTestCase {
 
 	public function set_up(): void {
 		parent::set_up();
+		$block_registry = \WP_Block_Type_Registry::get_instance();
+		foreach ( array_keys( $block_registry->get_all_registered() ) as $name ) {
+			if ( str_starts_with( $name, 'joo/' ) ) {
+				$block_registry->unregister( $name );
+			}
+		}
 		Kernel::reset();
 		Notices::reset();
 		$this->set_permalink_structure( '/%postname%/' );
@@ -42,6 +48,11 @@ final class PortfolioFixtureTest extends IntegrationTestCase {
 		);
 		Kernel::boot( self::MANIFEST );
 		do_action( 'after_setup_theme' );
+		$container = Kernel::container();
+		if ( null === $container ) {
+			throw new \RuntimeException( 'The portfolio fixture core should boot.' );
+		}
+		$container->get( BlockRegistrar::class )->register();
 	}
 
 	public function tear_down(): void {

@@ -22,5 +22,6 @@
     <testsuite name="theme-integration"><directory>themes/jooservices/tests/Integration</directory><directory>themes/starter/tests/Integration</directory></testsuite>
     <testsuite name="theme-fixture-magazine"><directory>tests/fixtures/themes/magazine/tests/Integration</directory></testsuite>
     <testsuite name="theme-fixture-portfolio"><directory>tests/fixtures/themes/portfolio/tests/Integration</directory></testsuite>
+    <testsuite name="portfolio-fixture-integration"><directory>tests/fixtures/themes/portfolio/tests/Integration</directory></testsuite>
   </testsuites>
 </phpunit>
