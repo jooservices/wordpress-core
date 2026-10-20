@@ -79,7 +79,7 @@ fix: ## Auto-fix PHP (phpcbf), CSS (stylelint) and formatting (prettier)
 	-@$(PHP) vendor/bin/phpcbf
 	-@$(NPX) --no-install stylelint "**/*.css" --fix --allow-empty-input
 	@$(NPX) --no-install prettier --ignore-path .prettierignore --write . >/dev/null
-analyse: ## PHPStan (core level 8, others level 6), tsc checkJs, deptrac
+analyse: ## PHPStan (core level 8 on PHP 8.1, others level 6), tsc checkJs, deptrac
 	@$(PHP) vendor/bin/phpstan analyse -c phpstan-core.neon --no-progress --memory-limit=1G
 	@$(PHP) vendor/bin/phpstan analyse -c phpstan-themes.neon --no-progress --memory-limit=1G
 	@$(NPX) --no-install tsc -p tsconfig.tools.json
