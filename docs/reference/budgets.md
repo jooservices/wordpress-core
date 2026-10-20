@@ -1,5 +1,11 @@
 # Performance budgets
 
+## Lighthouse theme budgets
+
+`themes/starter/budgets.json` and `themes/jooservices/budgets.json` define the same Lighthouse limits for home, single, category, search, and about pages. Both themes must reach performance 90, accessibility 95, best practices 90, and SEO 95; CLS is capped at 0.02, TBT at 200 ms, LCP at 2,700 ms, CSS at 30 KiB, JavaScript at 60 KiB, fonts at 100 KiB, and HTML at 60 KiB. The font allowance covers the two Latin typefaces plus the Vietnamese IBM Plex subset, measured at 100,140 bytes on the jooservices pages. Search pages are marked noindex and must fail the crawlability audit.
+
+Run `make perf THEME=starter` or `make perf THEME=jooservices`. The shared Node runtime runs Lighthouse and the browser runs on the Workspaces Dev VM.
+
 ## JavaScript bundles
 
 Measured from the current minified production assets built with:

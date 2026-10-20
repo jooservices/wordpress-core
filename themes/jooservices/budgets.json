@@ -1,5 +1,5 @@
 {
-  "$comment": "Performance budgets checked by `make perf THEME=jooservices` (Lighthouse, mobile emulation, local Docker). LCP is measured with Lighthouse's simulated mobile throttling against a local server. Fonts: Plex Sans (45 KB) and JetBrains Mono (40 KB) are both used above the fold. Pages marked noindex must FAIL the crawlable audit (proof that noindex is sent).",
+  "$comment": "Performance budgets checked by `make perf THEME=jooservices` (Lighthouse, mobile emulation, shared WordPress runtime). LCP is measured with Lighthouse's simulated mobile throttling. The 100 KiB font limit covers the two Latin typefaces and the required Vietnamese IBM Plex subset. Pages marked noindex must FAIL the crawlable audit (proof that noindex is sent).",
   "pages": [
     {
       "name": "home",
@@ -37,7 +37,7 @@
   "bytes": {
     "css": 30720,
     "js": 61440,
-    "fonts": 92160,
+    "fonts": 102400,
     "html": 61440
   }
 }

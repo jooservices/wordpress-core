@@ -104,6 +104,20 @@ describe('design tokens', () => {
   });
 });
 
+describe('layout stability', () => {
+  it('renders fragments with the page by default to keep visible sidebar content stable', () => {
+    expect(json('joo-theme.json').lazy.fragments).toBe(false);
+  });
+
+  it('reserves the desktop terminal dock column in each critical template', () => {
+    const dockRule =
+      '.joo-term{pointer-events:auto;flex-direction:row-reverse;flex:none;align-self:flex-start;width:40px;min-width:40px;';
+    for (const context of ['archive', 'home', 'page', 'search', 'single']) {
+      expect(read(`assets/critical/${context}.css`), context).toContain(dockRule);
+    }
+  });
+});
+
 describe('fonts', () => {
   const fonts = json('joo-theme.json').perf.fonts;
   const files = fonts.flatMap((f) => f.files);

@@ -137,6 +137,8 @@
     min-width: 40px;
     flex-direction: row-reverse;
     align-self: flex-start;
+    width: 40px;
+    min-width: 40px;
     height: min(100vh, 780px);
     margin-top: 8px;
     pointer-events: auto;

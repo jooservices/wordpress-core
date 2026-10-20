@@ -82,7 +82,7 @@
     "enabled": true,
     "images": true,
     "iframes": true,
-    "fragments": true,
+    "fragments": false,
     "sections": true,
     "comments": true,
     "eagerCount": 1

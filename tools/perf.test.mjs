@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { checkBudgets } from './perf.mjs';
+import { readFileSync } from 'node:fs';
+import { checkBudgets, remoteChromeConnection } from './perf.mjs';
 
 const budgets = {
   scores: { performance: 0.9, seo: 0.95 },
@@ -31,5 +32,42 @@ describe('perf budgets', () => {
     const noindex = { ...ok, scores: { performance: 0.95, seo: 0.5 }, crawlable: 0 };
     expect(checkBudgets(budgets, noindex, { noindex: true })).toEqual([]);
     expect(checkBudgets(budgets, { ...noindex, crawlable: 1 }, { noindex: true })).toHaveLength(1);
+  });
+});
+
+describe('remote Lighthouse browser', () => {
+  it('uses the Dev VM debugging endpoint when configured', () => {
+    expect(
+      remoteChromeConnection({ LIGHTHOUSE_CDP_HOST: 'host.docker.internal', LIGHTHOUSE_CDP_PORT: '9321' })
+    ).toEqual({
+      host: 'host.docker.internal',
+      port: 9321,
+    });
+  });
+
+  it('keeps local launch as the default', () => {
+    expect(remoteChromeConnection({})).toBeNull();
+  });
+
+  it('rejects an invalid debugging port or missing hostname', () => {
+    expect(() => remoteChromeConnection({ LIGHTHOUSE_CDP_HOST: 'localhost', LIGHTHOUSE_CDP_PORT: 'nope' })).toThrow(
+      'Invalid LIGHTHOUSE_CDP_PORT'
+    );
+    expect(() => remoteChromeConnection({ LIGHTHOUSE_CDP_PORT: '9321' })).toThrow('LIGHTHOUSE_CDP_HOST is required');
+  });
+});
+
+describe('starter performance budgets', () => {
+  it('defines representative pages and keeps the shared Lighthouse thresholds', () => {
+    const starter = JSON.parse(readFileSync(new URL('../themes/starter/budgets.json', import.meta.url), 'utf8'));
+    const jooservices = JSON.parse(
+      readFileSync(new URL('../themes/jooservices/budgets.json', import.meta.url), 'utf8')
+    );
+
+    expect(starter.pages.map(({ name }) => name)).toEqual(['home', 'single', 'category', 'search', 'about']);
+    expect(starter.pages.find(({ name }) => name === 'search').noindex).toBe(true);
+    expect(starter.scores).toEqual(jooservices.scores);
+    expect(starter.metrics).toEqual(jooservices.metrics);
+    expect(starter.bytes).toEqual(jooservices.bytes);
   });
 });
