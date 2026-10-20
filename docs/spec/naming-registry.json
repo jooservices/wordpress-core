@@ -7,7 +7,6 @@
     "joo_demo_checksum",
     "joo_resume_version",
     "joo_resume_flush_rewrite",
-    "joo_settings_schema_version",
     "joo_resume_custom_fields",
     "joo_resume_settings"
   ],
@@ -53,7 +52,7 @@
     "_joo_company_public_fields"
   ],
   "termMeta": ["joo_short_description", "joo_image_id", "joo_intro", "joo_icon"],
-  "userMeta": ["joo_title", "joo_short_bio", "joo_avatar_id", "joo_socials", "joo_dismissed_notices"],
+  "userMeta": ["joo_title", "joo_short_bio", "joo_avatar_id", "joo_socials"],
   "postTypes": ["joo_company"],
   "restRoutes": [
     "/companies",
@@ -85,11 +84,6 @@
     "joo/terminal-dock",
     "joo/reading-progress",
     "joo/not-found",
-    "joo/term-chips",
-    "joo/archive-count",
-    "joo/term-intro",
-    "joo/term-image",
-    "joo/author-stats",
     "joo/resume"
   ],
   "customElements": [
@@ -120,12 +114,12 @@
     "joo/seo/og",
     "joo/seo/graph/pieces",
     "joo/seo/schema/{piece}",
+    "joo/seo/schema/article_type",
     "joo/seo/yield",
     "joo/content/featured_exclusion_limit",
     "joo/seo/block_author_enumeration",
     "joo/seo/x_default",
     "joo/seo/profile_page",
-    "joo/lazy/policy",
     "joo/lazy/should_lazy",
     "joo/lazy/embed_providers",
     "joo/assets/register",
@@ -143,7 +137,6 @@
     "joo/profile/url",
     "joo/i18n/locales",
     "joo/terminal/commands",
-    "joo/terminal/fs",
     "joo/compat/report",
     "joo/perf/image_formats",
     "joo/lazy/provider",
