@@ -7,6 +7,7 @@ import {
   renderMarkdown,
   resultCounts,
   runHealthViaWeb,
+  runMatrix,
   runtimeLabel,
   skipReason,
 } from './matrix.mjs';
@@ -48,6 +49,45 @@ describe('matrix helpers', () => {
         { result: 'BLOCKED' },
       ])
     ).toEqual({ pass: 1, fail: 1, skipped: 1, unsupported: 1, blocked: 1 });
+  });
+  it('uses --group to run only plugins in the requested group', async () => {
+    const plugins = [
+      { key: 'cf7', name: 'Contact Form 7', group: 'Forms', tier: 1, slug: 'contact-form-7', source: 'wporg' },
+      { key: 'wpforms', name: 'WPForms Lite', group: 'Forms', tier: 1, slug: 'wpforms-lite', source: 'wporg' },
+      { key: 'fluentform', name: 'Fluent Forms', group: 'Forms', tier: 1, slug: 'fluentform', source: 'wporg' },
+      { key: 'yoast', name: 'Yoast SEO', group: 'SEO', tier: 1, slug: 'wordpress-seo', source: 'wporg' },
+    ];
+    const success = { status: 0, stdout: '', stderr: '' };
+    const reports = /** @type {{ results: { key: string }[] }[]} */ ([]);
+    const { report: result } = await runMatrix({
+      args: ['--group', 'forms', '--no-browser'],
+      env: {},
+      io: {
+        wp: (...args) => {
+          if (args[0] === 'theme' && args[1] === 'list') return { ...success, stdout: 'jooservices\n' };
+          if (args[0] === 'plugin' && args[1] === 'get') return { ...success, stdout: '1.0.0\n' };
+          return success;
+        },
+        sh: (command) => (command.startsWith('stat -c') ? { ...success, stdout: '0\n' } : success),
+        runHealth: async () => [],
+        browserSmoke: () => ({ failed: false, notes: [] }),
+        readRuntime: () => ({ wordpress: '7.1.3', php: '8.3.30', database: 'MariaDB' }),
+        readJson: (path) => (path === 'tests/matrix/plugins.json' ? { plugins } : {}),
+        readValues: () => ({ 'first-post': '/hello/' }),
+        hasZip: () => false,
+        mkdir: () => {},
+        write: (path, content) => {
+          if (path.endsWith('.json')) reports.push(JSON.parse(content));
+        },
+        now: () => new Date('2026-10-20T00:00:00.000Z'),
+        log: () => {},
+      },
+    });
+
+    expect(result.results.map((plugin) => plugin.key)).toEqual(['cf7', 'wpforms', 'fluentform']);
+    const report = reports[0];
+    if (!report) throw new Error('matrix did not write a report');
+    expect(report.results.map((plugin) => plugin.key)).toEqual(['cf7', 'wpforms', 'fluentform']);
   });
   it('formats available and missing runtime values', () => {
     expect(runtimeLabel({ wordpress: '7.1.3', php: '8.3.35', database: '12.3.3-MariaDB' })).toBe(

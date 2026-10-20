@@ -12,6 +12,26 @@ export function skipReason(entry, { hasZip }) {
   return null;
 }
 
+function normalizeGroup(group) {
+  return group
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, '-');
+}
+
+export function selectPlugins(plugins, { only = [], group = '' } = {}) {
+  const selectedGroup = normalizeGroup(group);
+  const availableGroups = [...new Set(plugins.map((plugin) => plugin.group))];
+  const normalizedGroups = new Set(availableGroups.map(normalizeGroup));
+  if (selectedGroup && !normalizedGroups.has(selectedGroup))
+    throw new Error(`unknown plugin group "${group}". Available groups: ${availableGroups.join(', ')}`);
+
+  return plugins.filter((plugin) => {
+    const selectedByKey = only.length ? only.includes(plugin.key) : plugin.tier === 1 || plugin.tier === 3;
+    return selectedByKey && (!selectedGroup || normalizeGroup(plugin.group) === selectedGroup);
+  });
+}
+
 /** Counts PHP problems in a log excerpt. */
 export function phpProblems(log) {
   return log
@@ -283,6 +303,7 @@ export async function runMatrix(options) {
     checked(io.wp('theme', 'list', '--status=active', '--field=name'), 'could not read active theme') || 'unknown'
   );
   const only = flag('--only', '').split(',').filter(Boolean);
+  const group = flag('--group', '');
   const runtimeOnly = args.includes('--runtime-only');
   const childRequested = args.includes('--child-theme');
   const matrix = io.readJson('tests/matrix/plugins.json');
@@ -308,9 +329,7 @@ export async function runMatrix(options) {
     if (runtimeOnly) {
       results.push(await testRuntime(ctx, io));
     } else {
-      const selected = matrix.plugins.filter((plugin) =>
-        only.length ? only.includes(plugin.key) : plugin.tier === 1 || plugin.tier === 3
-      );
+      const selected = selectPlugins(matrix.plugins, { only, group });
       for (const entry of selected) {
         const skip = skipReason(entry, { hasZip: io.hasZip(entry.key) });
         const result = skip
