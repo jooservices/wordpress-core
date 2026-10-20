@@ -13,7 +13,7 @@ function urlOf(shell, node) {
 const openCommand = {
   name: 'open',
   usage: 'open [path]',
-  summary: message('terminal.command.open.summary', 'go to that view on the site (post, category, tag, page)'),
+  summary: message('terminal.command.open.summary'),
   completion: 'path',
   readonly: true,
   run({ shell, args, result }) {
@@ -29,7 +29,7 @@ const openCommand = {
       result.blocks.push(
         line(
           text(
-            message('terminal.command.open.not_found', 'xdg-open: {path}: No such file or directory → 404', {
+            message('terminal.command.open.not_found', {
               path: arg,
             }),
             'err'
@@ -44,14 +44,10 @@ const openCommand = {
     const url = urlOf(shell, node);
     if (!url) {
       result.exitCode = 1;
-      result.blocks.push(
-        line(text(message('terminal.command.open.no_viewer', 'no viewer for {name}; use cat', { name: node.n }), 'dim'))
-      );
+      result.blocks.push(line(text(message('terminal.command.open.no_viewer', { name: node.n }), 'dim')));
       return;
     }
-    result.blocks.push(
-      line(text(message('terminal.command.open.opening', 'opening {path} …', { path: pathOf(node) }), 'dim'))
-    );
+    result.blocks.push(line(text(message('terminal.command.open.opening', { path: pathOf(node) }), 'dim')));
     result.navigate = { url };
   },
 };
@@ -62,19 +58,18 @@ export const commands = [
     ...openCommand,
     name: 'xdg-open',
     usage: 'xdg-open [path]',
-    summary: message('terminal.command.open.alias', 'alias of open'),
+    summary: message('terminal.command.open.alias'),
   },
-  { ...openCommand, name: 'go', usage: 'go [path]', summary: message('terminal.command.open.alias', 'alias of open') },
+  { ...openCommand, name: 'go', usage: 'go [path]', summary: message('terminal.command.open.alias') },
   {
     name: 'curl',
     usage: 'curl [-I] <path>',
-    summary: message('terminal.command.curl.summary', 'fake HTTP response for a path (no network)'),
+    summary: message('terminal.command.curl.summary'),
     completion: 'path',
     readonly: true,
     run({ shell, args, result }) {
       const { args: operands } = parseFlags(args);
-      if (!operands[0])
-        return fail(result, message('terminal.command.curl.usage', "curl: try 'curl --help' for more information"), 2);
+      if (!operands[0]) return fail(result, message('terminal.command.curl.usage'), 2);
       let path = operands[0].replace(/^https?:\/\/[^/]+/, '');
       if (path[0] !== '/') path = '/' + path;
       const node = shell.lookup(path) ?? shell.lookup(path + '.md');
@@ -86,11 +81,10 @@ export const commands = [
         `x-robots-tag: ${ok ? 'index,follow' : 'noindex'}`,
       ];
       const rows = [
-        [text(message('terminal.command.curl.simulated', '(simulated, no network)'), 'dim')],
+        [text(message('terminal.command.curl.simulated'), 'dim')],
         ...headers.map((h, i) => [text(h, i === 0 ? (ok ? 'ok' : 'err') : undefined)]),
       ];
-      if (!ok)
-        rows.push([link(message('terminal.command.open.link', '→ open {path}', { path }), 'open ' + path, 'cta')]);
+      if (!ok) rows.push([link(message('terminal.command.open.link', { path }), 'open ' + path, 'cta')]);
       result.blocks.push(lines(rows));
       return undefined;
     },
@@ -98,30 +92,26 @@ export const commands = [
   {
     name: 'theme',
     usage: 'theme dark|light',
-    summary: message('terminal.command.theme.summary', 'change the site theme'),
+    summary: message('terminal.command.theme.summary'),
     completion: 'enum:dark,light',
     readonly: true,
     run({ args, result }) {
-      if (args[0] !== 'dark' && args[0] !== 'light')
-        return fail(result, message('terminal.command.theme.usage', 'usage: theme dark|light'), 2);
+      if (args[0] !== 'dark' && args[0] !== 'light') return fail(result, message('terminal.command.theme.usage'), 2);
       result.effects = [{ type: 'theme', value: args[0] }];
-      result.blocks.push(line(text(message('terminal.command.theme.changed', 'theme → {theme}', { theme: args[0] }))));
+      result.blocks.push(line(text(message('terminal.command.theme.changed', { theme: args[0] }))));
       return undefined;
     },
   },
   {
     name: 'lang',
     usage: 'lang <code>',
-    summary: message('terminal.command.lang.summary', 'change the site language (for example lang en, lang vi)'),
+    summary: message('terminal.command.lang.summary'),
     completion: 'none',
     readonly: true,
     run({ args, result }) {
-      if (!/^[a-z]{2}(-[A-Z]{2})?$/.test(args[0] ?? ''))
-        return fail(result, message('terminal.command.lang.usage', 'usage: lang <code> (for example en or vi)'), 2);
+      if (!/^[a-z]{2}(-[A-Z]{2})?$/.test(args[0] ?? '')) return fail(result, message('terminal.command.lang.usage'), 2);
       result.effects = [{ type: 'lang', value: args[0] }];
-      result.blocks.push(
-        line(text(message('terminal.command.lang.changed', 'lang → {language}', { language: args[0] })))
-      );
+      result.blocks.push(line(text(message('terminal.command.lang.changed', { language: args[0] }))));
       return undefined;
     },
   },

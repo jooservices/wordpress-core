@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { fromRoot } from './lib/paths.mjs';
 import { criticalOutputDirectory, localizeSiteUrls } from './lib/critical.mjs';
+import { readCodeBudgets } from './lib/perf-budgets.mjs';
 
 describe('critical CSS output directory', () => {
   it('defaults to the theme critical directory and accepts a temporary output directory', () => {
@@ -24,11 +25,12 @@ describe('critical CSS site URLs', () => {
 });
 
 describe('critical CSS gzip budgets', () => {
-  it.each(['starter', 'jooservices'])('%s templates stay within the 14 KiB gzip budget', (theme) => {
-    for (const context of ['404', 'archive', 'home', 'page', 'search', 'single']) {
+  const budgets = readCodeBudgets().criticalCss;
+  it.each(budgets.themes)('%s templates stay within the documented gzip budget', (theme) => {
+    for (const context of budgets.templates) {
       const css = readFileSync(fromRoot('themes', theme, 'assets', 'critical', `${context}.css`));
 
-      expect(gzipSync(css).byteLength, `${theme}/${context}.css`).toBeLessThanOrEqual(14 * 1024);
+      expect(gzipSync(css).byteLength, `${theme}/${context}.css`).toBeLessThanOrEqual(budgets.maxGzipBytes);
     }
   });
 });

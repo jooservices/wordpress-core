@@ -4,6 +4,7 @@ import { createAnnouncer, formatAnnouncement } from './announcer.js';
 import { plainLine, renderBlocks } from './render.js';
 import { link, text } from './shell.js';
 
+// Terminal depends on i18n, which supplies every built-in UI string through the runtime config.
 const el = (tag, className, content) => {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -37,7 +38,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
   const title = el('b', 'joo-term__title');
   const close = el('button', 'joo-term__close', '×');
   close.type = 'button';
-  close.setAttribute('aria-label', t('terminal.close', 'Close terminal'));
+  close.setAttribute('aria-label', t('terminal.close'));
   const bar = el('div', 'joo-term__bar');
   bar.append(title, close);
 
@@ -51,7 +52,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
 
   const log = el('div', 'joo-term__log');
   log.setAttribute('role', 'log');
-  log.setAttribute('aria-label', t('terminal.output', 'Terminal output'));
+  log.setAttribute('aria-label', t('terminal.output'));
   log.setAttribute('aria-live', 'off');
   log.tabIndex = 0;
 
@@ -69,7 +70,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
   input.autocomplete = 'off';
   input.autocapitalize = 'off';
   input.spellcheck = false;
-  input.setAttribute('aria-label', t('terminal.input', 'Terminal command'));
+  input.setAttribute('aria-label', t('terminal.input'));
   form.append(label, input);
   panel.replaceChildren(bar, chips, log, form, status);
 
@@ -94,7 +95,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
         const url = alt ? safeUrl(alt.getAttribute('href') ?? '') : null;
         if (url) navigate(url);
         else {
-          const message = t('terminal.lang_unavailable', 'This page has no translation. Use the language switcher.');
+          const message = t('terminal.lang_unavailable');
           log.append(plainLine([text(message, 'dim')]));
           messages.push(message);
         }
@@ -104,7 +105,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
       const url = safeUrl(result.navigate.url);
       if (url) navigate(url);
       else {
-        const message = t('terminal.blocked', 'Blocked: not a link on this site.');
+        const message = t('terminal.blocked');
         log.append(plainLine([text(message, 'err')]));
         messages.push(message);
       }
@@ -185,12 +186,9 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
 
   syncPrompt();
   log.append(
+    plainLine([text(shell.fs.site.name, 'ok'), text(' ' + t('terminal.banner'), 'dim')]),
     plainLine([
-      text(shell.fs.site.name, 'ok'),
-      text(' ' + t('terminal.banner', 'read-only shell · nothing is sent anywhere'), 'dim'),
-    ]),
-    plainLine([
-      text(t('terminal.hint', 'Type '), 'dim'),
+      text(t('terminal.hint'), 'dim'),
       link('help', 'help'),
       text(' · ', 'dim'),
       link('ls', 'ls'),

@@ -4,8 +4,9 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fromRoot } from './lib/paths.mjs';
+import { readCodeBudgets } from './lib/perf-budgets.mjs';
 
-const MAX_BYTES = 1.5 * 1024 * 1024;
+const MAX_BYTES = readCodeBudgets().runtimeBundle.maxBytes;
 const coreDir = fromRoot('packages/theme-core');
 
 /** Reads the allow list. */
@@ -60,7 +61,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const { allowed } = classify(walk(coreDir), readPatterns());
     const bytes = allowed.reduce((sum, file) => sum + statSync(join(coreDir, file)).size, 0);
     console.log(allowed.join('\n'));
-    console.error(`${allowed.length} files, ${(bytes / 1024).toFixed(0)} KB`);
+    if (bytes > MAX_BYTES) {
+      console.error(`FAIL runtime bundle is ${bytes} B, limit ${MAX_BYTES} B`);
+      process.exitCode = 1;
+    } else {
+      console.error(`${allowed.length} files, ${bytes} B (limit ${MAX_BYTES} B)`);
+    }
   } else if (command === 'check') {
     const dir = target ? join(process.cwd(), target) : '';
     if (!dir || !existsSync(dir)) {

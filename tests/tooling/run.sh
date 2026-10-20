@@ -93,6 +93,42 @@ mkdir -p "$TMP/bundle" && node tools/runtime-bundle.mjs list 2>/dev/null | while
 node tools/runtime-bundle.mjs check "$TMP/bundle" >/dev/null 2>&1 && echo "ok:   runtime bundle accepts the allowed files" || { echo "FAIL: runtime bundle (clean)"; fail=1; }
 mkdir -p "$TMP/bundle/tests" && echo x > "$TMP/bundle/tests/leak.php"
 expect_fail "runtime bundle" node tools/runtime-bundle.mjs check "$TMP/bundle"
+# The documented code-budget gate must reject an actual oversized fixture bundle.
+mkdir -p "$TMP/perf/assets"
+node --input-type=module - "$TMP/perf/assets" <<'NODE'
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { readCodeBudgets } from './tools/lib/perf-budgets.mjs';
+
+const directory = process.argv[2];
+const budgets = readCodeBudgets();
+const assets = {};
+mkdirSync(directory, { recursive: true });
+for (const name of Object.keys(budgets.javascript)) {
+  const file = `${name.replaceAll('/', '-')}.js`;
+  const bytes = name === 'runtime' ? Buffer.alloc(budgets.javascript.runtime + 1024) : Buffer.from('export default 0;');
+  if (name === 'runtime') {
+    let seed = 251;
+    for (let index = 0; index < bytes.length; index += 1) {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      bytes[index] = seed >>> 24;
+    }
+  }
+  writeFileSync(join(directory, file), bytes);
+  assets[name] = { type: 'js', file };
+}
+writeFileSync(join(directory, 'assets.json'), JSON.stringify({ assets }));
+NODE
+if node tools/perf.mjs --check-code-budgets --assets-manifest "$TMP/perf/assets/assets.json" --skip-critical-css >"$TMP/perf/output.log" 2>&1; then
+  echo "FAIL: performance budgets accepted the oversized fixture bundle"
+  fail=1
+elif grep -q 'runtime gzip .* exceeds budget' "$TMP/perf/output.log"; then
+  echo "ok:   performance budgets reject the oversized fixture bundle"
+else
+  echo "FAIL: performance budget check failed for an unexpected reason"
+  cat "$TMP/perf/output.log"
+  fail=1
+fi
 # i18n check: passes with a complete dictionary, fails when a string has no translation
 node tools/i18n.mjs --check >/dev/null 2>&1 && echo "ok:   i18n check passes with a complete dictionary" || { echo "FAIL: i18n check"; fail=1; }
 cp packages/theme-core/languages/vi.json "$TMP/vi.json.bak"

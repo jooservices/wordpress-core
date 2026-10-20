@@ -1,9 +1,11 @@
 // Generates assets/critical/{context}.css for a theme from the running demo.
-// Usage: node tools/critical.mjs --theme jooservices [--base http://127.0.0.1:8082] [--max-gzip 14336] [--output-dir DIR]
+// Usage: node tools/critical.mjs --theme jooservices [--base http://127.0.0.1:8082] [--output-dir DIR]
 import { launchBrowser } from './lib/browser.mjs';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { gzipSync } from 'node:zlib';
 import { criticalOutputDirectory, extractCriticalRules, localizeSiteUrls, mergeAndMinify } from './lib/critical.mjs';
+import { readCodeBudgets } from './lib/perf-budgets.mjs';
 
 const args = Object.fromEntries(
   process.argv
@@ -18,7 +20,7 @@ const theme = String(args.theme ?? 'jooservices');
 const base = String(
   args.base ?? process.env.E2E_BASE_URL ?? process.env.WP_SITE_URL ?? 'http://127.0.0.1:8082'
 ).replace(/\/$/, '');
-const maxGzip = Number(args['max-gzip'] ?? 14 * 1024);
+const maxGzip = readCodeBudgets().criticalCss.maxGzipBytes;
 const outDir = criticalOutputDirectory(theme, args['output-dir']);
 const viewports = [
   { width: 390, height: 844 },
@@ -60,8 +62,10 @@ for (const [context, url] of Object.entries(targets)) {
     lists.push(await extractCriticalRules(page));
     await page.close();
   }
-  const { css, size, gzip } = mergeAndMinify(lists);
-  writeFileSync(join(outDir, `${context}.css`), localizeSiteUrls(css, base));
+  const { css, size } = mergeAndMinify(lists);
+  const localized = localizeSiteUrls(css, base);
+  writeFileSync(join(outDir, `${context}.css`), localized);
+  const gzip = gzipSync(localized).byteLength;
   const ok = gzip <= maxGzip;
   failed ||= !ok;
   console.log(

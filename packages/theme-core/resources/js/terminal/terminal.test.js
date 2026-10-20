@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import './test-i18n.js';
 import data from './__fixtures__/demo-fs.json';
 import { createShell } from '../terminal.js';
 import { buildFs, list, pathOf, resolve, stat, target } from './fs.js';

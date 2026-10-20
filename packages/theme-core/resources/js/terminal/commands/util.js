@@ -11,11 +11,11 @@ export const fail = (result, message, code = 1) => {
   result.blocks.push(line(text(message, 'err')));
 };
 
-/** Translates command copy and replaces named values in the translated text. */
-export function message(key, fallback, values = {}) {
+/** Translates command copy from the dictionary required by the Terminal module and replaces named values. */
+export function message(key, values = {}) {
   return Object.entries(values).reduce(
     (output, [name, value]) => output.replaceAll(`{${name}}`, String(value)),
-    t(key, fallback)
+    t(key)
   );
 }
 
