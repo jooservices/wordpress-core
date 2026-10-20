@@ -18,10 +18,13 @@ use JOOservices\ThemeCore\Tests\Fixtures\Modules\DependentModule;
 use JOOservices\ThemeCore\Tests\Fixtures\Modules\FailingModule;
 use JOOservices\ThemeCore\Tests\Fixtures\Modules\FailingRegisterModule;
 use JOOservices\ThemeCore\Tests\Fixtures\Modules\HealthyModule;
+use JOOservices\ThemeCore\Tests\Fixtures\Modules\SlowBootModule;
 
 final class KernelTest extends IntegrationTestCase {
 
-	private const FIXTURES = __DIR__ . '/../Fixtures/manifests/';
+	private const FIXTURES          = __DIR__ . '/../Fixtures/manifests/';
+	private const BOOT_COST_SAMPLES = 20;
+	private const MAX_BOOT_MS       = 30.0;
 
 	public function set_up(): void {
 		parent::set_up();
@@ -248,14 +251,115 @@ final class KernelTest extends IntegrationTestCase {
 	}
 
 	public function test_boot_cost_is_small(): void {
-		$memory = memory_get_usage();
-		$start  = hrtime( true );
-		Kernel::boot( self::FIXTURES . 'valid.json' );
-		$ms = ( hrtime( true ) - $start ) / 1e6;
-		$kb = ( memory_get_usage() - $memory ) / 1024;
-		fwrite( STDERR, sprintf( "\n[boot cost] %.2f ms, %.0f KB\n", $ms, $kb ) );
-		$this->assertLessThan( 30, $ms, 'boot must stay cheap (spec target < 3 ms warm; asserted with a CI margin)' );
-		$this->assertLessThan( 1536, $kb, 'boot must stay under 1.5 MB' );
+		$samples = $this->measureBootCosts();
+		$ms      = $this->median( $samples['ms'] );
+		$kb      = $this->median( $samples['bytes'] ) / 1024;
+		fwrite( STDERR, sprintf( "\n[boot cost] median %.2f ms, %.0f KB across %d boots\n", $ms, $kb, self::BOOT_COST_SAMPLES ) );
+		$this->assertLessThan( self::MAX_BOOT_MS, $ms, 'median boot must stay cheap (spec target < 3 ms warm; asserted with a CI margin)' );
+		$this->assertLessThan( 1536, $kb, 'median boot must stay under 1.5 MB' );
+	}
+
+	public function test_slow_module_exceeds_the_boot_time_budget(): void {
+		add_filter(
+			'joo/core/modules',
+			static fn( array $modules ): array => array_merge( $modules, array( SlowBootModule::class ) )
+		);
+
+		$samples = $this->measureBootCosts();
+
+		$this->assertGreaterThanOrEqual( self::MAX_BOOT_MS, $this->median( $samples['ms'] ), 'a sustained slow module must fail the boot-time budget' );
+	}
+
+	/**
+	 * Measures complete kernel boots from the same WordPress hook state.
+	 *
+	 * @return array{ms: list<float>, bytes: list<int>}
+	 */
+	private function measureBootCosts(): array {
+		if ( 0 === did_action( 'after_setup_theme' ) ) {
+			do_action( 'after_setup_theme' );
+		}
+		$hooks   = $this->snapshotHooks();
+		$samples = array(
+			'ms'    => array(),
+			'bytes' => array(),
+		);
+
+		try {
+			for ( $sample = 0; $sample < self::BOOT_COST_SAMPLES; ++$sample ) {
+				$this->restoreHooks( $hooks );
+				Kernel::reset();
+				Notices::reset();
+				gc_collect_cycles();
+
+				$memory = memory_get_usage();
+				$start  = hrtime( true );
+				Kernel::boot( self::FIXTURES . 'valid.json' );
+				$samples['ms'][]    = ( hrtime( true ) - $start ) / 1e6;
+				$samples['bytes'][] = max( 0, memory_get_usage() - $memory );
+			}
+		} finally {
+			$this->restoreHooks( $hooks );
+			Kernel::reset();
+			Notices::reset();
+		}
+
+		return $samples;
+	}
+
+	/**
+	 * Saves a clean copy of WordPress hook callbacks.
+	 *
+	 * @return array<string, mixed> Saved WordPress hook callbacks.
+	 */
+	private function snapshotHooks(): array {
+		$filters = $GLOBALS['wp_filter'] ?? array();
+		foreach ( $filters as $hook => $callbacks ) {
+			if ( $callbacks instanceof \WP_Hook ) {
+				$filters[ $hook ] = clone $callbacks;
+			}
+		}
+
+		return $filters;
+	}
+
+	/**
+	 * Restores a fresh copy of a saved WordPress hook state.
+	 *
+	 * @param array<string, mixed> $snapshot Hook state.
+	 */
+	private function restoreHooks( array $snapshot ): void {
+		$hooks = array_unique( array_merge( array_keys( $GLOBALS['wp_filter'] ?? array() ), array_keys( $snapshot ) ) );
+		foreach ( $hooks as $hook ) {
+			remove_all_filters( (string) $hook );
+		}
+
+		foreach ( $snapshot as $hook => $callbacks ) {
+			if ( ! $callbacks instanceof \WP_Hook ) {
+				continue;
+			}
+			foreach ( $callbacks->callbacks as $priority => $entries ) {
+				foreach ( $entries as $entry ) {
+					if ( isset( $entry['function'] ) && is_callable( $entry['function'] ) ) {
+						add_filter( (string) $hook, $entry['function'], (int) $priority, (int) $entry['accepted_args'] );
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns the median of numeric samples.
+	 *
+	 * @param list<int|float> $samples Samples.
+	 */
+	private function median( array $samples ): float {
+		sort( $samples, SORT_NUMERIC );
+		$middle = intdiv( count( $samples ), 2 );
+
+		return 0 === count( $samples ) % 2
+			? ( (float) $samples[ $middle - 1 ] + (float) $samples[ $middle ] ) / 2
+			: (float) $samples[ $middle ];
 	}
 
 	/**

@@ -9,12 +9,15 @@ declare(strict_types=1);
 
 namespace JOOservices\TestKit;
 
+use JOOservices\ThemeCore\Admin\Notices;
 use JOOservices\ThemeCore\Kernel;
 
 /**
  * Extend and implement manifest() and modules(); every module is then tested against the contract.
  */
 abstract class ModuleContractTest extends IntegrationTestCase {
+
+	private const BOOT_BUDGET_SAMPLES = 20;
 
 	/**
 	 * Manifest file used to boot the kernel.
@@ -110,12 +113,92 @@ abstract class ModuleContractTest extends IntegrationTestCase {
 	}
 
 	public function test_boot_stays_within_the_budget(): void {
-		Kernel::boot( $this->manifest() );
-		do_action( 'after_setup_theme' );
-		foreach ( Kernel::registry()?->timings() ?? array() as $id => $cost ) {
-			$this->assertLessThan( $this->maxBootMs(), $cost['ms'], $id . ' boot time (ms)' );
-			$this->assertLessThan( $this->maxBootBytes(), $cost['bytes'], $id . ' boot memory (bytes)' );
+		if ( 0 === did_action( 'after_setup_theme' ) ) {
+			do_action( 'after_setup_theme' );
 		}
+		$hooks   = $this->snapshotHooks();
+		$timings = array();
+
+		try {
+			for ( $sample = 0; $sample < self::BOOT_BUDGET_SAMPLES; ++$sample ) {
+				$this->restoreHooks( $hooks );
+				Kernel::reset();
+				Notices::reset();
+				gc_collect_cycles();
+
+				Kernel::boot( $this->manifest() );
+
+				foreach ( Kernel::registry()?->timings() ?? array() as $id => $cost ) {
+					$timings[ $id ]['ms'][]    = $cost['ms'];
+					$timings[ $id ]['bytes'][] = $cost['bytes'];
+				}
+			}
+		} finally {
+			$this->restoreHooks( $hooks );
+			Kernel::reset();
+			Notices::reset();
+		}
+
+		foreach ( $timings as $id => $cost ) {
+			$this->assertSame( self::BOOT_BUDGET_SAMPLES, count( $cost['ms'] ), $id . ' boot samples' );
+			$this->assertLessThan( $this->maxBootMs(), $this->median( $cost['ms'] ), $id . ' median boot time (ms)' );
+			$this->assertLessThan( $this->maxBootBytes(), $this->median( $cost['bytes'] ), $id . ' median boot memory (bytes)' );
+		}
+	}
+
+	/**
+	 * Saves a clean copy of WordPress hook callbacks.
+	 *
+	 * @return array<string, mixed> Saved WordPress hook callbacks.
+	 */
+	private function snapshotHooks(): array {
+		$filters = $GLOBALS['wp_filter'] ?? array();
+		foreach ( $filters as $hook => $callbacks ) {
+			if ( $callbacks instanceof \WP_Hook ) {
+				$filters[ $hook ] = clone $callbacks;
+			}
+		}
+
+		return $filters;
+	}
+
+	/**
+	 * Restores a fresh copy of a saved WordPress hook state.
+	 *
+	 * @param array<string, mixed> $snapshot Hook state.
+	 */
+	private function restoreHooks( array $snapshot ): void {
+		$hooks = array_unique( array_merge( array_keys( $GLOBALS['wp_filter'] ?? array() ), array_keys( $snapshot ) ) );
+		foreach ( $hooks as $hook ) {
+			remove_all_filters( (string) $hook );
+		}
+
+		foreach ( $snapshot as $hook => $callbacks ) {
+			if ( ! $callbacks instanceof \WP_Hook ) {
+				continue;
+			}
+			foreach ( $callbacks->callbacks as $priority => $entries ) {
+				foreach ( $entries as $entry ) {
+					if ( isset( $entry['function'] ) && is_callable( $entry['function'] ) ) {
+						add_filter( (string) $hook, $entry['function'], (int) $priority, (int) $entry['accepted_args'] );
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns the median of numeric samples.
+	 *
+	 * @param list<int|float> $samples Samples.
+	 */
+	private function median( array $samples ): float {
+		sort( $samples, SORT_NUMERIC );
+		$middle = intdiv( count( $samples ), 2 );
+
+		return 0 === count( $samples ) % 2
+			? ( (float) $samples[ $middle - 1 ] + (float) $samples[ $middle ] ) / 2
+			: (float) $samples[ $middle ];
 	}
 
 	/**
