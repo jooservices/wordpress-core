@@ -2,7 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { fromRoot } from './lib/paths.mjs';
-import { localizeSiteUrls } from './lib/critical.mjs';
+import { criticalOutputDirectory, localizeSiteUrls } from './lib/critical.mjs';
+
+describe('critical CSS output directory', () => {
+  it('defaults to the theme critical directory and accepts a temporary output directory', () => {
+    expect(criticalOutputDirectory('starter')).toBe(fromRoot('themes', 'starter', 'assets', 'critical'));
+    expect(criticalOutputDirectory('starter', '/tmp/joowt-245/critical')).toBe('/tmp/joowt-245/critical');
+    expect(criticalOutputDirectory('starter', 'artifacts/critical')).toBe(fromRoot('artifacts', 'critical'));
+  });
+});
 
 describe('critical CSS site URLs', () => {
   it('removes the capture origin from local assets and keeps external origins', () => {

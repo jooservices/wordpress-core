@@ -61,7 +61,7 @@ export async function captureMarketplacePreview({
   await capture(`${previewPath}/00_cover-draft.png`, url, { width: 2340, height: 1560 });
   await capture(`${previewPath}/01_jooservices-home.jpg`, url, { width: 590, height: 300 }, 'jpeg');
   await capture(`${previewPath}/02_desktop-home.png`, url, { width: 1170, height: 780 });
-  const postPath = await page.locator('.joo-card__title a').first().getAttribute('href');
+  const postPath = await page.locator('.wp-block-post-title a').first().getAttribute('href');
   if (!postPath) throw new Error('showcase has no article link for the single-post preview');
   await capture(`${previewPath}/03_single-post.png`, new URL(postPath, url).toString(), { width: 1170, height: 780 });
   await capture(`${previewPath}/04_mobile-home.png`, url, { width: 390, height: 844 });

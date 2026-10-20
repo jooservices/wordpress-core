@@ -82,6 +82,7 @@ theme_source() {
 restore_theme_source=0
 snapshot_lock_dir=""
 snapshot_temp_dir=""
+capture_output_dir=""
 restore_sources() {
   if ((restore_theme_source)); then
     restore_theme_source=0
@@ -90,6 +91,10 @@ restore_sources() {
   fi
 }
 cleanup_wp_task() {
+  if [[ -n "$capture_output_dir" ]]; then
+    docker exec -u www-data "$WEB_NAME" rm -rf -- "$capture_output_dir" >/dev/null 2>&1 || true
+    capture_output_dir=""
+  fi
   if [[ -n "$snapshot_lock_dir" ]]; then
     rmdir "$snapshot_lock_dir" 2>/dev/null || true
     snapshot_lock_dir=""
@@ -127,12 +132,20 @@ snapshot_dir() {
   code="$(cd "$ROOT" && find tools/wxr-generator docker/scripts/seed.php docker/scripts/seed.sh plugins/jooservices-resume/src packages/theme-core/src -type f -print0 | sort -z | xargs -0 shasum -a 256 | shasum -a 256 | cut -c1-12)"
   printf '%s/%s-wp%s-%s' "$snap_root" "${DEMO_SET:-$theme}" "$(wpx core version)" "$code"
 }
+copy_snapshot_tree() {
+  local source="$1" destination="$2"
+  if [[ "$(uname -s)" == Darwin ]]; then
+    cp -cR "$source" "$destination"
+  else
+    cp -R "$source" "$destination"
+  fi
+}
 snapshot_import() { # $1 = snapshot dir
   wpx db reset --yes >/dev/null
   wpx db import "$1/db.sql"
   wpx search-replace "http://seed.localhost" "$SITE_URL" --all-tables --precise --quiet
   rm -rf "$JOO_SITE_DIR/wp-content/uploads"
-  if [[ -d "$1/uploads" ]]; then cp -a "$1/uploads" "$JOO_SITE_DIR/wp-content/uploads"; else mkdir -p "$JOO_SITE_DIR/wp-content/uploads"; fi
+  if [[ -d "$1/uploads" ]]; then copy_snapshot_tree "$1/uploads" "$JOO_SITE_DIR/wp-content/uploads"; else mkdir -p "$JOO_SITE_DIR/wp-content/uploads"; fi
   local admin
   admin="$(wpx user list --role=administrator --field=ID </dev/null | head -1)"
   wpx user update "$admin" --user_pass="$WP_ADMIN_PASSWORD" --skip-email >/dev/null
@@ -148,7 +161,7 @@ snapshot_export() { # $1 = snapshot dir
   snapshot_temp_dir="$tmp"
   mkdir -p "$tmp"
   wpx search-replace "$SITE_URL" "http://seed.localhost" --all-tables --precise --export="$tmp/db.sql" --quiet
-  if [[ -d "$JOO_SITE_DIR/wp-content/uploads" ]]; then cp -a "$JOO_SITE_DIR/wp-content/uploads" "$tmp/uploads"; fi
+  if [[ -d "$JOO_SITE_DIR/wp-content/uploads" ]]; then copy_snapshot_tree "$JOO_SITE_DIR/wp-content/uploads" "$tmp/uploads"; fi
   printf '{"wordpress":"%s","checksum":"%s","created":"%s","theme":"%s"}\n' "$(wpx core version)" "$(wpx option get joo_demo_checksum)" "$(date -u +%FT%TZ)" "$theme" > "$tmp/manifest.json"
   rm -rf "$1"; mv "$tmp" "$1"
   snapshot_temp_dir=""
@@ -204,6 +217,16 @@ staging_backup() {
 
 # Applies the pending data migrations (migrations/, see docs/guides/migrations.md) to this site.
 run_migrations() { wpx eval-file "$ROOT/docker/scripts/migrate.php" "$@" </dev/null; }
+
+new_capture_output_dir() {
+  printf '/tmp/joowt-%s-captures-%s-%s' "${ticket,,}" "$$" "$RANDOM"
+}
+
+copy_capture_directory() {
+  local source="$1" destination="$2"
+  mkdir -p "$destination"
+  docker cp "$WEB_NAME:$source/." "$destination"
+}
 
 staging_require_clean() {
   [[ -z "$(git -C "$ROOT" status --porcelain)" ]] || { echo "ERROR: the staging checkout has uncommitted changes; staging must show committed develop only." >&2; exit 2; }
@@ -380,12 +403,15 @@ case "$action" in
   screenshots)
     acquire_shared_wp_test_lock || exit $?
     ensure_site
-    rt playwright node tools/screenshots.mjs --theme "$theme" --base "$SITE_URL" "$@"
+    capture_output_dir="$(new_capture_output_dir)"
+    rt playwright node tools/screenshots.mjs --theme "$theme" --base "$SITE_URL" "$@" --output "$capture_output_dir/screenshots"
     ;;
   critical)
     acquire_shared_wp_test_lock || exit $?
     ensure_site
-    rt playwright node tools/critical.mjs --theme "$theme" --base "$SITE_URL" "$@"
+    capture_output_dir="$(new_capture_output_dir)"
+    rt playwright node tools/critical.mjs --theme "$theme" --base "$SITE_URL" "$@" --output-dir "$capture_output_dir/critical"
+    copy_capture_directory "$capture_output_dir/critical" "$ROOT/themes/$theme/assets/critical"
     ;;
   health)
     acquire_shared_wp_test_lock || exit $?
@@ -401,7 +427,10 @@ case "$action" in
       wpx search-replace 'SGCarmart' 'Northstar Demo Co.' --all-tables --precise </dev/null
       wpx search-replace 'www.sgcarmart.com' 'northstar.example' --all-tables --precise </dev/null
       wpx search-replace 'Acme Labs' 'Harborview Demo Co.' --all-tables --precise </dev/null
-      rt playwright node tools/marketplace-preview.mjs "themes/$theme/screenshot.png"
+      capture_output_dir="$(new_capture_output_dir)"
+      rt playwright node tools/marketplace-preview.mjs "$capture_output_dir/screenshot.png" "$capture_output_dir/previews"
+      docker cp "$WEB_NAME:$capture_output_dir/screenshot.png" "$ROOT/themes/$theme/screenshot.png"
+      copy_capture_directory "$capture_output_dir/previews" "$ROOT/docs/release/previews"
     fi
     health_check
     echo "Demo ready at $SITE_URL"
