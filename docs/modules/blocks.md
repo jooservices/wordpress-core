@@ -3,7 +3,7 @@
 All custom blocks are dynamic (server-rendered), so their HTML is in the first response.
 
 ## Adding a block
-Create `packages/theme-core/resources/blocks/<slug>/block.json` (`apiVersion` 3, `name` `joo/<slug>`, `category` `joo`) and `render.php`. No PHP registration code is needed. Themes add folders with the `joo/blocks/register` filter. Disable blocks in the theme manifest: `"blocks": { "disabled": ["joo/term-image"] }`.
+Create `packages/theme-core/resources/blocks/<slug>/block.json` (`apiVersion` 3, `name` `joo/<slug>`, `category` `joo`) and `render.php`. No PHP registration code is needed. Themes add folders with the `joo/blocks/register` filter. Disable blocks in the theme manifest: `"blocks": { "disabled": ["joo/related-posts"] }`.
 
 Optional files: `view.js` (script module) and `style.css`; the build writes hashed files and the registrar wires them as `joo-block-<slug>` (module id and style handle), so they load only on pages that render the block. They are not referenced from `block.json` (the schema forbids `viewScriptModule`/`style` there).
 
