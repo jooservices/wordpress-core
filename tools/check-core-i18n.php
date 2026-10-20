@@ -39,6 +39,9 @@ final class JOO_Core_I18n_Scan_Visitor extends NodeVisitorAbstract {
 			if ( in_array( $name, array( 'wp_die', 'submit_button' ), true ) && isset( $node->args[0] ) ) {
 				$this->checkOutput( $node->args[0]->value );
 			}
+			if ( in_array( $name, array( 'printf', 'vprintf' ), true ) && isset( $node->args[0] ) ) {
+				$this->checkOutput( $node->args[0]->value );
+			}
 			if ( 'add_settings_error' === $name && isset( $node->args[2] ) ) {
 				$this->checkOutput( $node->args[2]->value );
 			}
@@ -164,7 +167,7 @@ echo "Core PHP i18n scan passed.\n";
 function output_template( Node\Expr $expression ): string {
 	$placeholder = "\u{E000}";
 	if ( $expression instanceof Node\Scalar\String_ ) {
-		return $expression->value;
+		return preg_replace( '/%(?:\d+\$)?[-+ 0]*\d*(?:\.\d+)?[bcdeEfFgGosuxX]/', $placeholder, $expression->value ) ?? $expression->value;
 	}
 	if ( $expression instanceof Node\Scalar\Encapsed ) {
 		$output = '';

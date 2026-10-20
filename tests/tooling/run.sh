@@ -21,6 +21,7 @@ expect_fail "core i18n" php tools/check-core-i18n.php tests/tooling/fixtures/i18
 expect_fail "core i18n template" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-template.php
 expect_fail "core i18n block comment" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-block-comment.php
 expect_fail "core i18n single word" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-open.php
+expect_fail "core i18n printf" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-printf.php
 
 # PHPStan: core must stay compatible with PHP 8.1.
 cp tests/tooling/fixtures/php-82-readonly.php "$TMP/php-input.php"
