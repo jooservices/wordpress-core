@@ -2,6 +2,12 @@
 # Proves each quality tool fails on a deliberate violation and passes on a clean file.
 set -u
 cd "$(dirname "$0")/../.."
+
+# Keep tooling checks inside the shared Workspaces runtimes; runtime.sh uses host tools in CI.
+php() { bash ./docker/scripts/runtime.sh php "$@"; }
+node() { bash ./docker/scripts/runtime.sh node "$@"; }
+npx() { bash ./docker/scripts/runtime.sh npx "$@"; }
+
 TMP_ROOT=".tooling-tmp"
 TMP_ROOT_CREATED=0
 if [ ! -d "$TMP_ROOT" ]; then mkdir "$TMP_ROOT"; TMP_ROOT_CREATED=1; fi
