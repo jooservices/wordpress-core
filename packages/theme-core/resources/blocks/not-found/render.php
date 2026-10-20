@@ -45,7 +45,7 @@ $joo_json    = wp_json_encode( $joo_index, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HE
 		<label for="joo-404-path"><?php echo esc_html__( 'Try another path', 'joo-core' ); ?></label>
 		<input id="joo-404-path" name="path" autocomplete="off" placeholder="<?php echo esc_attr( (string) $data['placeholder'] ); ?>">
 		<button type="submit">curl -i</button>
-		<p class="joo-404__result" role="status"></p>
+		<p class="joo-404__result" role="status" aria-live="polite" aria-atomic="true"></p>
 	</form>
 	<script type="application/json" class="joo-404__index"><?php echo $joo_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON encoded with HEX_TAG, HEX_AMP and HEX_APOS. ?></script>
 </joo-404>

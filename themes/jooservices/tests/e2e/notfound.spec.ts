@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { runAxe } from '../../../../packages/test-kit/e2e/helpers';
 
 test.skip(process.env.E2E_THEME !== 'jooservices', 'jooservices theme specs');
 
@@ -56,6 +57,33 @@ test.describe('404', () => {
     await retry.locator('input').fill('/ai/prompt-caching');
     await retry.getByRole('button').click();
     await expect(page.locator('.joo-404__result')).not.toHaveText('');
+  });
+
+  test('the 404 retry flow is keyboard-operable and its result is announced', async ({ page }) => {
+    await page.goto('/definitely-missing/');
+    await runAxe(page, { include: '.joo-404' });
+    const input = page.getByLabel('Try another path');
+    let reachedInput = false;
+    for (let index = 0; index < 100; index += 1) {
+      await page.keyboard.press('Tab');
+      if (await input.evaluate((element) => element === document.activeElement)) {
+        reachedInput = true;
+        break;
+      }
+    }
+    expect(reachedInput).toBe(true);
+    await page.keyboard.type('/ai/prompt-caching');
+    await page.keyboard.press('Enter');
+    const result = page.locator('.joo-404__result');
+    await expect(result).toHaveAttribute('aria-live', 'polite');
+    await expect(result).toContainText('HTTP/2 200 OK');
+    await expect(result.locator('a')).toHaveText('Prompt Caching');
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('button', { name: 'curl -i' })).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(result.locator('a')).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/\/ai\/prompt-caching\/?$/);
   });
 
   test('everything useful remains without JavaScript', async ({ browser }) => {
