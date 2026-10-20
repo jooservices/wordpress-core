@@ -23,23 +23,23 @@ Keep theme PHP under 50 lines (`functions.php` boots the core from `joo-theme.js
 
 ## Walk-through record
 
-Literal run on WSL on 2026-10-20 from a clean tracked checkout. The existing ignored `.env` was kept unchanged; inherited ignored `acme` and `qatest` artifacts were preserved, and the absent `replay281` theme was created for this run. Times are wall-clock seconds from `time -p`; the demo measurement was after the images were already available.
+Independent literal run on WSL on 2026-10-20 from a clean tracked checkout. The existing ignored `.env`, ticket database and inherited artifacts were preserved; the unique `codex281` theme was created for this run. Times are wall-clock seconds from `time -p`; the demo measurement was after the images were already available. The repository checks used the shared runtimes.
 
 | Step | Result | Time |
 | --- | --- | ---: |
-| Environment | `make init-env` kept the existing ignored environment file. `make deps` passed before scaffolding and after the generated workspace was added to the lockfile. | 0.01 s; 10.47 s; 10.64 s |
-| Scaffold and lockfile | `make new-theme NAME=replay281 TITLE="Replay 281"` created 34 files. `npm install` added the workspace entry. | 0.22 s; 1.44 s |
-| Demo | `make demo THEME=replay281` completed and health reported 17/17 checks. | 17.45 s |
-| Look | The printed worktree URL returned HTTP 200. | 0.33 s |
-| Custom CSS | Built one hashed asset, 61 B (73 B gzip). | 0.18 s |
-| Lint | `make lint` passed for the generated theme and repository. | 13.32 s |
-| Analysis | `make analyse` passed with no PHPStan or Deptrac violations. | 12.46 s |
-| Unit tests | `make test-unit`: 284 PHPUnit tests and 350 Vitest tests passed, including the 10 new-theme tests. | 12.51 s |
-| Integration | `make test-integration THEME=replay281 TEST_THEME=replay281` passed: 341 generated-theme tests and the core, portfolio and migration-oriented suites passed; 22 default-excluded tests were skipped. Wall time includes the queue behind the shared test lock. | 570.30 s |
-| Browser checks | The focused API, HTTP, SEO and smoke suite passed 66/66 tests through the Dev VM browser (15.9 s in Playwright). Wall time includes the queue behind the shared test lock. | 178.47 s |
+| Environment | `make init-env` kept the existing ignored environment file. `make deps` passed; the Composer dependencies were already installed and `npm ci` restored locked packages. | 0.01 s; 9.35 s |
+| Scaffold and lockfile | `make new-theme NAME=codex281 TITLE="Codex 281"` created 34 files. `npm install` added the workspace link to the lockfile. | 0.18 s; 4.91 s |
+| Demo | `make demo THEME=codex281` completed and health reported 17/17 checks. | 18.16 s |
+| Look | The printed worktree URL returned HTTP 200. | 0.06 s |
+| Custom CSS | Built one hashed asset, 56 B (73 B gzip). | 0.19 s |
+| Lint | `make lint` passed for the generated theme and repository. | 13.12 s |
+| Analysis | `make analyse` passed with no PHPStan or Deptrac violations. | 9.05 s |
+| Unit tests | `make test-unit`: 284 PHPUnit tests and 350 Vitest tests passed, including the 10 new-theme tests. | 11.88 s |
+| Integration | `make test-integration THEME=codex281 TEST_THEME=codex281` passed with 399 tests across its suites; 22 default-excluded tests were skipped. Wall time includes the queue behind the shared test lock. | 823.09 s |
+| Browser checks | The focused API, HTTP, SEO and smoke suite passed 66/66 tests through the Dev VM browser (15.6 s in Playwright). Wall time includes the queue behind the shared test lock. | 203.59 s |
 | Core proof | The command passed and reported 0 committed theme changes; the scaffold was intentionally uncommitted. Run it after committing a theme to check that commit. | 0.03 s |
 
-Corrections from the walk-through:
+Corrections from earlier walk-throughs; this independent replay confirmed them and found no new generator or tooling mismatches:
 
 - The first demo attempt failed because GNU `cp` on WSL rejects macOS's `-cR` option. The snapshot code now uses portable `cp -a`; its failure cleanup also removes the lock and temporary export directory.
 - The initial integration run failed after 40.05 s because it loaded `acme` while running the portfolio fixture in the same process. The runner now executes the selected generated theme tests and the portfolio fixture in separate processes.
