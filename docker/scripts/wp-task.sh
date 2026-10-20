@@ -82,6 +82,7 @@ theme_source() {
 restore_theme_source=0
 snapshot_lock_dir=""
 snapshot_temp_dir=""
+capture_output_dir=""
 restore_sources() {
   if ((restore_theme_source)); then
     restore_theme_source=0
@@ -90,6 +91,10 @@ restore_sources() {
   fi
 }
 cleanup_wp_task() {
+  if [[ -n "$capture_output_dir" ]]; then
+    docker exec -u www-data "$WEB_NAME" rm -rf -- "$capture_output_dir" >/dev/null 2>&1 || true
+    capture_output_dir=""
+  fi
   if [[ -n "$snapshot_lock_dir" ]]; then
     rmdir "$snapshot_lock_dir" 2>/dev/null || true
     snapshot_lock_dir=""
@@ -212,6 +217,16 @@ staging_backup() {
 
 # Applies the pending data migrations (migrations/, see docs/guides/migrations.md) to this site.
 run_migrations() { wpx eval-file "$ROOT/docker/scripts/migrate.php" "$@" </dev/null; }
+
+new_capture_output_dir() {
+  printf '/tmp/joowt-%s-captures-%s-%s' "${ticket,,}" "$$" "$RANDOM"
+}
+
+copy_capture_directory() {
+  local source="$1" destination="$2"
+  mkdir -p "$destination"
+  docker cp "$WEB_NAME:$source/." "$destination"
+}
 
 staging_require_clean() {
   [[ -z "$(git -C "$ROOT" status --porcelain)" ]] || { echo "ERROR: the staging checkout has uncommitted changes; staging must show committed develop only." >&2; exit 2; }
@@ -388,12 +403,15 @@ case "$action" in
   screenshots)
     acquire_shared_wp_test_lock || exit $?
     ensure_site
-    rt playwright node tools/screenshots.mjs --theme "$theme" --base "$SITE_URL" "$@"
+    capture_output_dir="$(new_capture_output_dir)"
+    rt playwright node tools/screenshots.mjs --theme "$theme" --base "$SITE_URL" "$@" --output "$capture_output_dir/screenshots"
     ;;
   critical)
     acquire_shared_wp_test_lock || exit $?
     ensure_site
-    rt playwright node tools/critical.mjs --theme "$theme" --base "$SITE_URL" "$@"
+    capture_output_dir="$(new_capture_output_dir)"
+    rt playwright node tools/critical.mjs --theme "$theme" --base "$SITE_URL" "$@" --output-dir "$capture_output_dir/critical"
+    copy_capture_directory "$capture_output_dir/critical" "$ROOT/themes/$theme/assets/critical"
     ;;
   health)
     acquire_shared_wp_test_lock || exit $?
@@ -409,7 +427,10 @@ case "$action" in
       wpx search-replace 'SGCarmart' 'Northstar Demo Co.' --all-tables --precise </dev/null
       wpx search-replace 'www.sgcarmart.com' 'northstar.example' --all-tables --precise </dev/null
       wpx search-replace 'Acme Labs' 'Harborview Demo Co.' --all-tables --precise </dev/null
-      rt playwright node tools/marketplace-preview.mjs "themes/$theme/screenshot.png"
+      capture_output_dir="$(new_capture_output_dir)"
+      rt playwright node tools/marketplace-preview.mjs "$capture_output_dir/screenshot.png" "$capture_output_dir/previews"
+      docker cp "$WEB_NAME:$capture_output_dir/screenshot.png" "$ROOT/themes/$theme/screenshot.png"
+      copy_capture_directory "$capture_output_dir/previews" "$ROOT/docs/release/previews"
     fi
     health_check
     echo "Demo ready at $SITE_URL"
