@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
 THEME ?= jooservices
-JOOS_TICKET ?= $(shell git branch --show-current | sed -nE 's/.*(JOOS-[0-9]+).*/\1/p')
+JOOS_TICKET ?= $(shell git branch --show-current | sed -nE 's/.*((JOOS|JOOWT)-[0-9]+).*/\1/p')
 export JOOS_TICKET WP_VERSION WP_PHP_VERSION MATRIX_VARIANT
 
 .PHONY: migrate test-migrations staging-up staging-update staging-reseed test-marketplace critical screenshots plugins-off plugins-on plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-e2e-demo demo-package demo health perf test-matrix package docs clean hooks release
@@ -32,7 +32,7 @@ deps: ## Install locked PHP and JavaScript dependencies in the shared runtimes
 init-env: ## Create .env with random secrets (never overwrites)
 	@./docker/scripts/init-env.sh
 shared-db-create: ## Create this ticket's shared MariaDB database and scoped user
-	@test -n "$(JOOS_TICKET)" || { echo "run from a JOOS ticket branch or pass JOOS_TICKET=JOOS-<n>"; exit 2; }
+	@test -n "$(JOOS_TICKET)" || { echo "run from a JOOS/JOOWT ticket branch or pass JOOS_TICKET=<ticket-key>"; exit 2; }
 	@test -f .env || JOOS_TICKET=$(JOOS_TICKET) ./docker/scripts/init-env.sh
 	@bash ./docker/scripts/shared-db.sh create $(JOOS_TICKET)
 shared-db-drop: ## Drop only this ticket's shared MariaDB database (CONFIRM=JOOS-<n>)

@@ -8,16 +8,16 @@ if [ -f .env ]; then echo ".env already exists: kept unchanged"; exit 0; fi
 ticket="${JOOS_TICKET:-}"
 if [ -z "$ticket" ]; then
   branch="$(git branch --show-current)"
-  if [[ "$branch" =~ JOOS-([0-9]+) ]]; then ticket="JOOS-${BASH_REMATCH[1]}"; fi
+  if [[ "$branch" =~ (JOOS|JOOWT)-([0-9]+) ]]; then ticket="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}"; fi
 fi
 if [[ "$ticket" == staging ]]; then
   db_name="wp_staging"   # the project checkout's staging site (make staging-up)
 else
-  [[ "$ticket" =~ ^JOOS-([0-9]+)$ ]] || {
-    echo "ERROR: set JOOS_TICKET=JOOS-<number> (or staging) or run from a JOOS ticket branch." >&2
+  [[ "$ticket" =~ ^(JOOS|JOOWT)-([0-9]+)$ ]] || {
+    echo "ERROR: set JOOS_TICKET=JOOS-<number> or JOOWT-<number> (or staging) or run from a ticket branch." >&2
     exit 2
   }
-  db_name="wp_JOOS_${BASH_REMATCH[1]}"
+  db_name="wp_${BASH_REMATCH[1]}_${BASH_REMATCH[2]}"
 fi
 rand() { python3 -c 'import secrets,string;print("".join(secrets.choice(string.ascii_letters+string.digits) for _ in range(40)))'; }
 cp .env.example .env
