@@ -67,7 +67,7 @@ for (const [name, path] of Object.entries(paths)) {
               const element = source.node instanceof Element ? source.node : (source.node?.parentElement ?? null);
               return {
                 element: element
-                  ? `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ''}${element.getAttribute('class') ? `.${element.getAttribute('class')?.trim().replace(/\\s+/g, '.')}` : ''}`
+                  ? `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ''}${element.getAttribute('class') ? `.${element.getAttribute('class')?.trim().replace(/\s+/g, '.')}` : ''}`
                   : null,
                 previousRect: source.previousRect.toJSON(),
                 currentRect: source.currentRect.toJSON(),
