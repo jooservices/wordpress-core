@@ -17,11 +17,6 @@
   font-weight: 600;
 }
 
-.joo-author__title,
-.joo-author__bio {
-  opacity: 0.8;
-}
-
 .joo-author__socials {
   display: flex;
   flex-wrap: wrap;
