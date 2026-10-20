@@ -12,9 +12,9 @@ Order: master/module off → non-front-end context → post override `off` → p
 | Video embeds | `EmbedFacade` | `<joo-embed>` click-to-load; no third-party request before the click; link is the no-JS fallback; providers extendable with `joo/lazy/embed_providers` |
 | Fragments | `FragmentLazy` | `<joo-lazy>` with placeholder (reserved height), `<noscript>` real HTML and a REST URL |
 | Sections | `SectionLazy` | `content-visibility` class for manifest `lazy.sectionBlocks`; core/comments deferred behind a button |
-| REST | `Rest\FragmentController` | `GET /joo/v1/fragment/{name}`, validated args, 404 unknown/missing snapshot, 400 invalid |
+| REST | `Rest\FragmentController` | Public `GET /joo/v1/fragment/{name}` with a 1–64 character registered name, validated args, 404 unknown/missing/non-public snapshot, 400 invalid |
 
-Renderer fragments use the same function inline and over REST (byte-identical). Snapshot fragments (template-bound blocks) store the rendered HTML in `FragmentCache` when the page renders.
+Renderer fragments use the same function inline and over REST (byte-identical). Snapshot fragments (template-bound blocks) store the rendered HTML in `FragmentCache` when an anonymous request renders a published, unprotected post. The comments fragment is served with `Cache-Control: private, no-store`; snapshots for draft, private, or password-protected posts are never returned.
 
 ## Client
 `<joo-lazy>` (~1 KB gz) and `<joo-embed>` (~0.6 KB gz) are script modules loaded only when such an element exists. Fragment HTML is inserted through a sanitising `safeFragment`.

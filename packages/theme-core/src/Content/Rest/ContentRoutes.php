@@ -85,6 +85,7 @@ final class ContentRoutes {
 					'type'    => 'integer',
 					'default' => 1,
 					'minimum' => 1,
+					'maximum' => 1000,
 				),
 				'per_page'       => array(
 					'type'    => 'integer',

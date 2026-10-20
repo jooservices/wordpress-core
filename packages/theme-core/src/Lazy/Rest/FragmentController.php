@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Lazy\Rest;
 use JOOservices\ThemeCore\Lazy\FragmentLazy;
 
 /**
- * GET /joo/v1/fragment/{name}: public, read-only, cacheable (see Http\CacheHeaders).
+ * GET /joo/v1/fragment/{name}: public and read-only; comments snapshots are private and not cached.
  *
  * @internal
  */
@@ -47,7 +47,7 @@ final class FragmentController {
 	public function registerRoutes(): void {
 		register_rest_route(
 			'joo/v1',
-			'/fragment/(?P<name>[a-z0-9-]+)',
+			'/fragment/(?P<name>[a-z0-9-]{1,64})',
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( $this, 'get' ),

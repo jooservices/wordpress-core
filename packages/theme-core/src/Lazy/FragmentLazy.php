@@ -15,7 +15,7 @@ use JOOservices\ThemeCore\Performance\FragmentCache;
  * Wraps secondary content in <joo-lazy>: a placeholder, the real HTML in <noscript> and a REST URL the
  * runtime fetches when the element nears the viewport. Fragments are either rendered by a registered renderer
  * (the same function serves the inline and the REST output, so both are identical) or stored as a snapshot when
- * the page was rendered (template-bound blocks such as core/comments).
+ * an anonymous request renders a published, unprotected post (template-bound blocks such as core/comments).
  *
  * @api
  */
@@ -56,17 +56,17 @@ final class FragmentLazy {
 	/**
 	 * Registers a fragment.
 	 *
-	 * Schema entries: key => [type (int|string|bool|enum), default, min, max, maxLength, enum].
+	 * Schema entries: key => [type (int|string|bool|enum), required, default, min, max, maxLength, enum].
 	 *
-	 * @param string                                        $name     Fragment name ([a-z0-9-]+).
+	 * @param string                                        $name     Fragment name (1–64 lowercase letters, digits or hyphens).
 	 * @param callable|null                                 $renderer Receives the validated args, returns HTML. Null: snapshot mode.
 	 * @param array<string, array<string, mixed>>           $schema   Argument schema.
 	 * @param int                                           $height   Reserved height in pixels (prevents layout shift).
 	 * @throws \InvalidArgumentException For invalid names.
 	 */
 	public function register( string $name, ?callable $renderer, array $schema = array(), int $height = 200 ): void {
-		if ( 1 !== preg_match( '/^[a-z0-9-]+$/', $name ) ) {
-			throw new \InvalidArgumentException( 'Fragment names use lowercase letters, digits and hyphens.' );
+		if ( 1 !== preg_match( '/^[a-z0-9-]{1,64}$/', $name ) ) {
+			throw new \InvalidArgumentException( 'Fragment names use 1 to 64 lowercase letters, digits or hyphens.' );
 		}
 		$this->fragments[ $name ] = array(
 			'renderer' => $renderer,
@@ -96,6 +96,9 @@ final class FragmentLazy {
 		foreach ( $this->fragments[ $name ]['schema'] ?? array() as $key => $rule ) {
 			$value = $params[ $key ] ?? $rule['default'] ?? null;
 			if ( null === $value ) {
+				if ( ! empty( $rule['required'] ) ) {
+					return new \WP_Error( 'rest_invalid_param', sprintf( 'Parameter %s is required.', $key ), array( 'status' => 400 ) );
+				}
 				continue;
 			}
 			switch ( (string) ( $rule['type'] ?? 'string' ) ) {
@@ -140,6 +143,11 @@ final class FragmentLazy {
 			return null;
 		}
 		if ( null === $fragment['renderer'] ) {
+			$post_id = (int) ( $args['post'] ?? 0 );
+			$post    = $post_id > 0 ? get_post( $post_id ) : null;
+			if ( ! $post instanceof \WP_Post || 'publish' !== $post->post_status || '' !== $post->post_password ) {
+				return null;
+			}
 			$stored = $this->cache->peek( $this->snapshotKey( $name, $args ), array( 'posts' ), 'lazy' );
 			return is_string( $stored ) ? $stored : null;
 		}
@@ -194,6 +202,6 @@ final class FragmentLazy {
 	 */
 	private function snapshotKey( string $name, array $args ): string {
 		ksort( $args );
-		return 'snapshot:' . $name . ':' . md5( (string) wp_json_encode( $args ) );
+		return 'snapshot:public-v2:' . $name . ':' . md5( (string) wp_json_encode( $args ) );
 	}
 }

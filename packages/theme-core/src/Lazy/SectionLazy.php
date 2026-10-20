@@ -13,7 +13,7 @@ use JOOservices\ThemeCore\Config\Manifest;
 
 /**
  * Adds the `joo-cv` class (CSS content-visibility:auto with a reserved size) to blocks that sit below the
- * first screen and defers the comments block into a fragment.
+ * first screen and defers anonymous comments on published, unprotected posts into a fragment.
  *
  * @internal
  */
@@ -68,8 +68,9 @@ final class SectionLazy {
 			null,
 			array(
 				'post'  => array(
-					'type' => 'int',
-					'min'  => 1,
+					'type'     => 'int',
+					'min'      => 1,
+					'required' => true,
 				),
 				'cpage' => array(
 					'type'    => 'int',
@@ -126,6 +127,16 @@ final class SectionLazy {
 		$post_id = (int) get_the_ID();
 		if ( $post_id < 1 || ! $this->policy->decide( 'comments' )->lazy ) {
 			return $html;
+		}
+		$post = get_post( $post_id );
+		if ( ! $post instanceof \WP_Post || 'publish' !== $post->post_status || '' !== $post->post_password || is_user_logged_in() ) {
+			return $html;
+		}
+		$commenter = wp_get_current_commenter();
+		foreach ( array( 'comment_author', 'comment_author_email', 'comment_author_url' ) as $field ) {
+			if ( '' !== (string) ( $commenter[ $field ] ?? '' ) ) {
+				return $html;
+			}
 		}
 		if ( str_contains( $html, '<joo-lazy name="comments"' ) ) {
 			// WordPress can run render_block twice for the comments block; wrapping the wrapper would make the

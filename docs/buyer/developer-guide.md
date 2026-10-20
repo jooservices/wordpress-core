@@ -6,20 +6,35 @@ Only symbols tagged `@api` in `packages/theme-core/src` are stable. Public hook 
 
 ## REST routes and blocks
 
-The generated [surface reference](../reference/surface.md) lists REST routes in the `joo/v1` namespace, blocks, post types, and stored data. The theme's routes below `/wp-json/joo/v1/` are unauthenticated, read-only `GET` requests and return published public content. The controller source is the contract for validation and response fields; see [content routes](../../packages/theme-core/src/Content/Rest/ContentRoutes.php), [fragment route](../../packages/theme-core/src/Lazy/Rest/FragmentController.php), and [terminal file-system route](../../packages/theme-core/src/Terminal/Rest/FsRoute.php).
+The generated [surface reference](../reference/surface.md) lists REST routes in the `joo/v1` namespace, blocks, post types, and stored data. Every route below is read-only, accepts `GET`, and uses `__return_true` as its permission callback. Responses contain published public content only. The controller source is the validation and response contract: [content routes](../../packages/theme-core/src/Content/Rest/ContentRoutes.php), [fragment route](../../packages/theme-core/src/Lazy/Rest/FragmentController.php), and [terminal file-system route](../../packages/theme-core/src/Terminal/Rest/FsRoute.php).
 
-| Path | Query parameters | Response |
-|---|---|---|
-| `/companies` | `page` (integer, default `1`); `per_page` (integer, default `5`, range `1`–`20`); `exclude_pinned` (boolean, default `true`) | Company cards. Pagination totals are in `X-WP-Total` and `X-WP-TotalPages` headers. |
-| `/categories/tree` | `hide_empty` (boolean, default `true`) | Category tree. |
-| `/topics` | `limit` (integer, default from `content.topics_limit`, range `1`–`20`); `strategy` (`count` or `manual`, default from `content.topics_strategy`) | Topic list. |
-| `/featured` | `limit` (integer, default `5`, range `1`–`12`) | Featured post cards. |
-| `/related/{post_id}` | `post_id` (positive integer in the path); `limit` (integer, default `3`, range `1`–`8`) | Related post cards. |
-| `/profile` | None | Selected public profile, or an empty array when none is configured. |
-| `/fragment/{name}` | Fragment-specific validated query parameters | `{ "html": "…", "etag": "…" }`. Unknown or unavailable fragments return `404`; invalid parameters return `400`. |
-| `/terminal/fs` | `lang` (optional 2–3 letter language code with optional region) | A read-only virtual tree of published site content. It does not expose server files, drafts, private posts, or password-protected posts. |
+### Route catalog
 
-Successful `GET` responses have public cache headers for 300 seconds, a weak `ETag`, and support `If-None-Match` with `304 Not Modified`. Do not edge-cache `/wp-json/joo/v1/fragment/comments` for logged-in visitors. Keep routes read-only and never expose private data; add an explicit permission callback before introducing any protected or writable route.
+| Path | Method | Permission callback | Parameters and validation |
+|---|---|---|---|
+| `/companies` | `GET` | `__return_true` | `page`: integer, default `1`, range `1`–`1000`; `per_page`: integer, default `5`, range `1`–`20`; `exclude_pinned`: boolean, default `true`, sanitized to a boolean. |
+| `/categories/tree` | `GET` | `__return_true` | `hide_empty`: boolean, default `true`, sanitized to a boolean. |
+| `/topics` | `GET` | `__return_true` | `limit`: integer, default from `content.topics_limit`, range `1`–`20`; `strategy`: `count` or `manual`, default from `content.topics_strategy`. |
+| `/featured` | `GET` | `__return_true` | `limit`: integer, default `5`, range `1`–`12`. |
+| `/related/{post_id}` | `GET` | `__return_true` | `post_id`: positive integer in the path; `limit`: integer, default `3`, range `1`–`8`. |
+| `/profile` | `GET` | `__return_true` | No parameters. Returns the selected public profile, or an empty array when none is configured. |
+| `/fragment/{name}` | `GET` | `__return_true` | `name`: registered lowercase letters, digits or hyphens, 1–64 characters. Query parameters are validated against the selected fragment's schema below. Unknown fragments return `404`; invalid values return `400`. |
+| `/terminal/fs` | `GET` | `__return_true` | `lang`: optional 2–3 ASCII letters, optionally followed by `-` or `_` and a 2-letter region. Invalid values return `400`. |
+
+### Core lazy-fragment schemas
+
+All fragment query parameters are optional unless stated otherwise. Integers must be whole numbers and obey the listed ranges; booleans are normalized; strings are sanitized and capped at the listed length.
+
+| Fragment name | Query parameters and validation |
+|---|---|
+| `companies` | `page` integer ≥1 (default `1`); `per` integer 1–10 (default `2`); `desc` boolean (default `true`); `pinned` string ≤60 characters; `list` string ≤80; `title` string ≤60. |
+| `category-tree` | `counts`, `desc`, `empty` booleans (default `true`); `open` integer 0–3 (default `0`); `depth` integer 1–4 (default `3`); `current` integer ≥0 (default `0`); `title` string ≤60. |
+| `top-topics` | `limit` integer 1–12 (default `4`); `strategy` `count` or `manual` (default `count`); `image` and `intro` booleans (default `true`); `title` string ≤60. |
+| `tag-list` | `limit` integer 5–60 (default `24`); `orderby` `count` or `name` (default `count`); `counts` boolean (default `true`); `style` `chips` or `cloud` (default `chips`); `title` string ≤60. |
+| `related` | `post` positive integer (required; missing returns `400`); `limit` integer 1–8 (default `3`); `image` boolean (default `true`); `excerpt` boolean (default `false`). |
+| `comments` | `post` positive integer (required; missing returns `400`); `cpage` integer ≥1 (default `1`). A snapshot is returned only for a published, unprotected post. Personalized renders are not stored. Successful responses use `private, no-store`. |
+
+Successful responses from content, terminal, and renderer-backed fragment routes have `Cache-Control: public, max-age=300, stale-while-revalidate=600`, a weak `ETag`, and support `If-None-Match` with `304 Not Modified`. Draft, private, and password-protected posts are excluded from content and terminal results and cannot be used to read comment snapshots. Published content record IDs in `Company.id`, `PostCard.id`, and terminal post nodes are intentional public identifiers; account IDs, `user_login`, and `user_email` are not part of these response schemas. Invalid requests and missing routes are not cached.
 
 ## Theme templates and child theme
 
