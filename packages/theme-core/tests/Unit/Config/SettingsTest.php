@@ -47,40 +47,78 @@ final class SettingsTest extends UnitTestCase {
 		return new Settings( $schema, new Manifest( $manifest ), new SettingsRepository( 'demo-theme', $schema ) );
 	}
 
+	private function assertSourceForType( Settings $settings, string $key, string $type, string $source ): void {
+		$this->assertSame( $type, $settings->schema()->get( $key )['type'], "$key must be a $type setting" );
+		$this->assertSame( $source, $settings->source( $key ), "$key must use the $source source" );
+	}
+
 	public function test_core_default_is_the_last_resort(): void {
 		$s = $this->settings();
 		$this->assertTrue( $s->get( 'lazy.images' ) );
-		$this->assertSame( 'core', $s->source( 'lazy.images' ) );
+		$this->assertSourceForType( $s, 'core.debug', 'boolean', 'core' );
 		$this->assertSame( 1, $s->get( 'lazy.eager_count' ) );
+		$this->assertSourceForType( $s, 'lazy.eager_count', 'integer', 'core' );
+		$this->assertSourceForType( $s, 'seo.yield', 'string', 'core' );
+		$this->assertSourceForType( $s, 'content.topics_manual', 'array', 'core' );
 	}
 
 	public function test_manifest_beats_core_default_even_when_false(): void {
 		$s = $this->settings(
 			array(
-				'lazy' => array(
+				'lazy'     => array(
 					'images'     => false,
 					'eagerCount' => 2,
+				),
+				'features' => array( 'slider' => false ),
+				'terminal' => array( 'maxPosts' => 240 ),
+				'i18n'     => array(
+					'default'   => 'fr',
+					'languages' => array( 'en', 'fr' ),
 				),
 			)
 		);
 		$this->assertFalse( $s->get( 'lazy.images' ) );
 		$this->assertSame( 2, $s->get( 'lazy.eager_count' ) );
-		$this->assertSame( 'manifest', $s->source( 'lazy.images' ) );
+		$this->assertSourceForType( $s, 'lazy.images', 'boolean', 'manifest' );
+		$this->assertSourceForType( $s, 'terminal.max_posts', 'integer', 'manifest' );
+		$this->assertSourceForType( $s, 'i18n.default', 'string', 'manifest' );
+		$this->assertSourceForType( $s, 'i18n.languages', 'array', 'manifest' );
 	}
 
 	public function test_saved_value_beats_manifest(): void {
 		$s = $this->settings( array( 'lazy' => array( 'images' => false ) ) );
-		$s->save( array( 'lazy.images' => '1' ) );
+		$s->save(
+			array(
+				'lazy.images'           => '1',
+				'content.topics_limit'  => 6,
+				'seo.yield'             => 'never',
+				'content.topics_manual' => array( 12, 15 ),
+			)
+		);
 		$this->assertTrue( $s->get( 'lazy.images' ) );
-		$this->assertSame( 'user', $s->source( 'lazy.images' ) );
+		$this->assertSourceForType( $s, 'lazy.images', 'boolean', 'user' );
+		$this->assertSourceForType( $s, 'content.topics_limit', 'integer', 'user' );
+		$this->assertSourceForType( $s, 'seo.yield', 'string', 'user' );
+		$this->assertSourceForType( $s, 'content.topics_manual', 'array', 'user' );
 	}
 
 	public function test_filter_beats_everything(): void {
 		$s = $this->settings();
 		$s->repository()->save( array( 'seo.yield' => 'never' ) );
-		Filters\expectApplied( 'joo/settings/value' )->andReturnUsing( static fn( $value, $key ) => 'seo.yield' === $key ? 'always' : $value );
+		$filtered_values = array(
+			'core.debug'            => true,
+			'lazy.eager_count'      => 3,
+			'seo.yield'             => 'always',
+			'content.topics_manual' => array( 20 ),
+		);
+		Filters\expectApplied( 'joo/settings/value' )->andReturnUsing(
+			static fn( $value, $key ) => $filtered_values[ $key ] ?? $value
+		);
 		$this->assertSame( 'always', $s->get( 'seo.yield' ) );
-		$this->assertSame( 'filter', $s->source( 'seo.yield' ) );
+		$this->assertSourceForType( $s, 'core.debug', 'boolean', 'filter' );
+		$this->assertSourceForType( $s, 'lazy.eager_count', 'integer', 'filter' );
+		$this->assertSourceForType( $s, 'seo.yield', 'string', 'filter' );
+		$this->assertSourceForType( $s, 'content.topics_manual', 'array', 'filter' );
 		$this->assertTrue( $s->get( 'lazy.images' ) );
 	}
 
@@ -122,7 +160,7 @@ final class SettingsTest extends UnitTestCase {
 	}
 
 	public function test_invalid_values_are_reported_and_not_stored(): void {
-		$result = $this->settings()->repository()->save(
+		$result = $this->settings()->save(
 			array(
 				'seo.yield'        => 'sometimes',
 				'lazy.eager_count' => '99',
@@ -132,6 +170,9 @@ final class SettingsTest extends UnitTestCase {
 		$this->assertArrayHasKey( 'seo.yield', $result['errors'] );
 		$this->assertArrayHasKey( 'lazy.eager_count', $result['errors'] );
 		$this->assertSame( array( 'lazy.images' => false ), $result['saved'] );
+		$this->assertSame( array( 'lazy.images' => false ), $this->options['joo_demo_theme_settings'] );
+		$this->assertArrayNotHasKey( 'seo.yield', $this->options['joo_demo_theme_settings'] );
+		$this->assertArrayNotHasKey( 'lazy.eager_count', $this->options['joo_demo_theme_settings'] );
 	}
 
 	public function test_unknown_keys_are_ignored_on_save(): void {
@@ -186,6 +227,57 @@ final class SettingsTest extends UnitTestCase {
 			$result            = $sanitizer->sanitize( $definition, $definition['default'] );
 			$this->assertTrue( $result['ok'], "$key default must be valid: " . $result['error'] );
 			$this->assertSame( $definition['default'], $result['value'], "$key default must survive sanitising" );
+		}
+	}
+
+	public function test_every_schema_setting_has_a_documented_contract(): void {
+		$schema_path = dirname( __DIR__, 3 ) . '/schema/settings.schema.json';
+		$doc_path    = dirname( __DIR__, 5 ) . '/docs/reference/settings.md';
+		$definition  = json_decode( (string) file_get_contents( $schema_path ), true, 512, JSON_THROW_ON_ERROR );
+		$document    = (string) file_get_contents( $doc_path );
+		$schema      = new SettingsSchema();
+		$sanitizer   = new Sanitizer();
+
+		Functions\when( 'sanitize_text_field' )->alias( static fn( $value ) => trim( strip_tags( (string) $value ) ) );
+
+		$this->assertSame( array_keys( $definition['settings'] ), array_keys( $schema->all() ) );
+		foreach ( $definition['settings'] as $key => $setting ) {
+			$this->assertSame( $setting, $schema->get( $key ), "$key must be exposed as its schema descriptor" );
+			foreach ( array( 'type', 'title', 'description', 'group', 'ui' ) as $descriptor_field ) {
+				$this->assertArrayHasKey( $descriptor_field, $setting, "$key must define its $descriptor_field descriptor" );
+				$this->assertIsString( $setting[ $descriptor_field ], "$key $descriptor_field descriptor must be a string" );
+				$this->assertNotSame( '', $setting[ $descriptor_field ], "$key must not have an empty $descriptor_field descriptor" );
+			}
+			$this->assertArrayHasKey( 'default', $setting, "$key must define a default" );
+			$this->assertArrayHasKey( 'sanitize', $setting, "$key must define a sanitiser name" );
+			$this->assertIsString( $setting['sanitize'], "$key sanitiser name must be a string" );
+			$this->assertNotSame( '', $setting['sanitize'], "$key must define a non-empty sanitiser name" );
+			if ( array_key_exists( 'manifest', $setting ) ) {
+				$this->assertIsString( $setting['manifest'], "$key manifest mapping must be a path" );
+				$this->assertNotSame( '', $setting['manifest'], "$key manifest mapping must not be empty" );
+			}
+
+			$setting_with_key        = $setting;
+			$setting_with_key['key'] = $key;
+			$sanitized_default       = $sanitizer->sanitize( $setting_with_key, $setting['default'] );
+			$this->assertTrue( $sanitized_default['ok'], "$key default must be accepted by its sanitiser: " . $sanitized_default['error'] );
+			$this->assertSame( $setting['default'], $sanitized_default['value'], "$key default must survive sanitising" );
+
+			$encoded_default = json_encode( $setting['default'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+			$this->assertNotFalse( $encoded_default, "$key default must be JSON encodable" );
+			$manifest_path  = isset( $setting['manifest'] ) ? '`' . $setting['manifest'] . '`' : '—';
+			$description    = str_replace( '|', '/', (string) ( $setting['description'] ?? $setting['title'] ) );
+			$documented_row = sprintf(
+				'| `%s` | %s | `%s` | `%s` | %s | %s | %s |',
+				$key,
+				$setting['type'],
+				$encoded_default,
+				$setting['sanitize'],
+				$manifest_path,
+				$setting['group'],
+				$description
+			);
+			$this->assertStringContainsString( $documented_row, $document, "$key must be documented with its type, default, sanitiser, mapping and description" );
 		}
 	}
 }

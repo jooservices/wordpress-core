@@ -57,9 +57,19 @@ $title = Hooks::filter( 'joo/seo/title', $title, $this->context() );
     expect(page).toContain('- `joo/core/ready` — Action; arguments: `$container`.');
 
     const settings = settingsPage({
-      settings: { 'a.b': { type: 'boolean', default: true, group: 'general', title: 'T', description: 'D | x' } },
+      settings: {
+        'a.b': {
+          type: 'boolean',
+          default: true,
+          sanitize: 'bool',
+          manifest: 'features.a',
+          group: 'general',
+          title: 'T',
+          description: 'D | x',
+        },
+      },
     });
-    expect(settings).toContain('| `a.b` | boolean | `true` | general | D / x |');
+    expect(settings).toContain('| `a.b` | boolean | `true` | `bool` | `features.a` | general | D / x |');
   });
 
   it('fails when a hook from source is missing from the docs', () => {
