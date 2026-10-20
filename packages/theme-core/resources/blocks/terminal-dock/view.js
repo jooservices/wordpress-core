@@ -30,6 +30,7 @@ export class JooTerminal extends HTMLElement {
   disconnectedCallback() {
     document.removeEventListener('keydown', this.onKey);
     window.visualViewport?.removeEventListener('resize', this.onViewport);
+    this.api?.destroy?.();
     this.controller?.abort();
   }
 
@@ -43,6 +44,11 @@ export class JooTerminal extends HTMLElement {
   }
 
   open() {
+    if (!this.isOpen()) {
+      const active = document.activeElement;
+      this.returnFocusTo =
+        active instanceof HTMLElement && active !== document.body && !this.contains(active) ? active : this.tab;
+    }
     this.dataset.state = 'open';
     this.panel.hidden = false;
     this.tab.setAttribute('aria-expanded', 'true');
@@ -56,7 +62,10 @@ export class JooTerminal extends HTMLElement {
     this.dataset.state = 'closed';
     this.panel.hidden = true;
     this.tab.setAttribute('aria-expanded', 'false');
-    this.tab.focus();
+    const target = this.returnFocusTo;
+    this.returnFocusTo = null;
+    if (target instanceof HTMLElement && target.isConnected && !target.closest('[hidden]')) target.focus();
+    else this.tab.focus();
   }
 
   /** Loads the terminal module and the FS JSON once. */
@@ -64,7 +73,12 @@ export class JooTerminal extends HTMLElement {
     const loading = document.createElement('p');
     loading.className = 'joo-term__line joo-term__dim';
     loading.textContent = t('terminal.loading', 'loading file system…');
+    loading.setAttribute('role', 'status');
+    loading.setAttribute('aria-live', 'polite');
+    loading.setAttribute('aria-atomic', 'true');
+    loading.tabIndex = -1;
     this.panel.replaceChildren(loading);
+    loading.focus();
     this.controller = new AbortController();
     try {
       const lang = config().lang ?? '';
@@ -80,7 +94,7 @@ export class JooTerminal extends HTMLElement {
         shortcuts: config().terminalShortcuts,
       });
       if (failed) this.api.run('echo fs: failed to load (close and reopen to retry); help still works');
-      this.api.focus();
+      if (this.isOpen()) this.api.focus();
     } catch {
       loading.textContent = t('terminal.failed', 'The terminal could not be loaded.');
       this.started = false;
