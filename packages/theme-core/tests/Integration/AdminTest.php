@@ -82,6 +82,108 @@ final class AdminTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'Detected plugins', $this->renderTab( $page, 'compatibility' ) );
 	}
 
+	public function test_compatibility_rows_and_tag_choices_are_rendered(): void {
+		$page = $this->page();
+		$this->asAdmin();
+		$tag = self::factory()->tag->create( array( 'name' => 'Coverage tag' ) );
+		add_filter(
+			'joo/compat/report',
+			static fn() => array(
+				array(
+					'label'    => 'Example SEO',
+					'version'  => '1.2.3',
+					'provides' => array( 'seo' ),
+					'adapter'  => 'ExampleAdapter',
+					'notice'   => 'Coverage note',
+				),
+			)
+		);
+
+		ob_start();
+		$page->renderCompatibility();
+		$compatibility = (string) ob_get_clean();
+		$this->assertStringContainsString( 'Example SEO', $compatibility );
+		$this->assertStringContainsString( 'ExampleAdapter', $compatibility );
+		$this->assertStringContainsString( 'Coverage note', $compatibility );
+
+		$html = $this->renderTab( $page, 'content' );
+		$this->assertGreaterThan( 0, $tag );
+		$this->assertStringContainsString( 'Coverage tag', $html );
+	}
+
+	public function test_settings_notices_and_tools_performance_states_are_rendered(): void {
+		$page = $this->page();
+		$this->asAdmin();
+		$user_id = get_current_user_id();
+		set_transient(
+			'joo_settings_notice_' . $user_id,
+			array(
+				'errors' => array(),
+				'saved'  => array( 'lazy.images' ),
+			),
+			60
+		);
+		$html = $this->renderTab( $page, 'unknown-tab' );
+		$this->assertStringContainsString( 'Settings saved.', $html );
+		$this->assertFalse( get_transient( 'joo_settings_notice_' . $user_id ) );
+
+		set_transient(
+			'joo_selftest_' . $user_id,
+			array(
+				'ok'      => true,
+				'status'  => 200,
+				'ttfb_ms' => 12,
+				'bytes'   => 1200,
+				'scripts' => 3,
+				'styles'  => 2,
+				'images'  => 1,
+			),
+			60
+		);
+		ob_start();
+		$page->renderTools();
+		$tools = (string) ob_get_clean();
+		$this->assertStringContainsString( 'Home page: HTTP 200', $tools );
+		$this->assertFalse( get_transient( 'joo_selftest_' . $user_id ) );
+
+		set_transient( 'joo_selftest_' . $user_id, array( 'ok' => false ), 60 );
+		ob_start();
+		$page->renderTools();
+		$this->assertStringContainsString( 'could not reach the home page', (string) ob_get_clean() );
+
+		Kernel::reset();
+		ob_start();
+		$page->renderTools();
+		$this->assertStringContainsString( 'performance module is not running', (string) ob_get_clean() );
+	}
+
+	public function test_settings_error_notice_highlights_the_invalid_field(): void {
+		$page = $this->page();
+		$this->asAdmin();
+		set_transient(
+			'joo_settings_notice_' . get_current_user_id(),
+			array(
+				'errors' => array( 'lazy.eager_count' => 'Enter a whole number.' ),
+				'saved'  => array(),
+			),
+			60
+		);
+		$html = $this->renderTab( $page, 'lazy' );
+		$this->assertStringContainsString( 'Some values were not saved.', $html );
+		$this->assertStringContainsString( 'Enter a whole number.', $html );
+		$this->assertStringContainsString( 'aria-describedby="joo-lazy-eager-count-desc joo-lazy-eager-count-error"', $html );
+	}
+
+	public function test_settings_page_assets_are_limited_to_its_screen(): void {
+		$page = $this->page();
+		$page->enqueue( 'dashboard' );
+		$this->assertFalse( wp_script_is( 'joo-settings', 'enqueued' ) );
+
+		$page->enqueue( 'appearance_page_' . SettingsPage::SLUG );
+		$this->assertTrue( wp_script_is( 'joo-settings', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'joo-settings', 'enqueued' ) );
+	}
+
 	public function test_saving_stores_valid_values_and_reports_invalid_ones(): void {
 		$page   = $this->page();
 		$result = $page->process(
@@ -318,6 +420,127 @@ final class AdminTest extends IntegrationTestCase {
 				'panel' => 'p',
 			)
 		);
+	}
+
+	public function test_classic_editor_boxes_render_supported_controls_and_the_block_editor_hint(): void {
+		$panels = new EditorPanels();
+		foreach (
+			array(
+				array(
+					'key'   => '_joo_bad_type',
+					'type'  => 'unsupported',
+					'label' => 'Bad type',
+					'panel' => 'card-options',
+				),
+				array(
+					'key'   => '_joo_no_label',
+					'type'  => 'string',
+					'panel' => 'card-options',
+				),
+			)
+			as $invalid_definition
+		) {
+			try {
+				$panels->add( $invalid_definition );
+				$this->fail( 'Invalid panel fields must be rejected.' );
+			} catch ( \InvalidArgumentException $error ) {
+				$this->assertNotSame( '', $error->getMessage() );
+			}
+		}
+		$panels->panel( 'card-options', 'Card options' );
+		$panels->add(
+			array(
+				'key'   => '_joo_featured',
+				'type'  => 'boolean',
+				'label' => 'Featured',
+				'panel' => 'card-options',
+				'help'  => 'Show a badge.',
+			)
+		);
+		$panels->add(
+			array(
+				'key'   => '_joo_layout',
+				'type'  => 'string',
+				'label' => 'Layout',
+				'panel' => 'card-options',
+				'enum'  => array( 'wide', 'compact' ),
+				'ui'    => 'select',
+			)
+		);
+		$panels->add(
+			array(
+				'key'   => '_joo_caption',
+				'type'  => 'string',
+				'label' => 'Caption',
+				'panel' => 'card-options',
+				'ui'    => 'textarea',
+			)
+		);
+		$panels->add(
+			array(
+				'key'   => '_joo_rank',
+				'type'  => 'integer',
+				'label' => 'Rank',
+				'panel' => 'card-options',
+				'ui'    => 'number',
+			)
+		);
+		$panels->add(
+			array(
+				'key'        => '_joo_page_note',
+				'type'       => 'string',
+				'label'      => 'Page note',
+				'panel'      => 'card-options',
+				'post_types' => array( 'page' ),
+			)
+		);
+		$panels->add(
+			array(
+				'key'   => '_joo_free_text',
+				'type'  => 'string',
+				'label' => 'Free text',
+				'panel' => 'free-panel',
+			)
+		);
+
+		$post_id = self::factory()->post->create();
+		update_post_meta( $post_id, '_joo_featured', '1' );
+		$panels->addClassicBoxes();
+		global $wp_meta_boxes;
+		$box = $wp_meta_boxes['post']['side']['default']['joo-card-options'];
+
+		add_filter( 'use_block_editor_for_post', '__return_false' );
+		ob_start();
+		$box['callback']( get_post( $post_id ), $box );
+		$html = (string) ob_get_clean();
+		remove_filter( 'use_block_editor_for_post', '__return_false' );
+		$this->assertStringContainsString( 'name="joo_panel[_joo_featured]" value="1" checked', $html );
+		$this->assertStringContainsString( '<select', $html );
+		$this->assertStringContainsString( '<textarea', $html );
+		$this->assertStringContainsString( 'type="number"', $html );
+		$this->assertStringNotContainsString( 'Page note', $html );
+		$this->assertStringContainsString( 'Show a badge.', $html );
+		$payload = $panels->payload();
+		$this->assertSame( 'Free panel', $payload[1]['title'] );
+
+		add_filter( 'use_block_editor_for_post', '__return_true' );
+		ob_start();
+		$box['callback']( get_post( $post_id ), $box );
+		$this->assertStringContainsString( 'These options are in the editor sidebar.', (string) ob_get_clean() );
+		remove_filter( 'use_block_editor_for_post', '__return_true' );
+
+		$page_box = $wp_meta_boxes['page']['side']['default']['joo-card-options'];
+		$page_id  = self::factory()->post->create( array( 'post_type' => 'page' ) );
+		add_filter( 'use_block_editor_for_post', '__return_false' );
+		ob_start();
+		$page_box['callback']( get_post( $page_id ), $page_box );
+		$this->assertStringContainsString( 'Page note', (string) ob_get_clean() );
+		remove_filter( 'use_block_editor_for_post', '__return_false' );
+
+		$empty = new EditorPanels();
+		$empty->enqueueEditor();
+		$panels->enqueueEditor();
+		$this->assertTrue( wp_script_is( 'joo-editor-panels', 'registered' ) );
 	}
 
 	public function test_classic_meta_box_saves_with_nonce_and_capability(): void {
