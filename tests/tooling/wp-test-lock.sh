@@ -57,6 +57,29 @@ if [[ -e "$dead_lock" ]]; then
 fi
 echo "ok:   dead owner is removed, logged, and replaced"
 
+empty_lock="$tmp/empty-owner.lock"
+: > "$empty_lock"
+if ! wp_task_lock_acquire "$empty_lock" 2> "$tmp/empty.stderr"; then
+  echo "FAIL: empty-owner recovery did not acquire the lock." >&2
+  cat "$tmp/empty.stderr" >&2
+  exit 1
+fi
+empty_output="$(cat "$tmp/empty.stderr")"
+if [[ "$empty_output" != *"Removed stale shared WordPress test lock with an empty or invalid owner marker."* ]]; then
+  echo "FAIL: empty-owner recovery did not log the stale marker." >&2
+  exit 1
+fi
+if [[ "$(cat "$empty_lock")" != "$$" ]]; then
+  echo "FAIL: empty-owner recovery did not record the current owner." >&2
+  exit 1
+fi
+wp_task_lock_release
+if [[ -e "$empty_lock" ]]; then
+  echo "FAIL: empty-owner lock release left the owner marker behind." >&2
+  exit 1
+fi
+echo "ok:   empty owner marker is removed, logged, and replaced"
+
 live_lock="$tmp/live-owner.lock"
 sleep 30 &
 holder_pid="$!"

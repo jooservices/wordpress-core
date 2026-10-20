@@ -145,15 +145,28 @@ wp_task_lock_acquire() {
     # Inspect the owner before sleeping. Protect marker cleanup and creation
     # with the short-lived guard so concurrent waiters cannot remove a new PID.
     owner_pid="$(cat "$lock_path" 2>/dev/null || true)"
-    if [[ "$owner_pid" =~ ^[1-9][0-9]*$ ]] && ! kill -0 "$owner_pid" 2>/dev/null; then
-      rm -f -- "$lock_path" || {
-        echo "ERROR: could not remove stale shared WordPress test lock: $lock_path" >&2
-        flock -u 9 || true
-        exec 9>&-
-        return 1
-      }
-      echo "Removed stale shared WordPress test lock for dead owner PID $owner_pid." >&2
-      owner_pid=""
+    if [[ -e "$lock_path" ]]; then
+      if [[ "$owner_pid" =~ ^[1-9][0-9]*$ ]]; then
+        if ! kill -0 "$owner_pid" 2>/dev/null; then
+          rm -f -- "$lock_path" || {
+            echo "ERROR: could not remove stale shared WordPress test lock: $lock_path" >&2
+            flock -u 9 || true
+            exec 9>&-
+            return 1
+          }
+          echo "Removed stale shared WordPress test lock for dead owner PID $owner_pid." >&2
+          owner_pid=""
+        fi
+      else
+        rm -f -- "$lock_path" || {
+          echo "ERROR: could not remove stale shared WordPress test lock: $lock_path" >&2
+          flock -u 9 || true
+          exec 9>&-
+          return 1
+        }
+        echo "Removed stale shared WordPress test lock with an empty or invalid owner marker." >&2
+        owner_pid=""
+      fi
     fi
 
     if [[ ! -e "$lock_path" ]]; then
