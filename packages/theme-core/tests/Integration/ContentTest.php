@@ -477,7 +477,9 @@ final class ContentTest extends IntegrationTestCase {
 
 		$paths = array( '/terminal/fs', '/companies', '/categories/tree', '/topics', '/featured', '/related/1', '/profile', '/fragment/companies' );
 		foreach ( $paths as $path ) {
-			$response = rest_do_request( new \WP_REST_Request( 'GET', '/joo/v1' . $path ) );
+			$request  = new \WP_REST_Request( 'GET', '/joo/v1' . $path );
+			$response = rest_do_request( $request );
+			$response = apply_filters( 'rest_post_dispatch', $response, rest_get_server(), $request );
 			$this->assertSame( 200, $response->get_status(), 'GET must be accepted for ' . $path );
 			$this->assertStringContainsString( 'public, max-age=300, stale-while-revalidate=600', $response->get_headers()['Cache-Control'], $path . ' cache policy' );
 			$this->assertArrayHasKey( 'ETag', $response->get_headers(), $path . ' ETag' );

@@ -292,6 +292,7 @@ final class LazyTest extends IntegrationTestCase {
 		$request   = new \WP_REST_Request( 'GET', '/joo/v1/fragment/rows' );
 		$request->set_query_params( array( 'limit' => '3' ) );
 		$response = rest_do_request( $request );
+		$response = apply_filters( 'rest_post_dispatch', $response, rest_get_server(), $request );
 		$this->assertSame( 200, $response->get_status() );
 		$data = $response->get_data();
 		$this->assertSame( $renderer( array( 'limit' => 3 ) ), $data['html'], 'REST and inline HTML are byte-identical' );
@@ -437,6 +438,7 @@ final class LazyTest extends IntegrationTestCase {
 			)
 		);
 		$response = rest_do_request( $request );
+		$response = apply_filters( 'rest_post_dispatch', $response, rest_get_server(), $request );
 		$this->assertSame( 200, $response->get_status() );
 		$this->assertSame( 'private, no-store', $response->get_headers()['Cache-Control'] );
 		$this->assertSame( 'Cookie, Accept-Encoding', $response->get_headers()['Vary'] );
