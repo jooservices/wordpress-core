@@ -37,7 +37,11 @@ if ( is_file( $joo_core ) ) {
 
 tests_add_filter(
 	'muplugins_loaded',
-	static function () use ( $joo_root ): void {
+	static function () use ( $joo_root, $joo_theme ): void {
+		if ( 'magazine' === $joo_theme ) {
+			return;
+		}
+
 		$plugin = $joo_root . '/plugins/jooservices-resume/jooservices-resume.php';
 		if ( is_file( $plugin ) ) {
 			require_once $plugin;

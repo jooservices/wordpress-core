@@ -68,6 +68,17 @@ acquire_shared_wp_test_lock() {
   wp_task_lock_acquire "$lock_path" "$WP_TASK_LOCK_WAIT_SECONDS"
 }
 
+theme_source() {
+  if [[ -d "$ROOT/themes/$theme" ]]; then
+    printf '%s\n' "$ROOT/themes/$theme"
+  elif [[ -d "$ROOT/tests/fixtures/themes/$theme" ]]; then
+    printf '%s\n' "$ROOT/tests/fixtures/themes/$theme"
+  else
+    echo "ERROR: theme '$theme' not found in themes/ or tests/fixtures/themes/." >&2
+    return 1
+  fi
+}
+
 restore_theme_source=0
 restore_sources() {
   if ((restore_theme_source)); then
@@ -278,6 +289,9 @@ case "$action" in
   e2e)
     acquire_shared_wp_test_lock || exit $?
     ensure_site
+    if [[ -d "$ROOT/tests/fixtures/themes/$theme" ]] && wpx plugin is-active jooservices-resume >/dev/null 2>&1; then
+      wpx plugin deactivate jooservices-resume >/dev/null
+    fi
     E2E_THEME="$theme" rt playwright npx --no-install playwright test -c tests/e2e/playwright.config.ts "$@"
     ;;
   e2e-demo)

@@ -10,6 +10,7 @@ node_modules/
 *.log
 .DS_Store
 /themes/*/core
+/tests/fixtures/themes/*/core
 /themes/*/assets/build/
 /packages/*/resources/build/
 .phpunit.result.cache
