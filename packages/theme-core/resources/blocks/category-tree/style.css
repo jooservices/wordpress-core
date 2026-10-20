@@ -37,6 +37,10 @@
   content: '▸';
 }
 
+.joo-tree__toggle[aria-expanded='false']:dir(rtl)::before {
+  content: '◂';
+}
+
 .joo-tree__count {
   margin-inline-start: auto;
   font-size: 0.75rem;
