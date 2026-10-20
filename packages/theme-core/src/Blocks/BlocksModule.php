@@ -107,8 +107,9 @@ final class BlocksModule extends AbstractModule {
 			},
 			array(
 				'post'    => array(
-					'type' => 'int',
-					'min'  => 1,
+					'type'     => 'int',
+					'min'      => 1,
+					'required' => true,
 				),
 				'limit'   => array(
 					'type'    => 'int',
