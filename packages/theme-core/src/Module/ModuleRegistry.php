@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JOOservices\ThemeCore\Module;
 
+use JOOservices\ThemeCore\Admin\Notices;
 use JOOservices\ThemeCore\Container\Container;
 use JOOservices\ThemeCore\Support\Logger;
 
@@ -216,7 +217,8 @@ final class ModuleRegistry {
 				if ( in_array( $this->status[ $dependency ] ?? '', array( self::STATUS_FAILED, self::STATUS_BLOCKED ), true ) ) {
 					$this->status[ $id ]   = self::STATUS_BLOCKED;
 					$this->messages[ $id ] = sprintf( 'Dependency "%s" failed.', $dependency );
-					$blocked               = true;
+					Notices::add( 'warning', sprintf( 'Module "%1$s" was blocked because dependency "%2$s" did not start.', $id, $dependency ), 'module-blocked-' . $id );
+					$blocked = true;
 					break;
 				}
 			}
@@ -266,6 +268,7 @@ final class ModuleRegistry {
 	private function fail( string $id, string $phase, \Throwable $error ): void {
 		$this->status[ $id ]   = self::STATUS_FAILED;
 		$this->messages[ $id ] = sprintf( '%s in %s(): %s', get_class( $error ), $phase, $error->getMessage() );
+		Notices::add( 'error', sprintf( 'Module "%1$s" failed during %2$s().', $id, $phase ), 'module-failed-' . $id );
 		$this->logger->error( sprintf( 'Module "%s" failed: %s', $id, $this->messages[ $id ] ) );
 	}
 }
