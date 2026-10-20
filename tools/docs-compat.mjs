@@ -6,7 +6,39 @@ import { fromRoot } from './lib/paths.mjs';
 
 const plugins = JSON.parse(readFileSync(fromRoot('tests/matrix/plugins.json'), 'utf8')).plugins;
 const reportDir = fromRoot('artifacts/reports/matrix');
-const results = new Map();
+const compatibilityFile = fromRoot('docs/compatibility.md');
+
+/** Recover the committed result table when no plugin report artifacts are available. */
+export function resultsFromCompatibilityMarkdown(markdown, catalog) {
+  const keysByName = new Map(catalog.map((plugin) => [plugin.name, plugin.key]));
+  const results = new Map();
+  let columns = null;
+  for (const line of markdown.split(/\r?\n/)) {
+    if (!line.startsWith('|')) continue;
+    const cells = line
+      .slice(1, -1)
+      .split(/(?<!\\)\|/)
+      .map((value) => value.replace(/\\\|/g, '|').trim());
+    if (cells[0] === 'Plugin') {
+      columns = cells;
+      continue;
+    }
+    if (!columns || !cells[0] || /^-+$/.test(cells[0])) continue;
+    const row = Object.fromEntries(columns.map((column, index) => [column, cells[index] ?? '']));
+    const key = keysByName.get(row.Plugin);
+    if (!key || !row.Result) continue;
+    results.set(key, {
+      version: row['Tested version'] ?? '',
+      runtime: row.Runtime ?? '',
+      date: row.Date ?? '',
+      result: row.Result,
+      notes: row.Notes ? row.Notes.split('; ') : [],
+    });
+  }
+  return results;
+}
+
+let results = new Map();
 if (existsSync(reportDir)) {
   const reports = readdirSync(reportDir)
     .filter((f) => f.endsWith('.json'))
@@ -15,16 +47,44 @@ if (existsSync(reportDir)) {
       const testedAt = (report) => report.doc.testedAt ?? `${report.doc.date ?? ''}T00:00:00.000Z`;
       return testedAt(a).localeCompare(testedAt(b)) || a.file.localeCompare(b.file);
     });
-  for (const { doc } of reports) {
-    if (doc.kind === 'runtime') continue;
+  const pluginReports = reports.filter(({ doc }) => doc.kind !== 'runtime');
+  for (const { doc } of pluginReports) {
     const runtime = doc.runtime
       ? `WordPress ${doc.runtime.wordpress}; PHP ${doc.runtime.php}; ${doc.runtime.database}`
       : '';
     for (const row of doc.results ?? []) results.set(row.key, { ...row, date: doc.date, runtime });
   }
 }
+if (!results.size && existsSync(compatibilityFile)) {
+  results = resultsFromCompatibilityMarkdown(readFileSync(compatibilityFile, 'utf8'), plugins);
+}
 const tierTitle = { 1: 'Tier 1: tested in the matrix', 2: 'Tier 2: detected, best effort', 3: 'Tier 3: basic support' };
 const cell = (v) => String(v ?? '').replace(/\|/g, '\\|');
+
+/** Build buyer-facing adapter notes and repeatable checks for licensed matrix entries. */
+export function licensedTestingSection(plugins, results = new Map()) {
+  const licensed = plugins.filter((plugin) => plugin.source === 'manual');
+  if (!licensed.length) return [];
+
+  const notTested = licensed.filter((plugin) => {
+    const result = results.get(plugin.key)?.result;
+    return !['PASS', 'FAIL'].includes(result);
+  });
+  const out = ['## Licensed plugin adapters and manual testing', ''];
+  if (notTested.length) {
+    out.push(
+      `Not tested here: ${notTested.map((plugin) => plugin.name).join(', ')} (licensed).`,
+      'No compatibility claim is made for a licensed plugin until its matrix test has run.',
+      ''
+    );
+  }
+  for (const plugin of licensed) {
+    out.push(`### ${plugin.name}`, '', `Adapter: \`${plugin.adapter}\`.`, '', 'Manual test steps:');
+    for (const [index, step] of (plugin.manualSteps ?? []).entries()) out.push(`${index + 1}. ${step}`);
+    out.push('');
+  }
+  return out;
+}
 
 const out = [];
 out.push('# Plugin compatibility', '');
@@ -35,13 +95,14 @@ out.push(
 out.push(
   'See the [product compatibility matrix](../themes/jooservices/docs/compatibility-matrix.md) for the WordPress, PHP, database, install, hosting, and browser support targets.',
   '',
-  'Compatibility is defined in tiers. **Tier 1** plugins have an adapter and an automated matrix test. **Tier 2** plugins are detected and need no changes. **Tier 3** (page builders, WooCommerce) get basic, documented support only: no custom design and no guarantee for every feature.',
+  'Compatibility is defined in tiers. **Tier 1** plugins have an adapter and are included in the automated matrix; a compatibility result requires recorded test evidence. **Tier 2** plugins are detected and need no changes. **Tier 3** (page builders, WooCommerce) get basic, documented support only: no custom design and no guarantee for every feature.',
   '',
   'No theme can guarantee that every plugin works. A result below says what was tested, with which version, runtime, and date. `NOT RUN` means there is no test evidence. `UNSUPPORTED` means the product does not promise support for that item in 1.0. `BLOCKED` means an operational issue stopped the test and needs a rerun.',
   '',
   'To ask for support for another plugin, open a Jira issue in the JOOWT project with the plugin name, version, the page that breaks and the console output.',
   ''
 );
+out.push(...licensedTestingSection(plugins, results));
 for (const tier of [1, 2, 3]) {
   const rows = plugins.filter((p) => p.tier === tier);
   if (!rows.length) continue;
@@ -55,11 +116,11 @@ for (const tier of [1, 2, 3]) {
     const r = results.get(p.key);
     let result = 'NOT RUN';
     let notes = '';
-    if (p.source === 'manual' && !r) {
-      result = 'UNSUPPORTED';
-      notes = 'Not included in 1.0: a licensed copy is unavailable for verification.';
+    if (p.source === 'manual' && (!r || !['PASS', 'FAIL'].includes(r.result))) {
+      result = 'NOT RUN';
+      notes = 'Licensed package has not been tested; no compatibility claim is made.';
     }
-    if (r) {
+    if (r && !(p.source === 'manual' && !['PASS', 'FAIL'].includes(r.result))) {
       result = r.result;
       notes = r.notes?.join('; ') ?? (r.reason ? `Reason: ${r.reason}` : '');
     }
@@ -70,15 +131,17 @@ for (const tier of [1, 2, 3]) {
   out.push('');
 }
 const text = out.join('\n');
-const target = fromRoot('docs/compatibility.md');
-if (process.argv.includes('--check')) {
-  const current = existsSync(target) ? readFileSync(target, 'utf8') : '';
-  if (current !== text) {
-    console.error('docs/compatibility.md is stale: run node tools/docs-compat.mjs');
-    process.exit(1);
+const target = compatibilityFile;
+if (import.meta.url === `file://${process.argv[1]}`) {
+  if (process.argv.includes('--check')) {
+    const current = existsSync(target) ? readFileSync(target, 'utf8') : '';
+    if (current !== text) {
+      console.error('docs/compatibility.md is stale: run node tools/docs-compat.mjs');
+      process.exit(1);
+    }
+    console.log('docs/compatibility.md is up to date');
+  } else {
+    writeFileSync(target, text);
+    console.log(`wrote docs/compatibility.md (${plugins.length} plugins)`);
   }
-  console.log('docs/compatibility.md is up to date');
-} else {
-  writeFileSync(target, text);
-  console.log(`wrote docs/compatibility.md (${plugins.length} plugins)`);
 }

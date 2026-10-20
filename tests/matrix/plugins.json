@@ -47,7 +47,13 @@
       "group": "Cache",
       "tier": 1,
       "slug": "",
-      "source": "manual"
+      "source": "manual",
+      "adapter": "CacheAdapter configured in packages/theme-core/src/Compat/Adapters/CacheAdapters.php",
+      "manualSteps": [
+        "Supply the licensed plugin ZIP at tests/matrix/vendor/wp-rocket.zip.",
+        "Run `make test-matrix THEME=jooservices ARGS=\"--only wp-rocket\"` and review the result under artifacts/reports/matrix/.",
+        "On the test site, clear the WP Rocket cache, exercise minify, defer, Delay JavaScript, and lazy-load settings, and check the tested pages for browser-console and PHP errors."
+      ]
     },
     {
       "key": "w3-total-cache",
@@ -79,7 +85,13 @@
       "group": "Multilingual",
       "tier": 1,
       "slug": "",
-      "source": "manual"
+      "source": "manual",
+      "adapter": "WpmlAdapter implementing Multilingual, registered by packages/theme-core/src/Compat/CompatModule.php",
+      "manualSteps": [
+        "Supply the licensed plugin ZIP at tests/matrix/vendor/wpml.zip.",
+        "Run `make test-matrix THEME=jooservices ARGS=\"--only wpml\"` and review the result under artifacts/reports/matrix/.",
+        "On the test site, configure two languages, translate a post and a term, and verify the language switcher, translated URLs, and hreflang alternates on the rendered pages."
+      ]
     },
     {
       "key": "translatepress",
