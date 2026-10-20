@@ -12,11 +12,7 @@ a="$(shasum docs/compatibility.md)"; node tools/docs-compat.mjs >/dev/null; b="$
 [ "$a" = "$b" ] && ok "deterministic" || bad "deterministic"
 node tools/docs-compat.mjs --check >/dev/null 2>&1 && ok "check passes when current" || bad "check current"
 cp tests/matrix/plugins.json "$tmp_dir/plugins.json.bak"
-python3 - <<'PY'
-import json
-d=json.load(open('tests/matrix/plugins.json')); d['plugins'][0]['name']='Changed Name'
-json.dump(d,open('tests/matrix/plugins.json','w'))
-PY
+node -e 'const fs = require("node:fs"); const path = "tests/matrix/plugins.json"; const data = JSON.parse(fs.readFileSync(path, "utf8")); data.plugins[0].name = "Changed Name"; fs.writeFileSync(path, JSON.stringify(data));'
 node tools/docs-compat.mjs --check >/dev/null 2>&1 && bad "stale not detected" || ok "stale file detected"
 cp "$tmp_dir/plugins.json.bak" tests/matrix/plugins.json; node tools/docs-compat.mjs >/dev/null
 if grep -Fq "Not tested here: WP Rocket, WPML (licensed)" docs/compatibility.md && awk -F'|' '

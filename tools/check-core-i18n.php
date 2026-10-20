@@ -39,8 +39,23 @@ final class JOO_Core_I18n_Scan_Visitor extends NodeVisitorAbstract {
 			if ( in_array( $name, array( 'wp_die', 'submit_button' ), true ) && isset( $node->args[0] ) ) {
 				$this->checkOutput( $node->args[0]->value );
 			}
-			if ( in_array( $name, array( 'printf', 'vprintf' ), true ) && isset( $node->args[0] ) ) {
-				$this->checkOutput( $node->args[0]->value );
+			if ( 'printf' === $name && isset( $node->args[0] ) ) {
+					$arguments = array();
+				foreach ( array_slice( $node->args, 1 ) as $argument ) {
+					$arguments[] = $argument->value;
+				}
+				$this->checkOutputTemplate( printf_output_template( $node->args[0]->value, $arguments ), $node->getStartLine() );
+			}
+			if ( 'vprintf' === $name && isset( $node->args[0] ) ) {
+				$arguments = array();
+				if ( isset( $node->args[1] ) && $node->args[1]->value instanceof Node\Expr\Array_ ) {
+					foreach ( $node->args[1]->value->items as $argument ) {
+						if ( null !== $argument ) {
+							$arguments[] = $argument->value;
+						}
+					}
+				}
+				$this->checkOutputTemplate( printf_output_template( $node->args[0]->value, $arguments ), $node->getStartLine() );
 			}
 			if ( 'add_settings_error' === $name && isset( $node->args[2] ) ) {
 				$this->checkOutput( $node->args[2]->value );
@@ -72,11 +87,15 @@ final class JOO_Core_I18n_Scan_Visitor extends NodeVisitorAbstract {
 	}
 
 	private function checkOutput( Node\Expr $expression ): void {
-		foreach ( visible_html_strings( output_template( $expression ) ) as $text ) {
+		$this->checkOutputTemplate( output_template( $expression ), $expression->getStartLine() );
+	}
+
+	private function checkOutputTemplate( string $template, int $line ): void {
+		foreach ( visible_html_strings( $template ) as $text ) {
 			if ( ! is_translatable_text( $text ) ) {
 				continue;
 			}
-			$this->errors[] = sprintf( '%s:%d: hard-coded visible string: %s', $this->path, $expression->getStartLine(), normalize_text( $text ) );
+			$this->errors[] = sprintf( '%s:%d: hard-coded visible string: %s', $this->path, $line, normalize_text( $text ) );
 		}
 	}
 }
@@ -203,6 +222,36 @@ function output_template( Node\Expr $expression ): string {
 	}
 
 	return $placeholder;
+}
+
+/**
+ * Replace statically known string substitutions before inspecting printf output as HTML.
+ *
+ * @param list<Node\Expr> $arguments Positional printf arguments.
+ */
+function printf_output_template( Node\Expr $format, array $arguments ): string {
+	if ( ! $format instanceof Node\Scalar\String_ ) {
+		return output_template( $format );
+	}
+
+	$placeholder       = "\u{E000}";
+	$nextArgumentIndex = 0;
+	return preg_replace_callback(
+		'/%{2}|%(?:(\d+)\$)?[-+ 0]*\d*(?:\.\d+)?([bcdeEfFgGosuxX])/',
+		static function ( array $matches ) use ( $arguments, &$nextArgumentIndex, $placeholder ): string {
+			if ( '%%' === $matches[0] ) {
+				return '%';
+			}
+
+			$argumentIndex = '' !== $matches[1] ? (int) $matches[1] - 1 : $nextArgumentIndex++;
+			if ( ! isset( $arguments[ $argumentIndex ] ) || 's' !== strtolower( $matches[2] ) ) {
+				return $placeholder;
+			}
+
+			return output_template( $arguments[ $argumentIndex ] );
+		},
+		$format->value
+	) ?? $format->value;
 }
 
 /**

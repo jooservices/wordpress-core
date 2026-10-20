@@ -2,9 +2,15 @@
 # Proves each quality tool fails on a deliberate violation and passes on a clean file.
 set -u
 cd "$(dirname "$0")/../.."
-TMP=".tooling-tmp"
-rm -rf "$TMP"; mkdir -p "$TMP"
-trap 'rm -rf "$TMP" packages/theme-core/src/ToolingFixture themes/jooservices/inc/ToolingFixture.php' EXIT
+TMP_ROOT=".tooling-tmp"
+TMP_ROOT_CREATED=0
+if [ ! -d "$TMP_ROOT" ]; then mkdir "$TMP_ROOT"; TMP_ROOT_CREATED=1; fi
+TMP="$(mktemp -d "$TMP_ROOT/run.XXXXXX")" || exit 1
+cleanup() {
+  rm -rf "$TMP" packages/theme-core/src/ToolingFixture themes/jooservices/inc/ToolingFixture.php
+  if [ "$TMP_ROOT_CREATED" -eq 1 ]; then rmdir "$TMP_ROOT" 2>/dev/null || true; fi
+}
+trap cleanup EXIT
 fail=0
 expect_fail() { name="$1"; shift; if "$@" >/dev/null 2>&1; then echo "FAIL: $name accepted a violation"; fail=1; else echo "ok:   $name rejects the violation"; fi; }
 expect_pass() { name="$1"; shift; if "$@" >/dev/null 2>&1; then echo "ok:   $name accepts clean input"; else echo "FAIL: $name rejected clean input"; fail=1; fi; }
@@ -22,12 +28,14 @@ expect_fail "core i18n template" php tools/check-core-i18n.php tests/tooling/fix
 expect_fail "core i18n block comment" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-block-comment.php
 expect_fail "core i18n single word" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-open.php
 expect_fail "core i18n printf" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-printf.php
+expect_fail "core i18n printf argument" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-printf-argument.php
+expect_fail "core i18n vprintf argument" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-vprintf-argument.php
 
 # PHPStan: core must stay compatible with PHP 8.1.
 cp tests/tooling/fixtures/php-82-readonly.php "$TMP/php-input.php"
 cat > "$TMP/phpstan-php81.neon" <<'NEON'
 includes:
-  - ../phpstan-core.neon
+  - ../../phpstan-core.neon
 parameters:
   paths:
     - php-input.php
@@ -82,7 +90,7 @@ expect_fail "runtime bundle" node tools/runtime-bundle.mjs check "$TMP/bundle"
 # i18n check: passes with a complete dictionary, fails when a string has no translation
 node tools/i18n.mjs --check >/dev/null 2>&1 && echo "ok:   i18n check passes with a complete dictionary" || { echo "FAIL: i18n check"; fail=1; }
 cp packages/theme-core/languages/vi.json "$TMP/vi.json.bak"
-python3 -c "import json;p='packages/theme-core/languages/vi.json';d=json.load(open(p));d.pop('Home');json.dump(d,open(p,'w'),ensure_ascii=False)"
+node -e 'const fs = require("node:fs"); const path = "packages/theme-core/languages/vi.json"; const data = JSON.parse(fs.readFileSync(path, "utf8")); delete data.Home; fs.writeFileSync(path, JSON.stringify(data));'
 expect_fail "i18n check" node tools/i18n.mjs --check
 cp "$TMP/vi.json.bak" packages/theme-core/languages/vi.json
 exit $fail
