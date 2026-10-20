@@ -67,6 +67,7 @@ link() { # $1 = target (absolute), $2 = link path inside the site
 }
 find wp-content/themes wp-content/plugins -maxdepth 1 -type l -delete 2>/dev/null || true
 for dir in "$JOO_ROOT"/themes/*/; do [[ -d "$dir" ]] && link "${dir%/}" "wp-content/themes/$(basename "$dir")"; done
+for dir in "$JOO_ROOT"/tests/fixtures/themes/*/; do [[ -d "$dir" ]] && link "${dir%/}" "wp-content/themes/$(basename "$dir")"; done
 for dir in "$JOO_ROOT"/plugins/*/; do [[ -d "$dir" ]] && link "${dir%/}" "wp-content/plugins/$(basename "$dir")"; done
 # Plugins staged by tools/build-plugin.mjs that have no source folder in this repository.
 for dir in "$JOO_ROOT"/artifacts/plugins/*/; do

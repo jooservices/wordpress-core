@@ -1,0 +1,36 @@
+<!-- wp:template-part {"slug":"header"} /-->
+<!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
+<main class="wp-block-group">
+  <!-- wp:joo/reading-progress /-->
+  <!-- wp:joo/breadcrumbs /-->
+  <!-- wp:post-title {"level":1} /-->
+  <!-- wp:joo/post-meta {"items":["category","date","updated","reading","author"]} /-->
+  <!-- wp:post-featured-image {"aspectRatio":"21/9"} /-->
+  <!-- wp:joo/toc /-->
+  <!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+  <!-- wp:post-terms {"term":"post_tag"} /-->
+  <!-- wp:joo/author-box /-->
+  <!-- wp:group {"layout":{"type":"flex","justifyContent":"space-between"}} -->
+  <div class="wp-block-group">
+    <!-- wp:post-navigation-link {"type":"previous"} /--><!-- wp:post-navigation-link /-->
+  </div>
+  <!-- /wp:group -->
+  <!-- wp:joo/related-posts /-->
+  <!-- wp:comments -->
+  <div class="wp-block-comments">
+    <!-- wp:comments-title /-->
+    <!-- wp:comment-template -->
+    <!-- wp:comment-author-name /-->
+    <!-- wp:comment-date /-->
+    <!-- wp:comment-content /-->
+    <!-- /wp:comment-template -->
+    <!-- wp:comments-pagination -->
+    <!-- wp:comments-pagination-previous /-->
+    <!-- wp:comments-pagination-next /-->
+    <!-- /wp:comments-pagination -->
+    <!-- wp:post-comments-form /-->
+  </div>
+  <!-- /wp:comments -->
+</main>
+<!-- /wp:group -->
+<!-- wp:template-part {"slug":"footer"} /-->

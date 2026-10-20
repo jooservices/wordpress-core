@@ -1,0 +1,22 @@
+/*
+Theme Name: Portfolio
+Theme URI: https://jooservices.com
+Author: JOOservices Ltd
+Author URI: https://jooservices.com
+Description: Portfolio block theme built on the JOOservices theme core.
+Version: 0.1.0
+Requires at least: 6.6
+Tested up to: 6.8
+Requires PHP: 8.1
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: portfolio
+Tags: dark-mode, full-site-editing, block-patterns, translation-ready
+*/
+
+.joo-profile__more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.25rem 0.5rem;
+}

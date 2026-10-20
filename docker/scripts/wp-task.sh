@@ -85,10 +85,14 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 ensure_site() {
-  ln -sfn ../../packages/theme-core "themes/$theme/core"
+	local theme_dir="themes/$theme" core_link="../../packages/theme-core"
+	if [[ ! -d "$theme_dir" && -d "tests/fixtures/themes/$theme" ]]; then theme_dir="tests/fixtures/themes/$theme"; fi
+	[[ -d "$theme_dir" ]] || { echo "ERROR: theme source not found: themes/$theme or tests/fixtures/themes/$theme" >&2; exit 2; }
+	if [[ "$theme_dir" == tests/fixtures/themes/* ]]; then core_link="../../../../packages/theme-core"; fi
+	ln -sfn "$core_link" "$theme_dir/core"
   rt node tools/build-assets.mjs --root packages/theme-core
-  if [[ -d "themes/$theme/assets/src" ]]; then
-    rt node tools/build-assets.mjs --root "themes/$theme" --src assets/src --out assets/build
+	if [[ -d "$theme_dir/assets/src" ]]; then
+		rt node tools/build-assets.mjs --root "$theme_dir" --src assets/src --out assets/build
   fi
   "$ROOT/docker/scripts/shared-db.sh" create "$ticket"
   site_up

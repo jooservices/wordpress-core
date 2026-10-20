@@ -7,7 +7,12 @@ const reports = '../../artifacts/reports/e2e';
 export default defineConfig({
   // Shared specs plus the specs of the theme under test (themes/<slug>/tests/e2e).
   testDir: '../..',
-  testMatch: ['tests/e2e/specs/**/*.spec.ts', ...(theme ? [`themes/${theme}/tests/e2e/**/*.spec.ts`] : [])],
+  testMatch: [
+    'tests/e2e/specs/**/*.spec.ts',
+    ...(theme
+      ? [`themes/${theme}/tests/e2e/**/*.spec.ts`, `tests/fixtures/themes/${theme}/tests/e2e/**/*.spec.ts`]
+      : []),
+  ],
   // Admin specs change shared settings and share one WordPress session store: run one test at a time.
   fullyParallel: false,
   retries: process.env.CI ? 2 : 0,

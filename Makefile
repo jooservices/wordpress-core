@@ -15,7 +15,7 @@ define stub
 endef
 
 define require_theme
-	@test -d themes/$(THEME) || { echo "theme not found: themes/$(THEME)"; exit 1; }
+	@if [ ! -d "themes/$(THEME)" ] && [ ! -d "tests/fixtures/themes/$(THEME)" ]; then echo "theme not found: themes/$(THEME) or tests/fixtures/themes/$(THEME)"; exit 1; fi
 endef
 
 PHP := bash ./docker/scripts/runtime.sh php -d error_reporting=24575

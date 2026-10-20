@@ -6,6 +6,7 @@
     "**/vendor/**",
     "artifacts/**",
     "themes/*/core/**",
+    "tests/fixtures/themes/*/core/**",
     "tests/tooling/fixtures/**",
     "themes/*/assets/critical/**"
   ],
