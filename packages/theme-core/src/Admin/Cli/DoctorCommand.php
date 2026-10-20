@@ -54,8 +54,8 @@ final class DoctorCommand {
 		if ( isset( $assoc_args['perf'] ) && $this->container->has( \JOOservices\ThemeCore\Performance\Diagnostics::class ) ) {
 			/** @var \JOOservices\ThemeCore\Performance\Diagnostics $diagnostics */
 			$diagnostics = $this->container->get( \JOOservices\ThemeCore\Performance\Diagnostics::class );
-			\WP_CLI::line( 'snapshot: ' . wp_json_encode( $diagnostics->snapshot() ) );
-			\WP_CLI::line( 'self-test: ' . wp_json_encode( $diagnostics->selfTest() ) );
+			\WP_CLI::line( __( 'Snapshot:', 'joo-core' ) . ' ' . wp_json_encode( $diagnostics->snapshot() ) );
+			\WP_CLI::line( __( 'Self-test:', 'joo-core' ) . ' ' . wp_json_encode( $diagnostics->selfTest() ) );
 		}
 		/** @var SiteHealth $health */
 		$health   = $this->container->get( SiteHealth::class );
@@ -69,13 +69,21 @@ final class DoctorCommand {
 			$result = $health->run( $id );
 			$level  = $statuses[ $result['status'] ] ?? 0;
 			$worst  = max( $worst, $level );
-			\WP_CLI::line( sprintf( '[%s] %s: %s', strtoupper( (string) $result['status'] ), $id, wp_specialchars_decode( wp_strip_all_tags( (string) $result['label'] ) ) ) );
+			\WP_CLI::line(
+				sprintf(
+					/* translators: 1: test status, 2: test identifier, 3: result label. */
+					__( '[%1$s] %2$s: %3$s', 'joo-core' ),
+					strtoupper( (string) $result['status'] ),
+					$id,
+					wp_specialchars_decode( wp_strip_all_tags( (string) $result['label'] ) )
+				)
+			);
 			if ( $level > 0 ) {
 				\WP_CLI::line( '        ' . wp_specialchars_decode( wp_strip_all_tags( (string) $result['description'] ) ) );
 			}
 		}
 		if ( 0 === $worst ) {
-			\WP_CLI::success( 'No problems found.' );
+			\WP_CLI::success( __( 'No problems found.', 'joo-core' ) );
 			return;
 		}
 		\WP_CLI::halt( $worst );

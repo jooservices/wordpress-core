@@ -97,18 +97,42 @@ final class FragmentLazy {
 			$value = $params[ $key ] ?? $rule['default'] ?? null;
 			if ( null === $value ) {
 				if ( ! empty( $rule['required'] ) ) {
-					return new \WP_Error( 'rest_invalid_param', sprintf( 'Parameter %s is required.', $key ), array( 'status' => 400 ) );
+					return new \WP_Error(
+						'rest_invalid_param',
+						sprintf(
+							/* translators: %s: parameter name. */
+							__( 'Parameter %s is required.', 'joo-core' ),
+							$key
+						),
+						array( 'status' => 400 )
+					);
 				}
 				continue;
 			}
 			switch ( (string) ( $rule['type'] ?? 'string' ) ) {
 				case 'int':
 					if ( ! is_int( $value ) && ! ( is_string( $value ) && 1 === preg_match( '/^-?\d+$/', $value ) ) ) {
-						return new \WP_Error( 'rest_invalid_param', sprintf( 'Parameter %s must be an integer.', $key ), array( 'status' => 400 ) );
+						return new \WP_Error(
+							'rest_invalid_param',
+							sprintf(
+								/* translators: %s: parameter name. */
+								__( 'Parameter %s must be an integer.', 'joo-core' ),
+								$key
+							),
+							array( 'status' => 400 )
+						);
 					}
 					$value = (int) $value;
 					if ( ( isset( $rule['min'] ) && $value < $rule['min'] ) || ( isset( $rule['max'] ) && $value > $rule['max'] ) ) {
-						return new \WP_Error( 'rest_invalid_param', sprintf( 'Parameter %s is out of range.', $key ), array( 'status' => 400 ) );
+						return new \WP_Error(
+							'rest_invalid_param',
+							sprintf(
+								/* translators: %s: parameter name. */
+								__( 'Parameter %s is out of range.', 'joo-core' ),
+								$key
+							),
+							array( 'status' => 400 )
+						);
 					}
 					break;
 				case 'bool':
@@ -116,14 +140,30 @@ final class FragmentLazy {
 					break;
 				case 'enum':
 					if ( ! in_array( (string) $value, (array) ( $rule['enum'] ?? array() ), true ) ) {
-						return new \WP_Error( 'rest_invalid_param', sprintf( 'Parameter %s is not an allowed value.', $key ), array( 'status' => 400 ) );
+						return new \WP_Error(
+							'rest_invalid_param',
+							sprintf(
+								/* translators: %s: parameter name. */
+								__( 'Parameter %s is not an allowed value.', 'joo-core' ),
+								$key
+							),
+							array( 'status' => 400 )
+						);
 					}
 					$value = (string) $value;
 					break;
 				default:
 					$value = is_scalar( $value ) ? sanitize_text_field( (string) $value ) : '';
 					if ( isset( $rule['maxLength'] ) && mb_strlen( $value ) > $rule['maxLength'] ) {
-						return new \WP_Error( 'rest_invalid_param', sprintf( 'Parameter %s is too long.', $key ), array( 'status' => 400 ) );
+						return new \WP_Error(
+							'rest_invalid_param',
+							sprintf(
+								/* translators: %s: parameter name. */
+								__( 'Parameter %s is too long.', 'joo-core' ),
+								$key
+							),
+							array( 'status' => 400 )
+						);
 					}
 			}
 			$clean[ $key ] = $value;

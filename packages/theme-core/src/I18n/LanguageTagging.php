@@ -83,7 +83,7 @@ final class LanguageTagging {
 				'get_callback' => static fn( $post ) => (string) get_post_meta( (int) ( $post['id'] ?? 0 ), '_joo_lang', true ),
 				'schema'       => array(
 					'type'        => 'string',
-					'description' => 'Language of the post.',
+					'description' => __( 'Language of the post.', 'joo-core' ),
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,
 				),
@@ -105,7 +105,7 @@ final class LanguageTagging {
 				},
 				'schema'       => array(
 					'type'        => 'object',
-					'description' => 'Published translations by language.',
+					'description' => __( 'Published translations by language.', 'joo-core' ),
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,
 				),

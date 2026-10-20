@@ -108,13 +108,15 @@ final class JooservicesThemeTest extends IntegrationTestCase {
 	}
 
 	public function test_header_and_footer_keep_buyer_content_in_editable_site_editor_blocks(): void {
-		$header = (string) file_get_contents( self::DIR . '/parts/header.html' );
-		$footer = (string) file_get_contents( self::DIR . '/parts/footer.html' );
+		$header  = (string) file_get_contents( self::DIR . '/parts/header.html' );
+		$footer  = (string) file_get_contents( self::DIR . '/parts/footer.html' );
+		$pattern = (string) file_get_contents( self::DIR . '/patterns/site-footer.php' );
 		$this->assertStringContainsString( 'wp:site-logo', $header );
 		$this->assertStringContainsString( 'wp:site-title', $header );
-		$this->assertStringContainsString( 'joo-footer__socials', $footer );
-		$this->assertStringContainsString( 'wp:joo/profile-card', $footer );
-		$this->assertStringContainsString( 'Connect', $footer );
+		$this->assertStringContainsString( 'jooservices/site-footer', $footer );
+		$this->assertStringContainsString( 'joo-footer__socials', $pattern );
+		$this->assertStringContainsString( 'wp:joo/profile-card', $pattern );
+		$this->assertStringContainsString( "esc_html__( 'Connect', 'jooservices' )", $pattern );
 	}
 
 	public function test_the_style_variations_define_the_same_palette_slugs(): void {
@@ -147,7 +149,7 @@ final class JooservicesThemeTest extends IntegrationTestCase {
 		try {
 			Kernel::container()->get( PatternLoader::class )->register();
 			$registry = \WP_Block_Patterns_Registry::get_instance();
-			foreach ( array( 'hero', 'about', 'contact', '404-search', '404-terminal', 'newsletter' ) as $slug ) {
+			foreach ( array( 'hero', 'about', 'contact', '404-search', '404-terminal', 'newsletter', 'site-footer' ) as $slug ) {
 				$name = 'jooservices/' . $slug;
 				$this->assertTrue( $registry->is_registered( $name ), $name );
 				$this->assertSame( array( 'jooservices' ), $registry->get_registered( $name )['categories'] );

@@ -45,6 +45,6 @@ final class CacheCommand {
 		}
 		unset( $args );
 		$this->repository->bumpCacheVersion();
-		\WP_CLI::success( 'JOOservices caches flushed.' );
+		\WP_CLI::success( __( 'JOOservices caches flushed.', 'joo-core' ) );
 	}
 }

@@ -69,8 +69,9 @@ link-core: ## Link packages/theme-core into themes/$(THEME)/core
 	@ln -sfn ../../packages/theme-core themes/$(THEME)/core
 	@echo "themes/$(THEME)/core -> ../../packages/theme-core"
 VITEST_ARGS ?= --configLoader native --no-cache --fsModuleCachePath /tmp/jooservices-wp-themes-vitest --maxWorkers=4
-lint: ## PHPCS, ESLint, Stylelint, Prettier, header check
+lint: ## PHPCS, core i18n scan, ESLint, Stylelint, Prettier, header check
 	@$(PHP) tools/check-headers.php
+	@$(PHP) tools/check-core-i18n.php
 	@$(PHP) vendor/bin/phpcs
 	@$(NPX) --no-install eslint .
 	@$(NPX) --no-install stylelint "**/*.css" --allow-empty-input

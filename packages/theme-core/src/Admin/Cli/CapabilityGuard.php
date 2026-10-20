@@ -27,7 +27,7 @@ final class CapabilityGuard {
 		}
 
 		if ( class_exists( '\WP_CLI' ) ) {
-			\WP_CLI::error( 'You do not have permission to manage these settings.' );
+			\WP_CLI::error( __( 'You do not have permission to manage these settings.', 'joo-core' ) );
 		}
 
 		return false;
