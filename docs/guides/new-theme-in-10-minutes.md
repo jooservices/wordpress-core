@@ -9,7 +9,7 @@ Prerequisites: Docker running, `make init-env` and `make deps` done once.
 
    The generated `languages/acme-vi.mo` is copied from the starter catalog and keeps its `starter` metadata. `make i18n` only rebuilds the bundled core, plugin, starter and jooservices catalogs; it does not regenerate a new theme's catalog.
 
-5. **Check**: run `make lint`, `make analyse`, and `make test-integration THEME=acme TEST_THEME=acme`. For browser checks, the shared container needs a writable report directory; use a unique `/tmp` path and the common API, HTTP, SEO and smoke specs:
+5. **Check**: run `make lint`, `make analyse`, `make test-unit`, and `make test-integration THEME=acme TEST_THEME=acme`. For browser checks, the shared container needs a writable report directory; use a unique `/tmp` path and the common API, HTTP, SEO and smoke specs:
 
    ```sh
    E2E_REPORT_DIR="/tmp/acme-e2e-$$" E2E_THEME=acme make test-e2e THEME=acme ARGS="tests/e2e/specs/shared/content-api.spec.ts tests/e2e/specs/shared/http.spec.ts tests/e2e/specs/shared/seo.spec.ts tests/e2e/specs/shared/smoke.spec.ts"
@@ -23,21 +23,21 @@ Keep theme PHP under 50 lines (`functions.php` boots the core from `joo-theme.js
 
 ## Walk-through record
 
-Literal run on WSL on 2026-10-20 from a clean tracked checkout. The existing ignored `.env` was kept unchanged; `qatest` was absent and created for this run. Times are wall-clock seconds from `time -p`; the demo measurement was after the images were already available.
+Literal run on WSL on 2026-10-20 from a clean tracked checkout. The existing ignored `.env` was kept unchanged; inherited ignored `acme` and `qatest` artifacts were preserved, and the absent `replay281` theme was created for this run. Times are wall-clock seconds from `time -p`; the demo measurement was after the images were already available.
 
 | Step | Result | Time |
 | --- | --- | ---: |
-| Environment | `make init-env` kept the existing ignored environment file. `make deps` passed before scaffolding and again after the generated workspace was added to the lockfile. | 0.01 s; 9.71 s; 9.56 s |
-| Scaffold and lockfile | `make new-theme NAME=qatest TITLE="QA Test"` created 34 files. `npm install` added the workspace entry. | 0.17 s; 2.06 s |
-| Demo | `make demo THEME=qatest` completed and health reported 17/17 checks. | 17.31 s |
+| Environment | `make init-env` kept the existing ignored environment file. `make deps` passed before scaffolding and after the generated workspace was added to the lockfile. | 0.01 s; 9.92 s; 9.42 s |
+| Scaffold and lockfile | `make new-theme NAME=replay281 TITLE="Replay 281"` created 34 files. `npm install` added the workspace entry. | 0.18 s; 2.20 s |
+| Demo | `make demo THEME=replay281` completed and health reported 17/17 checks. | 22.83 s |
 | Look | The printed worktree URL returned HTTP 200. | 0.06 s |
-| Custom CSS | Built one hashed asset, 58 B (70 B gzip). | 0.21 s |
-| Lint | `make lint` passed for the generated theme and repository. | 14.34 s |
-| Analysis | `make analyse` passed with no PHPStan or Deptrac violations. | 11.71 s |
-| Unit tests | `make test-unit`: 284 PHPUnit tests and 348 Vitest tests passed, including the 10 new-theme tests. | 8.05 s |
-| Integration | `make test-integration THEME=qatest TEST_THEME=qatest` passed: the generated theme, core, portfolio and migration-oriented suites passed; 22 default-excluded tests were skipped. | 41.55 s |
-| Browser checks | The focused API, HTTP, SEO and smoke suite passed 66/66 tests through the Dev VM browser (16.5 s in Playwright). | 69.76 s |
-| Core proof | The command passed and reported 0 committed theme changes; the scaffold was intentionally uncommitted. Run it after committing a theme to check that commit. | 0.02 s |
+| Custom CSS | Built one hashed asset, 61 B (73 B gzip). | 0.18 s |
+| Lint | `make lint` passed for the generated theme and repository. | 12.69 s |
+| Analysis | `make analyse` passed with no PHPStan or Deptrac violations. | 11.14 s |
+| Unit tests | `make test-unit`: 284 PHPUnit tests and 348 Vitest tests passed, including the 10 new-theme tests. | 8.14 s |
+| Integration | `make test-integration THEME=replay281 TEST_THEME=replay281` passed: 341 generated-theme tests and the core, portfolio and migration-oriented suites passed; 22 default-excluded tests were skipped. | 47.52 s |
+| Browser checks | The focused API, HTTP, SEO and smoke suite passed 66/66 tests through the Dev VM browser (17.2 s in Playwright). | 45.03 s |
+| Core proof | The command passed and reported 0 committed theme changes; the scaffold was intentionally uncommitted. Run it after committing a theme to check that commit. | 0.03 s |
 
 Corrections from the walk-through:
 
@@ -47,5 +47,5 @@ Corrections from the walk-through:
 - The first browser run stopped after 78.53 s because `www-data` could not create its report folder. The guide now sets `E2E_REPORT_DIR` to a writable `/tmp` path through the project runtime wrapper.
 - The previous instruction to run `make i18n THEME=acme` was removed. That target does not generate a custom theme catalog and failed on untranslated strings in the bundled catalogs (18.26 s).
 - The sample CSS first failed Stylelint in 8.82 s; it was changed to use the theme accent token. The planner test now uses a temporary copy of the real starter so an existing `themes/acme` directory cannot break the suite.
-- In this replay, a custom CSS sample failed Stylelint because its class lacked an approved prefix. The guide now documents the accepted `joo-`, `wp-`, `is-` and `has-` prefixes; the corrected sample and lint pass.
+- In the earlier replay, a custom CSS sample failed Stylelint because its class lacked an approved prefix. The guide now documents the accepted `joo-`, `wp-`, `is-` and `has-` prefixes; the corrected sample and lint pass.
 - The first analysis run failed after 8.24 s because PHPStan found `$argv` might be undefined in `tools/check-core-i18n.php`; the CLI script now defaults it to an empty array.
