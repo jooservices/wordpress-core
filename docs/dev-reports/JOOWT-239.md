@@ -25,7 +25,12 @@ The matrix PHP classifier treats deprecations from the shared WP-CLI PHAR's bund
 
 ## R2 bug handover
 
-The matrix failures require Bug coverage under R2. The JOOservices CLS baseline finding should include the affected plugin versions listed above and the browser CLS budget check (`<= 0.02` on home, category, tag, search, and single). WooCommerce 11.2.1 should also be recorded for its early translation-loading PHP Notice. This session is authorized to post Jira comments only, so these findings are recorded here and in the ticket comment for the supervisor to create as R2 bugs.
+The owner assigned the matrix findings to two R2 Bugs:
+
+- **JOOWT-301 — JOOservices CLS budget:** The no-third-party baseline exceeds the `0.02` browser CLS budget on home, category, tag, search, and single. This baseline failure also causes all 23 installed plugin rows to fail their browser check; plugin names and versions are listed in the [JOOservices plugin matrix](../../artifacts/reports/matrix/jooservices-wp-7.1.3-php-8.3.30-2026-10-20.md).
+- **JOOWT-302 — WooCommerce early text-domain notice:** WooCommerce 11.2.1 fails the starter matrix PHP log check because translation loading occurs before `init`. The same notice is present in the JOOservices matrix.
+
+These Bug issues are the R2 coverage for the CLS and WooCommerce failures. The individual plugin results, versions, and failing checks remain in the linked matrix reports above.
 
 ## Commands and checks
 
