@@ -44,7 +44,9 @@ Nothing is copied to the VM. `scripts/docker/e2e-vm` (called through `make test-
 
 Tools that open a browser (`screenshots`, `critical`, `marketplace-preview`, `social-cards`) use the same VM browser when `PW_TEST_CONNECT_WS_ENDPOINT` is set (through `runtime.sh playwright`).
 
-Known limit: layout-shift budgets are measured in a browser reached over an ssh tunnel; slower resource delivery shifts layout more than on a local browser, so `make test-matrix` can report CLS above its 0.02 budget (0.03 to 0.07 measured on the home, search and single pages) that a local browser would not.
+CLS is measured in the Dev VM browser over an SSH tunnel. The tunnel affects timing, but an over-budget result needs source evidence before it is treated as an artifact. On 2026-10-20, a quiet WSL run on WordPress 7.1.3 / PHP 8.3.30 reproduced real shifts with no third-party plugins: the `<joo-lazy>` wrapper caused home CLS 0.03368, category 0.02768 and tag 0.06474. The wrapper had an intrinsic-size hint but did not enforce a block size. The search page also shifted because the theme's terminal dock added its 40px desktop flex slot when its custom element initialized.
+
+The fix reserves each fragment's registered minimum block size and the terminal dock's desktop slot before initialization. The existing 0.02 budget remains. After the fix, the no-third-party runtime matrix passed (1 pass, 0 fail); home/category/tag CLS were 0.00142/0.00117/0.00120. The Forms matrix passed for Contact Form 7 6.2.2, WPForms Lite 2.0.2.2 and Fluent Forms 6.2.16; across those three runs, home/category/tag CLS ranged from 0.00077–0.00142, 0.00117–0.00117 and 0.00071–0.00120 respectively. The measurements include the layout-shift sources in each Playwright JSON attachment.
 
 ## Staging site (the project checkout)
 

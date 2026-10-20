@@ -39,9 +39,41 @@ for (const [name, path] of Object.entries(paths)) {
     });
     await page.addInitScript(() => {
       (window as unknown as { __cls: number }).__cls = 0;
+      (window as unknown as { __clsEntries: unknown[] }).__clsEntries = [];
       new PerformanceObserver((list) => {
-        for (const entry of list.getEntries() as unknown as { hadRecentInput: boolean; value: number }[]) {
-          if (!entry.hadRecentInput) (window as unknown as { __cls: number }).__cls += entry.value;
+        for (const entry of list.getEntries() as unknown as {
+          hadRecentInput: boolean;
+          value: number;
+          startTime: number;
+          sources?: {
+            node: Node | null;
+            previousRect: DOMRectReadOnly;
+            currentRect: DOMRectReadOnly;
+          }[];
+        }[]) {
+          if (entry.hadRecentInput) continue;
+
+          (window as unknown as { __cls: number }).__cls += entry.value;
+          (window as unknown as { __clsEntries: unknown[] }).__clsEntries.push({
+            value: entry.value,
+            startTime: entry.startTime,
+            viewport: {
+              innerWidth: window.innerWidth,
+              clientWidth: document.documentElement.clientWidth,
+              innerHeight: window.innerHeight,
+              documentHeight: document.documentElement.scrollHeight,
+            },
+            sources: (entry.sources ?? []).map((source) => {
+              const element = source.node instanceof Element ? source.node : (source.node?.parentElement ?? null);
+              return {
+                element: element
+                  ? `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ''}${element.getAttribute('class') ? `.${element.getAttribute('class')?.trim().replace(/\\s+/g, '.')}` : ''}`
+                  : null,
+                previousRect: source.previousRect.toJSON(),
+                currentRect: source.currentRect.toJSON(),
+              };
+            }),
+          });
         }
       }).observe({ type: 'layout-shift', buffered: true });
     });
@@ -55,6 +87,7 @@ for (const [name, path] of Object.entries(paths)) {
       ogTitles: document.querySelectorAll('meta[property="og:title"]').length,
       descriptions: document.querySelectorAll('meta[name="description"]').length,
       cls: (window as unknown as { __cls: number }).__cls,
+      clsEntries: (window as unknown as { __clsEntries: unknown[] }).__clsEntries,
     }));
     await info.attach(`${plugin}-${name}.json`, { body: JSON.stringify(head), contentType: 'application/json' });
     expect(head.titles, 'one <title>').toBe(1);

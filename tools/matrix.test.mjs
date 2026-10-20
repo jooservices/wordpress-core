@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   browserSmoke,
   phpProblems,
+  prepareReportDirectory,
   renderMarkdown,
   resultCounts,
   runHealthViaWeb,
@@ -20,6 +21,17 @@ describe('matrix helpers', () => {
   it('finds PHP problems in a log excerpt', () => {
     const log = '[a] PHP Notice:  x\n[b] harmless\n[c] PHP Fatal error:  y';
     expect(phpProblems(log)).toHaveLength(2);
+  });
+  it('makes E2E reports writable to the shared browser runtime with sticky permissions', () => {
+    const calls = [];
+    prepareReportDirectory('artifacts/reports/e2e', {
+      makeDirectory: (...args) => calls.push(['mkdir', ...args]),
+      setMode: (...args) => calls.push(['chmod', ...args]),
+    });
+    expect(calls).toEqual([
+      ['mkdir', 'artifacts/reports/e2e', { recursive: true }],
+      ['chmod', 'artifacts/reports/e2e', 0o1777],
+    ]);
   });
   it('counts passing, failing, skipped, unsupported and blocked cells', () => {
     expect(
@@ -118,11 +130,15 @@ describe('matrix helpers', () => {
 
   it('uses the shared Playwright runner and reports stderr when its JSON artifact is missing', () => {
     let invoked = false;
+    let reportDirectory = '';
     const result = browserSmoke(
       'runtime',
       'jooservices',
       { browserBase: 'http://wordpress', paths: { single: '/hello/' } },
       {
+        prepareReportDirectory: (path) => {
+          reportDirectory = path;
+        },
         spawn: (command, args, options) => {
           invoked = true;
           expect(command).toBe('bash');
@@ -146,6 +162,7 @@ describe('matrix helpers', () => {
       }
     );
     expect(invoked).toBe(true);
+    expect(reportDirectory).toBe('artifacts/reports/e2e');
     expect(result).toEqual({ failed: true, notes: ['browser failed without a report: last line'] });
   });
 });

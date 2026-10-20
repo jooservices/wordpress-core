@@ -10,7 +10,7 @@ Order: master/module off → non-front-end context → post override `off` → p
 |---|---|---|
 | Images / iframes | `ImageLazy` | `loading` attribute via the WordPress API; explicit `fetchpriority`/`loading=eager` always wins |
 | Video embeds | `EmbedFacade` | `<joo-embed>` click-to-load; no third-party request before the click; link is the no-JS fallback; providers extendable with `joo/lazy/embed_providers` |
-| Fragments | `FragmentLazy` | `<joo-lazy>` with placeholder (reserved height), `<noscript>` real HTML and a REST URL |
+| Fragments | `FragmentLazy` | Block `<joo-lazy>` with a minimum block size from its registered height, placeholder, `<noscript>` real HTML and a REST URL |
 | Sections | `SectionLazy` | `content-visibility` class for manifest `lazy.sectionBlocks`; core/comments deferred behind a button |
 | REST | `Rest\FragmentController` | Public `GET /joo/v1/fragment/{name}` with a 1–64 character registered name, validated args, 404 unknown/missing/non-public snapshot, 400 invalid |
 
