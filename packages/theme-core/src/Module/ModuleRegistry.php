@@ -227,10 +227,10 @@ final class ModuleRegistry {
 			}
 			try {
 				$memory = memory_get_usage();
-				$start  = microtime( true );
+				$start  = hrtime( true );
 				$this->modules[ $id ]->boot();
 				$this->timings[ $id ] = array(
-					'ms'    => round( ( microtime( true ) - $start ) * 1000, 3 ),
+					'ms'    => round( ( hrtime( true ) - $start ) / 1e6, 3 ),
 					'bytes' => max( 0, memory_get_usage() - $memory ),
 				);
 				$this->status[ $id ]  = self::STATUS_BOOTED;
