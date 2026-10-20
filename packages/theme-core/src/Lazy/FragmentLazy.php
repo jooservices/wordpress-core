@@ -97,7 +97,15 @@ final class FragmentLazy {
 			$value = $params[ $key ] ?? $rule['default'] ?? null;
 			if ( null === $value ) {
 				if ( ! empty( $rule['required'] ) ) {
-					return new \WP_Error( 'rest_invalid_param', sprintf( 'Parameter %s is required.', $key ), array( 'status' => 400 ) );
+					return new \WP_Error(
+						'rest_invalid_param',
+						sprintf(
+							/* translators: %s: parameter name. */
+							__( 'Parameter %s is required.', 'joo-core' ),
+							$key
+						),
+						array( 'status' => 400 )
+					);
 				}
 				continue;
 			}
