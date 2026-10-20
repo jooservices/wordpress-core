@@ -9,11 +9,8 @@ if [[ "$WP_TASK_LOCK_WAIT_SECONDS" -ne 1200 || "$WP_TASK_OPERATION_CAP_SECONDS" 
   exit 1
 fi
 
-ancestor_pid="$(ps -o ppid= -p "$PPID" 2>/dev/null | awk 'NF { print $1; exit }')"
-if [[ ! "$ancestor_pid" =~ ^[1-9][0-9]*$ ]]; then
-  ancestor_pid="$PPID"
-fi
-if ! wp_task_lock_owner_is_ancestor "$ancestor_pid"; then
+if ! bash -c 'source "$1"; wp_task_lock_owner_is_ancestor "$2"' _ \
+  "$ROOT/docker/scripts/wp-task-lock.sh" "$BASHPID"; then
   echo "FAIL: the process ancestry check did not accept a real ancestor." >&2
   exit 1
 fi
@@ -64,7 +61,8 @@ live_lock="$tmp/live-owner.lock"
 sleep 30 &
 holder_pid="$!"
 live_owner_pid="$holder_pid"
-if wp_task_lock_owner_is_ancestor "$live_owner_pid"; then
+if bash -c 'source "$1"; wp_task_lock_owner_is_ancestor "$2"' _ \
+  "$ROOT/docker/scripts/wp-task-lock.sh" "$live_owner_pid"; then
   echo "FAIL: the process ancestry check accepted an unrelated live process." >&2
   exit 1
 fi
