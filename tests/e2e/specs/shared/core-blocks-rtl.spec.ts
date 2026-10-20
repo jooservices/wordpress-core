@@ -14,7 +14,8 @@ const css = [
   ...blocks.map((block) => readFileSync(join(blocksDir, block, 'style.css'), 'utf8')),
 ].join('\n');
 
-const img = '<img alt="" width="64" height="64" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">';
+const img =
+  '<img alt="" width="64" height="64" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">';
 const links = '<li><a href="#">github</a></li><li><a href="#">linkedin</a></li><li><a href="#">x</a></li>';
 const arrow = (glyph: string) => `<span class="joo-arrow" aria-hidden="true">${glyph}</span>`;
 
@@ -25,7 +26,7 @@ const markup: Record<string, string> = {
     <p class="joo-author__bio">نبذة قصيرة عن الكاتب.</p><ul class="joo-author__socials">${links}</ul></div></aside>`,
   breadcrumbs: `<nav class="joo-breadcrumbs joo-breadcrumbs--chevron"><ol><li><a href="#">الرئيسية</a></li><li><a href="#">المقالات</a></li><li><span>مقال</span></li></ol></nav>`,
   'category-tree': `<div class="joo-tree"><ul><li><div class="joo-tree__row"><button class="joo-tree__toggle" id="open" aria-expanded="true"></button><a href="#">فئة</a><span class="joo-tree__count">4</span></div>
-    <ul class="joo-tree__children"><li><div class="joo-tree__row"><button class="joo-tree__toggle" id="shut" aria-expanded="false"></button><a href="#">فئة فرعية</a><span class="joo-tree__count">2</span></div></li></ul></li></ul></div>`,
+    <div class="joo-tree__children"><ul><li><div class="joo-tree__row"><button class="joo-tree__toggle" id="shut" aria-expanded="false"></button><a href="#">فئة فرعية</a><span class="joo-tree__count">2</span></div></li></ul></div></li></ul></div>`,
   companies: `<section><p class="joo-company--pinned"><span class="joo-company__label">الحالية</span></p><ul class="joo-companies__list">
     <li><div class="joo-company__row"><strong class="joo-company__name">شركة</strong><span class="joo-company__range">2020 – 2024</span></div></li></ul>
     <nav class="joo-companies__pager"><a rel="prev" href="#">${arrow('←')}</a><a href="#">1</a><a href="#" aria-current="page">2</a><a rel="next" href="#">${arrow('→')}</a></nav></section>`,
@@ -51,7 +52,10 @@ const markup: Record<string, string> = {
     <span class="joo-topic__text"><strong>موضوع <i>5</i></strong><span class="joo-topic__intro">مقدمة قصيرة عن الموضوع.</span></span></a></li></ul></section>`,
 };
 
-const page_ = (dir: 'rtl' | 'ltr', body: string) => `<!doctype html><html lang="${dir === 'rtl' ? 'ar' : 'en'}" dir="${dir}"><head>
+const page_ = (
+  dir: 'rtl' | 'ltr',
+  body: string
+) => `<!doctype html><html lang="${dir === 'rtl' ? 'ar' : 'en'}" dir="${dir}"><head>
 <meta charset="utf-8"><title>RTL fixture</title><style>body{margin:16px;font:16px sans-serif}${css}</style></head><body>${body}</body></html>`;
 
 const fixture = (dir: 'rtl' | 'ltr') =>
@@ -89,7 +93,8 @@ async function expectNoOverlap(page: Page) {
           const b = rects[j].r;
           const w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
           const h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
-          if (w > 1 && h > 1) out.push(`${parent.className || parent.tagName}: ${rects[i].c.className} x ${rects[j].c.className}`);
+          if (w > 1 && h > 1)
+            out.push(`${parent.className || parent.tagName}: ${rects[i].c.className} x ${rects[j].c.className}`);
         }
       }
     }
@@ -122,7 +127,9 @@ test.describe('core blocks in RTL', () => {
     }
 
     // The progress bar grows from the right.
-    expect(await page.locator('#bar').evaluate((el) => getComputedStyle(el).transformOrigin.split(' ')[0])).not.toBe('0px');
+    expect(await page.locator('#bar').evaluate((el) => getComputedStyle(el).transformOrigin.split(' ')[0])).not.toBe(
+      '0px'
+    );
 
     // Breadcrumb items run right to left.
     const crumbs = block('breadcrumbs').locator('li');
@@ -139,12 +146,21 @@ test.describe('core blocks in RTL', () => {
     expect(outer.x + outer.width - (inner.x + inner.width)).toBeCloseTo(16, 0);
 
     // Avatars and media sit on the right, before the text.
-    await expectBefore(block('author-box').locator('.joo-author__avatar'), block('author-box').locator('.joo-author__body'));
-    await expectBefore(block('profile-card').locator('.joo-profile__avatar'), block('profile-card').locator('.joo-profile__name'));
+    await expectBefore(
+      block('author-box').locator('.joo-author__avatar'),
+      block('author-box').locator('.joo-author__body')
+    );
+    await expectBefore(
+      block('profile-card').locator('.joo-profile__avatar'),
+      block('profile-card').locator('.joo-profile__name')
+    );
     await expectBefore(block('top-topics').locator('.joo-topic__img'), block('top-topics').locator('.joo-topic__text'));
 
     // Previous controls sit on the right, next on the left.
-    await expectBefore(block('featured-slider').locator('.joo-slider__prev'), block('featured-slider').locator('.joo-slider__next'));
+    await expectBefore(
+      block('featured-slider').locator('.joo-slider__prev'),
+      block('featured-slider').locator('.joo-slider__next')
+    );
     await expectBefore(block('companies').locator('[rel=prev]'), block('companies').locator('[rel=next]'));
 
     // Language items run right to left; the TOC levels indent from the right.
@@ -154,9 +170,15 @@ test.describe('core blocks in RTL', () => {
     expect(l2.x + l2.width - (l4.x + l4.width)).toBeGreaterThan(16);
 
     await expectNoOverlap(page);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)
+    ).toBe(true);
 
-    for (const name of blocks.filter((b) => markup[b])) await save(block(name), `rtl-${name}`, info);
+    for (const name of blocks.filter((b) => markup[b])) {
+      // The reading-progress wrapper has no visible box because its content is fixed to the viewport.
+      const target = name === 'reading-progress' ? block(name).locator('.joo-progress') : block(name);
+      await save(target, `rtl-${name}`, info);
+    }
     await save(page, 'core-blocks-rtl', info, true);
   });
 
@@ -184,6 +206,11 @@ test.describe('core blocks in RTL', () => {
     await page.setContent(fixture('ltr'));
     expect(await pseudo(page.locator('#shut'))).toBe('"▸"');
     expect(await pseudo(page.locator('.joo-breadcrumbs li + li').first())).toBe('"›"');
-    expect(await page.locator('.joo-arrow').first().evaluate((el) => getComputedStyle(el).transform)).toBe('none');
+    expect(
+      await page
+        .locator('.joo-arrow')
+        .first()
+        .evaluate((el) => getComputedStyle(el).transform)
+    ).toBe('none');
   });
 });
