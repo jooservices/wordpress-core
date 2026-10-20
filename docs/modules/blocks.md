@@ -34,7 +34,7 @@ Optional files: `view.js` (script module) and `style.css`; the build writes hash
 Reading time: `Support\ReadingTime::forPost()` (code at 25%, 220 wpm English / 200 Vietnamese) is computed on `save_post`, cached in `_joo_reading_cache` and used by the post-meta block, post cards and JSON-LD `timeRequired`/`wordCount`.
 
 ## Sidebar blocks (C13)
-All five render their content on the server and can be deferred as fragments (`companies`, `category-tree`, `top-topics`, `tag-list`) through `Blocks\FragmentBlock`: the fragment endpoint calls the same method as the inline path, so the HTML is identical.
+All five render their content on the server. Only `companies`, `category-tree`, `top-topics` and `tag-list` extend `Blocks\FragmentBlock` and support fragment deferral; `profile-card` is server-rendered but is not deferred as a fragment. The fragment endpoint calls the same method as the inline path, so the HTML is identical for the four fragment blocks.
 
 | Block | Notes |
 |---|---|

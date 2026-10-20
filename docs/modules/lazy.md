@@ -3,7 +3,7 @@
 Everything below is switchable: `lazy.enabled` (master), `lazy.images|iframes|fragments|sections|comments|terminal`, `lazy.eager_count`, `lazy.embed_thumbnails` (`local|remote`), `lazy.yield_to_plugins`. A post can override with the editor panel (`_joo_lazy_override`: default/on/off).
 
 ## Decision (`Lazy\Policy::decide`)
-Order: master/module off → non-front-end context → post override `off` → per-type switch (skipped when override is `on`) → yield to an optimisation plugin (`joo/lazy/provider` filter, images and iframes) → LCP / first `lazy.eager_count` images stay eager → lazy. Every `Decision` carries a `reason` code (`Decision::$reason`); no WP-CLI command prints it.
+Order: master/module off → non-front-end context → post override `off` → per-type switch (skipped when override is `on`) → yield to an optimisation plugin (`joo/lazy/provider` filter, images and iframes) → LCP / first `lazy.eager_count` images stay eager → default lazy/eager result. The final `joo/lazy/should_lazy` filter runs on every path and can override that result. Every `Decision` carries a `reason` code (`Decision::$reason`); no WP-CLI command prints it.
 
 ## Pieces
 | Piece | Class | Result |
