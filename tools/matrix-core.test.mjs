@@ -173,6 +173,22 @@ describe('matrix core helpers', () => {
 });
 
 describe('runMatrix', () => {
+  it.each([
+    [['--group', 'forms', '--only', 'yoast'], 'valid filters with no intersection'],
+    [['--only', 'missing'], 'an --only key with no match'],
+  ])('rejects %s and does not write an empty report (%s)', async (args) => {
+    const io = fakeIO({
+      plugins: [
+        { key: 'cf7', name: 'Contact Form 7', group: 'Forms', tier: 1, slug: 'contact-form-7', source: 'wporg' },
+        { key: 'yoast', name: 'Yoast SEO', group: 'SEO', tier: 1, slug: 'wordpress-seo', source: 'wporg' },
+      ],
+    });
+
+    await expect(runMatrix({ args, env: {}, io })).rejects.toThrow('no plugins matched');
+    expect(io.files.size).toBe(0);
+    expect(io.calls.some((call) => call[0] === 'wp' && call[1] === 'plugin' && call[2] === 'install')).toBe(false);
+  });
+
   it('runs successful runtime smoke, writes both reports and keeps an existing child theme', async () => {
     const io = fakeIO({
       installedThemes: 'parent-theme\ncompat-child',

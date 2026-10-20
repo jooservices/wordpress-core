@@ -304,6 +304,7 @@ export async function runMatrix(options) {
   );
   const only = flag('--only', '').split(',').filter(Boolean);
   const group = flag('--group', '');
+  const hasExplicitSelection = args.includes('--only') || args.includes('--group');
   const runtimeOnly = args.includes('--runtime-only');
   const childRequested = args.includes('--child-theme');
   const matrix = io.readJson('tests/matrix/plugins.json');
@@ -330,6 +331,8 @@ export async function runMatrix(options) {
       results.push(await testRuntime(ctx, io));
     } else {
       const selected = selectPlugins(matrix.plugins, { only, group });
+      if (hasExplicitSelection && selected.length === 0)
+        throw new Error('no plugins matched the specified --only/--group filters');
       for (const entry of selected) {
         const skip = skipReason(entry, { hasZip: io.hasZip(entry.key) });
         const result = skip
