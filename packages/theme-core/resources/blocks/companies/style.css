@@ -73,3 +73,8 @@
 .joo-companies__pager a[aria-current='page'] {
   font-weight: 700;
 }
+
+.joo-arrow:dir(rtl) {
+  display: inline-block;
+  transform: scaleX(-1);
+}

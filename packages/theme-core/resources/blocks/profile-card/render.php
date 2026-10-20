@@ -53,5 +53,5 @@ $size  = (int) ( $data['size'] ?? 64 );
 		<?php endforeach; ?>
 		</ul>
 	<?php endif; ?>
-	<a class="joo-profile__more" href="<?php echo esc_url( (string) $data['url'] ); ?>"><?php echo esc_html__( 'View full profile', 'joo-core' ); ?> →</a>
+	<a class="joo-profile__more" href="<?php echo esc_url( (string) $data['url'] ); ?>"><?php echo esc_html__( 'View full profile', 'joo-core' ); ?> <span class="joo-arrow" aria-hidden="true">→</span></a>
 </section>
