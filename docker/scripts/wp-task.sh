@@ -47,7 +47,12 @@ if [[ "$ticket" == staging ]]; then
 fi
 
 source "$ROOT/docker/scripts/site-lib.sh"
+source "$ROOT/docker/scripts/wp-task-lock.sh"
 cd "$ROOT"
+
+acquire_shared_wp_test_lock() {
+  wp_task_lock_acquire "$workspaces_root/.tmp/jooservices-wp-shared-test.lock" "$WP_TASK_LOCK_WAIT_SECONDS"
+}
 
 restore_theme_source=0
 restore_sources() {
@@ -57,7 +62,11 @@ restore_sources() {
     rt sh "bash '$ROOT/docker/scripts/site-bootstrap.sh'" >/dev/null || echo "ERROR: failed to restore the source symlinks of the site." >&2
   fi
 }
-trap restore_sources EXIT
+cleanup_wp_task() {
+  restore_sources
+  wp_task_lock_release
+}
+trap cleanup_wp_task EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
@@ -180,6 +189,7 @@ case "$action" in
   test-migrations)
     # Idempotency proof on a worktree site (never on staging): apply the fixtures twice, forgetting in between.
     [[ "$ticket" != staging ]] || { echo "ERROR: test-migrations drops the migration records; run it in a worktree, not on staging." >&2; exit 2; }
+    acquire_shared_wp_test_lock || exit $?
     ensure_site
     prefix="$(wpx db prefix </dev/null)"
     run_migrations dir="$ROOT/docker/scripts/migration-fixtures"
@@ -227,23 +237,28 @@ case "$action" in
     echo "Staging reseeded at $SITE_URL"
     ;;
   integration)
+    acquire_shared_wp_test_lock || exit $?
     ensure_site
     WP_PHP_CLI="${WP_PHP_VERSION:-}" JOO_TEST_THEME="${TEST_THEME:-$theme}" COVERAGE="${COVERAGE:-0}" site_script phpunit-integration.sh "$@"
     ;;
   e2e)
+    acquire_shared_wp_test_lock || exit $?
     ensure_site
     E2E_THEME="$theme" rt playwright npx --no-install playwright test -c tests/e2e/playwright.config.ts "$@"
     ;;
   e2e-demo)
+    acquire_shared_wp_test_lock || exit $?
     ensure_site
     site_script e2e-demo-import.sh
     ;;
   matrix)
+    acquire_shared_wp_test_lock || exit $?
     ensure_site
     seed_demo
     node tools/matrix.mjs --theme "$theme" "$@"
     ;;
   marketplace)
+    acquire_shared_wp_test_lock || exit $?
     ensure_site
     rt node tools/theme-check.mjs --theme "$theme"
     rt php-node tools/build-theme.mjs --theme "$theme"
@@ -267,14 +282,17 @@ case "$action" in
     [[ "$check_status" -eq 0 ]] || exit 1
     ;;
   screenshots)
+    acquire_shared_wp_test_lock || exit $?
     ensure_site
     rt playwright node tools/screenshots.mjs --theme "$theme" --base "$SITE_URL" "$@"
     ;;
   critical)
+    acquire_shared_wp_test_lock || exit $?
     ensure_site
     rt playwright node tools/critical.mjs --theme "$theme" --base "$SITE_URL" "$@"
     ;;
   health)
+    acquire_shared_wp_test_lock || exit $?
     ensure_site
     health_check
     ;;

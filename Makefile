@@ -87,6 +87,7 @@ analyse: ## PHPStan (core level 8 on PHP 8.1, others level 6), tsc checkJs, dept
 	@$(PHP) vendor/bin/deptrac analyse --no-progress --fail-on-uncovered
 test-tooling: ## Prove that every quality tool fails on a violation
 	@tests/make-help.sh
+	@tests/tooling/wp-test-lock.sh
 	@tests/tooling/run.sh
 	@tests/tooling/hooks-test.sh
 	@$(PHP_NODE) tools/diff-schema-validation.mjs
