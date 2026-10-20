@@ -12,6 +12,7 @@ import {
   runMatrix,
   runtimeLabel,
   skipReason,
+  wpCliSymfonyDeprecations,
   wordpressOrgWarnings,
 } from './matrix-core.mjs';
 
@@ -89,6 +90,15 @@ describe('matrix core helpers', () => {
       'PHP Warning: wp_update_plugins(): Something is wrong (WordPress could not establish a secure connection to WordPress.org.)';
     expect(phpProblems(`${wordpressOrgWarning}\nPHP Warning: plugin issue`)).toEqual(['PHP Warning: plugin issue']);
     expect(wordpressOrgWarnings(wordpressOrgWarning)).toEqual([wordpressOrgWarning]);
+    const wpCliDeprecation =
+      'PHP Deprecated: Return type of Symfony\\Component\\Finder\\Finder::getIterator() should be compatible in phar:///usr/local/lib/wp-cli.phar/vendor/symfony/finder/Iterator.php on line 32';
+    const pluginPharDeprecation =
+      'PHP Deprecated: Return type of Symfony\\Component\\Finder\\Finder::getIterator() should be compatible in phar:///plugin/vendor/symfony/finder/Iterator.php on line 32';
+    expect(phpProblems(`${wpCliDeprecation}\n${pluginPharDeprecation}\nPHP Warning: plugin issue`)).toEqual([
+      pluginPharDeprecation,
+      'PHP Warning: plugin issue',
+    ]);
+    expect(wpCliSymfonyDeprecations(wpCliDeprecation)).toEqual([wpCliDeprecation]);
     expect(runtimeLabel({})).toBe('WordPress unknown / PHP unknown / database unknown');
     expect(
       resultCounts([
@@ -289,6 +299,19 @@ describe('runMatrix', () => {
     expect(exitCode).toBe(0);
     expect(report.results[0].result).toBe('PASS');
     expect(report.results[0].notes[0]).toContain('WordPress.org update check could not establish TLS');
+  });
+
+  it('records WP-CLI PHAR Symfony Finder deprecations without failing plugin compatibility', async () => {
+    const plugin = { key: 'one', name: 'One', group: 'Forms', tier: 1, slug: 'one', source: 'wporg' };
+    const io = fakeIO({
+      plugins: [plugin],
+      phpLog:
+        'PHP Deprecated: Return type of Symfony\\Component\\Finder\\Finder::getIterator() should be compatible in phar:///usr/local/lib/wp-cli.phar/vendor/symfony/finder/Iterator.php on line 32',
+    });
+    const { report, exitCode } = await runMatrix({ args: ['--only', 'one', '--no-browser'], env: {}, io });
+    expect(exitCode).toBe(0);
+    expect(report.results[0].result).toBe('PASS');
+    expect(report.results[0].notes[0]).toContain('WP-CLI bundled Symfony Finder emitted PHP Deprecated');
   });
 
   it('fails a plugin cell when its database snapshot cannot be restored', async () => {

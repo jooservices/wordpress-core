@@ -2,6 +2,7 @@ const OFFLINE =
   /could not resolve|connection refused|timed out|curl error|unable to connect|download failed|no route|could not establish a secure connection to WordPress\.org/i;
 const MATRIX_DIR = 'artifacts/reports/matrix';
 const WORDPRESS_ORG_TLS_WARNING = /PHP Warning: .*WordPress could not establish a secure connection to WordPress\.org/;
+const WP_CLI_SYMFONY_DEPRECATION = /PHP Deprecated: .* in phar:\/\/.*\/wp-cli\.phar\/vendor\/symfony\/finder\//i;
 
 /** Classifies a plugin entry before any work: returns a skip reason or null. */
 export function skipReason(entry, { hasZip }) {
@@ -17,12 +18,18 @@ export function phpProblems(log) {
     .split('\n')
     .filter(
       (line) =>
-        /PHP (Fatal error|Warning|Notice|Deprecated|Parse error)/.test(line) && !WORDPRESS_ORG_TLS_WARNING.test(line)
+        /PHP (Fatal error|Warning|Notice|Deprecated|Parse error)/.test(line) &&
+        !WORDPRESS_ORG_TLS_WARNING.test(line) &&
+        !WP_CLI_SYMFONY_DEPRECATION.test(line)
     );
 }
 
 export function wordpressOrgWarnings(log) {
   return log.split('\n').filter((line) => WORDPRESS_ORG_TLS_WARNING.test(line));
+}
+
+export function wpCliSymfonyDeprecations(log) {
+  return log.split('\n').filter((line) => WP_CLI_SYMFONY_DEPRECATION.test(line));
 }
 
 /** Formats the runtime facts captured from the selected WordPress container. */
@@ -207,6 +214,11 @@ async function testPlugin(entry, ctx, io) {
     if (wordpressOrgWarningsInLog.length)
       notes.push(
         `environment warning: WordPress.org update check could not establish TLS (${wordpressOrgWarningsInLog.length} warning(s))`
+      );
+    const wpCliSymfonyDeprecationsInLog = wpCliSymfonyDeprecations(log);
+    if (wpCliSymfonyDeprecationsInLog.length)
+      notes.push(
+        `environment warning: WP-CLI bundled Symfony Finder emitted PHP Deprecated (${wpCliSymfonyDeprecationsInLog.length} warning(s))`
       );
     const problems = phpProblems(log);
     if (problems.length) notes.push(`php log: ${problems.length} problem(s), first: ${problems[0].slice(0, 160)}`);
