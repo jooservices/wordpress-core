@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "slug": "schema-coverage",
+  "name": "Schema Coverage",
+  "core": "^0.1",
+  "seo": {
+    "enabled": true,
+    "siteType": "business",
+    "yield": "never",
+    "organization": {
+      "logo": "assets/logo.svg",
+      "sameAs": ["https://social.example.test/example"]
+    }
+  },
+  "lazy": {
+    "terminal": true,
+    "sectionBlocks": ["core/paragraph"]
+  },
+  "perf": {
+    "fonts": [
+      {
+        "family": "Coverage Normal",
+        "files": ["assets/fonts/coverage-normal.woff2"],
+        "style": "normal",
+        "display": "fallback"
+      },
+      {
+        "family": "Coverage Italic",
+        "files": ["assets/fonts/coverage-italic.woff2"],
+        "style": "italic",
+        "display": "optional"
+      },
+      {
+        "family": "Coverage Block",
+        "files": ["assets/fonts/coverage-block.woff2"],
+        "display": "block"
+      },
+      {
+        "family": "Coverage Auto",
+        "files": ["assets/fonts/coverage-auto.woff2"],
+        "display": "auto"
+      }
+    ]
+  },
+  "blocks": {
+    "removeCorePatterns": false
+  },
+  "content": {
+    "provider": "null"
+  },
+  "x-schema-coverage": true
+}
