@@ -59,13 +59,11 @@ export function buildTheme(
 
   // Fresh builds so the zip never carries stale hashed files.
   execFileSync('node', [fromRoot('tools/build-assets.mjs'), '--root', 'packages/theme-core'], { stdio: 'ignore' });
-  if (existsSync(join(themeDir, 'assets/src'))) {
-    execFileSync(
-      'node',
-      [fromRoot('tools/build-assets.mjs'), '--root', `themes/${slug}`, '--src', 'assets/src', '--out', 'assets/build'],
-      { stdio: 'ignore' }
-    );
-  }
+  execFileSync(
+    'node',
+    [fromRoot('tools/build-assets.mjs'), '--root', `themes/${slug}`, '--src', 'assets/src', '--out', 'assets/build'],
+    { stdio: 'ignore' }
+  );
   for (const file of themeFiles(themeDir)) {
     mkdirSync(join(stage, file, '..'), { recursive: true });
     cpSync(join(themeDir, file), join(stage, file));

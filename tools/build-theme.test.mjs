@@ -1,9 +1,11 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { addBundledPlugin, EXCLUDED, styleHeader } from './build-theme.mjs';
+import { addBundledPlugin, buildTheme, EXCLUDED, styleHeader } from './build-theme.mjs';
+import { ROOT } from './lib/paths.mjs';
+import { classify, readPatterns } from './runtime-bundle.mjs';
 
 describe('build-theme', () => {
   it('reads the style.css header', () => {
@@ -44,6 +46,34 @@ describe('build-theme', () => {
         EXCLUDED.some((re) => re.test(file)),
         file
       ).toBe(true);
+  });
+
+  it('keeps runtime bundle tests, source files, and source maps out', () => {
+    const files = [
+      'resources/editor/blocks.js',
+      'resources/editor/blocks.test.js',
+      'resources/src/editor.js',
+      'resources/build/editor.js.map',
+    ];
+    const { allowed, rejected } = classify(files, readPatterns());
+
+    expect(allowed).toContain('resources/editor/blocks.js');
+    expect(rejected).toEqual(files.slice(1));
+  });
+
+  it('builds an empty asset manifest for themes without source assets', () => {
+    const scratch = join(ROOT, '.tmp');
+    mkdirSync(scratch, { recursive: true });
+    const root = mkdtempSync(join(scratch, 'starter-package-'));
+
+    try {
+      const { stage } = buildTheme('starter', { outDir: root });
+      const manifest = JSON.parse(readFileSync(join(stage, 'assets/build/assets.json'), 'utf8'));
+
+      expect(manifest.assets).toEqual({});
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it('copies the companion plugin archive into the theme package', () => {
