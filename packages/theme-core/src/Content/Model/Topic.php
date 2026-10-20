@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Content\Model;
 /**
  * Featured topic (tag). Immutable.
  *
- * @api
+ * @internal
  */
 final class Topic {
 

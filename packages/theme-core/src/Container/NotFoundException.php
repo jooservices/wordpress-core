@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Container;
 /**
  * Thrown by Container::get() for an unknown id.
  *
- * @api
+ * @internal
  */
 final class NotFoundException extends \RuntimeException {
 }

@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Container;
 /**
  * Thrown when a service cannot be built.
  *
- * @api
+ * @internal
  */
 final class ContainerException extends \RuntimeException {
 }

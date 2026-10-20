@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Compat\Multilingual;
 /**
  * One language of the site.
  *
- * @api
+ * @internal
  */
 final class Lang {
 

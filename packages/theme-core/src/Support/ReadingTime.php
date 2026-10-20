@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Support;
 /**
  * One definition of "words" shared by the reading-time label and structured data.
  *
- * @api
+ * @internal
  */
 final class ReadingTime {
 

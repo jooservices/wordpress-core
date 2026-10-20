@@ -15,7 +15,7 @@ use JOOservices\ThemeCore\Seo\Context;
 /**
  * The post without `_joo_translation_of` is the root of its group; translations point to the root.
  *
- * @api
+ * @internal
  */
 final class Translations {
 

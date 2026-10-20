@@ -13,7 +13,7 @@ namespace JOOservices\ThemeCore\Http;
  * Adds Cache-Control and a weak ETag to GET responses of the joo/v1 namespace and answers conditional
  * requests with 304. The routes only expose published public content, so responses may be cached publicly.
  *
- * @api
+ * @internal
  */
 final class CacheHeaders {
 

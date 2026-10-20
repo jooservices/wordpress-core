@@ -16,7 +16,7 @@ use JOOservices\ThemeCore\Support\Hooks;
  * Builds hreflang alternates from a multilingual adapter (filter `joo/seo/alternates`) or the built-in
  * `_joo_lang` / `_joo_translation_of` tagging.
  *
- * @api
+ * @internal
  */
 final class Hreflang {
 

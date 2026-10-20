@@ -15,7 +15,7 @@ use JOOservices\ThemeCore\Support\Hooks;
 /**
  * Builds the social meta tags as a list of [attribute, name, content] triples.
  *
- * @api
+ * @internal
  */
 final class SocialTags {
 

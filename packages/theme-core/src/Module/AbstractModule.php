@@ -15,7 +15,7 @@ use JOOservices\ThemeCore\Config\Settings;
 /**
  * Provides empty defaults and access to the container and settings.
  *
- * @api
+ * @internal
  */
 abstract class AbstractModule implements ModuleInterface {
 

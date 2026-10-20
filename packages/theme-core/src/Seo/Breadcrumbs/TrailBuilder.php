@@ -16,7 +16,7 @@ use JOOservices\ThemeCore\Support\Hooks;
 /**
  * Single source of the trail for the visible block and the BreadcrumbList node.
  *
- * @api
+ * @internal
  */
 final class TrailBuilder {
 

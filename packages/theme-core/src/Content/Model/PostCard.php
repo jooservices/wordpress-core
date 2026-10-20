@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Content\Model;
 /**
  * Compact post for lists and sliders. Immutable.
  *
- * @api
+ * @internal
  */
 final class PostCard {
 

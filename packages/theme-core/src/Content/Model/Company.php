@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Content\Model;
 /**
  * Employer entry. Immutable.
  *
- * @api
+ * @internal
  */
 final class Company {
 

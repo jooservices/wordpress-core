@@ -16,7 +16,7 @@ use JOOservices\ThemeCore\Support\Hooks;
 /**
  * Responsive, correctly sized images with intrinsic dimensions, modern formats and an LCP marker.
  *
- * @api
+ * @internal
  */
 final class Images {
 

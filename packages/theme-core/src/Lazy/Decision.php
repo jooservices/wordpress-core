@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Lazy;
 /**
  * Outcome of Policy::decide().
  *
- * @api
+ * @internal
  */
 final class Decision {
 

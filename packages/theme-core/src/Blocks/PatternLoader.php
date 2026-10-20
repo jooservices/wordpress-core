@@ -14,7 +14,7 @@ use JOOservices\ThemeCore\Config\Manifest;
 /**
  * Registers the `jooservices` pattern category, patterns from extra theme folders and can remove the core patterns.
  *
- * @api
+ * @internal
  */
 final class PatternLoader {
 

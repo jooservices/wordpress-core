@@ -14,7 +14,7 @@ use JOOservices\ThemeCore\Compat\Multilingual;
 /**
  * First active plugin implementation, else the built-in tagging.
  *
- * @api
+ * @internal
  */
 final class Resolver {
 

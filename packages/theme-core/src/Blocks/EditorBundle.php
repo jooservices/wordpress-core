@@ -15,7 +15,7 @@ use JOOservices\ThemeCore\Support\Paths;
  * One script for all dynamic blocks: ServerSideRender preview plus inspector controls generated from the
  * `x-joo` key of block.json (see resources/editor/blocks.js).
  *
- * @api
+ * @internal
  */
 final class EditorBundle {
 

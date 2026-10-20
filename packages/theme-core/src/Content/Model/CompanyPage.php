@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Content\Model;
 /**
  * One page of companies. Immutable.
  *
- * @api
+ * @internal
  */
 final class CompanyPage {
 

@@ -14,7 +14,7 @@ use JOOservices\ThemeCore\Content\Model\ImageRef;
 /**
  * Small, safe helpers: every method returns escaped HTML.
  *
- * @api
+ * @internal
  */
 final class Html {
 

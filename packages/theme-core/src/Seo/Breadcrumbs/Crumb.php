@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Seo\Breadcrumbs;
 /**
  * Label and optional URL (the current page has none).
  *
- * @api
+ * @internal
  */
 final class Crumb {
 

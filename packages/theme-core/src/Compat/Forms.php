@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Compat;
 /**
  * Detects forms in content so their assets can be loaded only where needed.
  *
- * @api
+ * @internal
  */
 final class Forms {
 

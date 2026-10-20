@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Config;
 /**
  * Parsed (and validated) joo-theme.json.
  *
- * @api
+ * @internal
  */
 final class Manifest {
 

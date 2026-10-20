@@ -18,7 +18,7 @@ use JOOservices\ThemeCore\Support\Hooks;
  * Order: module off, request context, per-post override, type switch, yield to third-party plugins,
  * eager count / LCP, filter joo/lazy/should_lazy.
  *
- * @api
+ * @internal
  */
 final class Policy {
 

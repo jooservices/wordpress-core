@@ -15,7 +15,7 @@ use JOOservices\ThemeCore\Support\Hooks;
 /**
  * Applies the robots matrix through the WordPress `wp_robots` filter and the X-Robots-Tag header.
  *
- * @api
+ * @internal
  */
 final class RobotsBuilder {
 

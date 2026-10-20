@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Compat;
 /**
  * An adapter changes core behaviour for one plugin. It must not depend on the plugin's code at load time.
  *
- * @api
+ * @internal
  */
 interface AdapterInterface {
 

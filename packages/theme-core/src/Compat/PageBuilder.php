@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Compat;
 /**
  * Pages built with Elementor, Beaver Builder, Divi or Bricks keep their own markup: content filters skip them.
  *
- * @api
+ * @internal
  */
 final class PageBuilder {
 

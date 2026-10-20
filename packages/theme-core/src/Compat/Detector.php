@@ -13,7 +13,7 @@ namespace JOOservices\ThemeCore\Compat;
  * Cheap, autoload-free detection from constants, already loaded classes and functions, then the active plugin list.
  * The environment probe is injectable: callable(string $kind, string $name): ?string with kind constant|class|function|plugin.
  *
- * @api
+ * @internal
  */
 final class Detector {
 

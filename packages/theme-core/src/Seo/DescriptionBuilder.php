@@ -14,7 +14,7 @@ use JOOservices\ThemeCore\Support\Hooks;
 /**
  * Override, excerpt, content, term description, author bio, tagline: first usable wins, never empty.
  *
- * @api
+ * @internal
  */
 final class DescriptionBuilder {
 
