@@ -25,6 +25,18 @@ $root = dirname( __DIR__ );
 require_once $root . '/packages/theme-core/core.php';
 require_once __DIR__ . '/lib/boot-cost-statistics.php';
 
+$budgetDocument = (string) file_get_contents( $root . '/docs/reference/budgets.md' );
+$budgetMatch    = array();
+if ( 1 !== preg_match( '/<!-- enforced-code-budgets:start -->\s*```json\s*(.*?)\s*```\s*<!-- enforced-code-budgets:end -->/s', $budgetDocument, $budgetMatch ) ) {
+	WP_CLI::error( 'The enforced code budgets are missing from docs/reference/budgets.md.' );
+}
+$codeBudgets = json_decode( $budgetMatch[1] ?? '', true );
+if ( ! is_array( $codeBudgets ) || ! isset( $codeBudgets['boot']['emptyModuleSetMedianMilliseconds'], $codeBudgets['boot']['emptyModuleSetPeakBytes'] ) ) {
+	WP_CLI::error( 'The empty-module boot budget is invalid in docs/reference/budgets.md.' );
+}
+$timeBudget   = (float) $codeBudgets['boot']['emptyModuleSetMedianMilliseconds'];
+$memoryBudget = (int) $codeBudgets['boot']['emptyModuleSetPeakBytes'];
+
 $manifest = $root . '/themes/jooservices/joo-theme.json';
 if ( ! is_file( $manifest ) ) {
 	WP_CLI::error( 'The jooservices default manifest is missing.' );
@@ -127,14 +139,12 @@ $emptyMedianMs   = BootCostStatistics::median( $empty['milliseconds'] );
 $emptyPeakBytes  = BootCostStatistics::peak( $empty['peak_bytes'] );
 $defaultMedianMs = BootCostStatistics::median( $default['milliseconds'] );
 $defaultPeak     = BootCostStatistics::peak( $default['peak_bytes'] );
-$memoryBudget    = 1536 * 1024;
-
 WP_CLI::line( sprintf( 'WordPress %s; PHP %s; samples per set: 30', get_bloginfo( 'version' ), PHP_VERSION ) );
 WP_CLI::line( sprintf( 'Empty modules (%d modules): median %.3f ms; peak %d B (%.1f KiB)', count( $empty['modules'] ), $emptyMedianMs, $emptyPeakBytes, $emptyPeakBytes / 1024 ) );
 WP_CLI::line( sprintf( 'Default modules (%d: %s): median %.3f ms; peak %d B (%.1f KiB)', count( $default['modules'] ), implode( ', ', $default['modules'] ), $defaultMedianMs, $defaultPeak, $defaultPeak / 1024 ) );
 
-if ( $emptyMedianMs >= 3.0 || $emptyPeakBytes >= $memoryBudget ) {
-	WP_CLI::error( 'The empty-module-set boot exceeds the 3 ms or 1.5 MiB budget.' );
+if ( $emptyMedianMs >= $timeBudget || $emptyPeakBytes >= $memoryBudget ) {
+	WP_CLI::error( sprintf( 'The empty-module-set boot exceeds the %.3g ms or %d B budget.', $timeBudget, $memoryBudget ) );
 }
 
-WP_CLI::success( 'The empty-module-set boot is within the 3 ms and 1.5 MiB budgets.' );
+WP_CLI::success( sprintf( 'The empty-module-set boot is within the %.3g ms and %d B budgets.', $timeBudget, $memoryBudget ) );

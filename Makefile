@@ -155,6 +155,10 @@ health: ## Verify the running demo (THEME=...)
 	@bash ./docker/scripts/wp-task.sh health $(THEME)
 perf: ## Lighthouse CI and size budgets (THEME=...)
 	$(call require_theme)
+	@$(NODE) tools/build-assets.mjs --root packages/theme-core
+	@$(NODE) tools/perf.mjs --check-code-budgets
+	@$(NODE) tools/runtime-bundle.mjs list >/dev/null
+	@$(MAKE) --no-print-directory boot-cost
 	@bash ./docker/scripts/perf-vm.sh $(THEME)
 boot-cost: ## Measure empty and default core boot cost in the ticket worktree site
 	@WP_PHP_VERSION=8.3 bash ./docker/scripts/wp-task.sh boot-cost jooservices

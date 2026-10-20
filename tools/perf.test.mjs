@@ -1,7 +1,8 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { checkBudgets, remoteChromeConnection } from './perf.mjs';
+import { checkAssetBudgets, checkBudgets, remoteChromeConnection } from './perf.mjs';
+import { readCodeBudgets } from './lib/perf-budgets.mjs';
 
 const budgets = {
   scores: { performance: 0.9, seo: 0.95 },
@@ -32,6 +33,34 @@ describe('perf budgets', () => {
     const noindex = { ...ok, scores: { performance: 0.95, seo: 0.5 }, crawlable: 0 };
     expect(checkBudgets(budgets, noindex, { noindex: true })).toEqual([]);
     expect(checkBudgets(budgets, { ...noindex, crawlable: 1 }, { noindex: true })).toHaveLength(1);
+  });
+});
+
+describe('documented code budgets', () => {
+  const codeBudgets = readCodeBudgets();
+
+  it('rejects an oversized JavaScript bundle fixture', () => {
+    const runtimeBudget = codeBudgets.javascript.runtime;
+    const assets = Object.fromEntries(
+      Object.entries(codeBudgets.javascript).map(([name, max]) => [name, { type: 'js', gzip: max }])
+    );
+    assets.runtime.gzip = runtimeBudget + 1;
+
+    expect(checkAssetBudgets(codeBudgets, assets)).toContain(
+      `runtime gzip ${runtimeBudget + 1} B exceeds budget ${runtimeBudget} B`
+    );
+  });
+
+  it('sets a single enforced limit for each documented JavaScript bundle', () => {
+    expect(Object.keys(codeBudgets.javascript)).toEqual([
+      'runtime',
+      'blocks/featured-slider/view',
+      'blocks/toc/view',
+      'blocks/companies/view',
+      'blocks/category-tree/view',
+      'terminal-engine',
+      'terminal',
+    ]);
   });
 });
 
