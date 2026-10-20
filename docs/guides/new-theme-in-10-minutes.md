@@ -23,20 +23,20 @@ Keep theme PHP under 50 lines (`functions.php` boots the core from `joo-theme.js
 
 ## Walk-through record
 
-Literal run on WSL on 2026-10-20. Times are wall-clock seconds from `time -p`; the demo measurement was after the images were already available.
+Literal run on WSL on 2026-10-20 from a clean tracked checkout. A prior ignored `themes/acme` output existed, so this replay used the new slug `qatest` and left inherited ignored files untouched. Times are wall-clock seconds from `time -p`; the demo measurement was after the images were already available.
 
 | Step | Result | Time |
 | --- | --- | ---: |
-| Environment | `make init-env` and `make deps` passed. `make deps` passed again after the generated workspace was added to the lockfile. | 0.05 s; 9.60 s; 9.65 s |
-| Scaffold and lockfile | `make new-theme` created 34 files. `npm install` added the new workspace entry; `make deps` then passed. | 0.19 s; 1.94 s |
-| Demo | `make demo THEME=acme` completed and health reported 17/17 checks. The first run found the WSL copy error below. | 36.50 s failed; 16.83 s and 17.35 s passed |
+| Environment | `make init-env` and `make deps` passed. `make deps` passed again after the generated workspace was added to the lockfile. | 0.05 s; 9.65 s; 9.30 s |
+| Scaffold and lockfile | `make new-theme NAME=qatest TITLE="QA Test"` created 34 files. `npm install` added the workspace entry. | 0.17 s; 1.62 s |
+| Demo | `make demo THEME=qatest` completed and health reported 17/17 checks. | 31.62 s |
 | Look | The printed worktree URL returned HTTP 200. | 0.07 s |
-| Custom CSS | Built one asset, 70 B (84 B gzip). | 0.19 s |
-| Lint | `make lint` passed for the generated theme and repository. | 12.24 s |
-| Analysis | `make analyse` passed after fixing the analyzer's `$argv` warning. | 12.33 s |
-| Unit tests | `make test-unit`: 283 PHPUnit tests and 342 Vitest tests passed. | 8.90 s |
-| Integration | `make test-integration THEME=acme TEST_THEME=acme` passed, including the generated theme tests. | 42.48 s |
-| Browser checks | The focused API, HTTP, SEO and smoke suite passed 66/66 tests. | 94.67 s |
+| Custom CSS | Built one hashed asset, 62 B (79 B gzip). | 0.19 s |
+| Lint | `make lint` passed for the generated theme and repository. | 12.44 s |
+| Analysis | `make analyse` passed with no PHPStan or Deptrac violations. | 11.10 s |
+| Unit tests | `make test-unit`: 283 PHPUnit tests and 342 Vitest tests passed, including the 10 new-theme tests. | 8.10 s |
+| Integration | `make test-integration THEME=qatest TEST_THEME=qatest` passed: the generated theme, core, portfolio and migration-oriented suites passed; 22 default-excluded tests were skipped. | 40.80 s |
+| Browser checks | The focused API, HTTP, SEO and smoke suite passed 66/66 tests through the Dev VM browser. | 34.36 s |
 | Core proof | The command passed and reported 0 committed theme changes; the scaffold was intentionally uncommitted. Run it after committing a theme to check that commit. | 0.01 s |
 
 Corrections from the walk-through:
