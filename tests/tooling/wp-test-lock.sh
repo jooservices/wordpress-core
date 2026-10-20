@@ -9,6 +9,15 @@ if [[ "$WP_TASK_LOCK_WAIT_SECONDS" -ne 1200 || "$WP_TASK_OPERATION_CAP_SECONDS" 
   exit 1
 fi
 
+ancestor_pid="$(ps -o ppid= -p "$PPID" 2>/dev/null | awk 'NF { print $1; exit }')"
+if [[ ! "$ancestor_pid" =~ ^[1-9][0-9]*$ ]]; then
+  ancestor_pid="$PPID"
+fi
+if ! wp_task_lock_owner_is_ancestor "$ancestor_pid"; then
+  echo "FAIL: the process ancestry check did not accept a real ancestor." >&2
+  exit 1
+fi
+
 tmp="$(mktemp -d)"
 holder_pid=""
 cleanup() {
@@ -55,6 +64,10 @@ live_lock="$tmp/live-owner.lock"
 sleep 30 &
 holder_pid="$!"
 live_owner_pid="$holder_pid"
+if wp_task_lock_owner_is_ancestor "$live_owner_pid"; then
+  echo "FAIL: the process ancestry check accepted an unrelated live process." >&2
+  exit 1
+fi
 printf '%s\n' "$live_owner_pid" > "$live_lock"
 if [[ ! -s "$live_lock" ]] || ! kill -0 "$holder_pid" 2>/dev/null; then
   echo "FAIL: live-owner fixture did not acquire its lock." >&2
@@ -79,6 +92,60 @@ wait "$holder_pid" 2>/dev/null || true
 holder_pid=""
 rm -f -- "$live_lock"
 echo "ok:   live owner is preserved and the wait cap reports a clear error"
+
+gtimeout_bin="$tmp/gtimeout-bin"
+mkdir -p "$gtimeout_bin"
+gtimeout_stub="$gtimeout_bin/gtimeout"
+: > "$gtimeout_stub"
+chmod +x "$gtimeout_stub"
+if [[ "$(PATH="$gtimeout_bin" wp_task_timeout_command)" != "$gtimeout_stub" ]]; then
+  echo "FAIL: the timeout resolver did not select gtimeout when timeout is unavailable." >&2
+  exit 1
+fi
+echo "ok:   gtimeout is selected when timeout is unavailable"
+
+run_forwarded_signal_test() {
+  local signal="$1"
+  local expected_status="$2"
+  local ready="$tmp/signal-$signal-ready"
+  local marker="$tmp/signal-$signal-forwarded"
+  local previous_trap_marker="$tmp/signal-$signal-original-trap"
+  local test_pid="$$"
+  local signal_sender_pid signal_status
+
+  trap 'touch "$previous_trap_marker"' "$signal"
+  (
+    for _ in {1..50}; do
+      [[ -e "$ready" ]] && break
+      sleep 0.1
+    done
+    kill -"$signal" "$test_pid" 2>/dev/null || true
+  ) &
+  signal_sender_pid="$!"
+  if wp_task_run_capped "signal $signal fixture" 30 bash -c 'trap '\''touch "$2"; exit 0'\'' TERM; : > "$1"; while :; do :; done' _ "$ready" "$marker" > "$tmp/signal-$signal.stdout" 2> "$tmp/signal-$signal.stderr"; then
+    echo "FAIL: $signal did not stop the capped operation." >&2
+    exit 1
+  else
+    signal_status=$?
+  fi
+  wait "$signal_sender_pid" 2>/dev/null || true
+  kill -"$signal" "$$"
+  if [[ ! -e "$previous_trap_marker" ]]; then
+    echo "FAIL: the original $signal trap was not restored after the capped operation." >&2
+    exit 1
+  fi
+  trap - "$signal"
+  if [[ "$signal_status" -ne "$expected_status" || ! -e "$marker" ]]; then
+    echo "FAIL: $signal was not forwarded to the capped process group (status $signal_status)." >&2
+    cat "$tmp/signal-$signal.stderr" >&2
+    exit 1
+  fi
+  echo "ok:   $signal is forwarded to the capped operation and returns $expected_status"
+}
+
+run_forwarded_signal_test INT 130
+run_forwarded_signal_test TERM 143
+run_forwarded_signal_test HUP 129
 
 operation_lock="$tmp/capped-operation.lock"
 termination_marker="$tmp/capped-operation-terminated"

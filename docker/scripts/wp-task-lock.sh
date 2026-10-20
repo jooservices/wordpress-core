@@ -8,6 +8,16 @@ WP_TASK_OPERATION_CAP_SECONDS=1200
 WP_TASK_LOCK_PATH=""
 WP_TASK_LOCK_HELD=0
 
+wp_task_timeout_command() {
+  if command -v timeout >/dev/null 2>&1; then
+    command -v timeout
+  elif command -v gtimeout >/dev/null 2>&1; then
+    command -v gtimeout
+  else
+    return 1
+  fi
+}
+
 wp_task_lock_duration() {
   local seconds="$1"
   local count suffix
@@ -27,23 +37,51 @@ wp_task_lock_duration() {
 wp_task_run_capped() {
   local operation="${1:?operation name is required}"
   local cap_seconds="${2:-$WP_TASK_OPERATION_CAP_SECONDS}"
-  local duration status
+  local duration status timeout_command timeout_pid="" interrupted_status=0
+  local previous_int_trap previous_term_trap previous_hup_trap
   shift 2
 
   if [[ ! "$cap_seconds" =~ ^[0-9]+$ ]] || ((cap_seconds < 1)); then
     echo "ERROR: shared WordPress operation cap must be a positive number of seconds." >&2
     return 2
   fi
-  if ! command -v timeout >/dev/null 2>&1; then
-    echo "ERROR: timeout is required to cap shared WordPress operations." >&2
+  if ! timeout_command="$(wp_task_timeout_command)"; then
+    echo "ERROR: timeout (or gtimeout) is required to cap shared WordPress operations." >&2
     return 2
   fi
 
-  if timeout --signal=TERM --kill-after=5s "${cap_seconds}s" "$@"; then
-    return 0
-  else
-    status=$?
+  previous_int_trap="$(trap -p INT)"
+  previous_term_trap="$(trap -p TERM)"
+  previous_hup_trap="$(trap -p HUP)"
+  trap 'interrupted_status=130; wp_task_forward_timeout_signal "$timeout_pid"' INT
+  trap 'interrupted_status=143; wp_task_forward_timeout_signal "$timeout_pid"' TERM
+  trap 'interrupted_status=129; wp_task_forward_timeout_signal "$timeout_pid"' HUP
+
+  "$timeout_command" --signal=TERM --kill-after=5s "${cap_seconds}s" "$@" &
+  timeout_pid="$!"
+  if ((interrupted_status > 0)); then
+    wp_task_forward_timeout_signal "$timeout_pid"
   fi
+
+  while :; do
+    if wait "$timeout_pid"; then
+      status=0
+    else
+      status=$?
+    fi
+    if ((interrupted_status == 0)) || ! kill -0 "$timeout_pid" 2>/dev/null; then
+      break
+    fi
+  done
+
+  if [[ -n "$previous_int_trap" ]]; then eval "$previous_int_trap"; else trap - INT; fi
+  if [[ -n "$previous_term_trap" ]]; then eval "$previous_term_trap"; else trap - TERM; fi
+  if [[ -n "$previous_hup_trap" ]]; then eval "$previous_hup_trap"; else trap - HUP; fi
+
+  if ((interrupted_status > 0)); then
+    status="$interrupted_status"
+  fi
+  ((status == 0)) && return 0
 
   if ((status == 124 || status == 137)); then
     duration="$(wp_task_lock_duration "$cap_seconds")"
@@ -51,6 +89,29 @@ wp_task_run_capped() {
     return 124
   fi
   return "$status"
+}
+
+wp_task_forward_timeout_signal() {
+  local timeout_pid="${1:-}"
+  [[ "$timeout_pid" =~ ^[1-9][0-9]*$ ]] || return 0
+
+  kill -TERM -- "-$timeout_pid" 2>/dev/null || kill -TERM "$timeout_pid" 2>/dev/null || true
+}
+
+wp_task_lock_owner_is_ancestor() {
+  local owner_pid="${1:-}"
+  local current_pid="${PPID:-}"
+  local parent_pid
+
+  [[ "$owner_pid" =~ ^[1-9][0-9]*$ ]] || return 1
+  while [[ "$current_pid" =~ ^[1-9][0-9]*$ ]]; do
+    [[ "$current_pid" == "$owner_pid" ]] && return 0
+    parent_pid="$(ps -o ppid= -p "$current_pid" 2>/dev/null | awk 'NF { print $1; exit }')"
+    [[ "$parent_pid" =~ ^[1-9][0-9]*$ && "$parent_pid" != "$current_pid" ]] || return 1
+    current_pid="$parent_pid"
+  done
+
+  return 1
 }
 
 wp_task_lock_acquire() {

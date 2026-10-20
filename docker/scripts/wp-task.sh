@@ -56,7 +56,9 @@ acquire_shared_wp_test_lock() {
 
   if [[ -n "${WP_TASK_LOCK_OWNER_PID:-}" ]]; then
     owner_pid="$(cat "$lock_path" 2>/dev/null || true)"
-    if [[ "$owner_pid" == "$WP_TASK_LOCK_OWNER_PID" ]] && kill -0 "$owner_pid" 2>/dev/null; then
+    if [[ "$owner_pid" == "$WP_TASK_LOCK_OWNER_PID" ]] &&
+      kill -0 "$owner_pid" 2>/dev/null &&
+      wp_task_lock_owner_is_ancestor "$owner_pid"; then
       return 0
     fi
     echo "ERROR: inherited shared WordPress test lock is not owned by PID ${WP_TASK_LOCK_OWNER_PID}." >&2
