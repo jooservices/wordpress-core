@@ -39,3 +39,8 @@
   list-style: none;
   font-size: 0.8125rem;
 }
+
+.joo-arrow:dir(rtl) {
+  display: inline-block;
+  transform: scaleX(-1);
+}
