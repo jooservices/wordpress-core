@@ -50,9 +50,9 @@ for suite in kit-integration core-integration plugin-integration; do
   JOO_TEST_THEME= run_suite "$suite" "$@"
 done
 
-# Fixture themes have their own isolated suite so package themes and a fixture core symlink are not scanned with them.
+# Each fixture theme has its own isolated suite (theme-fixture-<name>) so package themes and a fixture core symlink are not scanned with them.
 if [[ -n "${JOO_TEST_THEME:-}" && -d "$ROOT/tests/fixtures/themes/$JOO_TEST_THEME" ]]; then
-  run_suite theme-fixtures "$@"
+  run_suite "theme-fixture-$JOO_TEST_THEME" "$@"
 else
   JOO_TEST_THEME="${JOO_TEST_THEME:-}" run_suite theme-integration "$@"
 fi
