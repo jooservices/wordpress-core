@@ -27,16 +27,16 @@ Literal run on WSL on 2026-10-20 from a clean tracked checkout. The existing ign
 
 | Step | Result | Time |
 | --- | --- | ---: |
-| Environment | `make init-env` kept the existing ignored environment file. `make deps` passed before scaffolding and after the generated workspace was added to the lockfile. | 0.01 s; 9.92 s; 9.42 s |
-| Scaffold and lockfile | `make new-theme NAME=replay281 TITLE="Replay 281"` created 34 files. `npm install` added the workspace entry. | 0.18 s; 2.20 s |
-| Demo | `make demo THEME=replay281` completed and health reported 17/17 checks. | 22.83 s |
-| Look | The printed worktree URL returned HTTP 200. | 0.06 s |
+| Environment | `make init-env` kept the existing ignored environment file. `make deps` passed before scaffolding and after the generated workspace was added to the lockfile. | 0.01 s; 10.47 s; 10.64 s |
+| Scaffold and lockfile | `make new-theme NAME=replay281 TITLE="Replay 281"` created 34 files. `npm install` added the workspace entry. | 0.22 s; 1.44 s |
+| Demo | `make demo THEME=replay281` completed and health reported 17/17 checks. | 17.45 s |
+| Look | The printed worktree URL returned HTTP 200. | 0.33 s |
 | Custom CSS | Built one hashed asset, 61 B (73 B gzip). | 0.18 s |
-| Lint | `make lint` passed for the generated theme and repository. | 12.69 s |
-| Analysis | `make analyse` passed with no PHPStan or Deptrac violations. | 11.14 s |
-| Unit tests | `make test-unit`: 284 PHPUnit tests and 348 Vitest tests passed, including the 10 new-theme tests. | 8.14 s |
-| Integration | `make test-integration THEME=replay281 TEST_THEME=replay281` passed: 341 generated-theme tests and the core, portfolio and migration-oriented suites passed; 22 default-excluded tests were skipped. | 47.52 s |
-| Browser checks | The focused API, HTTP, SEO and smoke suite passed 66/66 tests through the Dev VM browser (17.2 s in Playwright). | 45.03 s |
+| Lint | `make lint` passed for the generated theme and repository. | 13.32 s |
+| Analysis | `make analyse` passed with no PHPStan or Deptrac violations. | 12.46 s |
+| Unit tests | `make test-unit`: 284 PHPUnit tests and 350 Vitest tests passed, including the 10 new-theme tests. | 12.51 s |
+| Integration | `make test-integration THEME=replay281 TEST_THEME=replay281` passed: 341 generated-theme tests and the core, portfolio and migration-oriented suites passed; 22 default-excluded tests were skipped. Wall time includes the queue behind the shared test lock. | 570.30 s |
+| Browser checks | The focused API, HTTP, SEO and smoke suite passed 66/66 tests through the Dev VM browser (15.9 s in Playwright). Wall time includes the queue behind the shared test lock. | 178.47 s |
 | Core proof | The command passed and reported 0 committed theme changes; the scaffold was intentionally uncommitted. Run it after committing a theme to check that commit. | 0.03 s |
 
 Corrections from the walk-through:
