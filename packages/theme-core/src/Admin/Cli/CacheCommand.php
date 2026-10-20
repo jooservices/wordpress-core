@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JOOservices\ThemeCore\Admin\Cli;
 
+use JOOservices\ThemeCore\Config\SettingsRepository;
+
 /**
  * Cache maintenance.
  *
@@ -17,13 +19,32 @@ namespace JOOservices\ThemeCore\Admin\Cli;
 final class CacheCommand {
 
 	/**
+	 * Settings repository.
+	 *
+	 * @var SettingsRepository
+	 */
+	private SettingsRepository $repository;
+
+	/**
+	 * Creates the command.
+	 *
+	 * @param SettingsRepository $repository Settings repository.
+	 */
+	public function __construct( SettingsRepository $repository ) {
+		$this->repository = $repository;
+	}
+
+	/**
 	 * Bumps the cache version so every cached fragment is rebuilt.
 	 *
 	 * @param array<int, string> $args Positional arguments.
 	 */
 	public function flush( array $args ): void {
+		if ( ! CapabilityGuard::check() ) {
+			return;
+		}
 		unset( $args );
-		update_option( 'joo_cache_version', time(), true );
+		$this->repository->bumpCacheVersion();
 		\WP_CLI::success( 'JOOservices caches flushed.' );
 	}
 }

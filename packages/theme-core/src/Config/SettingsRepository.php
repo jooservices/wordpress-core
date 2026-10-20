@@ -151,6 +151,13 @@ final class SettingsRepository {
 	}
 
 	/**
+	 * Bumps the core cache version to invalidate cached fragments.
+	 */
+	public function bumpCacheVersion(): void {
+		update_option( 'joo_cache_version', time(), true );
+	}
+
+	/**
 	 * Writes the option.
 	 *
 	 * @param array<string, mixed> $stored Overrides.

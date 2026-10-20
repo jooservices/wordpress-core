@@ -47,6 +47,9 @@ final class DoctorCommand {
 	 * @param array<string, string> $assoc_args Flags.
 	 */
 	public function __invoke( array $args, array $assoc_args = array() ): void {
+		if ( ! CapabilityGuard::check() ) {
+			return;
+		}
 		unset( $args );
 		if ( isset( $assoc_args['perf'] ) && $this->container->has( \JOOservices\ThemeCore\Performance\Diagnostics::class ) ) {
 			/** @var \JOOservices\ThemeCore\Performance\Diagnostics $diagnostics */

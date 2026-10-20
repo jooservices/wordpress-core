@@ -53,6 +53,9 @@ final class SettingsCommand {
 	 * @param array<string, string> $assoc_args Flags.
 	 */
 	public function list( array $args, array $assoc_args ): void {
+		if ( ! CapabilityGuard::check() ) {
+			return;
+		}
 		unset( $args );
 		$settings = $this->settings();
 		$rows     = array();
@@ -80,6 +83,9 @@ final class SettingsCommand {
 	 * @param array<int, string> $args Positional arguments.
 	 */
 	public function get( array $args ): void {
+		if ( ! CapabilityGuard::check() ) {
+			return;
+		}
 		$settings = $this->settings();
 		if ( null === $settings->schema()->get( $args[0] ) ) {
 			\WP_CLI::error( sprintf( 'Unknown setting "%s".', $args[0] ) );
@@ -101,6 +107,9 @@ final class SettingsCommand {
 	 * @param array<int, string> $args Positional arguments.
 	 */
 	public function set( array $args ): void {
+		if ( ! CapabilityGuard::check() ) {
+			return;
+		}
 		$settings   = $this->settings();
 		$definition = $settings->schema()->get( $args[0] );
 		if ( null === $definition ) {
@@ -132,6 +141,9 @@ final class SettingsCommand {
 	 * @param array<string, string> $assoc_args Flags.
 	 */
 	public function reset( array $args, array $assoc_args ): void {
+		if ( ! CapabilityGuard::check() ) {
+			return;
+		}
 		$settings = $this->settings();
 		if ( isset( $assoc_args['all'] ) ) {
 			\WP_CLI::confirm( 'Remove every saved setting?', $assoc_args );

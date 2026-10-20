@@ -13,6 +13,7 @@ use JOOservices\TestKit\IntegrationTestCase;
 use JOOservices\ThemeCore\Admin\Notices;
 use JOOservices\ThemeCore\Admin\EditorPanels;
 use JOOservices\ThemeCore\Admin\SettingsPage;
+use JOOservices\ThemeCore\Admin\Cli\SettingsCommand;
 use JOOservices\ThemeCore\Admin\SiteHealth;
 use JOOservices\ThemeCore\Config\Settings;
 use JOOservices\ThemeCore\Kernel;
@@ -189,6 +190,15 @@ final class AdminTest extends IntegrationTestCase {
 		$page->handleSave();
 	}
 
+	public function test_a_missing_nonce_is_rejected(): void {
+		$page = $this->page();
+		$this->asAdmin();
+		$_POST['joo_tab'] = 'lazy';
+		unset( $_REQUEST['_wpnonce'], $_POST['_wpnonce'], $_GET['_wpnonce'] );
+		$this->expectException( \WPDieException::class );
+		$page->handleSave();
+	}
+
 	public function test_users_without_the_capability_cannot_open_or_save(): void {
 		$page = $this->page();
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
@@ -200,6 +210,27 @@ final class AdminTest extends IntegrationTestCase {
 		}
 		$this->expectException( \WPDieException::class );
 		$page->handleSave();
+	}
+
+	public function test_subscribers_cannot_change_settings_through_wp_cli(): void {
+		$this->boot();
+		$settings = Kernel::container()->get( Settings::class );
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
+
+		$command = new SettingsCommand( Kernel::container() );
+		$command->set( array( 'features.back_to_top', '0' ) );
+
+		$this->assertFalse( $settings->repository()->has( 'features.back_to_top' ) );
+		$this->assertTrue( $settings->get( 'features.back_to_top' ) );
+	}
+
+	public function test_cache_version_is_written_through_settings_repository(): void {
+		$this->boot();
+		delete_option( 'joo_cache_version' );
+
+		Kernel::container()->get( Settings::class )->repository()->bumpCacheVersion();
+
+		$this->assertGreaterThan( 0, (int) get_option( 'joo_cache_version' ) );
 	}
 
 	public function test_the_menu_entry_is_added_under_appearance(): void {
@@ -310,6 +341,9 @@ final class AdminTest extends IntegrationTestCase {
 		$_POST['joo_panel']        = array( '_joo_featured' => '0' );
 		$panels->saveClassic( $post_id, get_post( $post_id ) );
 		$this->assertSame( '1', get_post_meta( $post_id, '_joo_featured', true ), 'bad nonce changes nothing' );
+		unset( $_POST['joo_panels_nonce'] );
+		$panels->saveClassic( $post_id, get_post( $post_id ) );
+		$this->assertSame( '1', get_post_meta( $post_id, '_joo_featured', true ), 'missing nonce changes nothing' );
 		unset( $_POST['joo_panels_nonce'], $_POST['joo_panel'] );
 	}
 

@@ -507,7 +507,7 @@ final class SettingsPage {
 	 */
 	public function handleFlush(): void {
 		$this->guard( null, 'tools' );
-		update_option( 'joo_cache_version', time(), true );
+		$this->settings->repository()->bumpCacheVersion();
 		$this->redirect( 'tools', array(), array( 'cache' ) );
 	}
 
