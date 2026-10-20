@@ -191,6 +191,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
     ]),
     plainLine([
       text(t('terminal.hint', 'Type '), 'dim'),
+      /* eslint-disable joo/no-untranslated-string -- the labels are command names, which are never translated */
       link('help', 'help'),
       text(' · ', 'dim'),
       link('ls', 'ls'),
@@ -198,6 +199,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
       link('tree', 'tree'),
       text(' · ', 'dim'),
       link('cat README.md', 'cat README.md'),
+      /* eslint-enable joo/no-untranslated-string */
     ])
   );
   return { run, focus: () => input.focus(), destroy: () => announcer.destroy() };

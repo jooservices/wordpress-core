@@ -53,6 +53,23 @@ describe('code copy', () => {
     expect(document.querySelector('.joo-code__status').textContent).toBe('Copy failed');
   });
 
+  it('shows the strings PHP provided in the runtime config', async () => {
+    const config = document.createElement('script');
+    config.type = 'application/json';
+    config.id = 'joo-config';
+    config.textContent = JSON.stringify({ i18n: { 'code.copied': 'Đã chép', 'code.status_copied': 'Đã chép mã' } });
+    document.head.append(config);
+    const writeText = vi.fn().mockResolvedValue();
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    await import('./code-copy.js');
+    const button = document.querySelector('.joo-code__copy');
+    button.click();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(button.textContent).toBe('Đã chép');
+    expect(document.querySelector('.joo-code__status').textContent).toBe('Đã chép mã');
+    config.remove();
+  });
+
   it('ignores clicks outside copy buttons', async () => {
     await import('./code-copy.js');
     document.querySelector('pre').click();

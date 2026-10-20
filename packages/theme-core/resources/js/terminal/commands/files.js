@@ -26,7 +26,7 @@ export function fileLines(shell, node) {
         text(message('terminal.file.date', 'date: '), 'dim'),
         text(p.d + '  '),
         text(message('terminal.file.read', 'read: '), 'dim'),
-        text(p.m + ' min'),
+        text(message('terminal.file.minutes', '{count} min', { count: p.m })),
       ],
       [
         text(message('terminal.file.tags', 'tags: '), 'dim'),
@@ -35,14 +35,18 @@ export function fileLines(shell, node) {
       [],
       [text(p.ex)],
       [],
-      [link('→ open ' + file.n, 'open ' + pathOf(file), 'cta')],
+      [link(message('terminal.command.open.link', '→ open {path}', { path: file.n }), 'open ' + pathOf(file), 'cta')],
     ];
     return rows;
   }
   const rows = String(file.text ?? '')
     .split('\n')
     .map((l) => [text(l)]);
-  if (file.page) rows.push([], [link('→ open ' + file.n, 'open ' + pathOf(file), 'cta')]);
+  if (file.page)
+    rows.push(
+      [],
+      [link(message('terminal.command.open.link', '→ open {path}', { path: file.n }), 'open ' + pathOf(file), 'cta')]
+    );
   return rows;
 }
 

@@ -71,12 +71,14 @@ export class Joo404 extends HTMLElement {
       link.textContent = row.t;
       return link;
     };
+    /* eslint-disable joo/no-untranslated-string -- "HTTP/2 <code>" is protocol notation shown as a status line */
     if (exact) {
       target.append(document.createTextNode('HTTP/2 200 OK → '), anchor(exact));
     } else if (near.length) {
       target.append(document.createTextNode('HTTP/2 404 · ' + t('did_you_mean', 'Did you mean') + ' '));
       near.forEach((row, i) => target.append(...(i ? [document.createTextNode(' · ')] : []), anchor(row)));
     } else target.textContent = 'HTTP/2 404';
+    /* eslint-enable joo/no-untranslated-string */
   }
 }
 
