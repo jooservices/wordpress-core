@@ -1,12 +1,126 @@
-<testsuites id="" name="" tests="4" failures="0" skipped="0" errors="0" time="10.317912999999999">
-<testsuite name="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" timestamp="2026-10-20T19:40:39.314Z" hostname="firefox" tests="4" failures="0" skipped="0" time="9.239" errors="0">
-<testcase name="core blocks in RTL › the fixture covers every core block" classname="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" time="0.004">
+<testsuites id="" name="" tests="38" failures="0" skipped="0" errors="0" time="82.66647599999999">
+<testsuite name="tests/e2e/specs/shared/content-api.spec.ts" timestamp="2026-10-20T20:18:05.329Z" hostname="firefox" tests="8" failures="0" skipped="0" time="0.535" errors="0">
+<testcase name="content API › GET /companies is public, JSON and cacheable" classname="tests/e2e/specs/shared/content-api.spec.ts" time="0.091">
 </testcase>
-<testcase name="core blocks in RTL › every block mirrors, does not overlap, and leaves screenshots as evidence" classname="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" time="7.037">
+<testcase name="content API › GET /categories/tree is public, JSON and cacheable" classname="tests/e2e/specs/shared/content-api.spec.ts" time="0.063">
 </testcase>
-<testcase name="core blocks in RTL › the terminal dock opens at the left edge in RTL" classname="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" time="1.24">
+<testcase name="content API › GET /topics is public, JSON and cacheable" classname="tests/e2e/specs/shared/content-api.spec.ts" time="0.059">
 </testcase>
-<testcase name="core blocks in RTL › keeps the LTR icons in LTR" classname="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" time="0.958">
+<testcase name="content API › GET /featured is public, JSON and cacheable" classname="tests/e2e/specs/shared/content-api.spec.ts" time="0.061">
+</testcase>
+<testcase name="content API › GET /profile is public, JSON and cacheable" classname="tests/e2e/specs/shared/content-api.spec.ts" time="0.047">
+</testcase>
+<testcase name="content API › companies expose pagination headers" classname="tests/e2e/specs/shared/content-api.spec.ts" time="0.039">
+</testcase>
+<testcase name="content API › invalid arguments are rejected with 400" classname="tests/e2e/specs/shared/content-api.spec.ts" time="0.101">
+</testcase>
+<testcase name="content API › the companion post type is not public and users do not leak email" classname="tests/e2e/specs/shared/content-api.spec.ts" time="0.074">
+</testcase>
+</testsuite>
+<testsuite name="tests/e2e/specs/shared/core-accessibility.spec.ts" timestamp="2026-10-20T20:18:05.329Z" hostname="firefox" tests="4" failures="0" skipped="0" time="35.109" errors="0">
+<testcase name="theme-core block accessibility › home blocks pass axe and a keyboard walkthrough" classname="tests/e2e/specs/shared/core-accessibility.spec.ts" time="16.718">
+<properties>
+<property name="slow" value="">
+</property>
+</properties>
+<system-out>
+<![CDATA[[axe 1440px] profile card: no violations
+[axe 1440px] companies: no violations
+[axe 1440px] category tree: no violations
+[axe 1440px] top topics: no violations
+[axe 1440px] tag list: no violations
+[axe 1440px] slider: no violations
+[axe 1440px] search trigger: no violations
+[axe 1440px] theme toggle: no violations
+[keyboard 1440px] 46/46 block controls reached; 0 block types without a visible focus indicator
+]]>
+</system-out>
+</testcase>
+<testcase name="theme-core block accessibility › article blocks pass axe and a keyboard walkthrough" classname="tests/e2e/specs/shared/core-accessibility.spec.ts" time="13.412">
+<properties>
+<property name="slow" value="">
+</property>
+</properties>
+<system-out>
+<![CDATA[[axe 1440px] breadcrumbs: no violations
+[axe 1440px] table of contents: no violations
+[axe 1440px] reading progress: no violations
+[axe 1440px] author box: no violations
+[axe 1440px] related posts: no violations
+[axe 1440px] post meta: no violations
+[keyboard 1440px] 28/28 block controls reached; 0 block types without a visible focus indicator
+]]>
+</system-out>
+</testcase>
+<testcase name="theme-core block accessibility › home controls respond to keyboard activation" classname="tests/e2e/specs/shared/core-accessibility.spec.ts" time="3.121">
+<properties>
+<property name="slow" value="">
+</property>
+</properties>
+</testcase>
+<testcase name="theme-core block accessibility › table of contents works with the keyboard" classname="tests/e2e/specs/shared/core-accessibility.spec.ts" time="1.858">
+</testcase>
+</testsuite>
+<testsuite name="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" timestamp="2026-10-20T20:18:05.329Z" hostname="firefox" tests="4" failures="0" skipped="0" time="8.858" errors="0">
+<testcase name="core blocks in RTL › the fixture covers every core block" classname="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" time="0">
+</testcase>
+<testcase name="core blocks in RTL › every block mirrors, does not overlap, and leaves screenshots as evidence" classname="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" time="6.775">
+</testcase>
+<testcase name="core blocks in RTL › the terminal dock opens at the left edge in RTL" classname="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" time="1.138">
+</testcase>
+<testcase name="core blocks in RTL › keeps the LTR icons in LTR" classname="tests/e2e/specs/shared/core-blocks-rtl.spec.ts" time="0.945">
+</testcase>
+</testsuite>
+<testsuite name="tests/e2e/specs/shared/http.spec.ts" timestamp="2026-10-20T20:18:05.329Z" hostname="firefox" tests="6" failures="0" skipped="0" time="0.474" errors="0">
+<testcase name="http › a real 404 is not cached and not indexed" classname="tests/e2e/specs/shared/http.spec.ts" time="0.048">
+</testcase>
+<testcase name="http › REST responses carry validators and honour If-None-Match" classname="tests/e2e/specs/shared/http.spec.ts" time="0.05">
+</testcase>
+<testcase name="http › the HTML never leaks PHP errors" classname="tests/e2e/specs/shared/http.spec.ts" time="0.232">
+</testcase>
+<testcase name="http › draft and private posts are not public" classname="tests/e2e/specs/shared/http.spec.ts" time="0.041">
+</testcase>
+<testcase name="http › the companion post type is not browsable" classname="tests/e2e/specs/shared/http.spec.ts" time="0.058">
+</testcase>
+<testcase name="http › the author archive does not expose the login name" classname="tests/e2e/specs/shared/http.spec.ts" time="0.045">
+</testcase>
+</testsuite>
+<testsuite name="tests/e2e/specs/shared/seo.spec.ts" timestamp="2026-10-20T20:18:05.329Z" hostname="firefox" tests="5" failures="0" skipped="0" time="0.379" errors="0">
+<testcase name="seo over HTTP › home has one title, description, canonical, robots and a valid graph" classname="tests/e2e/specs/shared/seo.spec.ts" time="0.074">
+</testcase>
+<testcase name="seo over HTTP › a post exposes a connected BlogPosting graph, Open Graph and Twitter tags" classname="tests/e2e/specs/shared/seo.spec.ts" time="0.124">
+</testcase>
+<testcase name="seo over HTTP › a missing URL is a real 404 with noindex and no canonical" classname="tests/e2e/specs/shared/seo.spec.ts" time="0.046">
+</testcase>
+<testcase name="seo over HTTP › search is noindex and a blank search redirects to home with 301" classname="tests/e2e/specs/shared/seo.spec.ts" time="0.082">
+</testcase>
+<testcase name="seo over HTTP › sitemap and robots.txt are published" classname="tests/e2e/specs/shared/seo.spec.ts" time="0.053">
+</testcase>
+</testsuite>
+<testsuite name="tests/e2e/specs/shared/smoke.spec.ts" timestamp="2026-10-20T20:18:05.329Z" hostname="firefox" tests="3" failures="0" skipped="0" time="6.186" errors="0">
+<testcase name="smoke › home renders without errors or horizontal scroll" classname="tests/e2e/specs/shared/smoke.spec.ts" time="1.232">
+</testcase>
+<testcase name="smoke › a missing URL returns a real 404" classname="tests/e2e/specs/shared/smoke.spec.ts" time="0.047">
+</testcase>
+<testcase name="smoke › home passes the automated accessibility scan" classname="tests/e2e/specs/shared/smoke.spec.ts" time="4.907">
+</testcase>
+</testsuite>
+<testsuite name="tests/e2e/specs/shared/views.spec.ts" timestamp="2026-10-20T20:18:05.329Z" hostname="firefox" tests="8" failures="0" skipped="0" time="29.348" errors="0">
+<testcase name="views › home is sound" classname="tests/e2e/specs/shared/views.spec.ts" time="5.42">
+</testcase>
+<testcase name="views › single is sound" classname="tests/e2e/specs/shared/views.spec.ts" time="3.965">
+</testcase>
+<testcase name="views › category is sound" classname="tests/e2e/specs/shared/views.spec.ts" time="3.626">
+</testcase>
+<testcase name="views › tag is sound" classname="tests/e2e/specs/shared/views.spec.ts" time="3.771">
+</testcase>
+<testcase name="views › page is sound" classname="tests/e2e/specs/shared/views.spec.ts" time="3.258">
+</testcase>
+<testcase name="views › search is sound" classname="tests/e2e/specs/shared/views.spec.ts" time="3.387">
+</testcase>
+<testcase name="views › empty is sound" classname="tests/e2e/specs/shared/views.spec.ts" time="3.187">
+</testcase>
+<testcase name="views › notFound is sound" classname="tests/e2e/specs/shared/views.spec.ts" time="2.734">
 </testcase>
 </testsuite>
 </testsuites>

@@ -332,11 +332,38 @@ case "$action" in
     ;;
   e2e)
     acquire_shared_wp_test_lock || exit $?
+    e2e_artifact_dir="${E2E_ARTIFACT_DIR:-}"
+    if [[ -n "$e2e_artifact_dir" ]]; then
+      case "$e2e_artifact_dir" in
+        "$ROOT"/artifacts/evidence/*) ;;
+        *) echo "ERROR: E2E_ARTIFACT_DIR must be under $ROOT/artifacts/evidence/." >&2; exit 2 ;;
+      esac
+      case "${E2E_ENGINES:-}" in
+        webkit|firefox) ;;
+        *) echo "ERROR: E2E_ARTIFACT_DIR requires E2E_ENGINES=webkit or E2E_ENGINES=firefox for one engine per evidence folder." >&2; exit 2 ;;
+      esac
+    fi
     ensure_site
     if [[ -d "$ROOT/tests/fixtures/themes/$theme" ]] && wpx plugin is-active jooservices-resume >/dev/null 2>&1; then
       wpx plugin deactivate jooservices-resume >/dev/null
     fi
-    E2E_THEME="$theme" rt playwright npx --no-install playwright test -c tests/e2e/playwright.config.ts "$@"
+    e2e_report_dir="${E2E_REPORT_DIR:-../../artifacts/reports/e2e}"
+    e2e_evidence_dir="${E2E_EVIDENCE_DIR:-artifacts/evidence/JOOWT-279}"
+    if [[ -n "$e2e_artifact_dir" ]]; then
+      capture_output_dir="$(new_capture_output_dir)"
+      e2e_report_dir="$capture_output_dir/reports"
+      e2e_evidence_dir="$capture_output_dir/screenshots"
+      docker exec -u www-data "$WEB_NAME" mkdir -p -- "$e2e_report_dir" "$e2e_evidence_dir"
+      mkdir -p "$e2e_artifact_dir"
+    fi
+    e2e_status=0
+    E2E_THEME="$theme" E2E_REPORT_DIR="$e2e_report_dir" E2E_EVIDENCE_DIR="$e2e_evidence_dir" \
+      rt playwright npx --no-install playwright test -c tests/e2e/playwright.config.ts "$@" || e2e_status=$?
+    if [[ -n "$e2e_artifact_dir" ]]; then
+      copy_capture_directory "$capture_output_dir/reports" "$e2e_artifact_dir/reports"
+      copy_capture_directory "$capture_output_dir/screenshots" "$e2e_artifact_dir/screenshots"
+    fi
+    exit "$e2e_status"
     ;;
   e2e-demo)
     acquire_shared_wp_test_lock || exit $?
