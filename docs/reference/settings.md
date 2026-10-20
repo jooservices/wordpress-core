@@ -4,73 +4,73 @@
 
 Precedence: filter `joo/settings/value`, then the value saved in the admin, then the theme manifest, then the default below.
 
-| Key | Type | Default | Group | Description |
-| --- | --- | --- | --- | --- |
-| `modules.seo.enabled` | boolean | `true` | general | Turns the SEO module on or off for this site. |
-| `modules.lazy.enabled` | boolean | `true` | general | Turns the Lazy loading module on or off for this site. |
-| `modules.perf.enabled` | boolean | `true` | general | Turns the Performance module on or off for this site. |
-| `modules.compat.enabled` | boolean | `true` | general | Turns the Compatibility module on or off for this site. |
-| `modules.blocks.enabled` | boolean | `true` | general | Turns the Blocks module on or off for this site. |
-| `modules.i18n.enabled` | boolean | `true` | general | Turns the Languages module on or off for this site. |
-| `modules.terminal.enabled` | boolean | `true` | general | Turns the Terminal module on or off for this site. |
-| `modules.content.enabled` | boolean | `true` | general | Turns the Content providers module on or off for this site. |
-| `core.debug` | boolean | `false` | general | Writes core log lines to the PHP error log and shows the performance admin bar node. |
-| `seo.enabled` | boolean | `true` | seo | Print title, description, canonical, robots, Open Graph, Twitter and JSON-LD. |
-| `seo.yield` | string | `"auto"` | seo | auto: step aside when an SEO plugin is active; never: always print; always: never print. |
-| `seo.yield_hreflang` | boolean | `true` | seo | When yielding, also leave hreflang tags to the plugin. |
-| `seo.yield_jetpack` | boolean | `true` | seo | Core Open Graph wins and Jetpack Open Graph is disabled. |
-| `seo.title_separator` | string | `"|"` | seo | Separator used by %sep% in title templates. |
-| `seo.title_template.home` | string | `"%sitename% %sep% %tagline%"` | seo | Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%. |
-| `seo.title_template.single` | string | `"%title% %sep% %sitename%"` | seo | Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%. |
-| `seo.title_template.page` | string | `"%title% %sep% %sitename%"` | seo | Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%. |
-| `seo.title_template.archive` | string | `"%title% %sep% %sitename%"` | seo | Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%. |
-| `seo.title_template.search` | string | `"Search results for \"%title%\" %sep% %sitename%"` | seo | Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%. |
-| `seo.title_template.404` | string | `"Page not found %sep% %sitename%"` | seo | Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%. |
-| `seo.default_og_image` | integer | `0` | seo | Attachment id used when a post has no image (1200x630 recommended). |
-| `seo.twitter_site` | string | `""` | seo | Without @, optional. |
-| `seo.paged_noindex` | boolean | `false` | seo | Adds noindex,follow to /page/N/ archives. |
-| `seo.breadcrumbs_owner` | string | `"core"` | seo | core prints BreadcrumbList; plugin leaves it to the active SEO plugin. |
-| `lazy.enabled` | boolean | `true` | lazy | Master switch for every lazy loading feature. |
-| `lazy.images` | boolean | `true` | lazy | Below-the-fold images use loading=lazy. The LCP image never does. |
-| `lazy.iframes` | boolean | `true` | lazy | Iframes lazy load; YouTube and Vimeo use click-to-load facades. |
-| `lazy.fragments` | boolean | `true` | lazy | Sidebar, related posts and similar blocks load when near the viewport, with a no-JS fallback. |
-| `lazy.sections` | boolean | `true` | lazy | Uses CSS content-visibility for below-the-fold sections. |
-| `lazy.comments` | boolean | `true` | lazy | Comments load on request or when linked to. |
-| `lazy.terminal` | boolean | `true` | lazy | Terminal code and data load after the first open. |
-| `lazy.eager_count` | integer | `1` | lazy | Number of leading content images that are never lazy. |
-| `lazy.yield_to_plugins` | boolean | `true` | lazy | Do not lazy load images or iframes when another plugin already does. |
-| `lazy.embed_thumbnails` | string | `"local"` | lazy | local: no third-party requests before click; remote: show the provider thumbnail. |
-| `perf.disable_emoji` | boolean | `true` | performance | Removes the emoji detection script and styles on the front end. |
-| `perf.disable_embeds` | boolean | `true` | performance | Removes wp-embed and oEmbed discovery on the front end. |
-| `perf.dashicons_guests` | boolean | `true` | performance | Dashicons are only needed for logged-in users. |
-| `perf.jquery_frontend` | string | `"auto"` | performance | auto removes jQuery when nothing depends on it. |
-| `perf.speculation` | string | `"conservative"` | performance | Prefetch/prerender same-origin links (Chromium). |
-| `perf.block_css_granular` | boolean | `true` | performance | Core and custom block styles load only when the block is used. |
-| `perf.remove_head_noise` | boolean | `true` | performance | Removes generator, RSD, WLW and shortlink output. |
-| `perf.preconnect` | array | `[]` | performance | Origins to preconnect (https only). |
-| `features.slider` | boolean | `true` | general | Enable featured slider. |
-| `features.rail` | boolean | `true` | general | Show the sidebar rail on templates that include it. |
-| `features.back_to_top` | boolean | `true` | general | Show a fixed link that returns visitors to the page header. |
-| `features.theme_toggle` | boolean | `true` | general | Let visitors cycle through the theme's available colour schemes. |
-| `features.reading_progress` | boolean | `true` | general | Enable reading progress bar. |
-| `features.hide_featured_in_list` | boolean | `true` | general | Enable hide featured posts from the latest list. |
-| `content.profile_user_id` | integer | `0` | content | User shown in About me and schema Person (0 = first administrator). |
-| `content.rail_profile` | boolean | `true` | content | Show the owner profile card in the sidebar rail. |
-| `content.rail_companies` | boolean | `true` | content | Show the company timeline block in the sidebar rail. |
-| `content.rail_categories` | boolean | `true` | content | Show the category tree block in the sidebar rail. |
-| `content.rail_topics` | boolean | `true` | content | Show the top topics block in the sidebar rail. |
-| `content.rail_tags` | boolean | `true` | content | Show the tag list block in the sidebar rail. |
-| `appearance.card_density` | string | `"comfortable"` | appearance | Choose comfortable spacing or a compact post list. |
-| `appearance.date_format` | string | `"site"` | appearance | Use the WordPress site format or choose a display format for post dates. |
-| `content.topics_strategy` | string | `"count"` | content | count: most posts first; manual: curated list. |
-| `content.topics_limit` | integer | `4` | content | Number of topics shown. |
-| `content.topics_manual` | array | `[]` | content | Tag ids in display order (used by the manual strategy). |
-| `i18n.default` | string | `"en"` | languages | Language code of the default language. |
-| `i18n.languages` | array | `["en"]` | languages | Language codes used by this site. |
-| `i18n.switch_locale` | boolean | `false` | languages | Render core UI strings in the language of the post. |
-| `terminal.enabled` | boolean | `true` | terminal | Show the terminal dock. |
-| `terminal.open_by_default` | boolean | `false` | terminal | Open the dock on page load. |
-| `terminal.persist_history` | boolean | `false` | terminal | Keeps history in sessionStorage. |
-| `terminal.max_posts` | integer | `500` | terminal | Newest posts first. |
-| `terminal.banner` | string | `"read-only shell"` | terminal | First line shown when the terminal opens. |
-| `terminal.hide_on_404` | boolean | `true` | terminal | The 404 page is full width. |
+| Key | Type | Default | Sanitiser | Manifest path | Group | Description |
+| --- | --- | --- | --- | --- | --- | --- |
+| `modules.seo.enabled` | boolean | `true` | `bool` | `modules.seo` | general | Turns the SEO module on or off for this site. |
+| `modules.lazy.enabled` | boolean | `true` | `bool` | `modules.lazy` | general | Turns the Lazy loading module on or off for this site. |
+| `modules.perf.enabled` | boolean | `true` | `bool` | `modules.perf` | general | Turns the Performance module on or off for this site. |
+| `modules.compat.enabled` | boolean | `true` | `bool` | `modules.compat` | general | Turns the Compatibility module on or off for this site. |
+| `modules.blocks.enabled` | boolean | `true` | `bool` | `modules.blocks` | general | Turns the Blocks module on or off for this site. |
+| `modules.i18n.enabled` | boolean | `true` | `bool` | `modules.i18n` | general | Turns the Languages module on or off for this site. |
+| `modules.terminal.enabled` | boolean | `true` | `bool` | `modules.terminal` | general | Turns the Terminal module on or off for this site. |
+| `modules.content.enabled` | boolean | `true` | `bool` | `modules.content` | general | Turns the Content providers module on or off for this site. |
+| `core.debug` | boolean | `false` | `bool` | — | general | Writes core log lines to the PHP error log and shows the performance admin bar node. |
+| `seo.enabled` | boolean | `true` | `bool` | `seo.enabled` | seo | Print title, description, canonical, robots, Open Graph, Twitter and JSON-LD. |
+| `seo.yield` | string | `"auto"` | `enum` | `seo.yield` | seo | auto: step aside when an SEO plugin is active; never: always print; always: never print. |
+| `seo.yield_hreflang` | boolean | `true` | `bool` | — | seo | When yielding, also leave hreflang tags to the plugin. |
+| `seo.yield_jetpack` | boolean | `true` | `bool` | — | seo | Core Open Graph wins and Jetpack Open Graph is disabled. |
+| `seo.title_separator` | string | `"|"` | `text` | `seo.titleSeparator` | seo | Separator used by %sep% in title templates. |
+| `seo.title_template.home` | string | `"%sitename% %sep% %tagline%"` | `text` | — | seo | Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%. |
+| `seo.title_template.single` | string | `"%title% %sep% %sitename%"` | `text` | — | seo | Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%. |
+| `seo.title_template.page` | string | `"%title% %sep% %sitename%"` | `text` | — | seo | Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%. |
+| `seo.title_template.archive` | string | `"%title% %sep% %sitename%"` | `text` | — | seo | Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%. |
+| `seo.title_template.search` | string | `"Search results for \"%title%\" %sep% %sitename%"` | `text` | — | seo | Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%. |
+| `seo.title_template.404` | string | `"Page not found %sep% %sitename%"` | `text` | — | seo | Variables: %title% %sitename% %tagline% %category% %author% %page% %sep%. |
+| `seo.default_og_image` | integer | `0` | `attachment_id` | — | seo | Attachment id used when a post has no image (1200x630 recommended). |
+| `seo.twitter_site` | string | `""` | `text` | — | seo | Without @, optional. |
+| `seo.paged_noindex` | boolean | `false` | `bool` | — | seo | Adds noindex,follow to /page/N/ archives. |
+| `seo.breadcrumbs_owner` | string | `"core"` | `enum` | — | seo | core prints BreadcrumbList; plugin leaves it to the active SEO plugin. |
+| `lazy.enabled` | boolean | `true` | `bool` | `lazy.enabled` | lazy | Master switch for every lazy loading feature. |
+| `lazy.images` | boolean | `true` | `bool` | `lazy.images` | lazy | Below-the-fold images use loading=lazy. The LCP image never does. |
+| `lazy.iframes` | boolean | `true` | `bool` | `lazy.iframes` | lazy | Iframes lazy load; YouTube and Vimeo use click-to-load facades. |
+| `lazy.fragments` | boolean | `true` | `bool` | `lazy.fragments` | lazy | Sidebar, related posts and similar blocks load when near the viewport, with a no-JS fallback. |
+| `lazy.sections` | boolean | `true` | `bool` | `lazy.sections` | lazy | Uses CSS content-visibility for below-the-fold sections. |
+| `lazy.comments` | boolean | `true` | `bool` | `lazy.comments` | lazy | Comments load on request or when linked to. |
+| `lazy.terminal` | boolean | `true` | `bool` | `lazy.terminal` | lazy | Terminal code and data load after the first open. |
+| `lazy.eager_count` | integer | `1` | `int_range` | `lazy.eagerCount` | lazy | Number of leading content images that are never lazy. |
+| `lazy.yield_to_plugins` | boolean | `true` | `bool` | — | lazy | Do not lazy load images or iframes when another plugin already does. |
+| `lazy.embed_thumbnails` | string | `"local"` | `enum` | — | lazy | local: no third-party requests before click; remote: show the provider thumbnail. |
+| `perf.disable_emoji` | boolean | `true` | `bool` | — | performance | Removes the emoji detection script and styles on the front end. |
+| `perf.disable_embeds` | boolean | `true` | `bool` | — | performance | Removes wp-embed and oEmbed discovery on the front end. |
+| `perf.dashicons_guests` | boolean | `true` | `bool` | — | performance | Dashicons are only needed for logged-in users. |
+| `perf.jquery_frontend` | string | `"auto"` | `enum` | — | performance | auto removes jQuery when nothing depends on it. |
+| `perf.speculation` | string | `"conservative"` | `enum` | — | performance | Prefetch/prerender same-origin links (Chromium). |
+| `perf.block_css_granular` | boolean | `true` | `bool` | — | performance | Core and custom block styles load only when the block is used. |
+| `perf.remove_head_noise` | boolean | `true` | `bool` | — | performance | Removes generator, RSD, WLW and shortlink output. |
+| `perf.preconnect` | array | `[]` | `string_list` | `perf.preconnect` | performance | Origins to preconnect (https only). |
+| `features.slider` | boolean | `true` | `bool` | `features.slider` | general | Enable featured slider. |
+| `features.rail` | boolean | `true` | `bool` | — | general | Show the sidebar rail on templates that include it. |
+| `features.back_to_top` | boolean | `true` | `bool` | — | general | Show a fixed link that returns visitors to the page header. |
+| `features.theme_toggle` | boolean | `true` | `bool` | `features.theme_toggle` | general | Let visitors cycle through the theme's available colour schemes. |
+| `features.reading_progress` | boolean | `true` | `bool` | `features.reading_progress` | general | Enable reading progress bar. |
+| `features.hide_featured_in_list` | boolean | `true` | `bool` | `features.hide_featured_in_list` | general | Enable hide featured posts from the latest list. |
+| `content.profile_user_id` | integer | `0` | `user_id` | — | content | User shown in About me and schema Person (0 = first administrator). |
+| `content.rail_profile` | boolean | `true` | `bool` | — | content | Show the owner profile card in the sidebar rail. |
+| `content.rail_companies` | boolean | `true` | `bool` | — | content | Show the company timeline block in the sidebar rail. |
+| `content.rail_categories` | boolean | `true` | `bool` | — | content | Show the category tree block in the sidebar rail. |
+| `content.rail_topics` | boolean | `true` | `bool` | — | content | Show the top topics block in the sidebar rail. |
+| `content.rail_tags` | boolean | `true` | `bool` | — | content | Show the tag list block in the sidebar rail. |
+| `appearance.card_density` | string | `"comfortable"` | `enum` | — | appearance | Choose comfortable spacing or a compact post list. |
+| `appearance.date_format` | string | `"site"` | `enum` | — | appearance | Use the WordPress site format or choose a display format for post dates. |
+| `content.topics_strategy` | string | `"count"` | `enum` | — | content | count: most posts first; manual: curated list. |
+| `content.topics_limit` | integer | `4` | `int_range` | — | content | Number of topics shown. |
+| `content.topics_manual` | array | `[]` | `term_ids` | — | content | Tag ids in display order (used by the manual strategy). |
+| `i18n.default` | string | `"en"` | `text` | `i18n.default` | languages | Language code of the default language. |
+| `i18n.languages` | array | `["en"]` | `string_list` | `i18n.languages` | languages | Language codes used by this site. |
+| `i18n.switch_locale` | boolean | `false` | `bool` | — | languages | Render core UI strings in the language of the post. |
+| `terminal.enabled` | boolean | `true` | `bool` | `features.terminal` | terminal | Show the terminal dock. |
+| `terminal.open_by_default` | boolean | `false` | `bool` | — | terminal | Open the dock on page load. |
+| `terminal.persist_history` | boolean | `false` | `bool` | — | terminal | Keeps history in sessionStorage. |
+| `terminal.max_posts` | integer | `500` | `int_range` | `terminal.maxPosts` | terminal | Newest posts first. |
+| `terminal.banner` | string | `"read-only shell"` | `text` | `terminal.banner` | terminal | First line shown when the terminal opens. |
+| `terminal.hide_on_404` | boolean | `true` | `bool` | — | terminal | The 404 page is full width. |

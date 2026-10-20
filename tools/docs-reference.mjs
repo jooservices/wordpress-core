@@ -302,9 +302,10 @@ export function hooksPage(hooks) {
 export function settingsPage(sch) {
   const rows = Object.entries(sch.settings).map(([key, s]) => {
     const def = JSON.stringify(s.default);
-    return `| \`${key}\` | ${s.type} | \`${def}\` | ${s.group} | ${String(s.description ?? s.title).replace(/\|/g, '/')} |`;
+    const manifest = s.manifest ? `\`${s.manifest}\`` : '—';
+    return `| \`${key}\` | ${s.type} | \`${def}\` | \`${s.sanitize}\` | ${manifest} | ${s.group} | ${String(s.description ?? s.title).replace(/\|/g, '/')} |`;
   });
-  return `${NOTES.settings}\n# Settings\n\nPrecedence: filter \`joo/settings/value\`, then the value saved in the admin, then the theme manifest, then the default below.\n\n| Key | Type | Default | Group | Description |\n| --- | --- | --- | --- | --- |\n${rows.join('\n')}\n`;
+  return `${NOTES.settings}\n# Settings\n\nPrecedence: filter \`joo/settings/value\`, then the value saved in the admin, then the theme manifest, then the default below.\n\n| Key | Type | Default | Sanitiser | Manifest path | Group | Description |\n| --- | --- | --- | --- | --- | --- | --- |\n${rows.join('\n')}\n`;
 }
 
 export function surfacePage(reg) {
