@@ -25,7 +25,7 @@ fi
 export WP_PHPUNIT__TESTS_CONFIG="$ROOT/tests/wp-tests-config.php"
 mkdir -p "$ROOT/artifacts/reports/integration"
 echo "WordPress ${WP_VER} (tests lib ${WP_TESTS_DIR})"
-PHP_FLAGS=(-d error_reporting=24575)
+PHP_FLAGS=(-d "error_reporting=${PHP_ERROR_REPORTING:-24575}")
 if [ "${COVERAGE:-0}" = "1" ]; then
   PHP_FLAGS+=(-d pcov.enabled=1 -d pcov.directory="$ROOT")
   mkdir -p "$ROOT/artifacts/reports/cov"

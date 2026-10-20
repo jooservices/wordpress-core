@@ -210,8 +210,7 @@ final class BlocksTest extends IntegrationTestCase {
 		if ( ! $ref->hasProperty( 'registered' ) ) {
 			return null;
 		}
-		$prop = $ref->getProperty( 'registered' );
-		$prop->setAccessible( true );
+		$prop       = $ref->getProperty( 'registered' );
 		$registered = $prop->getValue( $modules );
 		return $registered[ $id ]['src'] ?? null;
 	}
