@@ -5,7 +5,7 @@ Prerequisites: Docker running, `make init-env` and `make deps` done once.
 1. **Scaffold**: `make new-theme NAME=acme TITLE="Acme Co"`. It copies `themes/starter`, renames the slug, text domain, namespace and filenames, links the core (`themes/acme/core`), and registers the text domain in `phpcs.xml.dist` and the folder in `deptrac.yaml`. Then update the workspace lockfile with `bash docker/scripts/runtime.sh npm install`; commit `package-lock.json` together with the theme. Without the lockfile entry, `npm ci`, `make deps` and CI fail with `Missing: @jooservices/theme-acme`.
 2. **Run it**: `make demo THEME=acme`. This builds the assets, installs WordPress and the theme, seeds deterministic demo content, and finishes with the health checks.
 3. **Look**: open the `WP_SITE_URL` printed by `make demo`. The URL is ticket-scoped; admin credentials stay in `.env`.
-4. **Change the look**: edit `themes/acme/theme.json` (palette, fonts and sizes), templates and parts under `themes/acme/templates` and `themes/acme/parts`. The core blocks (`joo/*`) provide the structure. The scaffold has no `assets` folder, so create `themes/acme/assets/src/css/` for your CSS and build with `bash docker/scripts/runtime.sh node tools/build-assets.mjs --root themes/acme --src assets/src --out assets/build` (output is git-ignored).
+4. **Change the look**: edit `themes/acme/theme.json` (palette, fonts and sizes), templates and parts under `themes/acme/templates` and `themes/acme/parts`. The core blocks (`joo/*`) provide the structure. The scaffold has no `assets` folder, so create `themes/acme/assets/src/css/` for your CSS and build with `bash docker/scripts/runtime.sh node tools/build-assets.mjs --root themes/acme --src assets/src --out assets/build` (output is git-ignored). Give custom CSS classes an approved prefix such as `joo-`; Stylelint also permits `wp-`, `is-` and `has-` classes.
 
    The generated `languages/acme-vi.mo` is copied from the starter catalog and keeps its `starter` metadata. `make i18n` only rebuilds the bundled core, plugin, starter and jooservices catalogs; it does not regenerate a new theme's catalog.
 
@@ -23,21 +23,21 @@ Keep theme PHP under 50 lines (`functions.php` boots the core from `joo-theme.js
 
 ## Walk-through record
 
-Literal run on WSL on 2026-10-20 from a clean tracked checkout. A prior ignored `themes/acme` output existed, so this replay used the new slug `qatest` and left inherited ignored files untouched. Times are wall-clock seconds from `time -p`; the demo measurement was after the images were already available.
+Literal run on WSL on 2026-10-20 from a clean tracked checkout. The existing ignored `.env` was kept unchanged; `qatest` was absent and created for this run. Times are wall-clock seconds from `time -p`; the demo measurement was after the images were already available.
 
 | Step | Result | Time |
 | --- | --- | ---: |
-| Environment | `make init-env` and `make deps` passed. `make deps` passed again after the generated workspace was added to the lockfile. | 0.05 s; 9.65 s; 9.30 s |
-| Scaffold and lockfile | `make new-theme NAME=qatest TITLE="QA Test"` created 34 files. `npm install` added the workspace entry. | 0.17 s; 1.62 s |
-| Demo | `make demo THEME=qatest` completed and health reported 17/17 checks. | 31.62 s |
-| Look | The printed worktree URL returned HTTP 200. | 0.07 s |
-| Custom CSS | Built one hashed asset, 62 B (79 B gzip). | 0.19 s |
-| Lint | `make lint` passed for the generated theme and repository. | 12.44 s |
-| Analysis | `make analyse` passed with no PHPStan or Deptrac violations. | 11.10 s |
-| Unit tests | `make test-unit`: 283 PHPUnit tests and 342 Vitest tests passed, including the 10 new-theme tests. | 8.10 s |
-| Integration | `make test-integration THEME=qatest TEST_THEME=qatest` passed: the generated theme, core, portfolio and migration-oriented suites passed; 22 default-excluded tests were skipped. | 40.80 s |
-| Browser checks | The focused API, HTTP, SEO and smoke suite passed 66/66 tests through the Dev VM browser. | 34.36 s |
-| Core proof | The command passed and reported 0 committed theme changes; the scaffold was intentionally uncommitted. Run it after committing a theme to check that commit. | 0.01 s |
+| Environment | `make init-env` kept the existing ignored environment file. `make deps` passed before scaffolding and again after the generated workspace was added to the lockfile. | 0.01 s; 9.71 s; 9.56 s |
+| Scaffold and lockfile | `make new-theme NAME=qatest TITLE="QA Test"` created 34 files. `npm install` added the workspace entry. | 0.17 s; 2.06 s |
+| Demo | `make demo THEME=qatest` completed and health reported 17/17 checks. | 17.31 s |
+| Look | The printed worktree URL returned HTTP 200. | 0.06 s |
+| Custom CSS | Built one hashed asset, 58 B (70 B gzip). | 0.21 s |
+| Lint | `make lint` passed for the generated theme and repository. | 14.34 s |
+| Analysis | `make analyse` passed with no PHPStan or Deptrac violations. | 11.71 s |
+| Unit tests | `make test-unit`: 284 PHPUnit tests and 348 Vitest tests passed, including the 10 new-theme tests. | 8.05 s |
+| Integration | `make test-integration THEME=qatest TEST_THEME=qatest` passed: the generated theme, core, portfolio and migration-oriented suites passed; 22 default-excluded tests were skipped. | 41.55 s |
+| Browser checks | The focused API, HTTP, SEO and smoke suite passed 66/66 tests through the Dev VM browser (16.5 s in Playwright). | 69.76 s |
+| Core proof | The command passed and reported 0 committed theme changes; the scaffold was intentionally uncommitted. Run it after committing a theme to check that commit. | 0.02 s |
 
 Corrections from the walk-through:
 
@@ -47,4 +47,5 @@ Corrections from the walk-through:
 - The first browser run stopped after 78.53 s because `www-data` could not create its report folder. The guide now sets `E2E_REPORT_DIR` to a writable `/tmp` path through the project runtime wrapper.
 - The previous instruction to run `make i18n THEME=acme` was removed. That target does not generate a custom theme catalog and failed on untranslated strings in the bundled catalogs (18.26 s).
 - The sample CSS first failed Stylelint in 8.82 s; it was changed to use the theme accent token. The planner test now uses a temporary copy of the real starter so an existing `themes/acme` directory cannot break the suite.
+- In this replay, a custom CSS sample failed Stylelint because its class lacked an approved prefix. The guide now documents the accepted `joo-`, `wp-`, `is-` and `has-` prefixes; the corrected sample and lint pass.
 - The first analysis run failed after 8.24 s because PHPStan found `$argv` might be undefined in `tools/check-core-i18n.php`; the CLI script now defaults it to an empty array.
