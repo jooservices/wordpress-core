@@ -257,7 +257,7 @@ final class LazyTest extends IntegrationTestCase {
 		$html = $fragments->wrap( 'demo', array( 'limit' => 3 ), static fn() => '<ul><li>3</li></ul>' );
 		$this->assertStringContainsString( '<joo-lazy name="demo"', $html );
 		$this->assertMatchesRegularExpression( '#data-src="[^"]*fragment%2Fdemo[^"]*limit=3#', $html );
-		$this->assertStringContainsString( 'contain-intrinsic-size:auto 220px', $html );
+		$this->assertStringContainsString( 'style="display:block;min-block-size:220px"', $html );
 		$this->assertStringContainsString( 'aria-busy="true"', $html );
 		$this->assertStringContainsString( '<noscript><ul><li>3</li></ul></noscript>', $html );
 	}

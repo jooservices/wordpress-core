@@ -2,7 +2,7 @@
 // Usage: make test-matrix THEME=jooservices [WP_VERSION=6.6] [WP_PHP_VERSION=8.3] [ARGS="--child-theme"]
 // Add --runtime-only to check the selected runtime without installing plugins.
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { browserResult, readRuntime, prepareChildTheme, removeChildTheme, runMatrix } from './matrix-core.mjs';
 
 export * from './matrix-core.mjs';
@@ -15,12 +15,22 @@ const root = process.env.JOO_ROOT ?? '/workspace';
 // The checkout as wp-web (where Playwright runs) sees it.
 const webRoot = process.env.JOO_WEB_ROOT ?? '/workspace';
 
+export function prepareReportDirectory(path, { makeDirectory = mkdirSync, setMode = chmodSync } = {}) {
+  makeDirectory(path, { recursive: true });
+  setMode(path, 0o1777);
+}
+
 export function browserSmoke(
   plugin,
   theme,
   ctx,
-  { spawn = spawnSync, readReport = (path) => readFileSync(path, 'utf8') } = {}
+  {
+    spawn = spawnSync,
+    readReport = (path) => readFileSync(path, 'utf8'),
+    prepareReportDirectory: prepare = prepareReportDirectory,
+  } = {}
 ) {
+  prepare('artifacts/reports/e2e');
   const json = `artifacts/reports/e2e/${plugin}-${theme}-playwright.json`;
   const result = spawn(
     'bash',

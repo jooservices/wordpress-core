@@ -133,6 +133,8 @@
     position: sticky;
     top: 0;
     flex: none;
+    width: 40px;
+    min-width: 40px;
     flex-direction: row-reverse;
     align-self: flex-start;
     height: min(100vh, 780px);

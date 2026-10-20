@@ -229,7 +229,7 @@ final class FragmentLazy {
 		$height = (int) ( $this->fragments[ $name ]['height'] ?? 200 );
 		$src    = add_query_arg( array_map( static fn( $v ) => is_bool( $v ) ? (int) $v : $v, $args ), rest_url( 'joo/v1/fragment/' . $name ) );
 		wp_enqueue_script_module( 'joo-lazy' );
-		return '<joo-lazy name="' . esc_attr( $name ) . '" data-src="' . esc_url( $src ) . '" style="contain-intrinsic-size:auto ' . $height . 'px">'
+		return '<joo-lazy name="' . esc_attr( $name ) . '" data-src="' . esc_url( $src ) . '" style="display:block;min-block-size:' . $height . 'px">'
 			. '<div class="joo-lazy__placeholder" aria-busy="true">' . esc_html__( 'Loading…', 'joo-core' ) . '</div>'
 			. '<noscript>' . $html . '</noscript></joo-lazy>';
 	}
