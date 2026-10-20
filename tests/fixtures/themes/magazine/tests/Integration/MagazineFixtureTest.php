@@ -36,6 +36,10 @@ final class MagazineFixtureTest extends IntegrationTestCase {
 		$this->assertSame( 'disabled', Kernel::status()['terminal'] );
 	}
 
+	public function test_resume_plugin_is_not_loaded(): void {
+		$this->assertFalse( defined( 'JOO_RESUME_FILE' ), 'The Magazine fixture must run without the Resume plugin.' );
+	}
+
 	public function test_disabled_terminal_registers_no_hook_route_or_asset(): void {
 		$this->assertSame( array(), $this->terminalHooks() );
 
