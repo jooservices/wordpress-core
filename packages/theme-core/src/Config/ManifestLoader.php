@@ -91,11 +91,11 @@ final class ManifestLoader {
 	public function parse( string $json, string $fallback = 'theme' ): Manifest {
 		$json = preg_replace( '/^\xEF\xBB\xBF/', '', $json ) ?? $json;
 		try {
-			$data = json_decode( $json, true, 32, JSON_THROW_ON_ERROR );
+			$data = json_decode( $json, false, 32, JSON_THROW_ON_ERROR );
 		} catch ( \JsonException $error ) {
 			return Manifest::invalid( array( 'Manifest is not valid JSON: ' . $error->getMessage() ), $fallback );
 		}
-		if ( ! is_array( $data ) ) {
+		if ( ! ( $data instanceof \stdClass ) ) {
 			return Manifest::invalid( array( 'Manifest must be a JSON object.' ), $fallback );
 		}
 		$schema = $this->schema();
@@ -103,7 +103,39 @@ final class ManifestLoader {
 			return Manifest::invalid( array( 'Manifest schema is missing from core.' ), $fallback );
 		}
 		$errors = $this->validator->validate( $data, $schema );
-		return $errors ? new Manifest( array(), $errors, $fallback ) : new Manifest( $data, array(), $fallback );
+		return $errors ? new Manifest( array(), $errors, $fallback ) : new Manifest( $this->toArray( $data ), array(), $fallback );
+	}
+
+	/**
+	 * Converts a validated JSON object into the array representation used by Manifest.
+	 *
+	 * @param \stdClass $value Decoded JSON object.
+	 * @return array<array-key, mixed>
+	 */
+	private function toArray( \stdClass $value ): array {
+		$normalized = array();
+		foreach ( get_object_vars( $value ) as $key => $item ) {
+			$normalized[ $key ] = $this->normalizeValue( $item );
+		}
+		return $normalized;
+	}
+
+	/**
+	 * Recursively converts JSON values to the array representation used by Manifest.
+	 *
+	 * @param mixed $value Decoded JSON value.
+	 * @return mixed
+	 */
+	private function normalizeValue( $value ) {
+		if ( $value instanceof \stdClass ) {
+			return $this->toArray( $value );
+		}
+		if ( is_array( $value ) ) {
+			foreach ( $value as $key => $item ) {
+				$value[ $key ] = $this->normalizeValue( $item );
+			}
+		}
+		return $value;
 	}
 
 	/**

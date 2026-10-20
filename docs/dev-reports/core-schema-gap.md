@@ -4,7 +4,7 @@
 
 This report inventories the JSON Schema resources validated by `tools/validate-schemas.mjs`: the theme manifest, block, and resume company schemas. `packages/theme-core/schema/settings.schema.json` is a settings descriptor consumed by the settings tooling, not a JSON Schema resource; its descriptor fields are checked separately by `tools/validate-schemas.mjs` and are not counted as JSON Schema keywords. The runtime `SchemaValidator` validates only the manifest schema.
 
-The Ajv side uses the same strict Ajv 2020 configuration as `tools/validate-schemas.mjs`. The runtime side calls `SchemaValidator::validate()` after PHP's production-style associative `json_decode`. The input set contains every spec example and theme manifest discovered by the schema tool, every invalid manifest fixture, and two focused representation edge cases.
+The Ajv side uses the same strict Ajv 2020 configuration as `tools/validate-schemas.mjs`. The runtime side calls `SchemaValidator::validate()` with PHP's object-preserving `json_decode`, matching production validation before manifest values are normalized for runtime use. The input set contains every spec example and theme manifest discovered by the schema tool, every invalid manifest fixture, and two focused representation edge cases.
 
 ## Keyword inventory
 
@@ -54,12 +54,9 @@ The manifest schema uses no unimplemented validation keywords; its only partial 
 | Invalid fixture | `packages/theme-core/tests/Fixtures/manifest-invalid/bad-type.json` | Reject | Reject | No |
 | Invalid fixture | `packages/theme-core/tests/Fixtures/manifest-invalid/missing-required.json` | Reject | Reject | No |
 | Invalid fixture | `packages/theme-core/tests/Fixtures/manifest-invalid/unknown-key.json` | Reject | Reject | No |
-| Invalid edge case | `Synthetic edge case: array for object-valued features` | Reject | Accept | Yes: Ajv reject, runtime accept |
-| Valid edge case | `Synthetic edge case: numeric key in object-valued modules` | Accept | Reject | Yes: Ajv accept, runtime reject |
+| Invalid edge case | `Synthetic edge case: array for object-valued features` | Reject | Reject | No |
+| Valid edge case | `Synthetic edge case: numeric key in object-valued modules` | Accept | Accept | No |
 
-Observed differences:
+No differences were observed.
 
-- **Synthetic edge case: array for object-valued features:** PHP associative decoding represents both an empty JSON array and empty JSON object as an empty array.
-- **Synthetic edge case: numeric key in object-valued modules:** PHP associative decoding converts the numeric object key to integer key 0, which the runtime list check classifies as an array.
-
-The two edge-case differences are recorded as expected findings. Other differences, or a change to either edge-case decision, fail the differential check so the report and test cannot silently drift.
+The differential check fails on any Ajv/runtime decision difference, including the focused representation edge cases.

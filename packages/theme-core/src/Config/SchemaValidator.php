@@ -24,7 +24,7 @@ final class SchemaValidator {
 	/**
 	 * Validates data and returns error messages with JSON pointers (empty when valid).
 	 *
-	 * @param mixed                $data    Decoded JSON (objects as associative arrays).
+	 * @param mixed                $data    Decoded JSON (objects as stdClass instances).
 	 * @param array<string, mixed> $schema  Schema.
 	 * @param string               $pointer JSON pointer of $data (internal).
 	 * @return list<string>
@@ -70,7 +70,7 @@ final class SchemaValidator {
 				}
 			}
 		}
-		if ( is_array( $data ) && ( ! $this->isList( $data ) || ( array() === $data && 'object' === ( $schema['type'] ?? null ) ) ) ) {
+		if ( $data instanceof \stdClass || ( is_array( $data ) && ! $this->isList( $data ) ) ) {
 			$errors = array_merge( $errors, $this->validateObject( $data, $schema, $pointer, $at ) );
 		}
 		return $errors;
@@ -113,17 +113,18 @@ final class SchemaValidator {
 	}
 
 	/**
-	 * Validates an object-like array.
+	 * Validates an object-like value.
 	 *
-	 * @param array<mixed>         $data    Data.
+	 * @param array<mixed>|\stdClass $data    Data.
 	 * @param array<string, mixed> $schema  Schema.
 	 * @param string               $pointer Pointer.
 	 * @param string               $at      Display pointer.
 	 * @return list<string>
 	 */
-	private function validateObject( array $data, array $schema, string $pointer, string $at ): array {
+	private function validateObject( array|\stdClass $data, array $schema, string $pointer, string $at ): array {
 		$errors     = array();
 		$properties = is_array( $schema['properties'] ?? null ) ? $schema['properties'] : array();
+		$data       = (array) $data;
 		foreach ( (array) ( $schema['required'] ?? array() ) as $required ) {
 			if ( ! array_key_exists( $required, $data ) ) {
 				$errors[] = sprintf( '%s: missing required property "%s"', $at, $required );
@@ -173,7 +174,7 @@ final class SchemaValidator {
 					$ok = is_array( $data ) && $this->isList( $data );
 					break;
 				case 'object':
-					$ok = is_array( $data ) && ( array() === $data || ! $this->isList( $data ) );
+					$ok = $data instanceof \stdClass || ( is_array( $data ) && ! $this->isList( $data ) );
 					break;
 				case 'null':
 					$ok = null === $data;
@@ -194,6 +195,9 @@ final class SchemaValidator {
 	 * @param mixed $data Data.
 	 */
 	private function typeName( $data ): string {
+		if ( $data instanceof \stdClass ) {
+			return 'object';
+		}
 		if ( is_array( $data ) ) {
 			return $this->isList( $data ) ? 'array' : 'object';
 		}
