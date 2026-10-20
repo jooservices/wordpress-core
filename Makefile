@@ -165,6 +165,7 @@ docs: ## Generate compatibility and API reference docs
 	@$(NODE) tools/docs-compat.mjs
 	@$(NODE) tools/docs-reference.mjs
 docs-check: ## Check generated API references and buyer documentation links
+	@$(NODE) tools/check-registry.mjs
 	@$(NODE) tools/docs-reference.mjs --check
 	@$(NODE) tools/docs-check.mjs
 hooks: ## Install repository git hooks (repo-local config only)
