@@ -72,18 +72,25 @@ export async function run({ base, table, extra = {}, seoActive = false }) {
   return results;
 }
 
+export function renderResults(results, json = false) {
+  if (json) return JSON.stringify(results);
+  const rows = results.map(
+    (r) =>
+      `${r.ok ? 'ok  ' : 'FAIL'} ${r.name}${r.path ? ` (${r.path})` : ''}${r.ok ? '' : ` — ${r.problems.join('; ')}`}`
+  );
+  const passed = results.filter((r) => r.ok).length;
+  return [...rows, `${passed}/${results.length} checks passed`].join('\n');
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const flag = (n, d) => (args.includes(n) ? args[args.indexOf(n) + 1] : d);
+  const json = args.includes('--json');
   const base = flag('--base', process.env.E2E_BASE_URL ?? process.env.WP_SITE_URL ?? 'http://127.0.0.1:8082');
   const table = JSON.parse(readFileSync(fileURLToPath(new URL('../tests/matrix/urls.json', import.meta.url)), 'utf8'));
   const extra = JSON.parse(flag('--values', '{}'));
-  const results = await run({ base, table, extra });
-  for (const r of results)
-    console.log(
-      `${r.ok ? 'ok  ' : 'FAIL'} ${r.name}${r.path ? ` (${r.path})` : ''}${r.ok ? '' : ` — ${r.problems.join('; ')}`}`
-    );
+  const results = await run({ base, table, extra, seoActive: args.includes('--seo-active') });
+  console.log(renderResults(results, json));
   const failed = results.filter((r) => !r.ok);
-  console.log(`${results.length - failed.length}/${results.length} checks passed`);
   process.exit(failed.length === 0 ? 0 : 1);
 }

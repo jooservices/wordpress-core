@@ -1,0 +1,238 @@
+{
+  "kind": "plugins",
+  "theme": "starter",
+  "variant": "wp-7.1.3-php-8.3.30",
+  "date": "2026-10-20",
+  "testedAt": "2026-10-20T06:45:55.263Z",
+  "runtime": {
+    "wordpress": "7.1.3",
+    "php": "8.3.30",
+    "database": "12.3.3-MariaDB-ubu2404"
+  },
+  "counts": {
+    "pass": 22,
+    "fail": 1,
+    "skipped": 0,
+    "unsupported": 2,
+    "blocked": 0
+  },
+  "results": [
+    {
+      "key": "yoast",
+      "name": "Yoast SEO",
+      "group": "SEO",
+      "result": "PASS",
+      "notes": [],
+      "version": "28.7"
+    },
+    {
+      "key": "rankmath",
+      "name": "Rank Math SEO",
+      "group": "SEO",
+      "result": "PASS",
+      "notes": [
+        "environment warning: WordPress.org update check could not establish TLS (1 warning(s))"
+      ],
+      "version": "1.0.280"
+    },
+    {
+      "key": "aioseo",
+      "name": "All in One SEO",
+      "group": "SEO",
+      "result": "PASS",
+      "notes": [],
+      "version": "5.0.3"
+    },
+    {
+      "key": "seopress",
+      "name": "SEOPress",
+      "group": "SEO",
+      "result": "PASS",
+      "notes": [],
+      "version": "10.3"
+    },
+    {
+      "key": "litespeed-cache",
+      "name": "LiteSpeed Cache",
+      "group": "Cache",
+      "result": "PASS",
+      "notes": [],
+      "version": "7.9.1"
+    },
+    {
+      "key": "wp-rocket",
+      "name": "WP Rocket",
+      "group": "Cache",
+      "result": "UNSUPPORTED",
+      "notes": [
+        "licensed plugin: zip not present in tests/matrix/vendor/ (not tested)"
+      ]
+    },
+    {
+      "key": "w3-total-cache",
+      "name": "W3 Total Cache",
+      "group": "Cache",
+      "result": "PASS",
+      "notes": [],
+      "version": "2.10.7"
+    },
+    {
+      "key": "autoptimize",
+      "name": "Autoptimize",
+      "group": "Cache",
+      "result": "PASS",
+      "notes": [],
+      "version": "3.1.16"
+    },
+    {
+      "key": "polylang",
+      "name": "Polylang",
+      "group": "Multilingual",
+      "result": "PASS",
+      "notes": [],
+      "version": "3.9.0"
+    },
+    {
+      "key": "wpml",
+      "name": "WPML",
+      "group": "Multilingual",
+      "result": "UNSUPPORTED",
+      "notes": [
+        "licensed plugin: zip not present in tests/matrix/vendor/ (not tested)"
+      ]
+    },
+    {
+      "key": "translatepress",
+      "name": "TranslatePress",
+      "group": "Multilingual",
+      "result": "PASS",
+      "notes": [],
+      "version": "3.3.8"
+    },
+    {
+      "key": "cf7",
+      "name": "Contact Form 7",
+      "group": "Forms",
+      "result": "PASS",
+      "notes": [],
+      "version": "6.2.2"
+    },
+    {
+      "key": "wpforms",
+      "name": "WPForms Lite",
+      "group": "Forms",
+      "result": "PASS",
+      "notes": [
+        "environment warning: WordPress.org update check could not establish TLS (1 warning(s))"
+      ],
+      "version": "2.0.2.2"
+    },
+    {
+      "key": "fluentform",
+      "name": "Fluent Forms",
+      "group": "Forms",
+      "result": "PASS",
+      "notes": [],
+      "version": "6.2.16"
+    },
+    {
+      "key": "jetpack",
+      "name": "Jetpack",
+      "group": "Other",
+      "result": "PASS",
+      "notes": [],
+      "version": "16.3.1"
+    },
+    {
+      "key": "site-kit",
+      "name": "Site Kit by Google",
+      "group": "Other",
+      "result": "PASS",
+      "notes": [],
+      "version": "1.190.0"
+    },
+    {
+      "key": "smush",
+      "name": "Smush",
+      "group": "Images",
+      "result": "PASS",
+      "notes": [
+        "environment warning: WordPress.org update check could not establish TLS (1 warning(s))"
+      ],
+      "version": "4.3.4"
+    },
+    {
+      "key": "shortpixel",
+      "name": "ShortPixel Image Optimizer",
+      "group": "Images",
+      "result": "PASS",
+      "notes": [],
+      "version": "6.6.1"
+    },
+    {
+      "key": "ewww",
+      "name": "EWWW Image Optimizer",
+      "group": "Images",
+      "result": "PASS",
+      "notes": [],
+      "version": "8.9.0"
+    },
+    {
+      "key": "tablepress",
+      "name": "TablePress",
+      "group": "Other",
+      "result": "PASS",
+      "notes": [],
+      "version": "3.4.1"
+    },
+    {
+      "key": "acf",
+      "name": "Advanced Custom Fields",
+      "group": "Other",
+      "result": "PASS",
+      "notes": [
+        "environment warning: WordPress.org update check could not establish TLS (2 warning(s))"
+      ],
+      "version": "6.8.10"
+    },
+    {
+      "key": "akismet",
+      "name": "Akismet",
+      "group": "Other",
+      "result": "PASS",
+      "notes": [],
+      "version": "5.7.2"
+    },
+    {
+      "key": "wordfence",
+      "name": "Wordfence",
+      "group": "Security",
+      "result": "PASS",
+      "notes": [],
+      "version": "9.0.2"
+    },
+    {
+      "key": "woocommerce",
+      "name": "WooCommerce",
+      "group": "Shop",
+      "result": "FAIL",
+      "notes": [
+        "environment warning: WordPress.org update check could not establish TLS (1 warning(s))",
+        "php log: 1 problem(s), first: [20-Oct-2026 06:44:55 UTC] PHP Notice:  Function _load_textdomain_just_in_time was called <strong>incorrectly</strong>. Translation loading for the <code>woocom",
+        "Basic compatibility only; no custom page-builder or shop design is included.",
+        "Shop templates are unstyled; only non-shop pages are checked."
+      ],
+      "version": "11.2.1"
+    },
+    {
+      "key": "elementor",
+      "name": "Elementor",
+      "group": "Page builder",
+      "result": "PASS",
+      "notes": [
+        "Basic compatibility only; no custom page-builder or shop design is included."
+      ],
+      "version": "4.3.5"
+    }
+  ]
+}

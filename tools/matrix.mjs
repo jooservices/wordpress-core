@@ -3,7 +3,6 @@
 // Add --runtime-only to check the selected runtime without installing plugins.
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { run as runHealth } from './health.mjs';
 import { browserResult, readRuntime, prepareChildTheme, removeChildTheme, runMatrix } from './matrix-core.mjs';
 
 export * from './matrix-core.mjs';
@@ -22,7 +21,7 @@ export function browserSmoke(
   ctx,
   { spawn = spawnSync, readReport = (path) => readFileSync(path, 'utf8') } = {}
 ) {
-  const json = `artifacts/matrix/${plugin}-${theme}-playwright.json`;
+  const json = `artifacts/reports/e2e/${plugin}-${theme}-playwright.json`;
   const result = spawn(
     'bash',
     [
@@ -60,10 +59,31 @@ export function browserSmoke(
   return browserResult(result, reportText);
 }
 
+export function runHealthViaWeb({ theme, base, extra, seoActive }, spawn = spawnSync) {
+  const args = [
+    './docker/scripts/wp-task.sh',
+    'matrix-health',
+    theme,
+    '--base',
+    base,
+    '--values',
+    JSON.stringify(extra),
+    '--json',
+  ];
+  if (seoActive) args.push('--seo-active');
+  const result = spawn('bash', args, { encoding: 'utf8', input: '' });
+  if (result.error) throw result.error;
+  try {
+    return JSON.parse(result.stdout);
+  } catch {
+    throw new Error(`health probe could not return JSON: ${(result.stderr || result.stdout || '').trim()}`);
+  }
+}
+
 const defaultIO = {
   wp,
   sh,
-  runHealth,
+  runHealth: runHealthViaWeb,
   browserSmoke,
   readRuntime: () => readRuntime(wp),
   prepareChildTheme: (parent) => prepareChildTheme(parent, wp),
