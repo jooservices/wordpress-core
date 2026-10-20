@@ -11,20 +11,26 @@ mkdir -p "$JOO_SITE_DIR" "${WP_CLI_CACHE_DIR:-/tmp/wp-cli-cache}"
 cd "$JOO_SITE_DIR"
 
 want="${WP_VERSION:-latest}"
-# A series such as 6.6 resolves to its newest patch release.
-if [[ "$want" =~ ^[0-9]+\.[0-9]+$ ]]; then
+# A series such as 6.6 resolves to its newest patch release; latest resolves to the newest stable release.
+if [[ "$want" == latest || "$want" =~ ^[0-9]+\.[0-9]+$ ]]; then
+  requested="$want"
   want="$(php -r '
-    $series = $argv[1];
+    $requested = $argv[1];
     $json = @file_get_contents("https://api.wordpress.org/core/stable-check/1.0/");
     $versions = $json ? array_keys((array) json_decode($json, true)) : array();
-    $match = array_values(array_filter($versions, static fn($v) => $v === $series || str_starts_with($v, $series . ".")));
+    $match = array_values(array_filter(
+        $versions,
+        static fn($v) => 1 === preg_match("/^\\d+\\.\\d+(?:\\.\\d+)?$/D", (string) $v)
+            && ("latest" === $requested || $v === $requested || str_starts_with($v, $requested . "."))
+    ));
     usort($match, "version_compare");
-    echo $match ? end($match) : $series;
-  ' "$want")"
+    echo $match ? end($match) : "";
+  ' "$requested")"
+  [[ -n "$want" ]] || { echo "ERROR: could not resolve stable WordPress version '$requested'." >&2; exit 2; }
 fi
 if [[ ! -f wp-includes/version.php ]]; then
   wp core download --version="$want" --locale=en_US
-elif [[ "$want" != latest && "$(wp core version)" != "$want" ]]; then
+elif [[ "$(wp core version)" != "$want" ]]; then
   wp core download --version="$want" --force --skip-content
 fi
 
