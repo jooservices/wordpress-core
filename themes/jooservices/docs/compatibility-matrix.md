@@ -35,15 +35,22 @@ The database floors follow WordPress's current recommendations. The shared devel
 
 | Area | 1.0 support | Verification |
 | --- | --- | --- |
-| Tier 1 plugins | Supported only for rows marked PASS in the [plugin matrix](compatibility.md) | Install, health checks, PHP log scan, and browser smoke; reports record the installed plugin version and runtime. |
-| WP Rocket and WPML | Unsupported until licensed packages are supplied and tested | No licensed package is included in the lab. |
+| Tier 1 plugins | Supported only for rows marked PASS in the [plugin matrix](../../../docs/compatibility.md) | Install, health checks, PHP log scan, and browser smoke; reports record the installed plugin version and runtime. |
+| WP Rocket and WPML | Not tested here: WP Rocket, WPML (licensed) | The licensed packages are not included in the lab; no compatibility claim is made. See the plugin matrix for adapters and manual test steps. |
 | Elementor | Basic compatibility only | Smoke checks non-builder theme routes. Elementor styling and widgets are outside the theme's design support. |
 | WordPress block editor | Supported | The theme is a block theme and uses the Site Editor; no page-builder kit is included. |
 | WooCommerce | Basic compatibility only | The matrix checks non-shop routes for fatal errors and layout regressions. Product, cart, and checkout templates are unstyled and unsupported. |
 | JOOservices Resume | Supported companion plugin | Included in the showcase and activated during plugin-matrix runs. |
 | Child themes | Supported as a customization route | `make test-matrix ARGS="--child-theme"` creates a temporary child theme and repeats the plugin smoke before removing it. Custom child-theme code is outside Tier 1 support. |
 
-`make test-matrix` runs the Tier 1 and Tier 3 plugin list by default. Licensed items without a ZIP are reported as **UNSUPPORTED**. A network failure is **BLOCKED** and makes the command fail so the affected cell must be rerun.
+`make test-matrix` runs the Tier 1 and Tier 3 plugin list by default. A licensed item without a ZIP in `tests/matrix/vendor/` has not been tested and carries no compatibility claim. A network failure is **BLOCKED** and makes the command fail so the affected cell must be rerun.
+
+### WP Rocket and WPML manual tests
+
+Not tested here: WP Rocket, WPML (licensed). No compatibility claim is made until a matrix run records a result.
+
+- **WP Rocket adapter:** `CacheAdapter`, configured in `packages/theme-core/src/Compat/Adapters/CacheAdapters.php`. Supply the licensed ZIP as `tests/matrix/vendor/wp-rocket.zip`, then run `make test-matrix THEME=jooservices ARGS="--only wp-rocket"`. Review the result under `artifacts/reports/matrix/`. On the test site, clear the WP Rocket cache, exercise minify, defer, Delay JavaScript, and lazy-load settings, and check the tested pages for browser-console and PHP errors.
+- **WPML adapter:** `WpmlAdapter`, implementing `Multilingual` and registered by `packages/theme-core/src/Compat/CompatModule.php`. Supply the licensed ZIP as `tests/matrix/vendor/wpml.zip`, then run `make test-matrix THEME=jooservices ARGS="--only wpml"`. Review the result under `artifacts/reports/matrix/`. On the test site, configure two languages, translate a post and a term, and verify the language switcher, translated URLs, and hreflang alternates on the rendered pages.
 
 ## Hosting requirements
 
