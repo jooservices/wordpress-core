@@ -75,6 +75,88 @@ export function screenshotOptions(argv) {
   };
 }
 
+/** Wait for automatically loaded fragments, native lazy images, and fonts before a full-page capture. */
+export async function waitForScreenshotAssets(page) {
+  // Loading a fragment can add another deferred fragment, so repeat until a pass finds no pending auto-loads.
+  for (let pass = 0; pass < 5; pass += 1) {
+    const fragments = page.locator('joo-lazy[data-src]');
+    const count = await fragments.count();
+    let pending = false;
+    for (let index = 0; index < count; index += 1) {
+      const fragment = fragments.nth(index);
+      if (!(await fragment.isVisible())) continue;
+      if (['related', 'comments'].includes(await fragment.getAttribute('name'))) continue;
+      if (await fragment.locator('[data-joo-load]').count()) continue;
+      const done = await fragment.evaluate(
+        (element) => element.state === 'done' || !element.querySelector('.joo-lazy__placeholder')
+      );
+      if (done) continue;
+
+      pending = true;
+      await fragment.scrollIntoViewIfNeeded();
+      await page.waitForFunction(
+        (element) => element.state === 'done' || !element.querySelector('.joo-lazy__placeholder'),
+        await fragment.elementHandle()
+      );
+    }
+    if (!pending) break;
+  }
+
+  await page.evaluate(async () => {
+    const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+    const images = Array.from(document.images).filter((image) => {
+      const rect = image.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && rect.right > 0 && rect.left < window.innerWidth;
+    });
+    const originalLoading = images.map((image) => image.getAttribute('loading'));
+    try {
+      images.forEach((image) => {
+        image.loading = 'eager';
+      });
+      await Promise.all(
+        images.map(async (image) => {
+          if (!image.complete) {
+            await new Promise((resolve, reject) => {
+              const timer = setTimeout(() => reject(new Error('image did not finish loading before screenshot')), 5000);
+              const finish = () => {
+                clearTimeout(timer);
+                resolve();
+              };
+              image.addEventListener('load', finish, { once: true });
+              image.addEventListener('error', finish, { once: true });
+            });
+          }
+          if (image.currentSrc && image.naturalWidth === 0)
+            throw new Error('visible image failed to load before screenshot');
+          if (image.naturalWidth > 0 && typeof image.decode === 'function') {
+            await new Promise((resolve, reject) => {
+              const timer = setTimeout(() => reject(new Error('image decode timed out before screenshot')), 5000);
+              image.decode().then(
+                () => {
+                  clearTimeout(timer);
+                  resolve();
+                },
+                (error) => {
+                  clearTimeout(timer);
+                  reject(error);
+                }
+              );
+            });
+          }
+        })
+      );
+      await document.fonts.ready;
+    } finally {
+      images.forEach((image, index) => {
+        if (originalLoading[index] === null) image.removeAttribute('loading');
+        else image.setAttribute('loading', originalLoading[index]);
+      });
+      window.scrollTo(0, 0);
+      await nextFrame();
+    }
+  });
+}
+
 /** Capture the selected gallery pages using a Playwright-compatible browser instance. */
 export async function captureScreenshots(options, browser) {
   const out = options.output;
@@ -90,12 +172,7 @@ export async function captureScreenshots(options, browser) {
       const page = await context.newPage();
       for (const [name, path] of options.views) {
         await page.goto(options.base + path, { waitUntil: 'load' });
-        // Let the lazy fragments (rail, related posts) load before the picture is taken.
-        await page.evaluate(async () => {
-          for (const lazy of document.querySelectorAll('joo-lazy')) lazy.scrollIntoView();
-          window.scrollTo(0, 0);
-        });
-        await page.waitForTimeout(700);
+        await waitForScreenshotAssets(page);
         await page.screenshot({ path: join(out, screenshotFilename(name, vname, scheme)), fullPage: true });
         count += 1;
       }

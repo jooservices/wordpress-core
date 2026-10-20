@@ -2,6 +2,7 @@
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { JSDOM } from 'jsdom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   captureScreenshots,
@@ -10,6 +11,7 @@ import {
   screenshotFilename,
   screenshotOptions,
   runScreenshotCli,
+  waitForScreenshotAssets,
 } from './screenshots.mjs';
 
 let tempRoot;
@@ -85,7 +87,7 @@ describe('showcase screenshot options', () => {
     const page = {
       goto: vi.fn(),
       evaluate: vi.fn(),
-      waitForTimeout: vi.fn(),
+      locator: vi.fn(() => ({ count: vi.fn().mockResolvedValue(0) })),
       screenshot: vi.fn(),
     };
     const context = { newPage: vi.fn().mockResolvedValue(page), close: vi.fn() };
@@ -105,6 +107,84 @@ describe('showcase screenshot options', () => {
     expect(context.close).toHaveBeenCalledOnce();
   });
 
+  it('waits for automatic fragments, scroll-loads and decodes images, then restores the top position', async () => {
+    const dom = new JSDOM(
+      '<joo-lazy data-src="/auto"><div class="joo-lazy__placeholder"></div></joo-lazy>' +
+        '<joo-lazy data-src="/manual"><button data-joo-load></button><div class="joo-lazy__placeholder"></div></joo-lazy>' +
+        '<div hidden><joo-lazy data-src="/hidden"><div class="joo-lazy__placeholder"></div></joo-lazy></div>' +
+        '<joo-lazy name="related" data-src="/related"><div class="joo-lazy__placeholder"></div></joo-lazy>' +
+        '<img src="/thumb.png"><img src="/offscreen.png">',
+      { runScripts: 'outside-only', pretendToBeVisual: true }
+    );
+    const { document, window } = dom.window;
+    const autoFragment = document.querySelector('[data-src="/auto"]');
+    const manualFragment = document.querySelector('[data-src="/manual"]');
+    const hiddenFragment = document.querySelector('[data-src="/hidden"]');
+    const relatedFragment = document.querySelector('[data-src="/related"]');
+    autoFragment.state = 'idle';
+    manualFragment.state = 'idle';
+    autoFragment.scrollIntoView = vi.fn(() => {
+      autoFragment.state = 'done';
+      autoFragment.querySelector('.joo-lazy__placeholder').remove();
+    });
+    manualFragment.scrollIntoView = vi.fn();
+    hiddenFragment.scrollIntoView = vi.fn();
+    relatedFragment.scrollIntoView = vi.fn();
+    const image = document.querySelector('img');
+    const offscreenImage = document.querySelector('img[src="/offscreen.png"]');
+    Object.defineProperties(image, {
+      complete: { configurable: true, value: true },
+      naturalWidth: { configurable: true, value: 320 },
+    });
+    Object.defineProperties(offscreenImage, {
+      complete: { configurable: true, value: true },
+      naturalWidth: { configurable: true, value: 320 },
+    });
+    image.decode = vi.fn().mockResolvedValue(undefined);
+    offscreenImage.decode = vi.fn().mockResolvedValue(undefined);
+    image.getBoundingClientRect = () => ({ width: 320, height: 180, left: 0, right: 320 });
+    offscreenImage.getBoundingClientRect = () => ({ width: 320, height: 180, left: 1600, right: 1920 });
+    Object.defineProperty(document.documentElement, 'scrollHeight', { configurable: true, value: 1500 });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 500 });
+    Object.defineProperty(document, 'fonts', { configurable: true, value: { ready: Promise.resolve() } });
+    window.scrollTo = vi.fn();
+
+    const locator = (element) => ({
+      locator: (selector) => ({ count: vi.fn().mockResolvedValue(element.querySelectorAll(selector).length) }),
+      getAttribute: async (name) => element.getAttribute(name),
+      evaluate: async (callback) => callback(element),
+      isVisible: async () => !element.closest('[hidden]'),
+      scrollIntoViewIfNeeded: async () => element.scrollIntoView(),
+      elementHandle: async () => element,
+    });
+    const page = {
+      locator: vi.fn((selector) => {
+        const elements = [...document.querySelectorAll(selector)];
+        return {
+          count: vi.fn().mockResolvedValue(elements.length),
+          nth: (index) => locator(elements[index]),
+        };
+      }),
+      waitForFunction: vi.fn(async (predicate, element) => expect(predicate(element)).toBe(true)),
+      evaluate: async (callback) => window.eval(`(${callback.toString()})()`),
+    };
+
+    try {
+      await waitForScreenshotAssets(page);
+      expect(autoFragment.scrollIntoView).toHaveBeenCalledOnce();
+      expect(manualFragment.scrollIntoView).not.toHaveBeenCalled();
+      expect(hiddenFragment.scrollIntoView).not.toHaveBeenCalled();
+      expect(relatedFragment.scrollIntoView).not.toHaveBeenCalled();
+      expect(page.waitForFunction).toHaveBeenCalledOnce();
+      expect(image.decode).toHaveBeenCalledOnce();
+      expect(offscreenImage.decode).not.toHaveBeenCalled();
+      expect(image.hasAttribute('loading')).toBe(false);
+      expect(window.scrollTo).toHaveBeenLastCalledWith(0, 0);
+    } finally {
+      window.close();
+    }
+  });
+
   it('runs the CLI, reports its output, and closes the browser', async () => {
     const close = vi.fn();
     const browser = {
@@ -112,7 +192,7 @@ describe('showcase screenshot options', () => {
         newPage: vi.fn().mockResolvedValue({
           goto: vi.fn(),
           evaluate: vi.fn(),
-          waitForTimeout: vi.fn(),
+          locator: vi.fn(() => ({ count: vi.fn().mockResolvedValue(0) })),
           screenshot: vi.fn(),
         }),
         close: vi.fn(),
