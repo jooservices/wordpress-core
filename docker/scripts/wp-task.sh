@@ -7,7 +7,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 ROOT="$(cd "$SCRIPT_DIR/../.." && pwd -P)"
 action="${1:-}"
-[[ -n "$action" ]] || { echo "Usage: wp-task.sh up|install|seed|seed-reset|seed-live|integration|e2e|e2e-demo|matrix|marketplace|screenshots|critical|health|demo|wp|shell|logs|down|reset|plugins-on|plugins-off|demo-plugins|i18n [args ...]" >&2; exit 2; }
+[[ -n "$action" ]] || { echo "Usage: wp-task.sh up|install|seed|seed-reset|seed-live|integration|boot-cost|e2e|e2e-demo|matrix|marketplace|screenshots|critical|health|demo|wp|shell|logs|down|reset|plugins-on|plugins-off|demo-plugins|i18n [args ...]" >&2; exit 2; }
 shift
 theme="${1:-jooservices}"
 if (($# > 0)); then shift; fi
@@ -239,7 +239,7 @@ health_check() {
 }
 
 case "$action" in
-  test-migrations|integration|e2e|e2e-demo|matrix|matrix-health|marketplace|screenshots|critical|health)
+  test-migrations|integration|boot-cost|e2e|e2e-demo|matrix|matrix-health|marketplace|screenshots|critical|health)
     if [[ -z "${WP_TASK_LOCK_OWNER_PID:-}" ]]; then
       acquire_shared_wp_test_lock || exit $?
       operation_cap="$WP_TASK_OPERATION_CAP_SECONDS"
@@ -323,6 +323,12 @@ case "$action" in
     acquire_shared_wp_test_lock || exit $?
     ensure_site
     WP_PHP_CLI="${WP_PHP_VERSION:-}" JOO_TEST_THEME="${TEST_THEME:-$theme}" COVERAGE="${COVERAGE:-0}" site_script phpunit-integration.sh "$@"
+    ;;
+  boot-cost)
+    [[ "$theme" == jooservices ]] || { echo "ERROR: boot-cost measures the jooservices default manifest; run make boot-cost without THEME." >&2; exit 2; }
+    acquire_shared_wp_test_lock || exit $?
+    ensure_site
+    wpx --skip-plugins --skip-themes eval-file "$ROOT/tools/boot-cost.php"
     ;;
   e2e)
     acquire_shared_wp_test_lock || exit $?

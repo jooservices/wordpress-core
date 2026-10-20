@@ -1,5 +1,18 @@
 # Performance budgets
 
+## Core boot
+
+Measured on the WSL workstation on 2026-10-21 with WordPress 7.1.3 and PHP 8.3.30 in the shared PHP runtime. The empty-module result is within the 3 ms and 1.5 MiB budgets. The parent requirement defines these limits for the empty module set; the default-set result is informational.
+
+| Module set | Modules booted | Median boot time (30 samples) | Peak incremental heap (maximum of 30) | Budget | Result |
+| --- | ---: | ---: | ---: | --- | --- |
+| Empty | 0 | 0.275 ms | 498,176 B (486.5 KiB) | < 3 ms; < 1,572,864 B (1,536 KiB / 1.5 MiB) | Within budget |
+| Default JOOservices | 10 | 0.578 ms | 2,611,184 B (2,550.0 KiB) | Informational; no default-set limit specified | — |
+
+Run `make boot-cost` to repeat the measurement against the ticket worktree's WordPress site. It invokes WP-CLI with plugins and themes skipped, loads `packages/theme-core/core.php`, and boots `themes/jooservices/joo-theme.json`. The `joo/core/modules` filter is set to an empty list for the first scenario and to `Kernel::BUILTIN_MODULES` for the second, so both sets use the same manifest and WordPress database.
+
+Each scenario performs 30 consecutive `Kernel::boot()` calls in the same PHP process. Before each sample the script restores the WordPress hook snapshot, resets the kernel and notices, and collects cycles. It measures elapsed time with `hrtime()` around `Kernel::boot()`; the table reports the median. For memory, it records `memory_get_usage(false)` immediately before the boot, resets PHP's peak counter, then subtracts that baseline from `memory_get_peak_usage(false)`. The table reports the largest of those 30 per-boot heap peaks. WordPress bootstrap is excluded; the core manifest, container, and selected modules are included. Later samples reuse PHP's loaded classes, so this is a warm kernel-boot measurement. Memory values use binary units (1 KiB = 1,024 B); the 1.5 MiB limit is 1,572,864 B.
+
 ## Lighthouse theme budgets
 
 `themes/starter/budgets.json` and `themes/jooservices/budgets.json` define the same Lighthouse limits for home, single, category, search, and about pages. Both themes must reach performance 90, accessibility 95, best practices 90, and SEO 95; CLS is capped at 0.02, TBT at 200 ms, LCP at 2,700 ms, CSS at 30 KiB, JavaScript at 60 KiB, fonts at 100 KiB, and HTML at 60 KiB. The font allowance covers the two Latin typefaces plus the Vietnamese IBM Plex subset, measured at 100,140 bytes on the jooservices pages. Search pages are marked noindex and must fail the crawlability audit.
