@@ -1,9 +1,10 @@
 // @vitest-environment node
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { plan, registerTooling, rewrite, studly } from './new-theme.mjs';
+import { ROOT } from './lib/paths.mjs';
 
 const ctx = { from: 'starter', to: 'acme-labs', title: 'Acme Labs' };
 
@@ -53,5 +54,38 @@ describe('new-theme', () => {
     expect(once.phpcs).toContain('<element value="acme"/>');
     expect(once.deptrac).toContain('./themes/acme/inc');
     expect(registerTooling('acme', once)).toEqual(once);
+  });
+
+  describe('the steps the guide relies on, planned from the real starter', () => {
+    const files = plan({ name: 'acme', title: 'Acme Co' });
+    const byPath = (suffix) => files.find((f) => f.to.endsWith(suffix));
+
+    it('leaves no starter name in any file name or text', () => {
+      for (const f of files) {
+        expect(f.to.toLowerCase()).not.toContain('starter');
+        if (f.text !== null) expect(f.text.toLowerCase(), f.to).not.toContain('starter');
+      }
+    });
+
+    it('names the integration test file after its class so PSR-4 and PHPCS pass', () => {
+      const test = byPath('/tests/Integration/AcmeTest.php');
+      expect(test?.text).toContain('final class AcmeTest');
+    });
+
+    it('declares the workspace package that the lockfile step needs', () => {
+      expect(JSON.parse(byPath('/package.json').text).name).toBe('@jooservices/theme-acme');
+    });
+
+    it('keeps the theme bootstrap within the 50-line budget the guide states', () => {
+      expect(byPath('/functions.php').text.trimEnd().split('\n').length).toBeLessThanOrEqual(50);
+    });
+
+    it('registers tooling in the real phpcs and deptrac files without breaking them', () => {
+      const phpcs = readFileSync(join(ROOT, 'phpcs.xml.dist'), 'utf8');
+      const deptrac = readFileSync(join(ROOT, 'deptrac.yaml'), 'utf8');
+      const next = registerTooling('acme', { phpcs, deptrac });
+      expect(next.phpcs).toContain('<element value="acme"/>');
+      expect(next.deptrac).toContain('./themes/acme/inc');
+    });
   });
 });
