@@ -89,6 +89,7 @@ test-tooling: ## Prove that every quality tool fails on a violation
 	@tests/make-help.sh
 	@tests/tooling/run.sh
 	@tests/tooling/hooks-test.sh
+	@$(PHP_NODE) tools/diff-schema-validation.mjs
 test-unit: ## PHPUnit unit suites and Vitest (COVERAGE=1: coverage with thresholds, PHP part runs in Docker with pcov)
 	@if [ "$(COVERAGE)" = "1" ]; then $(MAKE) --no-print-directory coverage; else $(PHP) vendor/bin/phpunit && $(PHP_NODE) node_modules/vitest/vitest.mjs run $(VITEST_ARGS); fi
 coverage: ## Merged unit + integration coverage (pcov in Docker) with the threshold gate

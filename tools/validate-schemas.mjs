@@ -1,13 +1,13 @@
 // Validates manifests against the manifest schema (Ajv 2020, strict) and cross-checks the settings descriptor.
-import Ajv2020 from 'ajv/dist/2020.js';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fromRoot } from './lib/paths.mjs';
+import { createSchemaValidator } from './lib/schema-validator.mjs';
 
 const read = (p) => JSON.parse(readFileSync(p, 'utf8'));
 const manifestSchema = read(fromRoot('packages/theme-core/schema/manifest.schema.json'));
 const settings = read(fromRoot('packages/theme-core/schema/settings.schema.json'));
-const ajv = new Ajv2020({ strict: true, allErrors: true });
+const ajv = createSchemaValidator();
 const validate = ajv.compile(manifestSchema);
 let failures = 0;
 let settingProblems = 0;
