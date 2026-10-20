@@ -52,7 +52,7 @@ final class JsStrings {
 			'did_you_mean'                         => __( 'Did you mean', 'joo-core' ),
 			'terminal.close'                       => __( 'Close terminal', 'joo-core' ),
 			'terminal.input'                       => __( 'Terminal command', 'joo-core' ),
-			'terminal.output'           => __( 'Terminal output', 'joo-core' ),
+			'terminal.output'                      => __( 'Terminal output', 'joo-core' ),
 			'terminal.lang_unavailable'            => __( 'This page has no translation. Use the language switcher.', 'joo-core' ),
 			'terminal.blocked'                     => __( 'Blocked: not a link on this site.', 'joo-core' ),
 			'terminal.banner'                      => __( 'read-only shell · nothing is sent anywhere', 'joo-core' ),
