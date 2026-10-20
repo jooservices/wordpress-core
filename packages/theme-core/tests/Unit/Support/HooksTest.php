@@ -46,16 +46,52 @@ final class HooksTest extends UnitTestCase {
 		Hooks::filter( 'bad_name', 'x' );
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
 	public function test_deprecated_triggers_only_when_something_is_hooked(): void {
+		define( 'WP_DEBUG', true );
 		Functions\when( 'has_filter' )->justReturn( true );
 		Functions\expect( '_deprecated_hook' )->once()->with( 'joo/old/hook', '0.2.0', 'joo/new/hook' );
 		Hooks::deprecated( 'joo/old/hook', '0.2.0', 'joo/new/hook' );
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
 	public function test_deprecated_is_silent_when_nothing_is_hooked(): void {
+		define( 'WP_DEBUG', true );
 		Functions\when( 'has_filter' )->justReturn( false );
 		Functions\expect( '_deprecated_hook' )->never();
 		Hooks::deprecated( 'joo/old/hook', '0.2.0' );
+		$this->addToAssertionCount( 1 );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_deprecated_reports_a_hook_once_per_request(): void {
+		define( 'WP_DEBUG', true );
+		Functions\when( 'has_filter' )->justReturn( true );
+		Functions\expect( '_deprecated_hook' )->once()->with( 'joo/unit/repeated_hook', '0.2.0', 'joo/new/hook' );
+
+		Hooks::deprecated( 'joo/unit/repeated_hook', '0.2.0', 'joo/new/hook' );
+		Hooks::deprecated( 'joo/unit/repeated_hook', '0.2.0', 'joo/new/hook' );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_deprecated_does_not_report_a_hook_outside_debug_mode(): void {
+		define( 'WP_DEBUG', false );
+		Functions\expect( 'has_filter' )->never();
+		Functions\expect( '_deprecated_hook' )->never();
+
+		Hooks::deprecated( 'joo/unit/non_debug_hook', '0.2.0', 'joo/new/hook' );
 		$this->addToAssertionCount( 1 );
 	}
 }
