@@ -1,13 +1,15 @@
 # Core block accessibility report
 
 - Ticket: JOOWT-272
-- Audit date: 2026-10-20
+- Audit date: 2026-10-21
 - Machine: WSL
 - Consumer fixture: `jooservices` on WordPress 7.1.3
 
 ## Method
 
 The browser audit ran on the seeded ticket worktree site through `make test-e2e`, with Playwright 1.64.1 using the Dev VM browser. The selected E2E spec scanned each rendered block separately with axe-core 4.13.0 using WCAG 2.0/2.1 A and AA plus WCAG 2.2 AA tags at 390×844, 820×1180 and 1440×900. The Jooservices sidebar was opened with its keyboard control at narrow widths so its blocks were visible to the audit.
+
+For fragment-capable sidebar blocks, the test scrolls the `<joo-lazy>` wrapper when lazy loading is enabled and audits the inline block when it is disabled.
 
 The keyboard walkthrough used Tab to reach every visible block control and checked for a visible focus indicator. It also activated the search dialog, theme toggle, slider arrows, companies pager, category tree toggle, TOC disclosure and TOC link with the keyboard. The reading progress block has no interactive controls.
 
@@ -43,7 +45,7 @@ No other axe issues were found. No follow-up Bugs are required from this audit.
 Command:
 
 ```sh
-make test-e2e THEME=jooservices ARGS="tests/e2e/specs/shared/core-accessibility.spec.ts --reporter=list --output=/tmp/joowt-272-e2e"
+make test-e2e THEME=jooservices ARGS="tests/e2e/specs/shared/core-accessibility.spec.ts --reporter=list --output=/tmp/joowt-272-qa"
 ```
 
 Result: 12 passed across phone, tablet and desktop projects. The list reporter and `/tmp` output override are needed because the default report directory under the worktree is not writable by the `www-data` E2E process.

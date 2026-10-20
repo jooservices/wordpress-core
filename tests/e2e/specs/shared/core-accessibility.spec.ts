@@ -33,8 +33,7 @@ let articlePath = '';
 async function revealBlock(page: Page, block: Block): Promise<void> {
   if (block.fragment) {
     const fragment = page.locator(`joo-lazy[name="${block.fragment}"]`).first();
-    await expect(fragment, `${block.name} fragment is present`).toBeAttached();
-    await fragment.scrollIntoViewIfNeeded();
+    if (await fragment.count()) await fragment.scrollIntoViewIfNeeded();
   }
 
   const root = page.locator(block.selector).first();
