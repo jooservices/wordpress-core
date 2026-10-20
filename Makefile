@@ -5,7 +5,7 @@ THEME ?= jooservices
 JOOS_TICKET ?= $(shell git branch --show-current | sed -nE 's/.*((JOOS|JOOWT)-[0-9]+).*/\1/p')
 export JOOS_TICKET WP_VERSION WP_PHP_VERSION MATRIX_VARIANT
 
-.PHONY: migrate test-migrations staging-up staging-update staging-reseed test-marketplace critical screenshots plugins-off plugins-on plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-e2e-demo demo-package demo health perf test-matrix package docs clean hooks release
+.PHONY: migrate test-migrations staging-up staging-update staging-reseed test-marketplace critical screenshots plugins-off plugins-on plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-e2e-demo demo-package demo health perf boot-cost test-matrix package docs clean hooks release
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-20s %s\n",$$1,$$2}'
@@ -156,6 +156,8 @@ health: ## Verify the running demo (THEME=...)
 perf: ## Lighthouse CI and size budgets (THEME=...)
 	$(call require_theme)
 	@bash ./docker/scripts/perf-vm.sh $(THEME)
+boot-cost: ## Measure empty and default core boot cost in the ticket worktree site
+	@WP_PHP_VERSION=8.3 bash ./docker/scripts/wp-task.sh boot-cost jooservices
 test-matrix: ## Plugin and runtime compatibility matrix (THEME=..., WP_VERSION=..., WP_PHP_VERSION=...)
 	$(call require_theme)
 	@bash ./docker/scripts/wp-task.sh matrix $(THEME) $(ARGS)
