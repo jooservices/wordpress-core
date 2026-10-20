@@ -1,6 +1,6 @@
 // help, man, whoami, hostname, id, date, uname, echo, clear, history, exit, which, neofetch, ping and the read-only refusals.
 import { line, lines, parseFlags, text } from '../shell.js';
-import { fail } from './util.js';
+import { fail, message } from './util.js';
 
 const simple = (name, summary, output) => ({
   name,
@@ -15,42 +15,65 @@ export const commands = [
   {
     name: 'help',
     usage: 'help',
-    summary: 'list the commands',
+    summary: message('terminal.command.help.summary', 'list the commands'),
     completion: 'none',
     readonly: true,
     run({ shell, result }) {
       const rows = [
-        [text('Read-only shell. Categories are directories, posts are files. Nothing is sent anywhere.', 'dim')],
+        [
+          text(
+            message(
+              'terminal.command.help.intro',
+              'Read-only shell. Categories are directories, posts are files. Nothing is sent anywhere.'
+            ),
+            'dim'
+          ),
+        ],
       ];
       for (const c of shell.commands.values())
         if (!c.hidden) rows.push([text('  ' + c.usage.padEnd(34, ' ') + c.summary)]);
-      rows.push([text('Tab completes · ↑/↓ history · click names to run them', 'dim')]);
+      rows.push([
+        text(
+          message('terminal.command.help.navigation', 'Tab completes · ↑/↓ history · click names to run them'),
+          'dim'
+        ),
+      ]);
       result.blocks.push(lines(rows));
     },
   },
   {
     name: 'man',
     usage: 'man <command>',
-    summary: 'manual entry of a command',
+    summary: message('terminal.command.man.summary', 'manual entry of a command'),
     completion: 'none',
     readonly: true,
     run({ shell, args, result }) {
-      if (!args[0]) return fail(result, 'What manual page do you want?', 1);
+      if (!args[0])
+        return fail(result, message('terminal.command.man.missing_name', 'What manual page do you want?'), 1);
       const c = shell.commands.get(args[0]);
-      if (!c) return fail(result, `No manual entry for ${args[0]}`, 16);
+      if (!c)
+        return fail(
+          result,
+          message('terminal.command.man.not_found', 'No manual entry for {command}', { command: args[0] }),
+          16
+        );
       result.blocks.push(
         lines([[text(c.name.toUpperCase() + '(1)', 'ok')], [text('  ' + c.usage)], [text('  ' + c.summary)]])
       );
       return undefined;
     },
   },
-  simple('whoami', 'who writes here', (s) => s.fs.site.user),
-  simple('hostname', 'show the host name', (s) => s.fs.site.host),
-  simple('id', 'show the user', (s) => `uid=1000(${s.fs.site.user}) gid=1000(joo) groups=1000(joo),27(readers)`),
+  simple('whoami', message('terminal.command.whoami.summary', 'who writes here'), (s) => s.fs.site.user),
+  simple('hostname', message('terminal.command.hostname.summary', 'show the host name'), (s) => s.fs.site.host),
+  simple(
+    'id',
+    message('terminal.command.id.summary', 'show the user'),
+    (s) => `uid=1000(${s.fs.site.user}) gid=1000(joo) groups=1000(joo),27(readers)`
+  ),
   {
     name: 'date',
     usage: 'date',
-    summary: 'current date and time',
+    summary: message('terminal.command.date.summary', 'current date and time'),
     completion: 'none',
     readonly: true,
     run: ({ result }) => result.blocks.push(line(text(new Date().toString()))),
@@ -58,7 +81,7 @@ export const commands = [
   {
     name: 'uname',
     usage: 'uname [-a]',
-    summary: 'system name',
+    summary: message('terminal.command.uname.summary', 'system name'),
     completion: 'none',
     readonly: true,
     run({ shell, args, result }) {
@@ -76,7 +99,7 @@ export const commands = [
   {
     name: 'echo',
     usage: 'echo <text>',
-    summary: 'print text',
+    summary: message('terminal.command.echo.summary', 'print text'),
     completion: 'none',
     readonly: true,
     run: ({ args, result }) => result.blocks.push(line(text(args.join(' ')))),
@@ -84,7 +107,7 @@ export const commands = [
   {
     name: 'clear',
     usage: 'clear',
-    summary: 'clear the screen (Ctrl+L)',
+    summary: message('terminal.command.clear.summary', 'clear the screen (Ctrl+L)'),
     completion: 'none',
     readonly: true,
     run: ({ result }) => {
@@ -94,7 +117,7 @@ export const commands = [
   {
     name: 'history',
     usage: 'history',
-    summary: 'commands typed in this tab',
+    summary: message('terminal.command.history.summary', 'commands typed in this tab'),
     completion: 'none',
     readonly: true,
     run: ({ shell, result }) =>
@@ -103,7 +126,7 @@ export const commands = [
   {
     name: 'exit',
     usage: 'exit',
-    summary: 'close the terminal',
+    summary: message('terminal.command.exit.summary', 'close the terminal'),
     completion: 'none',
     readonly: true,
     run: ({ result }) => {
@@ -113,7 +136,7 @@ export const commands = [
   {
     name: 'logout',
     usage: 'logout',
-    summary: 'alias of exit',
+    summary: message('terminal.command.logout.summary', 'alias of exit'),
     completion: 'none',
     readonly: true,
     hidden: true,
@@ -124,7 +147,7 @@ export const commands = [
   {
     name: 'which',
     usage: 'which <command>',
-    summary: 'where a command lives',
+    summary: message('terminal.command.which.summary', 'where a command lives'),
     completion: 'none',
     readonly: true,
     run({ shell, args, result }) {
@@ -135,7 +158,7 @@ export const commands = [
   {
     name: 'neofetch',
     usage: 'neofetch',
-    summary: 'about this site',
+    summary: message('terminal.command.neofetch.summary', 'about this site'),
     completion: 'none',
     readonly: true,
     run({ shell, result }) {
@@ -144,10 +167,17 @@ export const commands = [
         lines([
           [text(`${site.user}@${site.host}`, 'ok')],
           [text('--------------')],
-          [text('OS: WordPress · block theme')],
-          [text(`Site: ${site.name}`)],
-          [text(`Posts: ${count.posts} · Directories: ${count.dirs}`)],
-          [text('Shell: joo-sh (read-only)')],
+          [text(message('terminal.command.neofetch.os', 'OS: WordPress · block theme'))],
+          [text(message('terminal.command.neofetch.site', 'Site: {site}', { site: site.name }))],
+          [
+            text(
+              message('terminal.command.neofetch.counts', 'Posts: {posts} · Directories: {directories}', {
+                posts: count.posts,
+                directories: count.dirs,
+              })
+            ),
+          ],
+          [text(message('terminal.command.neofetch.shell', 'Shell: joo-sh (read-only)'))],
         ])
       );
     },
@@ -155,39 +185,65 @@ export const commands = [
   {
     name: 'ping',
     usage: 'ping <host>',
-    summary: 'always offline by design',
+    summary: message('terminal.command.ping.summary', 'always offline by design'),
     completion: 'none',
     readonly: true,
-    run: ({ result }) => fail(result, 'ping: connect: Network is unreachable (this shell is offline by design)', 2),
+    run: ({ result }) =>
+      fail(
+        result,
+        message(
+          'terminal.command.ping.offline',
+          'ping: connect: Network is unreachable (this shell is offline by design)'
+        ),
+        2
+      ),
   },
   {
     name: 'sudo',
     usage: 'sudo <command>',
-    summary: 'not available',
+    summary: message('terminal.command.sudo.summary', 'not available'),
     completion: 'none',
     readonly: true,
     run({ shell, result }) {
-      fail(result, `${shell.fs.site.user} is not in the sudoers file. This incident will be reported to /dev/null.`, 1);
+      fail(
+        result,
+        message(
+          'terminal.command.sudo.denied',
+          '{user} is not in the sudoers file. This incident will be reported to /dev/null.',
+          { user: shell.fs.site.user }
+        ),
+        1
+      );
     },
   },
   ...['rm', 'rmdir', 'mv', 'cp', 'touch', 'mkdir', 'chmod', 'chown', 'ln', 'tee'].map((name) => ({
     name,
     usage: `${name} <path>`,
-    summary: 'refused: the file system is read-only',
+    summary: message('terminal.command.readonly.summary', 'refused: the file system is read-only'),
     completion: 'path',
     readonly: true,
     hidden: true,
     run({ args, result }) {
-      fail(result, `${name}: cannot modify '${parseFlags(args).args[0] ?? ''}': Read-only file system`, 1);
+      fail(
+        result,
+        message('terminal.command.readonly.modify', "{command}: cannot modify '{path}': Read-only file system", {
+          command: name,
+          path: parseFlags(args).args[0] ?? '',
+        }),
+        1
+      );
     },
   })),
   ...['vim', 'vi', 'nano'].map((name) => ({
     name,
     usage: `${name} <file>`,
-    summary: 'refused: the file system is read-only',
+    summary: message('terminal.command.readonly.summary', 'refused: the file system is read-only'),
     completion: 'path',
     readonly: true,
     hidden: true,
-    run: ({ result }) => result.blocks.push(line(text('The file system is read-only. Try cat.', 'dim'))),
+    run: ({ result }) =>
+      result.blocks.push(
+        line(text(message('terminal.command.readonly.editor', 'The file system is read-only. Try cat.'), 'dim'))
+      ),
   })),
 ];

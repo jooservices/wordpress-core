@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JOOservices\ThemeCore\Blocks\Blocks;
 
 use JOOservices\ThemeCore\Blocks\DynamicBlock;
+use JOOservices\ThemeCore\Config\Manifest;
 use JOOservices\ThemeCore\Performance\FragmentCache;
 use JOOservices\ThemeCore\Seo\Text;
 
@@ -93,6 +94,8 @@ final class NotFound extends DynamicBlock {
 	 */
 	protected function data( array $attrs, \WP_Block $block ): array {
 		unset( $attrs, $block );
+		/** @var Manifest $manifest */
+		$manifest = $this->container->get( Manifest::class );
 		/** @var FragmentCache $cache */
 		$cache = $this->container->get( FragmentCache::class );
 		$index = $cache->remember(
@@ -132,6 +135,7 @@ final class NotFound extends DynamicBlock {
 		$path  = self::requestedPath();
 		return array(
 			'path'        => $path,
+			'placeholder' => (string) $manifest->get( 'blocks.notFoundPlaceholder', '/example-path' ),
 			'suggestions' => self::suggest( $path, $index ),
 			'index'       => $index,
 			'home'        => home_url( '/' ),

@@ -34,7 +34,7 @@ final class JsStringsTest extends UnitTestCase {
 			if ( ! str_ends_with( $path, '.js' ) || str_contains( $path, '/build/' ) || str_contains( $path, '.test.js' ) ) {
 				continue;
 			}
-			preg_match_all( "/\\bt\\('([a-z_.]+)'/", (string) file_get_contents( $path ), $m );
+			preg_match_all( "/\\b(?:t|message)\\('([a-z_.]+)'/", (string) file_get_contents( $path ), $m );
 			$keys = array_merge( $keys, $m[1] );
 		}
 		return array_values( array_unique( $keys ) );

@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Blocks;
 use JOOservices\ThemeCore\Config\Manifest;
 
 /**
- * Registers the `jooservices` pattern category, patterns from extra theme folders and can remove the core patterns.
+ * Registers the theme pattern category, patterns from extra theme folders and can remove the core patterns.
  *
  * @api
  */
@@ -54,7 +54,9 @@ final class PatternLoader {
 	 * Registers the category and the patterns of the manifest folders.
 	 */
 	public function register(): void {
-		register_block_pattern_category( 'jooservices', array( 'label' => __( 'JOOservices', 'joo-core' ) ) );
+		$category = (string) $this->manifest->get( 'blocks.patternCategory', 'theme-core' );
+		$label    = (string) $this->manifest->get( 'blocks.patternCategoryLabel', __( 'Theme Core', 'joo-core' ) );
+		register_block_pattern_category( $category, array( 'label' => $label ) );
 		foreach ( (array) $this->manifest->get( 'blocks.patterns', array() ) as $relative ) {
 			$relative = trim( (string) $relative, '/' );
 			if ( '' !== $relative && false === strpos( $relative, '..' ) ) {
@@ -70,7 +72,8 @@ final class PatternLoader {
 	 * @return list<string> Slugs registered.
 	 */
 	public function fromDirectory( string $dir ): array {
-		$slugs = array();
+		$slugs           = array();
+		$defaultCategory = (string) $this->manifest->get( 'blocks.patternCategory', 'theme-core' );
 		foreach ( glob( trailingslashit( $dir ) . '*.php' ) ?: array() as $file ) {
 			$data = get_file_data(
 				$file,
@@ -88,11 +91,12 @@ final class PatternLoader {
 			}
 			ob_start();
 			include $file;
-			$content = trim( (string) ob_get_clean() );
-			$args    = array(
+			$content    = trim( (string) ob_get_clean() );
+			$categories = '' !== $data['categories'] ? $data['categories'] : $defaultCategory;
+			$args       = array(
 				'title'      => $data['title'],
 				'content'    => $content,
-				'categories' => array_values( array_filter( array_map( 'trim', explode( ',', '' !== $data['categories'] ? $data['categories'] : 'jooservices' ) ) ) ),
+				'categories' => array_values( array_filter( array_map( 'trim', explode( ',', $categories ) ) ) ),
 				'keywords'   => array_values( array_filter( array_map( 'trim', explode( ',', $data['keywords'] ) ) ) ),
 			);
 			if ( '' !== $data['description'] ) {

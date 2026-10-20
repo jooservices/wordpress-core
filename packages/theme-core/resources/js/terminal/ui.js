@@ -29,10 +29,10 @@ export function safeUrl(url) {
 /**
  * Mounts the terminal into a panel element.
  * @param {HTMLElement} panel Empty panel container.
- * @param {{shell: object, onClose: () => void, navigate?: (url: string) => void}} options Options.
+ * @param {{shell: object, onClose: () => void, navigate?: (url: string) => void, shortcuts?: string[]}} options Options.
  * @returns {{run: (cmd: string) => void, focus: () => void}} Controller.
  */
-export function mountTerminal(panel, { shell, onClose, navigate = (url) => window.location.assign(url) }) {
+export function mountTerminal(panel, { shell, onClose, navigate = (url) => window.location.assign(url), shortcuts }) {
   const title = el('b', 'joo-term__title');
   const close = el('button', 'joo-term__close', '×');
   close.type = 'button';
@@ -41,7 +41,7 @@ export function mountTerminal(panel, { shell, onClose, navigate = (url) => windo
   bar.append(title, close);
 
   const chips = el('div', 'joo-term__chips');
-  for (const cmd of ['ls', 'tree', 'help', 'grep -ri docker .']) {
+  for (const cmd of shortcuts ?? ['ls', 'tree', 'help', 'find . -type f']) {
     const chip = el('button', 'joo-term__chip', cmd);
     chip.type = 'button';
     chip.dataset.cmd = cmd;

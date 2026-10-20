@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JOOservices\ThemeCore\Blocks\Blocks;
 
 use JOOservices\ThemeCore\Blocks\DynamicBlock;
+use JOOservices\ThemeCore\Config\Manifest;
 use JOOservices\ThemeCore\Content\ContentProviderInterface;
 
 /**
@@ -41,8 +42,11 @@ final class ProfileCard extends DynamicBlock {
 		if ( null === $profile ) {
 			return array( 'profile' => null );
 		}
-		$about = 'author' === ( $attrs['linkTo'] ?? 'about' ) ? null : get_page_by_path( 'about' );
-		$url   = $about instanceof \WP_Post && 'publish' === $about->post_status ? (string) get_permalink( $about ) : $profile->url;
+		/** @var Manifest $manifest */
+		$manifest  = $this->container->get( Manifest::class );
+		$aboutPath = (string) $manifest->get( 'content.profilePagePath', '' );
+		$about     = 'author' === ( $attrs['linkTo'] ?? 'about' ) || '' === $aboutPath ? null : get_page_by_path( $aboutPath );
+		$url       = $about instanceof \WP_Post && 'publish' === $about->post_status ? (string) get_permalink( $about ) : $profile->url;
 		return array(
 			'profile'     => $profile,
 			'url'         => $url,

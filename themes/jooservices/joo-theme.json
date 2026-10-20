@@ -148,14 +148,20 @@
   },
   "terminal": {
     "banner": "jooservices.com read-only shell",
+    "shortcuts": ["ls", "tree", "help", "grep -ri docker ."],
     "maxPosts": 500
   },
   "blocks": {
+    "categoryLabel": "JOOservices",
+    "patternCategory": "jooservices",
+    "patternCategoryLabel": "JOOservices",
+    "notFoundPlaceholder": "/ai/prompt-caching",
     "disabled": [],
     "patterns": ["patterns"],
     "canvas": true
   },
   "content": {
-    "provider": "wp"
+    "provider": "wp",
+    "profilePagePath": "about"
   }
 }

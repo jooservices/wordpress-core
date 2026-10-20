@@ -14,7 +14,6 @@ use JOOservices\TestKit\Factories\AttachmentFactory;
 use JOOservices\TestKit\IntegrationTestCase;
 use JOOservices\ThemeCore\Admin\Notices;
 use JOOservices\ThemeCore\Content\ContentProviderInterface;
-use JOOservices\ThemeCore\Content\NullProvider;
 use JOOservices\ThemeCore\Content\WpContentProvider;
 use JOOservices\ThemeCore\Kernel;
 
@@ -80,11 +79,11 @@ final class ContentTest extends IntegrationTestCase {
 		$this->assertInstanceOf( WpContentProvider::class, $this->boot() );
 	}
 
-	public function test_without_the_plugin_type_the_null_provider_returns_empty_answers_everywhere(): void {
+	public function test_wp_provider_handles_standard_content_without_the_optional_plugin_type(): void {
 		unregister_post_type( 'joo_company' );
 		$provider = $this->boot();
-		$this->assertInstanceOf( NullProvider::class, $provider );
-		$this->assertNull( $provider->profile() );
+		$this->assertInstanceOf( WpContentProvider::class, $provider );
+		$this->assertNotNull( $provider->profile() );
 		$this->assertNull( $provider->pinnedCompany() );
 		$this->assertSame( 0, $provider->companies( 1, 5 )->total );
 		$this->assertSame( array(), $provider->categoryTree() );
@@ -96,7 +95,7 @@ final class ContentTest extends IntegrationTestCase {
 			$this->assertSame( 200, $response->get_status(), $route );
 			$this->assertSame( array(), $response->get_data(), $route );
 		}
-		$this->assertSame( array(), $this->get( '/profile' )->get_data() );
+		$this->assertNotSame( array(), $this->get( '/profile' )->get_data() );
 	}
 
 	public function test_companies_are_published_only_newest_first_paginated_and_the_pinned_one_is_separate(): void {

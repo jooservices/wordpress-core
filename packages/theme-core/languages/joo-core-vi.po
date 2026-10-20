@@ -234,8 +234,8 @@ msgstr "Một số giá trị chưa được lưu. Hãy kiểm tra các trườn
 msgid "Settings saved."
 msgstr "Đã lưu thiết lập."
 
-msgid "JOOservices"
-msgstr "JOOservices"
+msgid "Theme Core"
+msgstr "Lõi giao diện"
 
 msgid "Categories"
 msgstr "Chuyên mục"
@@ -266,6 +266,147 @@ msgstr "Sao chép mã"
 
 msgid "Copy"
 msgstr "Sao chép"
+
+msgid "About page"
+msgstr "Trang giới thiệu"
+
+msgid "Author archive"
+msgstr "Lưu trữ tác giả"
+
+msgid "Autoplay"
+msgstr "Tự chạy"
+
+msgid "Avatar size"
+msgstr "Kích thước ảnh đại diện"
+
+msgid "Chevron"
+msgstr "Dấu chevron"
+
+msgid "Chips"
+msgstr "Thẻ"
+
+msgid "Cloud"
+msgstr "Đám mây"
+
+msgid "Collapsed"
+msgstr "Thu gọn"
+
+msgid "Companies per page"
+msgstr "Số công ty mỗi trang"
+
+msgid "Curated"
+msgstr "Tuyển chọn"
+
+msgid "Current company label"
+msgstr "Nhãn công ty hiện tại"
+
+msgid "Dot"
+msgstr "Dấu chấm"
+
+msgid "Dropdown"
+msgstr "Danh sách thả xuống"
+
+msgid "Expanded levels"
+msgstr "Số cấp mở rộng"
+
+msgid "Hide current language"
+msgstr "Ẩn ngôn ngữ hiện tại"
+
+msgid "Hide empty categories"
+msgstr "Ẩn chuyên mục trống"
+
+msgid "Interval (ms)"
+msgstr "Khoảng thời gian (ms)"
+
+msgid "Label"
+msgstr "Nhãn"
+
+msgid "Label length"
+msgstr "Độ dài nhãn"
+
+msgid "Link the category"
+msgstr "Liên kết chuyên mục"
+
+msgid "Link to"
+msgstr "Liên kết đến"
+
+msgid "List"
+msgstr "Danh sách"
+
+msgid "List label"
+msgstr "Nhãn danh sách"
+
+msgid "Maximum depth"
+msgstr "Độ sâu tối đa"
+
+msgid "Minimum headings"
+msgstr "Số tiêu đề tối thiểu"
+
+msgid "Most posts"
+msgstr "Nhiều bài viết nhất"
+
+msgid "Most used"
+msgstr "Được dùng nhiều nhất"
+
+msgid "Name"
+msgstr "Tên"
+
+msgid "Order"
+msgstr "Thứ tự"
+
+msgid "Posts"
+msgstr "Bài viết"
+
+msgid "Separator"
+msgstr "Dấu phân cách"
+
+msgid "Show bio"
+msgstr "Hiện tiểu sử"
+
+msgid "Show counts"
+msgstr "Hiện số lượng"
+
+msgid "Show description"
+msgstr "Hiện mô tả"
+
+msgid "Show descriptions"
+msgstr "Hiện mô tả"
+
+msgid "Show excerpt"
+msgstr "Hiện đoạn trích"
+
+msgid "Show excerpts"
+msgstr "Hiện đoạn trích"
+
+msgid "Show home"
+msgstr "Hiện trang chủ"
+
+msgid "Show images"
+msgstr "Hiện ảnh"
+
+msgid "Show intro"
+msgstr "Hiện giới thiệu"
+
+msgid "Show meta"
+msgstr "Hiện thông tin"
+
+msgid "Show social links"
+msgstr "Hiện liên kết mạng xã hội"
+
+msgid "Site setting"
+msgstr "Thiết lập trang"
+
+msgid "Slash"
+msgstr "Dấu gạch chéo"
+
+msgid "Style"
+msgstr "Kiểu"
+
+msgid "Title"
+msgstr "Tiêu đề"
+
+msgid "Topics"
+msgstr "Chủ đề"
 
 msgid "Link to section"
 msgstr "Liên kết tới mục"
@@ -393,6 +534,231 @@ msgstr "đang tải hệ thống tệp…"
 msgid "The terminal could not be loaded."
 msgstr "Không tải được terminal."
 
+msgid "list the commands"
+msgstr "liệt kê lệnh"
+
+msgid "Read-only shell. Categories are directories, posts are files. Nothing is sent anywhere."
+msgstr "Shell chỉ đọc. Chuyên mục là thư mục, bài viết là tệp. Không có dữ liệu nào được gửi đi."
+
+msgid "Tab completes · ↑/↓ history · click names to run them"
+msgstr "Tab để hoàn tất · ↑/↓ xem lịch sử · nhấp tên lệnh để chạy"
+
+msgid "manual entry of a command"
+msgstr "trang hướng dẫn của một lệnh"
+
+msgid "What manual page do you want?"
+msgstr "Bạn muốn xem trang hướng dẫn nào?"
+
+msgid "No manual entry for {command}"
+msgstr "Không có trang hướng dẫn cho {command}"
+
+msgid "who writes here"
+msgstr "người viết ở đây"
+
+msgid "show the host name"
+msgstr "hiển thị tên máy chủ"
+
+msgid "show the user"
+msgstr "hiển thị người dùng"
+
+msgid "current date and time"
+msgstr "ngày giờ hiện tại"
+
+msgid "system name"
+msgstr "tên hệ thống"
+
+msgid "print text"
+msgstr "in văn bản"
+
+msgid "clear the screen (Ctrl+L)"
+msgstr "xóa màn hình (Ctrl+L)"
+
+msgid "commands typed in this tab"
+msgstr "các lệnh đã nhập trong thẻ này"
+
+msgid "close the terminal"
+msgstr "đóng terminal"
+
+msgid "alias of exit"
+msgstr "bí danh của exit"
+
+msgid "where a command lives"
+msgstr "đường dẫn của lệnh"
+
+msgid "about this site"
+msgstr "thông tin về trang này"
+
+msgid "OS: WordPress · block theme"
+msgstr "HĐH: WordPress · giao diện block"
+
+msgid "Site: {site}"
+msgstr "Trang: {site}"
+
+msgid "Posts: {posts} · Directories: {directories}"
+msgstr "Bài viết: {posts} · Thư mục: {directories}"
+
+msgid "Shell: joo-sh (read-only)"
+msgstr "Shell: joo-sh (chỉ đọc)"
+
+msgid "always offline by design"
+msgstr "luôn ngoại tuyến theo thiết kế"
+
+msgid "ping: connect: Network is unreachable (this shell is offline by design)"
+msgstr "ping: kết nối: Không thể truy cập mạng (shell này được thiết kế để ngoại tuyến)"
+
+msgid "not available"
+msgstr "không khả dụng"
+
+msgid "{user} is not in the sudoers file. This incident will be reported to /dev/null."
+msgstr "{user} không có trong tệp sudoers. Sự việc này sẽ được ghi vào /dev/null."
+
+msgid "refused: the file system is read-only"
+msgstr "bị từ chối: hệ thống tệp chỉ đọc"
+
+msgid "{command}: cannot modify '{path}': Read-only file system"
+msgstr "{command}: không thể sửa đổi '{path}': Hệ thống tệp chỉ đọc"
+
+msgid "The file system is read-only. Try cat."
+msgstr "Hệ thống tệp chỉ đọc. Hãy thử cat."
+
+msgid "go to that view on the site (post, category, tag, page)"
+msgstr "mở chế độ xem tương ứng trên trang (bài viết, chuyên mục, thẻ, trang)"
+
+msgid "xdg-open: {path}: No such file or directory → 404"
+msgstr "xdg-open: {path}: Không có tệp hoặc thư mục → 404"
+
+msgid "no viewer for {name}; use cat"
+msgstr "không có trình xem cho {name}; hãy dùng cat"
+
+msgid "opening {path} …"
+msgstr "đang mở {path} …"
+
+msgid "alias of open"
+msgstr "bí danh của open"
+
+msgid "fake HTTP response for a path (no network)"
+msgstr "phản hồi HTTP mô phỏng cho đường dẫn (không có mạng)"
+
+msgid "curl: try 'curl --help' for more information"
+msgstr "curl: hãy thử 'curl --help' để biết thêm thông tin"
+
+msgid "(simulated, no network)"
+msgstr "(mô phỏng, không có mạng)"
+
+msgid "→ open {path}"
+msgstr "→ mở {path}"
+
+msgid "change the site theme"
+msgstr "đổi giao diện trang"
+
+msgid "usage: theme dark|light"
+msgstr "cách dùng: theme dark|light"
+
+msgid "theme → {theme}"
+msgstr "giao diện → {theme}"
+
+msgid "change the site language (for example lang en, lang vi)"
+msgstr "đổi ngôn ngữ trang (ví dụ lang en, lang vi)"
+
+msgid "usage: lang <code> (for example en or vi)"
+msgstr "cách dùng: lang <mã> (ví dụ en hoặc vi)"
+
+msgid "lang → {language}"
+msgstr "ngôn ngữ → {language}"
+
+msgid "{command}: cannot access '{path}': No such file or directory"
+msgstr "{command}: không thể truy cập '{path}': Không có tệp hoặc thư mục"
+
+msgid "category: "
+msgstr "chuyên mục: "
+
+msgid "date: "
+msgstr "ngày: "
+
+msgid "read: "
+msgstr "đọc: "
+
+msgid "tags: "
+msgstr "thẻ: "
+
+msgid "list directory (categories) and posts"
+msgstr "liệt kê thư mục (chuyên mục) và bài viết"
+
+msgid "(empty)"
+msgstr "(trống)"
+
+msgid "total {count}"
+msgstr "tổng cộng {count}"
+
+msgid "change directory (cd .., cd ~, cd -)"
+msgstr "đổi thư mục (cd .., cd ~, cd -)"
+
+msgid "bash: cd: {path}: No such file or directory"
+msgstr "bash: cd: {path}: Không có tệp hoặc thư mục"
+
+msgid "bash: cd: {path}: Not a directory"
+msgstr "bash: cd: {path}: Không phải thư mục"
+
+msgid "print working directory"
+msgstr "in thư mục hiện tại"
+
+msgid "show a post summary or page"
+msgstr "hiển thị tóm tắt bài viết hoặc trang"
+
+msgid "cat: missing file operand"
+msgstr "cat: thiếu đối số tệp"
+
+msgid "cat: {path}: No such file or directory"
+msgstr "cat: {path}: Không có tệp hoặc thư mục"
+
+msgid "cat: {path}: Is a directory"
+msgstr "cat: {path}: Đây là thư mục"
+
+msgid "first lines of a file"
+msgstr "các dòng đầu của tệp"
+
+msgid "head: missing file operand"
+msgstr "head: thiếu đối số tệp"
+
+msgid "head: cannot open '{path}' for reading: No such file or directory"
+msgstr "head: không thể mở '{path}' để đọc: Không có tệp hoặc thư mục"
+
+msgid "head: error reading '{path}': Is a directory"
+msgstr "head: lỗi khi đọc '{path}': Đây là thư mục"
+
+msgid "directory tree"
+msgstr "cây thư mục"
+
+msgid "{path} [error opening dir]"
+msgstr "{path} [lỗi mở thư mục]"
+
+msgid "{directories} directories, {files} files"
+msgstr "{directories} thư mục, {files} tệp"
+
+msgid "find files and directories by name"
+msgstr "tìm tệp và thư mục theo tên"
+
+msgid "find: '{path}': No such file or directory"
+msgstr "find: '{path}': Không có tệp hoặc thư mục"
+
+msgid "(no matches)"
+msgstr "(không có kết quả)"
+
+msgid "search titles, excerpts and tags"
+msgstr "tìm trong tiêu đề, đoạn trích và thẻ"
+
+msgid "Usage: grep [OPTION]... PATTERN [FILE]..."
+msgstr "Cách dùng: grep [TÙY_CHỌN]... MẪU [TỆP]..."
+
+msgid "grep: {path}: No such file or directory"
+msgstr "grep: {path}: Không có tệp hoặc thư mục"
+
+msgid "(no match)"
+msgstr "(không khớp)"
+
+msgid "(no match. grep is case-sensitive, try -i)"
+msgstr "(không khớp. grep phân biệt chữ hoa/thường, hãy thử -i)"
+
 msgid "Lang"
 msgstr "Ngôn ngữ"
 
@@ -492,6 +858,9 @@ msgstr "Có nhiều hơn một plugin SEO đang hoạt động"
 
 msgid "SEO output is consistent"
 msgstr "Đầu ra SEO nhất quán"
+
+msgid "Categories are directories, posts are .md files, tags are virtual directories of links. Nothing you type leaves this page."
+msgstr "Chuyên mục là thư mục, bài viết là tệp .md, thẻ là thư mục ảo chứa liên kết. Nội dung bạn nhập không rời khỏi trang này."
 
 msgid "Author box"
 msgstr "Hộp tác giả"
