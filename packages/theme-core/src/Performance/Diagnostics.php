@@ -82,7 +82,16 @@ final class Diagnostics {
 		$bar->add_node(
 			array(
 				'id'    => 'joo-perf',
-				'title' => sprintf( 'Joo: %1$d queries, %2$s s, %3$d JS, %4$d CSS, cache %5$d/%6$d', get_num_queries(), timer_stop( 0, 3 ), count( $assets['js'] ), count( $assets['css'] ), $stats['hits'], $stats['hits'] + $stats['misses'] ),
+				'title' => sprintf(
+					/* translators: 1: SQL queries, 2: elapsed seconds, 3: scripts, 4: stylesheets, 5: cache hits, 6: cache lookups. */
+					__( 'Joo: %1$d queries, %2$s s, %3$d JS, %4$d CSS, cache %5$d/%6$d', 'joo-core' ),
+					get_num_queries(),
+					timer_stop( 0, 3 ),
+					count( $assets['js'] ),
+					count( $assets['css'] ),
+					$stats['hits'],
+					$stats['hits'] + $stats['misses']
+				),
 			)
 		);
 	}

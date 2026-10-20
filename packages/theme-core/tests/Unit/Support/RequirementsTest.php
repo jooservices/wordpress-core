@@ -10,9 +10,9 @@ declare(strict_types=1);
 namespace JOOservices\ThemeCore\Tests\Unit\Support;
 
 use JOOservices\ThemeCore\Support\Requirements;
-use PHPUnit\Framework\TestCase;
+use JOOservices\TestKit\UnitTestCase;
 
-final class RequirementsTest extends TestCase {
+final class RequirementsTest extends UnitTestCase {
 
 	/**
 	 * @return list<string>

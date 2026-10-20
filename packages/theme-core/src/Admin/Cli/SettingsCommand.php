@@ -88,7 +88,13 @@ final class SettingsCommand {
 		}
 		$settings = $this->settings();
 		if ( null === $settings->schema()->get( $args[0] ) ) {
-			\WP_CLI::error( sprintf( 'Unknown setting "%s".', $args[0] ) );
+			\WP_CLI::error(
+				sprintf(
+					/* translators: %s: settings key. */
+					__( 'Unknown setting "%s".', 'joo-core' ),
+					$args[0]
+				)
+			);
 		}
 		\WP_CLI::line( $this->display( $settings->get( $args[0] ) ) );
 	}
@@ -113,14 +119,27 @@ final class SettingsCommand {
 		$settings   = $this->settings();
 		$definition = $settings->schema()->get( $args[0] );
 		if ( null === $definition ) {
-			\WP_CLI::error( sprintf( 'Unknown setting "%s".', $args[0] ) );
+			\WP_CLI::error(
+				sprintf(
+					/* translators: %s: settings key. */
+					__( 'Unknown setting "%s".', 'joo-core' ),
+					$args[0]
+				)
+			);
 			return;
 		}
 		$result = $settings->save( array( $args[0] => $this->parse( $definition, $args[1] ) ) );
 		if ( isset( $result['errors'][ $args[0] ] ) ) {
 			\WP_CLI::error( $result['errors'][ $args[0] ] );
 		}
-		\WP_CLI::success( sprintf( '%s = %s', $args[0], $this->display( $settings->get( $args[0] ) ) ) );
+		\WP_CLI::success(
+			sprintf(
+				/* translators: 1: setting key, 2: setting value. */
+				__( '%1$s = %2$s', 'joo-core' ),
+				$args[0],
+				$this->display( $settings->get( $args[0] ) )
+			)
+		);
 	}
 
 	/**
@@ -146,16 +165,22 @@ final class SettingsCommand {
 		}
 		$settings = $this->settings();
 		if ( isset( $assoc_args['all'] ) ) {
-			\WP_CLI::confirm( 'Remove every saved setting?', $assoc_args );
+			\WP_CLI::confirm( __( 'Remove every saved setting?', 'joo-core' ), $assoc_args );
 			$settings->repository()->reset();
-			\WP_CLI::success( 'All saved settings removed.' );
+			\WP_CLI::success( __( 'All saved settings removed.', 'joo-core' ) );
 			return;
 		}
 		if ( ! isset( $args[0] ) || null === $settings->schema()->get( $args[0] ) ) {
-			\WP_CLI::error( 'Pass a known key or --all.' );
+			\WP_CLI::error( __( 'Pass a known key or --all.', 'joo-core' ) );
 		}
 		$settings->repository()->reset( $args[0] );
-		\WP_CLI::success( sprintf( '%s reset.', $args[0] ) );
+		\WP_CLI::success(
+			sprintf(
+				/* translators: %s: settings key. */
+				__( '%s reset.', 'joo-core' ),
+				$args[0]
+			)
+		);
 	}
 
 	/**

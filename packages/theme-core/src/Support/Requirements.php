@@ -35,20 +35,34 @@ final class Requirements {
 		if ( version_compare( $php, $min_php, '<' ) ) {
 			$problems[] = array(
 				'code'    => 'php',
-				'message' => sprintf( 'JOOservices core needs PHP %1$s or newer (found %2$s).', $min_php, $php ),
+				'message' => sprintf(
+					/* translators: 1: minimum PHP version, 2: current PHP version. */
+					__( 'JOOservices core needs PHP %1$s or newer (found %2$s).', 'joo-core' ),
+					$min_php,
+					$php
+				),
 			);
 		}
 		if ( '' !== $wp && version_compare( $wp, $min_wp, '<' ) ) {
 			$problems[] = array(
 				'code'    => 'wp',
-				'message' => sprintf( 'JOOservices core needs WordPress %1$s or newer (found %2$s).', $min_wp, $wp ),
+				'message' => sprintf(
+					/* translators: 1: minimum WordPress version, 2: current WordPress version. */
+					__( 'JOOservices core needs WordPress %1$s or newer (found %2$s).', 'joo-core' ),
+					$min_wp,
+					$wp
+				),
 			);
 		}
 		foreach ( array( 'json', 'mbstring' ) as $extension ) {
 			if ( ! in_array( $extension, array_map( 'strtolower', $extensions ), true ) ) {
 				$problems[] = array(
 					'code'    => 'ext-' . $extension,
-					'message' => sprintf( 'The PHP extension "%s" is required by JOOservices core.', $extension ),
+					'message' => sprintf(
+						/* translators: %s: PHP extension name. */
+						__( 'The PHP extension "%s" is required by JOOservices core.', 'joo-core' ),
+						$extension
+					),
 				);
 			}
 		}

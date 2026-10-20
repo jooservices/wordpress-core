@@ -180,24 +180,24 @@ final class SiteHealth {
 		$counts           = array_count_values( array_map( fn( string $key ) => $settings->source( $key ), array_keys( $settings->schema()->all() ) ) );
 		$fields           = array(
 			'version'  => array(
-				'label' => 'Core version',
+				'label' => __( 'Core version', 'joo-core' ),
 				'value' => Version::core(),
 			),
 			'theme'    => array(
-				'label' => 'Manifest',
+				'label' => __( 'Manifest', 'joo-core' ),
 				'value' => $manifest->slug() . ' (requires core ' . $manifest->coreRange() . ')',
 			),
 			'modules'  => array(
-				'label' => 'Modules',
+				'label' => __( 'Modules', 'joo-core' ),
 				'value' => wp_json_encode( Kernel::status() ),
 			),
 			'settings' => array(
-				'label' => 'Settings by source',
+				'label' => __( 'Settings by source', 'joo-core' ),
 				'value' => wp_json_encode( $counts ),
 			),
 		);
 		$info['joo-core'] = array(
-			'label'  => 'JOOservices core',
+			'label'  => __( 'JOOservices core', 'joo-core' ),
 			'fields' => $fields,
 		);
 		return $info;
@@ -216,7 +216,7 @@ final class SiteHealth {
 			'label'       => $label,
 			'status'      => $status,
 			'badge'       => array(
-				'label' => 'JOOservices',
+				'label' => __( 'JOOservices', 'joo-core' ),
 				'color' => 'critical' === $status ? 'red' : ( 'good' === $status ? 'blue' : 'orange' ),
 			),
 			'description' => '<p>' . esc_html( $description ) . '</p>',

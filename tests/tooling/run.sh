@@ -15,6 +15,11 @@ expect_fail "phpcs" php -d error_reporting=24575 vendor/bin/phpcs --standard=php
 printf "<?php\n/**\n * Clean file.\n *\n * @package JOOservices\n */\n\ndeclare(strict_types=1);\n\ndefined( 'ABSPATH' ) || exit;\n" > "$TMP/good.php"
 expect_pass "phpcs" php -d error_reporting=24575 vendor/bin/phpcs --standard=phpcs.xml.dist "$TMP/good.php"
 
+# Core PHP and block template translations.
+expect_pass "core i18n" php tools/check-core-i18n.php
+expect_fail "core i18n" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded.php
+expect_fail "core i18n template" php tools/check-core-i18n.php tests/tooling/fixtures/i18n-hardcoded-template.php
+
 # PHPStan: core must stay compatible with PHP 8.1.
 cp tests/tooling/fixtures/php-82-readonly.php "$TMP/php-input.php"
 cat > "$TMP/phpstan-php81.neon" <<'NEON'

@@ -302,7 +302,7 @@ final class Kernel {
 						'label'       => $resultLabel,
 						'status'      => 'critical',
 						'badge'       => array(
-							'label' => 'JOOservices',
+							'label' => __( 'JOOservices', 'joo-core' ),
 							'color' => 'red',
 						),
 						'description' => '<p>' . esc_html( $description ) . '</p>',

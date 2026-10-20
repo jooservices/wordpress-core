@@ -15,11 +15,11 @@ if ( array() === $cards ) {
 }
 $count = count( $cards );
 ?>
-<section <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by get_block_wrapper_attributes(). ?> aria-roledescription="carousel" aria-label="<?php echo esc_attr__( 'Featured articles', 'joo-core' ); ?>">
+<section <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by get_block_wrapper_attributes(). ?> aria-roledescription="<?php echo esc_attr__( 'carousel', 'joo-core' ); ?>" aria-label="<?php echo esc_attr__( 'Featured articles', 'joo-core' ); ?>">
 <joo-slider data-autoplay="<?php echo ! empty( $data['autoplay'] ) ? '1' : '0'; ?>" data-interval="<?php echo (int) ( $data['interval'] ?? 6500 ); ?>">
 <div class="joo-slider__track" tabindex="0">
 <?php foreach ( $cards as $i => $card ) : ?>
-	<article class="joo-slide" role="group" aria-roledescription="slide" aria-label="<?php echo esc_attr( sprintf( /* translators: 1: slide number, 2: slide count. */ __( '%1$d of %2$d', 'joo-core' ), $i + 1, $count ) ); ?>">
+	<article class="joo-slide" role="group" aria-roledescription="<?php echo esc_attr__( 'slide', 'joo-core' ); ?>" aria-label="<?php echo esc_attr( sprintf( /* translators: 1: slide number, 2: slide count. */ __( '%1$d of %2$d', 'joo-core' ), $i + 1, $count ) ); ?>">
 		<?php if ( null !== $card->image ) : ?>
 			<a class="joo-slide__media" href="<?php echo esc_url( $card->url ); ?>" tabindex="-1" aria-hidden="true">
 			<?php

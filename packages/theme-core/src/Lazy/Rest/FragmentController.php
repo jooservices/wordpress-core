@@ -71,7 +71,7 @@ final class FragmentController {
 	public function get( \WP_REST_Request $request ) {
 		$name = (string) $request['name'];
 		if ( ! $this->fragments->has( $name ) ) {
-			return new \WP_Error( 'joo_fragment_not_found', 'Unknown fragment.', array( 'status' => 404 ) );
+			return new \WP_Error( 'joo_fragment_not_found', __( 'Unknown fragment.', 'joo-core' ), array( 'status' => 404 ) );
 		}
 		$args = $this->fragments->validate( $name, $request->get_query_params() );
 		if ( is_wp_error( $args ) ) {
@@ -79,7 +79,7 @@ final class FragmentController {
 		}
 		$html = $this->fragments->render( $name, $args );
 		if ( null === $html ) {
-			return new \WP_Error( 'joo_fragment_unavailable', 'This fragment is not available right now.', array( 'status' => 404 ) );
+			return new \WP_Error( 'joo_fragment_unavailable', __( 'This fragment is not available right now.', 'joo-core' ), array( 'status' => 404 ) );
 		}
 		return new \WP_REST_Response(
 			array(
