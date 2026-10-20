@@ -127,12 +127,20 @@ snapshot_dir() {
   code="$(cd "$ROOT" && find tools/wxr-generator docker/scripts/seed.php docker/scripts/seed.sh plugins/jooservices-resume/src packages/theme-core/src -type f -print0 | sort -z | xargs -0 shasum -a 256 | shasum -a 256 | cut -c1-12)"
   printf '%s/%s-wp%s-%s' "$snap_root" "${DEMO_SET:-$theme}" "$(wpx core version)" "$code"
 }
+copy_snapshot_tree() {
+  local source="$1" destination="$2"
+  if [[ "$(uname -s)" == Darwin ]]; then
+    cp -cR "$source" "$destination"
+  else
+    cp -R "$source" "$destination"
+  fi
+}
 snapshot_import() { # $1 = snapshot dir
   wpx db reset --yes >/dev/null
   wpx db import "$1/db.sql"
   wpx search-replace "http://seed.localhost" "$SITE_URL" --all-tables --precise --quiet
   rm -rf "$JOO_SITE_DIR/wp-content/uploads"
-  if [[ -d "$1/uploads" ]]; then cp -a "$1/uploads" "$JOO_SITE_DIR/wp-content/uploads"; else mkdir -p "$JOO_SITE_DIR/wp-content/uploads"; fi
+  if [[ -d "$1/uploads" ]]; then copy_snapshot_tree "$1/uploads" "$JOO_SITE_DIR/wp-content/uploads"; else mkdir -p "$JOO_SITE_DIR/wp-content/uploads"; fi
   local admin
   admin="$(wpx user list --role=administrator --field=ID </dev/null | head -1)"
   wpx user update "$admin" --user_pass="$WP_ADMIN_PASSWORD" --skip-email >/dev/null
@@ -148,7 +156,7 @@ snapshot_export() { # $1 = snapshot dir
   snapshot_temp_dir="$tmp"
   mkdir -p "$tmp"
   wpx search-replace "$SITE_URL" "http://seed.localhost" --all-tables --precise --export="$tmp/db.sql" --quiet
-  if [[ -d "$JOO_SITE_DIR/wp-content/uploads" ]]; then cp -a "$JOO_SITE_DIR/wp-content/uploads" "$tmp/uploads"; fi
+  if [[ -d "$JOO_SITE_DIR/wp-content/uploads" ]]; then copy_snapshot_tree "$JOO_SITE_DIR/wp-content/uploads" "$tmp/uploads"; fi
   printf '{"wordpress":"%s","checksum":"%s","created":"%s","theme":"%s"}\n' "$(wpx core version)" "$(wpx option get joo_demo_checksum)" "$(date -u +%FT%TZ)" "$theme" > "$tmp/manifest.json"
   rm -rf "$1"; mv "$tmp" "$1"
   snapshot_temp_dir=""
