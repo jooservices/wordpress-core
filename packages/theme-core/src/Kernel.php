@@ -78,16 +78,15 @@ final class Kernel {
 	/**
 	 * Module registry.
 	 *
-	 * @var ModuleRegistry
+	 * @var ModuleRegistry|null
 	 */
-	private ModuleRegistry $registry;
+	private ?ModuleRegistry $registry = null;
 
 	/**
 	 * Private: use Kernel::boot().
 	 */
 	private function __construct() {
 		$this->container = new Container();
-		$this->registry  = new ModuleRegistry( new Logger() );
 	}
 
 	/**
@@ -128,7 +127,7 @@ final class Kernel {
 	 * @return array<string, string>
 	 */
 	public static function status(): array {
-		return self::$instance ? self::$instance->registry->status() : array();
+		return self::$instance && null !== self::$instance->registry ? self::$instance->registry->status() : array();
 	}
 
 	/**
@@ -163,39 +162,28 @@ final class Kernel {
 		if ( defined( 'JOO_CORE_DUPLICATE' ) ) {
 			Notices::add( 'warning', sprintf( 'A second copy of core was found at %1$s; version %2$s is in use.', (string) JOO_CORE_DUPLICATE, Version::core() ), 'duplicate-core' );
 		}
-		foreach ( Requirements::check() as $problem ) {
+		$requirements = Requirements::check();
+		if ( $requirements ) {
+			$messages = array_column( $requirements, 'message' );
+			$this->registerEarlySiteHealthTest( 'joo_core_requirements', 'JOOservices core requirements', 'JOOservices core requirements are not met', implode( ' ', $messages ) );
+		}
+		foreach ( $requirements as $problem ) {
 			Notices::add( 'error', $problem['message'], 'requirement-' . $problem['code'] );
 			return;
 		}
 
 		$manifest = ( new ManifestLoader() )->load( $manifestPath );
 		if ( ! $manifest->isValid() ) {
-			Notices::add( 'error', 'The theme manifest is invalid: ' . implode( '; ', array_slice( $manifest->errors(), 0, 3 ) ), 'manifest-invalid' );
-		} elseif ( ! Version::satisfies( Version::core(), $manifest->coreRange() ) ) {
+			$message = 'The theme manifest is invalid: ' . implode( '; ', array_slice( $manifest->errors(), 0, 3 ) );
+			Notices::add( 'error', $message, 'manifest-invalid' );
+			$this->registerEarlySiteHealthTest( 'joo_manifest_valid', 'JOOservices theme manifest', 'The theme manifest is invalid', $message );
+			return;
+		}
+		if ( ! Version::satisfies( Version::core(), $manifest->coreRange() ) ) {
 			$message = sprintf( 'Theme "%1$s" requires JOOservices core %2$s; the bundled version is %3$s.', $manifest->name(), $manifest->coreRange(), Version::core() );
 			Notices::add( 'error', $message, 'core-incompatible' );
 			// Site Health shows it as a critical entry (the kernel did not boot, so the Site Health service does not exist).
-			add_filter(
-				'site_status_tests',
-				static function ( $tests ) use ( $message ) {
-					$tests                                    = is_array( $tests ) ? $tests : array();
-					$tests['direct']['joo_core_incompatible'] = array(
-						'label' => 'JOOservices core version',
-						'test'  => static fn(): array => array(
-							'label'       => 'The theme needs a newer JOOservices core',
-							'status'      => 'critical',
-							'badge'       => array(
-								'label' => 'JOOservices',
-								'color' => 'red',
-							),
-							'description' => '<p>' . esc_html( $message ) . '</p>',
-							'actions'     => '',
-							'test'        => 'joo_core_incompatible',
-						),
-					);
-					return $tests;
-				}
-			);
+			$this->registerEarlySiteHealthTest( 'joo_core_incompatible', 'JOOservices core version', 'The theme needs a newer JOOservices core', $message );
 			return;
 		}
 
@@ -214,7 +202,6 @@ final class Kernel {
 		$c->instance( self::class, $this );
 		$c->instance( Container::class, $c );
 		$c->instance( Manifest::class, $manifest );
-		$c->instance( ModuleRegistry::class, $this->registry );
 		$c->singleton(
 			Logger::class,
 			static fn( Container $c ) => new Logger(
@@ -224,6 +211,10 @@ final class Kernel {
 		$c->singleton( SettingsSchema::class, static fn() => new SettingsSchema() );
 		$c->singleton( SettingsRepository::class, static fn( Container $c ) => new SettingsRepository( $c->get( Manifest::class )->slug(), $c->get( SettingsSchema::class ) ) );
 		$c->singleton( Settings::class, static fn( Container $c ) => new Settings( $c->get( SettingsSchema::class ), $c->get( Manifest::class ), $c->get( SettingsRepository::class ) ) );
+		/** @var Logger $logger */
+		$logger         = $c->get( Logger::class );
+		$this->registry = new ModuleRegistry( $logger );
+		$c->instance( ModuleRegistry::class, $this->registry );
 
 		$services = Hooks::filter( 'joo/core/services', array() );
 		if ( is_array( $services ) ) {
@@ -239,6 +230,10 @@ final class Kernel {
 	 * Collects, orders, registers and schedules the modules.
 	 */
 	private function loadModules(): void {
+		$registry = $this->registry;
+		if ( null === $registry ) {
+			return;
+		}
 		/** @var Logger $logger */
 		$logger  = $this->container->get( Logger::class );
 		$classes = Hooks::filter( 'joo/core/modules', self::BUILTIN_MODULES );
@@ -249,7 +244,7 @@ final class Kernel {
 				continue; // Module not shipped in this core version.
 			}
 			try {
-				$this->registry->add( $class );
+				$registry->add( $class );
 			} catch ( \Throwable $error ) {
 				$logger->error( 'Module rejected: ' . $error->getMessage() );
 			}
@@ -258,7 +253,7 @@ final class Kernel {
 		/** @var Settings $settings */
 		$settings = $this->container->get( Settings::class );
 		$enabled  = array();
-		foreach ( $this->registry->ids() as $id ) {
+		foreach ( $registry->ids() as $id ) {
 			$key = 'modules.' . $id . '.enabled';
 			if ( null === $settings->schema()->get( $key ) || (bool) $settings->get( $key, true ) ) {
 				$enabled[] = $id;
@@ -266,16 +261,16 @@ final class Kernel {
 		}
 
 		try {
-			$this->registry->resolve( $enabled );
+			$registry->resolve( $enabled );
 		} catch ( \Throwable $error ) {
 			$logger->error( 'Module resolution failed: ' . $error->getMessage() );
 			Notices::add( 'error', 'Modules could not be ordered: ' . $error->getMessage(), 'module-resolution' );
 			return;
 		}
-		$this->registry->registerAll( $this->container );
+		$registry->registerAll( $this->container );
 
 		$boot = function (): void {
-			$this->registry->bootAll();
+			$this->registry?->bootAll();
 			Hooks::action( 'joo/core/ready', $this->container );
 		};
 		if ( did_action( 'after_setup_theme' ) ) {
@@ -283,5 +278,40 @@ final class Kernel {
 		} else {
 			add_action( 'after_setup_theme', $boot, 5 );
 		}
+	}
+
+	/**
+	 * Registers a critical Site Health result for failures before the container is available.
+	 *
+	 * @param string $id          Test id.
+	 * @param string $label       Test label.
+	 * @param string $resultLabel Result label.
+	 * @param string $description Result description.
+	 */
+	private function registerEarlySiteHealthTest( string $id, string $label, string $resultLabel, string $description ): void {
+		add_filter(
+			'site_status_tests',
+			static function ( $tests ) use ( $id, $label, $resultLabel, $description ) {
+				$tests = is_array( $tests ) ? $tests : array();
+				if ( ! isset( $tests['direct'] ) || ! is_array( $tests['direct'] ) ) {
+					$tests['direct'] = array();
+				}
+				$tests['direct'][ $id ] = array(
+					'label' => $label,
+					'test'  => static fn(): array => array(
+						'label'       => $resultLabel,
+						'status'      => 'critical',
+						'badge'       => array(
+							'label' => 'JOOservices',
+							'color' => 'red',
+						),
+						'description' => '<p>' . esc_html( $description ) . '</p>',
+						'actions'     => '',
+						'test'        => $id,
+					),
+				);
+				return $tests;
+			}
+		);
 	}
 }

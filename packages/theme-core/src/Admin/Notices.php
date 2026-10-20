@@ -59,6 +59,10 @@ final class Notices {
 	 */
 	public static function reset(): void {
 		self::$notices = array();
+		if ( self::$registered && function_exists( 'remove_action' ) ) {
+			remove_action( 'admin_notices', array( self::class, 'render' ) );
+		}
+		self::$registered = false;
 	}
 
 	/**
