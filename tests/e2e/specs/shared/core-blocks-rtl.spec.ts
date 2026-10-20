@@ -1,13 +1,13 @@
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import { readdirSync, readFileSync, mkdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Renders every core block stylesheet on a fixture page in dir="rtl" (no WordPress site needed) and checks that
 // direction-sensitive blocks mirror: icons point the reading way, rows do not overlap, the progress bar grows from the right.
 const root = join(dirname(fileURLToPath(import.meta.url)), '../../../..');
 const blocksDir = join(root, 'packages/theme-core/resources/blocks');
-const evidenceDir = join(root, 'artifacts/evidence/JOOWT-279');
+const evidenceDir = resolve(root, process.env.E2E_EVIDENCE_DIR ?? 'artifacts/evidence/JOOWT-279');
 const blocks = readdirSync(blocksDir).sort();
 const css = [
   readFileSync(join(root, 'packages/theme-core/resources/css/core.css'), 'utf8'),

@@ -3,7 +3,7 @@
 SHELL := /bin/bash
 THEME ?= jooservices
 JOOS_TICKET ?= $(shell git branch --show-current | sed -nE 's/.*((JOOS|JOOWT)-[0-9]+).*/\1/p')
-export JOOS_TICKET WP_VERSION WP_PHP_VERSION MATRIX_VARIANT
+export JOOS_TICKET WP_VERSION WP_PHP_VERSION MATRIX_VARIANT E2E_ENGINES E2E_ARTIFACT_DIR
 
 .PHONY: migrate test-migrations staging-up staging-update staging-reseed test-marketplace critical screenshots plugins-off plugins-on plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-e2e-demo demo-package demo health perf boot-cost test-matrix package docs clean hooks release
 
@@ -108,7 +108,7 @@ coverage: ## Merged unit + integration coverage (pcov in Docker) with the thresh
 test-integration: ## wp-phpunit against this worktree's site (WP_VERSION=6.6 for the minimum version)
 	$(call require_test_theme)
 	@bash ./docker/scripts/wp-task.sh integration $(THEME) $(ARGS)
-test-e2e: ## Playwright E2E on the Dev VM against the shared test site (THEME=..., ARGS="specs/shared")
+test-e2e: ## Playwright E2E on the Dev VM against the shared test site (THEME=..., ARGS="specs/shared", E2E_ENGINES=..., E2E_ARTIFACT_DIR=...)
 	$(call require_test_theme)
 	@bash ./docker/scripts/wp-task.sh e2e $(THEME) $(ARGS)
 test-e2e-demo: demo-package ## Import, diff, idempotence, and rollback on a clean shared WordPress site
