@@ -1,8 +1,11 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { gzipSync } from 'node:zlib';
+import { build } from 'esbuild';
 import { checkAssetBudgets, checkBudgets, remoteChromeConnection } from './perf.mjs';
 import { readCodeBudgets } from './lib/perf-budgets.mjs';
+import { fromRoot } from './lib/paths.mjs';
 
 const budgets = {
   scores: { performance: 0.9, seo: 0.95 },
@@ -61,6 +64,25 @@ describe('documented code budgets', () => {
       'terminal-engine',
       'terminal',
     ]);
+  });
+
+  it('keeps the standalone terminal engine independent of built-in commands and within budget', async () => {
+    const result = await build({
+      entryPoints: [fromRoot('packages', 'theme-core', 'resources', 'js', 'terminal', 'engine.js')],
+      bundle: true,
+      write: false,
+      format: 'esm',
+      target: 'es2022',
+      minify: true,
+      legalComments: 'none',
+      external: ['joo-runtime'],
+      metafile: true,
+    });
+    const output = result.outputFiles[0].contents;
+    const inputs = Object.values(result.metafile.outputs)[0].inputs;
+
+    expect(Object.keys(inputs).some((file) => file.includes('/commands/'))).toBe(false);
+    expect(gzipSync(output).byteLength).toBeLessThanOrEqual(codeBudgets.javascript['terminal-engine']);
   });
 });
 

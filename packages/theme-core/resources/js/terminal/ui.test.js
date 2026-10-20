@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import './test-i18n.js';
 import data from './__fixtures__/demo-fs.json';
 import { createShell, mountTerminal, safeUrl } from '../terminal.js';
 

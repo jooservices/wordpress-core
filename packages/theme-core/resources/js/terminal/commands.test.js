@@ -1,9 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
+import { setupTerminalI18n } from './test-i18n.js';
 import { resetConfig } from 'joo-runtime';
 import data from './__fixtures__/demo-fs.json';
 import { createShell } from '../terminal.js';
 import { createRegistry } from './registry.js';
 import { message } from './commands/util.js';
+
+afterEach(setupTerminalI18n);
 
 const make = () => createShell(data);
 const text = (r) =>
@@ -68,18 +71,14 @@ describe('every command has metadata, a man entry and a test below', () => {
 
 describe('terminal command translation', () => {
   it('uses the runtime translation map and interpolates values', () => {
-    const config = document.createElement('script');
-    config.id = 'joo-config';
-    config.type = 'application/json';
+    const config = document.getElementById('joo-config');
+    const saved = config.textContent;
     config.textContent = JSON.stringify({ i18n: { 'terminal.command.cat.not_found': 'missing: {path}' } });
-    document.body.append(config);
     resetConfig();
     try {
-      expect(
-        message('terminal.command.cat.not_found', 'cat: {path}: No such file or directory', { path: '/missing' })
-      ).toBe('missing: /missing');
+      expect(message('terminal.command.cat.not_found', { path: '/missing' })).toBe('missing: /missing');
     } finally {
-      config.remove();
+      config.textContent = saved;
       resetConfig();
     }
   });
@@ -279,8 +278,10 @@ describe('system commands', () => {
     const { readFileSync } = await import('node:fs');
     const { join } = await import('node:path');
     for (const file of [
+      'engine.js',
       'fs.js',
       'shell.js',
+      'command-api.js',
       'registry.js',
       'commands/files.js',
       'commands/site.js',

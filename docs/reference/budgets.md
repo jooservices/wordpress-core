@@ -68,10 +68,10 @@ The build uses esbuild 0.28.2, target ES2022, minification, and Node 24.21.0's `
 | Table of contents (`blocks/toc/view`) | 600 B | Within budget |
 | Companies (`blocks/companies/view`) | 1,594 B | Within budget |
 | Category tree (`blocks/category-tree/view`) | 563 B | Within budget |
-| Pure terminal engine (`terminal-engine`) | 7,452 B | Over budget |
-| Complete terminal bundle (`terminal`) | 9,652 B | Over budget |
+| Pure terminal engine (`terminal-engine`) | 2,326 B | Within budget |
+| Complete terminal bundle (`terminal`) | 8,536 B | Within budget |
 
-The standalone terminal engine bundle includes filesystem and shell behavior plus command registration, but excludes the built-in command handlers and browser UI. The complete terminal bundle includes the engine, built-in commands, and UI. ADR 0012 sets the full-bundle limit from the measured current output; the spec and module documentation describe both scopes.
+The standalone terminal engine bundle includes filesystem and shell behavior plus command registration, but excludes the built-in command handlers and browser UI. The complete terminal bundle includes the engine, built-in commands, and UI. ADR 0012 sets the full-bundle limit at 9 KiB; this table records the current build, and the spec and module documentation describe both scopes.
 
 ## Critical CSS
 
