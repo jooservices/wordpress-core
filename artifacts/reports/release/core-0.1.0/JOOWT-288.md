@@ -5,7 +5,8 @@
 - Branch: `JOOWT-288-core-r11-4-gates-g6-to-g9-for-starter-an`
 - Rebased base: `origin/develop` at `7ffa49a`
 - Full two-theme gate-run source commit: `078d47b0be01e4720bd51036090abc31d7da0b5f`
-- Final source commit: `78d3c5ffa9468a313e6b2543bf67e41a50d0a71e`
+- Final G6-G9 gate source commit: `78d3c5ffa9468a313e6b2543bf67e41a50d0a71e`
+- Compatibility documentation follow-up commit: `7d05b85d8ea272193e453a029855fb65beb99cf3`
 - Runtime: WordPress 7.1.3, PHP 8.3.30, MariaDB 12.3.3
 - Database: isolated `wp_JOOWT_288`
 
@@ -19,12 +20,12 @@ The final source commit removes duplicate copies of the existing Jooservices ter
 | starter | G6 | `make health THEME=starter` | PASS, 17/17 checks |
 | starter | G7 | `make perf THEME=starter` | PASS, all five pages within budgets |
 | starter | G8 | `MATRIX_VARIANT=joowt288-final make test-matrix THEME=starter` | PASS, 23 pass, 0 fail, 2 unsupported |
-| starter | G9 | `make package THEME=starter` | PASS, 275 files, 477 KB |
+| starter | G9 | `make package THEME=starter` | PASS, 275 files, 477 KB; rerun on compatibility documentation follow-up |
 | jooservices | G6 | `make demo THEME=jooservices` | PASS, 17/17 health checks; rerun on final source |
 | jooservices | G6 | `make health THEME=jooservices` | PASS, 17/17 checks; rerun on final source |
 | jooservices | G7 | `make perf THEME=jooservices` | PASS, all five pages within budgets; rerun on final source |
 | jooservices | G8 | `MATRIX_VARIANT=joowt288-final make test-matrix THEME=jooservices` | PASS, 23 pass, 0 fail, 2 unsupported; rerun on final source |
-| jooservices | G9 | `make package THEME=jooservices` | PASS, 311 files, 836 KB; rerun on final source |
+| jooservices | G9 | `make package THEME=jooservices` | PASS, 311 files, 836 KB; rerun on compatibility documentation follow-up |
 
 `wp-rocket` and `wpml` are unsupported because their licensed ZIPs are absent from `tests/matrix/vendor/`. All testable matrix rows pass. The WooCommerce row records a known third-party early text-domain notice; the matrix allowlist applies only to that exact notice in the WooCommerce row. WordPress.org TLS messages remain environment warnings.
 
@@ -57,6 +58,10 @@ The shared font byte budget is 102,400 B (100 KiB). This accounts for the two La
 
 ## Supporting checks
 
-`make lint`, `make analyse`, `make test-tooling`, and `make test-unit` pass on final source. PHPUnit: 284 tests, 3,258 assertions. Vitest: 48 files, 361 tests.
+The initial final-source checks passed: `make lint`, `make analyse`, `make test-tooling`, and `make test-unit`; PHPUnit reported 284 tests / 3,258 assertions and Vitest 48 files / 361 tests.
+
+## Round 5 follow-up verification
+
+Commit `7d05b85d8ea272193e453a029855fb65beb99cf3` scopes `docs/compatibility.md` to Jooservices plugin-matrix reports and adds a regression test for newer reports from other themes. On this follow-up tree, `make docs-check`, `make lint`, `make analyse`, `make test-tooling`, and `make test-unit` pass; PHPUnit reports 284 tests / 3,258 assertions and Vitest reports 48 files / 362 tests. Package gates pass for both themes as recorded above. G6 demo/health, G7 performance, and G8 matrix were not rerun because this follow-up changes documentation report selection and its test only.
 
 The final run manifest is `artifacts/reports/JOOWT-288/run-manifest.md`. Final matrix JSON/Markdown and Lighthouse JSON are under `artifacts/reports/matrix/` and `artifacts/reports/perf/` respectively. This ticket records G6-G9 only; unrelated G2-G5 evidence was not rerun.

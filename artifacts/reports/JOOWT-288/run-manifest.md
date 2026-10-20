@@ -5,7 +5,8 @@ Machine: wsl
 Branch: JOOWT-288-core-r11-4-gates-g6-to-g9-for-starter-an
 Rebased base: `origin/develop` at `7ffa49a`
 Full gate-run source commit: `078d47b0be01e4720bd51036090abc31d7da0b5f`
-Final source commit: `78d3c5ffa9468a313e6b2543bf67e41a50d0a71e` (removes duplicate identical dock-width declarations)
+Final G6-G9 gate source commit: `78d3c5ffa9468a313e6b2543bf67e41a50d0a71e` (removes duplicate identical dock-width declarations)
+Compatibility documentation follow-up commit: `7d05b85d8ea272193e453a029855fb65beb99cf3`
 Runtime: WordPress 7.1.3, PHP 8.3.30, MariaDB 12.3.3
 Database: ticket-scoped `wp_JOOWT_288`
 
@@ -28,12 +29,20 @@ The full two-theme gate batch ran after rebasing onto the current `develop`. Aft
 
 The unsupported matrix rows are licensed WP Rocket and WPML packages that are not present in `tests/matrix/vendor/`. The WooCommerce row passes and records its isolated third-party early text-domain notice.
 
-## Supporting checks on final source
+## Supporting checks on final G6-G9 gate source
 
 - `make lint`: PASS.
 - `make analyse`: PASS; 0 violations, 0 errors.
 - `make test-tooling`: PASS.
 - `make test-unit`: PASS; PHPUnit 284 tests / 3,258 assertions, Vitest 48 files / 361 tests.
+
+## Round 5 rework follow-up
+
+On commit `7d05b85d8ea272193e453a029855fb65beb99cf3`, `tools/docs-compat.mjs` now scopes this Jooservices product document to Jooservices plugin-matrix reports. A regression test proves a newer Starter report cannot replace the Jooservices result. The generated `docs/compatibility.md` identifies its report scope.
+
+Verified on the follow-up tree: `make docs-check`, `make lint`, `make analyse`, `make test-tooling`, and `make test-unit` pass. PHPUnit reports 284 tests / 3,258 assertions; Vitest reports 48 files / 362 tests. `make package THEME=starter` passes with 275 files / 477 KB, and `make package THEME=jooservices` passes with 311 files / 836 KB. The package checksums below are unchanged.
+
+The follow-up changes only documentation selection and its regression test. G6 demo/health, G7 performance, and G8 matrix results remain the final gate evidence recorded above and were not rerun for this follow-up.
 
 ## Retained evidence
 
