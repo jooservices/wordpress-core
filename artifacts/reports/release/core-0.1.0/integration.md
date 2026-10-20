@@ -3,7 +3,8 @@
 - Date: 2026-10-20
 - Repository: `wordpress-core`
 - Branch: `JOOWT-233-core-r1-3-integration-suite-on-wordpress`
-- Source commit tested: `905637a68d8e95759bddb71655f30faa126591dd` (`chore(core): Refresh integration verification evidence (JOOWT-233)`)
+- Source commit tested: `37a5e142f4238fce3c987cdd790e5cadee79a7d0` (`chore(core): Refresh independent integration evidence (JOOWT-233)`)
+- Validation: reran both endpoints after QA feedback and rebasing onto current `origin/develop`, using the source commit above.
 - Runtime: WSL shared Workspaces PHP runtime, PHP 8.3.30, PHPUnit 9.6.38
 - Theme: `starter`
 - Locking: the two version runs were sequential and used the repository's shared per-host WordPress test lock.
