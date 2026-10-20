@@ -4,6 +4,7 @@
 # keep the guard locked after the wp-task.sh owner exits.
 
 WP_TASK_LOCK_WAIT_SECONDS=1200
+WP_TASK_OPERATION_CAP_SECONDS=1200
 WP_TASK_LOCK_PATH=""
 WP_TASK_LOCK_HELD=0
 
@@ -21,6 +22,35 @@ wp_task_lock_duration() {
     ((count == 1)) && suffix=""
     printf '%s second%s' "$count" "$suffix"
   fi
+}
+
+wp_task_run_capped() {
+  local operation="${1:?operation name is required}"
+  local cap_seconds="${2:-$WP_TASK_OPERATION_CAP_SECONDS}"
+  local duration status
+  shift 2
+
+  if [[ ! "$cap_seconds" =~ ^[0-9]+$ ]] || ((cap_seconds < 1)); then
+    echo "ERROR: shared WordPress operation cap must be a positive number of seconds." >&2
+    return 2
+  fi
+  if ! command -v timeout >/dev/null 2>&1; then
+    echo "ERROR: timeout is required to cap shared WordPress operations." >&2
+    return 2
+  fi
+
+  if timeout --signal=TERM --kill-after=5s "${cap_seconds}s" "$@"; then
+    return 0
+  else
+    status=$?
+  fi
+
+  if ((status == 124 || status == 137)); then
+    duration="$(wp_task_lock_duration "$cap_seconds")"
+    echo "ERROR: shared WordPress operation '$operation' exceeded its $duration cap and was terminated." >&2
+    return 124
+  fi
+  return "$status"
 }
 
 wp_task_lock_acquire() {

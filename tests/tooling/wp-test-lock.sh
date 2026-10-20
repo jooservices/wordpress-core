@@ -4,8 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 source "$ROOT/docker/scripts/wp-task-lock.sh"
 
-if [[ "$WP_TASK_LOCK_WAIT_SECONDS" -ne 1200 ]]; then
-  echo "FAIL: the production shared WordPress test lock cap is not 20 minutes." >&2
+if [[ "$WP_TASK_LOCK_WAIT_SECONDS" -ne 1200 || "$WP_TASK_OPERATION_CAP_SECONDS" -ne 1200 ]]; then
+  echo "FAIL: the production shared WordPress test lock and operation caps are not 20 minutes." >&2
   exit 1
 fi
 
@@ -79,3 +79,45 @@ wait "$holder_pid" 2>/dev/null || true
 holder_pid=""
 rm -f -- "$live_lock"
 echo "ok:   live owner is preserved and the wait cap reports a clear error"
+
+operation_lock="$tmp/capped-operation.lock"
+termination_marker="$tmp/capped-operation-terminated"
+if ! wp_task_lock_acquire "$operation_lock"; then
+  echo "FAIL: could not acquire the operation-cap fixture lock." >&2
+  exit 1
+fi
+if [[ "$(cat "$operation_lock")" != "$$" ]]; then
+  echo "FAIL: operation-cap fixture lock does not record the owner." >&2
+  exit 1
+fi
+
+if wp_task_run_capped "test fixture" 1 bash -c 'trap '\''touch "$1"; exit 0'\'' TERM; while :; do sleep 30; done' _ "$termination_marker" > "$tmp/cap.stdout" 2> "$tmp/cap.stderr"; then
+  echo "FAIL: a stuck operation completed instead of hitting its cap." >&2
+  exit 1
+else
+  cap_status=$?
+fi
+if [[ "$cap_status" -ne 124 ]]; then
+  echo "FAIL: the capped operation returned status $cap_status instead of 124." >&2
+  cat "$tmp/cap.stderr" >&2
+  exit 1
+fi
+if ! grep -Fq "ERROR: shared WordPress operation 'test fixture' exceeded its 1 second cap and was terminated." "$tmp/cap.stderr"; then
+  echo "FAIL: operation-cap timeout did not explain that the operation was terminated." >&2
+  cat "$tmp/cap.stderr" >&2
+  exit 1
+fi
+if [[ ! -e "$termination_marker" ]]; then
+  echo "FAIL: operation-cap timeout did not terminate the command." >&2
+  exit 1
+fi
+if [[ "$(cat "$operation_lock")" != "$$" ]]; then
+  echo "FAIL: operation-cap timeout changed the active lock owner." >&2
+  exit 1
+fi
+wp_task_lock_release
+if [[ -e "$operation_lock" ]]; then
+  echo "FAIL: operation-cap fixture lock was not released." >&2
+  exit 1
+fi
+echo "ok:   a stuck operation is terminated at its cap with a clear error"

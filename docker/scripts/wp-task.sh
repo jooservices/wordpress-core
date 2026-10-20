@@ -51,7 +51,19 @@ source "$ROOT/docker/scripts/wp-task-lock.sh"
 cd "$ROOT"
 
 acquire_shared_wp_test_lock() {
-  wp_task_lock_acquire "$workspaces_root/.tmp/jooservices-wp-shared-test.lock" "$WP_TASK_LOCK_WAIT_SECONDS"
+  local lock_path="$workspaces_root/.tmp/jooservices-wp-shared-test.lock"
+  local owner_pid
+
+  if [[ -n "${WP_TASK_LOCK_OWNER_PID:-}" ]]; then
+    owner_pid="$(cat "$lock_path" 2>/dev/null || true)"
+    if [[ "$owner_pid" == "$WP_TASK_LOCK_OWNER_PID" ]] && kill -0 "$owner_pid" 2>/dev/null; then
+      return 0
+    fi
+    echo "ERROR: inherited shared WordPress test lock is not owned by PID ${WP_TASK_LOCK_OWNER_PID}." >&2
+    return 1
+  fi
+
+  wp_task_lock_acquire "$lock_path" "$WP_TASK_LOCK_WAIT_SECONDS"
 }
 
 restore_theme_source=0
@@ -172,6 +184,22 @@ health_check() {
   values="$(wpx eval-file "$ROOT/docker/scripts/health-values.php" </dev/null)"
   webx node tools/health.mjs --base "$SITE_URL" --values "$values"
 }
+
+case "$action" in
+  test-migrations|integration|e2e|e2e-demo|matrix|marketplace|screenshots|critical|health)
+    if [[ -z "${WP_TASK_LOCK_OWNER_PID:-}" ]]; then
+      acquire_shared_wp_test_lock || exit $?
+      if wp_task_run_capped "$action" "$WP_TASK_OPERATION_CAP_SECONDS" \
+        env WP_TASK_LOCK_OWNER_PID="$$" bash "$ROOT/docker/scripts/wp-task.sh" "$action" "$theme" "$@"; then
+        exit 0
+      else
+        operation_status=$?
+        exit "$operation_status"
+      fi
+    fi
+    acquire_shared_wp_test_lock || exit $?
+    ;;
+esac
 
 case "$action" in
   up|install)
