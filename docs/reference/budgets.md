@@ -21,3 +21,22 @@ The build uses esbuild 0.28.2, target ES2022, minification, and Node 24.21.0's `
 | Complete terminal bundle (`terminal`) | 8,991 B | 9,216 B (9 KiB) | Within budget |
 
 The standalone terminal engine bundle includes filesystem and shell behavior plus command registration, but excludes the built-in command handlers and browser UI. The complete terminal bundle includes the engine, built-in commands, and UI. ADR 0012 sets the full-bundle limit from the measured current output; the spec and module documentation describe both scopes.
+
+## Critical CSS
+
+Captured from the starter and jooservices demo themes with `make critical THEME=starter` and `make critical THEME=jooservices`. The generator merges the three viewport captures for each template and minifies with Lightning CSS. The sizes below are measured from the emitted CSS files after local asset URL localization, using Node's `gzipSync()` default settings. Values exclude HTTP headers; the 14 KiB budget is 14,336 bytes.
+
+| Theme | Template | Current gzip size | Budget | Result |
+| --- | --- | ---: | ---: | --- |
+| starter | 404 | 2,697 B | 14,336 B | Within budget |
+| starter | archive | 3,258 B | 14,336 B | Within budget |
+| starter | home | 3,478 B | 14,336 B | Within budget |
+| starter | page | 3,011 B | 14,336 B | Within budget |
+| starter | search | 3,303 B | 14,336 B | Within budget |
+| starter | single | 3,168 B | 14,336 B | Within budget |
+| jooservices | 404 | 5,069 B | 14,336 B | Within budget |
+| jooservices | archive | 6,969 B | 14,336 B | Within budget |
+| jooservices | home | 7,219 B | 14,336 B | Within budget |
+| jooservices | page | 6,539 B | 14,336 B | Within budget |
+| jooservices | search | 7,080 B | 14,336 B | Within budget |
+| jooservices | single | 6,718 B | 14,336 B | Within budget |
