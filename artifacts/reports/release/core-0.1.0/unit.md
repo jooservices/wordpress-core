@@ -3,7 +3,7 @@
 - Date: 2026-10-20
 - Repository: `wordpress-core`
 - Branch: `JOOWT-232-core-r1-2-run-unit-and-vitest-suites-and`
-- Source commit tested: `93518f1` (`fix(docs): Register the demo importer meta keys and refresh the surface reference (JOOWT-293)`)
+- Source commit tested: `684999b` (`chore(core): Record unit gate evidence (JOOWT-232)`)
 - Command: `make test-unit`
 - Runtime: shared Workspaces CLI runtime; PHPUnit 9.6.38 and Vitest 5.0.4
 - Result: **Pass**
