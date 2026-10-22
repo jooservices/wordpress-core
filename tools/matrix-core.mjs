@@ -35,7 +35,7 @@ export function selectPlugins(plugins, { only = [], group = '' } = {}) {
   });
 }
 
-/** Counts PHP problems in a log excerpt, allowing one documented WooCommerce-only notice. */
+/** Counts PHP problems, allowing only the documented WooCommerce early-textdomain notice in its own row. */
 export function phpProblems(log, { plugin = '' } = {}) {
   return log
     .split('\n')
@@ -251,7 +251,7 @@ async function testPlugin(entry, ctx, io) {
     const knownWooNotices = entry.key === 'woocommerce' ? woocommerceEarlyTextdomainNotices(log) : [];
     if (knownWooNotices.length) {
       notes.push(
-        `known third-party notice: WooCommerce loaded its own text domain before init (${knownWooNotices.length} notice(s))`
+        `known third-party notice: WooCommerce triggered its own text-domain load before init (${knownWooNotices.length} notice(s)); see docs/guides/testing.md`
       );
     }
     const problems = phpProblems(log, { plugin: entry.key });
