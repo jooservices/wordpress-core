@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Runs the boot-budget unit tests N times (default 20) while background loops of the same tests load the CPU.
+# Runs the real-Kernel boot probe (tools/boot-units-probe.php, the same BootBudget judgement as KernelTest) N times (default 20) while background loops of the same boots load the CPU.
 # The loop of boots is the artificial load; no stress tool is used. Usage: tools/boot-budget-loop.sh [runs] [load-workers]
 set -uo pipefail
 cd "$(dirname "$0")/.."
 runs="${1:-20}"
 workers="${2:-4}"
-test_file=packages/test-kit/tests/BootBudgetTest.php
-run() { vendor/bin/phpunit --no-configuration --bootstrap vendor/autoload.php "$test_file"; }
+probe=tools/boot-units-probe.php
+run() { php "$probe"; }
 
 for ((w = 0; w < workers; w++)); do
   (while [[ ! -f "${TMPDIR:-/tmp}/boot-budget-loop.stop.$$" ]]; do run >/dev/null 2>&1; done) &
