@@ -25,7 +25,6 @@ final class KernelTest extends IntegrationTestCase {
 
 	private const FIXTURES          = __DIR__ . '/../Fixtures/manifests/';
 	private const BOOT_COST_SAMPLES = 20;
-	private const MAX_BOOT_MS       = 30.0;
 
 	public function set_up(): void {
 		parent::set_up();
@@ -256,9 +255,9 @@ final class KernelTest extends IntegrationTestCase {
 		$ms      = $this->median( $samples['ms'] );
 		$kb      = $this->median( $samples['bytes'] ) / 1024;
 		fwrite( STDERR, sprintf( "\n[boot cost] median %.2f ms, %.0f KB across %d boots\n", $ms, $kb, self::BOOT_COST_SAMPLES ) );
-		$budget = BootBudget::scale( self::MAX_BOOT_MS );
-		fwrite( STDERR, sprintf( "[boot cost] budget %.2f ms for this host\n", $budget ) );
-		$this->assertLessThan( $budget, $ms, 'median boot must stay cheap (spec target < 3 ms warm; asserted with a CI margin scaled by the host load measured in this run)' );
+		$units = BootBudget::units( $samples['ms'], $samples['spins'] );
+		fwrite( STDERR, sprintf( "[boot cost] %.2f units (1 unit = median spin %.2f ms; host factor %.2f)\n", $units, $this->median( $samples['spins'] ), BootBudget::hostFactor( $samples['spins'] ) ) );
+		$this->assertLessThan( BootBudget::MAX_BOOT_UNITS, $units, 'median boot must stay within 1.5x the 3 ms spec target, measured against a spin timed right before each boot (a doubled boot fails)' );
 		$this->assertLessThan( 1536, $kb, 'median boot must stay under 1.5 MB' );
 	}
 
@@ -268,19 +267,19 @@ final class KernelTest extends IntegrationTestCase {
 			static fn( array $modules ): array => array_merge( $modules, array( SlowBootModule::class ) )
 		);
 
-		$slow = $this->median( $this->measureBootCosts()['ms'] );
+		$slow = $this->measureBootCosts();
 
-		// Judged against a clean boot measured in the same run, so host load can neither hide nor fake the slow module.
 		remove_all_filters( 'joo/core/modules' );
-		$clean = $this->median( $this->measureBootCosts()['ms'] );
+		$clean = $this->measureBootCosts();
 
-		$this->assertGreaterThanOrEqual( 40.0, $slow - $clean, 'a sustained slow module must stand out from a clean boot in the same run' );
+		$this->assertGreaterThanOrEqual( BootBudget::MAX_BOOT_UNITS, BootBudget::units( $slow['ms'], $slow['spins'] ), 'an injected slow module must exceed the boot ceiling' );
+		$this->assertLessThan( BootBudget::MAX_BOOT_UNITS, BootBudget::units( $clean['ms'], $clean['spins'] ), 'the clean boot of the same run must stay under it' );
 	}
 
 	/**
 	 * Measures complete kernel boots from the same WordPress hook state.
 	 *
-	 * @return array{ms: list<float>, bytes: list<int>}
+	 * @return array{ms: list<float>, bytes: list<int>, spins: list<float>}
 	 */
 	private function measureBootCosts(): array {
 		if ( 0 === did_action( 'after_setup_theme' ) ) {
@@ -290,6 +289,7 @@ final class KernelTest extends IntegrationTestCase {
 		$samples = array(
 			'ms'    => array(),
 			'bytes' => array(),
+			'spins' => array(),
 		);
 
 		try {
@@ -299,11 +299,17 @@ final class KernelTest extends IntegrationTestCase {
 				Notices::reset();
 				gc_collect_cycles();
 
+				if ( BootBudget::spinsFirst( $sample ) ) {
+					$samples['spins'][] = BootBudget::spin();
+				}
 				$memory = memory_get_usage();
 				$start  = hrtime( true );
 				Kernel::boot( self::FIXTURES . 'valid.json' );
 				$samples['ms'][]    = ( hrtime( true ) - $start ) / 1e6;
 				$samples['bytes'][] = max( 0, memory_get_usage() - $memory );
+				if ( ! BootBudget::spinsFirst( $sample ) ) {
+					$samples['spins'][] = BootBudget::spin();
+				}
 			}
 		} finally {
 			$this->restoreHooks( $hooks );
