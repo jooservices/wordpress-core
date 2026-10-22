@@ -99,6 +99,64 @@ describe('matrix helpers', () => {
     if (!report) throw new Error('matrix did not write a report');
     expect(report.results.map((plugin) => plugin.key)).toEqual(['cf7', 'wpforms', 'fluentform']);
   });
+  it('passes the WooCommerce row while reporting its documented early text-domain notice', async () => {
+    const notice =
+      '[20-Oct-2026 08:27:34 UTC] PHP Notice:  Function _load_textdomain_just_in_time was called <strong>incorrectly</strong>. Translation loading for the <code>woocommerce</code> domain was triggered too early.';
+    const success = { status: 0, stdout: '', stderr: '' };
+    const reports =
+      /** @type {{ results: { key: string; result: string; notes: string[] }[]; counts: { pass: number; fail: number } }[]} */ ([]);
+    const { report, exitCode } = await runMatrix({
+      args: ['--only', 'woocommerce', '--no-browser'],
+      env: {},
+      io: {
+        wp: (...args) => {
+          if (args[0] === 'theme' && args[1] === 'list') return { ...success, stdout: 'starter\n' };
+          if (args[0] === 'plugin' && args[1] === 'get') return { ...success, stdout: '11.2.1\n' };
+          return success;
+        },
+        sh: (command) => {
+          if (command.startsWith('stat -c')) return { ...success, stdout: '0\n' };
+          if (command.startsWith('tail -c')) return { ...success, stdout: notice };
+          return success;
+        },
+        runHealth: async () => [],
+        browserSmoke: () => ({ failed: false, notes: [] }),
+        readRuntime: () => ({ wordpress: '7.1.3', php: '8.3.30', database: 'MariaDB' }),
+        readJson: (path) =>
+          path === 'tests/matrix/plugins.json'
+            ? {
+                plugins: [
+                  {
+                    key: 'woocommerce',
+                    name: 'WooCommerce',
+                    group: 'Shop',
+                    tier: 3,
+                    slug: 'woocommerce',
+                    source: 'wporg',
+                  },
+                ],
+              }
+            : {},
+        readValues: () => ({ 'first-post': '/hello/' }),
+        hasZip: () => false,
+        mkdir: () => {},
+        write: (path, content) => {
+          if (path.endsWith('.json')) reports.push(JSON.parse(content));
+        },
+        now: () => new Date('2026-10-20T00:00:00.000Z'),
+        log: () => {},
+      },
+    });
+
+    expect(exitCode).toBe(0);
+    expect(report.counts).toMatchObject({ pass: 1, fail: 0 });
+    expect(report.results[0]).toMatchObject({ key: 'woocommerce', result: 'PASS' });
+    expect(report.results[0].notes).toContain(
+      'known third-party notice: WooCommerce triggered its own text-domain load before init (1 notice(s)); see docs/guides/testing.md'
+    );
+    expect(report.results[0].notes.some((note) => note.startsWith('php log:'))).toBe(false);
+    expect(reports).toHaveLength(1);
+  });
   it('formats available and missing runtime values', () => {
     expect(runtimeLabel({ wordpress: '7.1.3', php: '8.3.35', database: '12.3.3-MariaDB' })).toBe(
       'WordPress 7.1.3 / PHP 8.3.35 / 12.3.3-MariaDB'
