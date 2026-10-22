@@ -76,7 +76,8 @@
 }
 
 .joo-term__chip {
-  min-height: 1.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
   color: rgb(159 179 204);
   border: 1px solid rgb(47 69 96);
   border-radius: var(--joo-radius-s);
@@ -106,6 +107,7 @@
 }
 
 .joo-term__input {
+  min-height: 2.75rem;
   color: rgb(230 237 245);
   caret-color: rgb(205 217 232);
 }
@@ -122,6 +124,15 @@
   text-decoration: none;
 }
 
+.joo-term__cmd {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+
 .joo-term__cmd:hover,
 .joo-term__log a:hover {
   text-decoration: underline;
@@ -133,8 +144,8 @@
     position: sticky;
     top: 0;
     flex: none;
-    width: 40px;
-    min-width: 40px;
+    width: 44px;
+    min-width: 44px;
     flex-direction: row-reverse;
     align-self: flex-start;
     height: min(100vh, 780px);
@@ -144,8 +155,8 @@
 
   .joo-term__tab {
     box-sizing: border-box;
-    width: 40px;
-    min-width: 40px;
+    width: 44px;
+    min-width: 44px;
     height: 100%;
     margin-top: 0;
     padding: 14px 0 0;
