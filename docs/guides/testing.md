@@ -17,6 +17,10 @@ The shared PHP container runs PHP 8.5 for current tooling and coverage support. 
 
 `WP_VERSION` selects the WordPress core of the worktree's site (6.6, 6.7, 6.8, latest, a full version) and `WP_PHP_VERSION` the PHP CLI container for PHP tests (8.1 to 8.5; the web server runs PHP 8.3). For example, `WP_VERSION=6.6 WP_PHP_VERSION=8.1 make test-matrix THEME=jooservices ARGS="--runtime-only"` records a runtime-only check. `MATRIX_VARIANT` names the report.
 
+### WooCommerce early text-domain notice
+
+The plugin matrix recognizes one narrow third-party exception: the WordPress `_load_textdomain_just_in_time` notice stating that translations for the `woocommerce` domain were triggered before `init`. It is noted in the WooCommerce row and excluded from that row's PHP problem count; the same notice still fails every other row, and all other PHP errors still fail WooCommerce. This rule is based on the JOOWT-239 reports, which recorded the notice with WooCommerce 11.2.1 under both starter and JOOservices on WordPress 7.1.3 / PHP 8.3.30. Source review found no `woocommerce` text-domain translation calls in `themes/starter` or `packages/theme-core`; the core adapter reports its own `joo-core` text and adds WooCommerce support on `after_setup_theme`. The exact original and passing rerun are linked in [the JOOWP-302 evidence report](../dev-reports/JOOWP-302.md). The matcher and row-level behavior are covered by `tools/matrix.test.mjs`.
+
 The `docker/scripts/phpunit-integration.sh` runner selects the matching `wp-phpunit` series. When the lockfile library does not match the running WordPress series, the matching release is installed under `artifacts/wp-tests-lib` of the worktree. Both test suites use the ticket's isolated schema; the `wptests_` table prefix separates the WordPress test tables from the demo site's `wp_` tables.
 
 ## Base classes and helpers
