@@ -290,15 +290,31 @@ test('every shipped template reflows across the device matrix without clipping',
     }
 
     // 200% text-only zoom is emulated by doubling the computed size of rendered text while keeping the viewport fixed.
-    await page.setViewportSize({ width: 390, height: 844 });
-    for (const template of templateNames) {
-      await page.goto(routes[template], { waitUntil: 'load' });
-      await zoomText(page);
-      await assertNoScrollOrClipping(page, `${template} at 200% text-only zoom`);
-      await assertPrimaryTargets(page);
+    // It runs at 390px (typical phone) and at 320px (narrowest supported width, where wrapping is hardest).
+    for (const width of [390, 320]) {
+      await page.setViewportSize({ width, height: 844 });
+      for (const template of templateNames) {
+        await page.goto(routes[template], { waitUntil: 'load' });
+        await zoomText(page);
+        await assertNoScrollOrClipping(page, `${template} at 200% text-only zoom, ${width}px`);
+        await assertPrimaryTargets(page);
+      }
     }
 
-    // 400% reflow is represented by the narrowest supported 320px CSS viewport in the matrix above.
+    // 400% browser zoom leaves a 320 CSS px layout viewport (1280 / 4), so it is tested explicitly: every template is
+    // loaded fresh at 320x256 and checked for reflow, clipping, target sizes and the rail, card and dock behaviour.
+    await page.setViewportSize({ width: 320, height: 256 });
+    for (const template of templateNames) {
+      const response = await page.goto(routes[template], { waitUntil: 'load' });
+      expect(response!.status(), `${template} status at 400% zoom`).toBe(template === '404' ? 404 : 200);
+      expect(
+        await page.evaluate(() => document.documentElement.clientWidth),
+        `${template} 400% zoom layout viewport`
+      ).toBeLessThanOrEqual(320);
+      await assertNoScrollOrClipping(page, `${template} at 400% zoom (320px reflow)`);
+      await assertPrimaryTargets(page);
+      await assertResponsiveLayout(page, template);
+    }
   } finally {
     for (const fixture of created.reverse()) await deletePage(page, fixture.id);
   }
