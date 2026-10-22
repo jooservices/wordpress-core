@@ -19,7 +19,7 @@ make demo THEME=jooservices
 Language: English for code, comments, commits and Jira. See `docs/definition-of-done.md` for gates G1..G9 and the per-level Definition of Done, and the engineering standards in the Jira epic JOOWT-1.
 
 ## Deprecations
-Keep deprecated symbols for at least one minor release and call `Hooks::deprecated()` when a deprecated hook is used. The [unit tests](packages/theme-core/tests/Unit/Support/HooksTest.php) and [WordPress integration test](packages/theme-core/tests/Integration/HooksDeprecationTest.php) cover this behavior.
+Keep deprecated symbols for at least one minor release and call `Hooks::deprecated()` when a deprecated hook is used. Follow the [theme-core upgrade and deprecation guide](docs/guides/upgrading.md) when changing a theme's core compatibility or preparing upgrade notes. The [unit tests](packages/theme-core/tests/Unit/Support/HooksTest.php) and [WordPress integration test](packages/theme-core/tests/Integration/HooksDeprecationTest.php) cover this behavior.
 
 ## Pull request checklist
 Use `.github/pull_request_template.md`: summary, Jira key, acceptance criteria checked, tests run with results, screenshots for UI, risks, docs updated.
