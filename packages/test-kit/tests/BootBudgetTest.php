@@ -17,13 +17,11 @@ final class BootBudgetTest extends TestCase {
 	private const SAMPLES = 21;
 
 	/**
-	 * A stand-in boot of about one unit (the 3 ms spec target); $weight 2 injects a 2x slowdown.
+	 * A stand-in boot costing the real Kernel's about 0.3 units; $weight 2 injects a 2x slowdown (about 0.6 units).
 	 */
 	private static function boot( int $weight ): callable {
 		return static function () use ( $weight ): void {
-			for ( $i = 0; $i < $weight; ++$i ) {
-				BootBudget::spin();
-			}
+			BootBudget::spin( (int) ( BootBudget::SPIN_ITERATIONS * 0.3 * $weight ) );
 		};
 	}
 

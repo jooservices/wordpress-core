@@ -257,7 +257,7 @@ final class KernelTest extends IntegrationTestCase {
 		fwrite( STDERR, sprintf( "\n[boot cost] median %.2f ms, %.0f KB across %d boots\n", $ms, $kb, self::BOOT_COST_SAMPLES ) );
 		$units = BootBudget::units( $samples['ms'], $samples['spins'] );
 		fwrite( STDERR, sprintf( "[boot cost] %.2f units (1 unit = median spin %.2f ms; host factor %.2f)\n", $units, $this->median( $samples['spins'] ), BootBudget::hostFactor( $samples['spins'] ) ) );
-		$this->assertLessThan( BootBudget::MAX_BOOT_UNITS, $units, 'median boot must stay within 1.5x the 3 ms spec target, measured against a spin timed right before each boot (a doubled boot fails)' );
+		$this->assertLessThan( BootBudget::MAX_BOOT_UNITS, $units, 'median boot must stay within the ceiling, measured against a spin timed right before each boot' );
 		$this->assertLessThan( 1536, $kb, 'median boot must stay under 1.5 MB' );
 	}
 

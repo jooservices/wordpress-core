@@ -3,7 +3,7 @@
 ## Approach
 
 - `BootBudget` no longer has a hard-coded idle reference. A fixed CPU workload (the "spin", one unit, about the 3 ms spec target) is timed next to every boot sample, alternating before/after so neither side is always the one that runs second on a busy host.
-- The boot cost is judged as `units = typical boot / typical spin` of the same run (typical = median of the fastest third, so scheduler preemption only ever adds noise to the slow samples). The ceiling is `MAX_BOOT_UNITS = 1.5`: a boot that doubles the 3 ms spec target fails, a busy host stretches both boot and spin and does not.
+- The boot cost is judged as `units = typical boot / typical spin` of the same run (typical = median of the fastest third, so scheduler preemption only ever adds noise to the slow samples). The ceiling is `MAX_BOOT_UNITS = 0.55`: the real Kernel boot is about 0.3 units, so a doubled boot (about 0.6) fails, while a busy host stretches both boot and spin and does not.
 - The per-module millisecond budget (`maxBootMs()`) is scaled by `hostFactor` = median spin / fastest spin of the run (the idle baseline comes from the run), measured around the boots.
 - `KernelTest::test_boot_cost_is_small` and `ModuleContractTest::test_boot_stays_within_the_budget` (the WordPress 6.6 matrix runs it) both assert the whole-boot units ceiling.
 - Negative tests: `KernelTest::test_slow_module_exceeds_the_boot_time_budget` (injected `SlowBootModule`, clean boot of the same run must pass); `BootBudgetTest` measures real stand-in boots, with and without an injected 2x slowdown, and a busy-host (all timings x4.2) case.
@@ -18,7 +18,7 @@
 | 2 | 0.84 ms | 2.51 ms | 0.29 |
 | 3 | 0.85 ms | 2.48 ms | 0.24 |
 
-So the real unit cost is about 0.25-0.3 units (one unit = one spin, about 2.3-2.5 ms on this host), roughly 5x under `MAX_BOOT_UNITS = 1.5`. WordPress's own hook system adds some cost per `add_action`/`add_filter`, so the WordPress figure will be higher than this one; a 5x margin leaves room for it, so the ceiling and spin size were kept. The first real `make test-integration` prints `[boot cost] N units`; if N is above about 1.0, raise `SPIN_ITERATIONS` rather than the ceiling.
+So the real unit cost is about 0.25-0.3 units (one unit = one spin, about 2.3-2.5 ms on this host), about 1.8x under `MAX_BOOT_UNITS = 0.55`. WordPress's own hook system adds some cost per `add_action`/`add_filter`, so the WordPress figure will be higher than this one; a ~1.8x margin leaves room for it. The first real `make test-integration` prints `[boot cost] N units`; if N is above about 0.5, raise `SPIN_ITERATIONS` rather than the ceiling.
 
 ## Evidence (20 of 20 clean runs of a loop of real-Kernel boots)
 
@@ -34,7 +34,11 @@ The earlier flake at saturated CPUs came from the stand-in `BootBudgetTest` boot
 
 ## AC4: JOOS-123
 
-The Atlassian connector in this session is not authorised, so JOOS-123 could not be transitioned from here. Action for the PR reviewer / Jira owner: close JOOS-123 as "covered by JOOWP-243" when this PR merges.
+Closing a Jira ticket is outside the checkout. JOOS-123 to be closed as covered by JOOWP-243 once this merges (hand-off item).
+
+## Test environment
+
+`zip` and `unzip` are needed by the packaging tests; the CI unit job now installs them (`.github/workflows/ci.yml`).
 
 ## Not verified here
 
@@ -42,4 +46,4 @@ The Atlassian connector in this session is not authorised, so JOOS-123 could not
 
 ## Other
 
-`artifacts/package/jooservices-resume-0.1.0.zip` was deleted by the earlier commit by mistake and is restored from `origin/develop`.
+`artifacts/package/jooservices-resume-0.1.0.zip` is restored in the worktree from `origin/develop`. It is git-ignored, so it needs `git add -f` to stop showing as deleted against develop.

@@ -22,9 +22,10 @@ final class BootBudget {
 	public const SPIN_ITERATIONS = 60000;
 
 	/**
-	 * Median-boot ceiling in units: 1.5 x the 3 ms spec target, so a boot that doubles (2 units) fails.
+	 * Median-boot ceiling in units. The real Kernel boot measures about 0.3 units, so the ceiling sits at about
+	 * 1.8x that: the real boot passes with room for scheduler noise and a doubled boot (about 0.6) fails.
 	 */
-	public const MAX_BOOT_UNITS = 1.5;
+	public const MAX_BOOT_UNITS = 0.55;
 
 	/**
 	 * Returns the median of numeric samples.
@@ -44,12 +45,14 @@ final class BootBudget {
 	}
 
 	/**
-	 * Times one run of the fixed CPU workload and returns the milliseconds.
+	 * Times one run of the fixed CPU workload (or a fraction of it) and returns the milliseconds.
+	 *
+	 * @param int $iterations Workload size; the default is one unit.
 	 */
-	public static function spin(): float {
+	public static function spin( int $iterations = self::SPIN_ITERATIONS ): float {
 		$start = hrtime( true );
 		$sum   = 0;
-		for ( $n = 0; $n < self::SPIN_ITERATIONS; ++$n ) {
+		for ( $n = 0; $n < $iterations; ++$n ) {
 			$sum ^= crc32( (string) $n );
 		}
 		if ( $sum < 0 ) {

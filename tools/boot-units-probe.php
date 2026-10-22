@@ -94,5 +94,5 @@ $samples  = BootBudget::measure(
 	20
 );
 $units    = BootBudget::units( $samples['boots'], $samples['spins'] );
-printf( "boot %.3f ms, spin %.3f ms, %.3f units (ceiling %.1f), container %s\n", BootBudget::median( $samples['boots'] ), BootBudget::median( $samples['spins'] ), $units, BootBudget::MAX_BOOT_UNITS, Kernel::container() ? 'built' : 'MISSING' );
+printf( "boot %.3f ms, spin %.3f ms, %.3f units (ceiling %.2f), container %s\n", BootBudget::median( $samples['boots'] ), BootBudget::median( $samples['spins'] ), $units, BootBudget::MAX_BOOT_UNITS, Kernel::container() ? 'built' : 'MISSING' );
 exit( null !== Kernel::container() && $units < BootBudget::MAX_BOOT_UNITS ? 0 : 1 );
