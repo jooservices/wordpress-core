@@ -26,8 +26,14 @@ msgstr "Trang trước"
 msgid "Next page"
 msgstr "Trang sau"
 
+msgid "carousel"
+msgstr "băng chuyền"
+
 msgid "Featured articles"
 msgstr "Bài viết nổi bật"
+
+msgid "slide"
+msgstr "slide"
 
 msgid "%1$d of %2$d"
 msgstr "%1$d trên %2$d"
@@ -99,6 +105,42 @@ msgstr "Trong trang này"
 msgid "Table of contents"
 msgstr "Mục lục"
 
+msgid "JOOservices caches flushed."
+msgstr "Đã xóa bộ nhớ đệm JOOservices."
+
+msgid "You do not have permission to manage these settings."
+msgstr "Bạn không có quyền quản lý các thiết lập này."
+
+msgid "Snapshot:"
+msgstr "Ảnh chụp:"
+
+msgid "Self-test:"
+msgstr "Tự kiểm tra:"
+
+msgid "[%1$s] %2$s: %3$s"
+msgstr "[%1$s] %2$s: %3$s"
+
+msgid "No problems found."
+msgstr "Không phát hiện vấn đề nào."
+
+msgid "Unknown setting \"%s\"."
+msgstr "Thiết lập \"%s\" không tồn tại."
+
+msgid "%1$s = %2$s"
+msgstr "%1$s = %2$s"
+
+msgid "Remove every saved setting?"
+msgstr "Xóa mọi thiết lập đã lưu?"
+
+msgid "All saved settings removed."
+msgstr "Đã xóa mọi thiết lập đã lưu."
+
+msgid "Pass a known key or --all."
+msgstr "Hãy truyền một khóa hợp lệ hoặc --all."
+
+msgid "%s reset."
+msgstr "Đã đặt lại %s."
+
 msgid "These options are in the editor sidebar."
 msgstr "Các tùy chọn này nằm ở thanh bên của trình soạn thảo."
 
@@ -107,9 +149,6 @@ msgstr "Tương thích"
 
 msgid "Tools"
 msgstr "Công cụ"
-
-msgid "You do not have permission to manage these settings."
-msgstr "Bạn không có quyền quản lý các thiết lập này."
 
 msgid "Settings sections"
 msgstr "Các nhóm thiết lập"
@@ -233,6 +272,24 @@ msgstr "Một số giá trị chưa được lưu. Hãy kiểm tra các trườn
 
 msgid "Settings saved."
 msgstr "Đã lưu thiết lập."
+
+msgid "Core version"
+msgstr "Phiên bản lõi"
+
+msgid "Manifest"
+msgstr "Tệp kê khai"
+
+msgid "Modules"
+msgstr "Mô-đun"
+
+msgid "Settings by source"
+msgstr "Thiết lập theo nguồn"
+
+msgid "JOOservices core"
+msgstr "Lõi JOOservices"
+
+msgid "JOOservices"
+msgstr "JOOservices"
 
 msgid "Theme Core"
 msgstr "Lõi giao diện"
@@ -516,6 +573,9 @@ msgstr "Đóng terminal"
 msgid "Terminal command"
 msgstr "Lệnh terminal"
 
+msgid "Terminal output"
+msgstr "Kết quả đầu ra của terminal"
+
 msgid "This page has no translation. Use the language switcher."
 msgstr "Trang này chưa có bản dịch. Hãy dùng bộ chuyển ngôn ngữ."
 
@@ -759,6 +819,12 @@ msgstr "(không khớp)"
 msgid "(no match. grep is case-sensitive, try -i)"
 msgstr "(không khớp. grep phân biệt chữ hoa/thường, hãy thử -i)"
 
+msgid "Language of the post."
+msgstr "Ngôn ngữ của bài viết."
+
+msgid "Published translations by language."
+msgstr "Các bản dịch đã xuất bản theo ngôn ngữ."
+
 msgid "Lang"
 msgstr "Ngôn ngữ"
 
@@ -770,6 +836,21 @@ msgstr "Đặt ngôn ngữ: %s"
 
 msgid "Play video: %s"
 msgstr "Phát video: %s"
+
+msgid "Parameter %s is required."
+msgstr "Tham số %s là bắt buộc."
+
+msgid "Parameter %s must be an integer."
+msgstr "Tham số %s phải là số nguyên."
+
+msgid "Parameter %s is out of range."
+msgstr "Tham số %s nằm ngoài phạm vi cho phép."
+
+msgid "Parameter %s is not an allowed value."
+msgstr "Tham số %s không phải là giá trị được phép."
+
+msgid "Parameter %s is too long."
+msgstr "Tham số %s quá dài."
 
 msgid "Loading…"
 msgstr "Đang tải…"
@@ -783,12 +864,21 @@ msgstr "Lazy load cho bài viết này"
 msgid "default follows the site settings; off loads everything immediately; on forces lazy loading."
 msgstr "default theo thiết lập của site; off tải mọi thứ ngay; on bắt buộc lazy load."
 
+msgid "Unknown fragment."
+msgstr "Không rõ đoạn nội dung này."
+
+msgid "This fragment is not available right now."
+msgstr "Đoạn nội dung này hiện không khả dụng."
+
 msgid "Show %d comment"
 msgid_plural "Show %d comments"
 msgstr[0] "Hiện %d bình luận"
 
 msgid "Leave a comment"
 msgstr "Để lại bình luận"
+
+msgid "Joo: %1$d queries, %2$s s, %3$d JS, %4$d CSS, cache %5$d/%6$d"
+msgstr "Joo: %1$d truy vấn, %2$s giây, %3$d JS, %4$d CSS, bộ nhớ đệm %5$d/%6$d"
 
 msgid "Home"
 msgstr "Trang chủ"
@@ -858,6 +948,15 @@ msgstr "Có nhiều hơn một plugin SEO đang hoạt động"
 
 msgid "SEO output is consistent"
 msgstr "Đầu ra SEO nhất quán"
+
+msgid "JOOservices core needs PHP %1$s or newer (found %2$s)."
+msgstr "Lõi JOOservices cần PHP %1$s trở lên (hiện là %2$s)."
+
+msgid "JOOservices core needs WordPress %1$s or newer (found %2$s)."
+msgstr "Lõi JOOservices cần WordPress %1$s trở lên (hiện là %2$s)."
+
+msgid "The PHP extension \"%s\" is required by JOOservices core."
+msgstr "Lõi JOOservices yêu cầu tiện ích mở rộng PHP \"%s\"."
 
 msgid "Categories are directories, posts are .md files, tags are virtual directories of links. Nothing you type leaves this page."
 msgstr "Chuyên mục là thư mục, bài viết là tệp .md, thẻ là thư mục ảo chứa liên kết. Nội dung bạn nhập không rời khỏi trang này."
