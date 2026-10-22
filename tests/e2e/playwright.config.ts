@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 const baseURL = process.env.E2E_BASE_URL ?? 'http://127.0.0.1:8082';
 const theme = process.env.E2E_THEME ?? '';
 const reports = process.env.E2E_REPORT_DIR ?? '../../artifacts/reports/e2e';
+const responsiveSpec = 'themes/jooservices/tests/e2e/responsive.spec.ts';
 const fixtureSpecs = theme ? new URL(`../fixtures/themes/${theme}/tests/e2e/`, import.meta.url) : null;
 const fixtureTheme = fixtureSpecs ? existsSync(fileURLToPath(fixtureSpecs)) : false;
 
@@ -31,9 +32,37 @@ export default defineConfig({
     {
       name: 'phone',
       use: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 },
+      ...(theme === 'jooservices' ? { testIgnore: [responsiveSpec] } : {}),
     },
-    { name: 'tablet', use: { viewport: { width: 820, height: 1180 }, hasTouch: true } },
-    { name: 'desktop', use: { viewport: { width: 1440, height: 900 } } },
+    {
+      name: 'tablet',
+      use: { viewport: { width: 820, height: 1180 }, hasTouch: true },
+      ...(theme === 'jooservices' ? { testIgnore: [responsiveSpec] } : {}),
+    },
+    {
+      name: 'desktop',
+      use: { viewport: { width: 1440, height: 900 } },
+      ...(theme === 'jooservices' ? { testIgnore: [responsiveSpec] } : {}),
+    },
+    ...(theme === 'jooservices'
+      ? [
+          {
+            name: 'responsive-chromium',
+            testMatch: [responsiveSpec],
+            use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+          },
+          {
+            name: 'responsive-webkit',
+            testMatch: [responsiveSpec],
+            use: { ...devices['Desktop Safari'], viewport: { width: 1440, height: 900 } },
+          },
+          {
+            name: 'responsive-firefox',
+            testMatch: [responsiveSpec],
+            use: { ...devices['Desktop Firefox'], viewport: { width: 1440, height: 900 } },
+          },
+        ]
+      : []),
     // Cross-engine runs (E2E_ENGINES=webkit,firefox): WebKit is the Safari engine.
     ...(process.env.E2E_ENGINES?.includes('webkit')
       ? [{ name: 'webkit', use: { ...devices['Desktop Safari'], viewport: { width: 1440, height: 900 } } }]
