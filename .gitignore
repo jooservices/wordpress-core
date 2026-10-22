@@ -7,6 +7,11 @@ node_modules/
 !.env.example
 # reports and build output
 /artifacts/
+!/artifacts/
+artifacts/*
+!/artifacts/package/
+artifacts/package/*
+!/artifacts/package/jooservices-resume-0.1.0.zip
 *.log
 .DS_Store
 /themes/*/core
