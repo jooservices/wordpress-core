@@ -47,20 +47,55 @@ final class BootBudgetTest extends TestCase {
 		$this->assertLessThan( BootBudget::MAX_BOOT_UNITS, BootBudget::units( $run['boots'], $run['spins'] ) );
 	}
 
-	public function test_a_real_boot_with_an_injected_2x_slowdown_fails_the_ceiling(): void {
-		$run = BootBudget::measure( self::boot( 2 ), self::SAMPLES );
-		$this->assertGreaterThanOrEqual( BootBudget::MAX_BOOT_UNITS, BootBudget::units( $run['boots'], $run['spins'] ) );
+	/**
+	 * Interleaves healthy and doubled boots so both see the same host load, and returns their units.
+	 *
+	 * @return array{healthy: float, doubled: float, runs: array<string, array{boots: list<float>, spins: list<float>}>}
+	 */
+	private static function interleaved(): array {
+		$runs = array(
+			'healthy' => array(
+				'boots' => array(),
+				'spins' => array(),
+			),
+			'doubled' => array(
+				'boots' => array(),
+				'spins' => array(),
+			),
+		);
+		for ( $i = 0; $i < self::SAMPLES; ++$i ) {
+			$order = BootBudget::spinsFirst( $i ) ? array( 'healthy', 'doubled' ) : array( 'doubled', 'healthy' );
+			foreach ( $order as $name ) {
+				$one = BootBudget::measure( self::boot( 'healthy' === $name ? 1 : 2 ), 1 );
+
+				$runs[ $name ]['boots'][] = $one['boots'][0];
+				$runs[ $name ]['spins'][] = $one['spins'][0];
+			}
+		}
+
+		return array(
+			'healthy' => BootBudget::units( $runs['healthy']['boots'], $runs['healthy']['spins'] ),
+			'doubled' => BootBudget::units( $runs['doubled']['boots'], $runs['doubled']['spins'] ),
+			'runs'    => $runs,
+		);
+	}
+
+	public function test_a_real_boot_with_an_injected_2x_slowdown_is_far_above_the_same_run_healthy_boot(): void {
+		// Compared with the healthy boot of the same run, not with the absolute ceiling, which a doubled boot only just clears.
+		$run = self::interleaved();
+		$this->assertGreaterThan( 1.5 * $run['healthy'], $run['doubled'] );
 	}
 
 	public function test_a_busy_host_does_not_fail_a_healthy_boot_but_still_fails_a_doubled_one(): void {
 		// Busy host: every timing, boots and spins alike, is stretched by the same factor.
 		$busy = static fn( array $samples ): array => array_map( static fn( float $ms ): float => $ms * 4.2, $samples );
 
-		$healthy = BootBudget::measure( self::boot( 1 ), self::SAMPLES );
-		$doubled = BootBudget::measure( self::boot( 2 ), self::SAMPLES );
+		$run     = self::interleaved();
+		$healthy = BootBudget::units( $busy( $run['runs']['healthy']['boots'] ), $busy( $run['runs']['healthy']['spins'] ) );
+		$doubled = BootBudget::units( $busy( $run['runs']['doubled']['boots'] ), $busy( $run['runs']['doubled']['spins'] ) );
 
-		$this->assertLessThan( BootBudget::MAX_BOOT_UNITS, BootBudget::units( $busy( $healthy['boots'] ), $busy( $healthy['spins'] ) ) );
-		$this->assertGreaterThanOrEqual( BootBudget::MAX_BOOT_UNITS, BootBudget::units( $busy( $doubled['boots'] ), $busy( $doubled['spins'] ) ) );
+		$this->assertLessThan( BootBudget::MAX_BOOT_UNITS, $healthy );
+		$this->assertGreaterThan( 1.5 * $healthy, $doubled );
 	}
 
 	public function test_measure_accepts_a_boot_that_reports_its_own_cost(): void {

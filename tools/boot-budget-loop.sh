@@ -7,6 +7,8 @@ runs="${1:-20}"
 workers="${2:-4}"
 probe=tools/boot-units-probe.php
 run() { php "$probe"; }
+# BOOT_BUDGET_CHECK overrides the judged command (e.g. "php vendor/bin/phpunit --filter BootBudgetTest"); the load stays the probe.
+check() { if [[ -n "${BOOT_BUDGET_CHECK:-}" ]]; then eval "$BOOT_BUDGET_CHECK"; else run; fi; }
 
 for ((w = 0; w < workers; w++)); do
   (while [[ ! -f "${TMPDIR:-/tmp}/boot-budget-loop.stop.$$" ]]; do run >/dev/null 2>&1; done) &
@@ -15,7 +17,7 @@ done
 pass=0
 fail=0
 for ((i = 1; i <= runs; i++)); do
-  if out="$(run 2>&1)"; then pass=$((pass + 1)); else fail=$((fail + 1)); echo "$out" | tail -15; fi
+  if out="$(check 2>&1)"; then pass=$((pass + 1)); else fail=$((fail + 1)); echo "$out" | tail -15; fi
 done
 touch "${TMPDIR:-/tmp}/boot-budget-loop.stop.$$"
 wait
