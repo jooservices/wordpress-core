@@ -7,7 +7,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-20T02:21:57+00:00\n"
+"POT-Creation-Date: 2026-10-22T21:52:01+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: joo-core\n"
@@ -39,7 +39,15 @@ msgid "Next page"
 msgstr ""
 
 #: resources/blocks/featured-slider/render.php:18
+msgid "carousel"
+msgstr ""
+
+#: resources/blocks/featured-slider/render.php:18
 msgid "Featured articles"
+msgstr ""
+
+#: resources/blocks/featured-slider/render.php:22
+msgid "slide"
 msgstr ""
 
 #. translators: 1: slide number, 2: slide count.
@@ -140,13 +148,72 @@ msgstr ""
 msgid "Change colour theme"
 msgstr ""
 
-#: resources/blocks/toc/render.php:15
+#: resources/blocks/toc/render.php:16
 #: src/I18n/JsStrings.php:51
 msgid "On this page"
 msgstr ""
 
-#: resources/blocks/toc/render.php:16
+#: resources/blocks/toc/render.php:17
 msgid "Table of contents"
+msgstr ""
+
+#: src/Admin/Cli/CacheCommand.php:48
+msgid "JOOservices caches flushed."
+msgstr ""
+
+#: src/Admin/Cli/CapabilityGuard.php:30
+#: src/Admin/SettingsPage.php:107
+#: src/Admin/SettingsPage.php:522
+msgid "You do not have permission to manage these settings."
+msgstr ""
+
+#: src/Admin/Cli/DoctorCommand.php:57
+msgid "Snapshot:"
+msgstr ""
+
+#: src/Admin/Cli/DoctorCommand.php:58
+msgid "Self-test:"
+msgstr ""
+
+#. translators: 1: test status, 2: test identifier, 3: result label.
+#: src/Admin/Cli/DoctorCommand.php:75
+#, php-format
+msgid "[%1$s] %2$s: %3$s"
+msgstr ""
+
+#: src/Admin/Cli/DoctorCommand.php:86
+msgid "No problems found."
+msgstr ""
+
+#. translators: %s: settings key.
+#: src/Admin/Cli/SettingsCommand.php:94
+#: src/Admin/Cli/SettingsCommand.php:125
+#, php-format
+msgid "Unknown setting \"%s\"."
+msgstr ""
+
+#. translators: 1: setting key, 2: setting value.
+#: src/Admin/Cli/SettingsCommand.php:138
+#, php-format
+msgid "%1$s = %2$s"
+msgstr ""
+
+#: src/Admin/Cli/SettingsCommand.php:168
+msgid "Remove every saved setting?"
+msgstr ""
+
+#: src/Admin/Cli/SettingsCommand.php:170
+msgid "All saved settings removed."
+msgstr ""
+
+#: src/Admin/Cli/SettingsCommand.php:174
+msgid "Pass a known key or --all."
+msgstr ""
+
+#. translators: %s: settings key.
+#: src/Admin/Cli/SettingsCommand.php:180
+#, php-format
+msgid "%s reset."
 msgstr ""
 
 #: src/Admin/EditorPanels.php:186
@@ -159,11 +226,6 @@ msgstr ""
 
 #: src/Admin/SettingsPage.php:98
 msgid "Tools"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:107
-#: src/Admin/SettingsPage.php:522
-msgid "You do not have permission to manage these settings."
 msgstr ""
 
 #: src/Admin/SettingsPage.php:114
@@ -192,7 +254,7 @@ msgstr ""
 
 #: src/Admin/SettingsPage.php:271
 #: src/Blocks/Blocks/TagList.php:172
-#: src/Blocks/EditorBundle.php:122
+#: src/Blocks/EditorBundle.php:125
 #: src/Seo/Breadcrumbs/TrailBuilder.php:204
 msgid "Tags"
 msgstr ""
@@ -347,6 +409,31 @@ msgstr ""
 msgid "Settings saved."
 msgstr ""
 
+#: src/Admin/SiteHealth.php:183
+msgid "Core version"
+msgstr ""
+
+#: src/Admin/SiteHealth.php:187
+msgid "Manifest"
+msgstr ""
+
+#: src/Admin/SiteHealth.php:191
+msgid "Modules"
+msgstr ""
+
+#: src/Admin/SiteHealth.php:195
+msgid "Settings by source"
+msgstr ""
+
+#: src/Admin/SiteHealth.php:200
+msgid "JOOservices core"
+msgstr ""
+
+#: src/Admin/SiteHealth.php:219
+#: src/Kernel.php:305
+msgid "JOOservices"
+msgstr ""
+
 #: src/Blocks/BlockRegistrar.php:81
 #: src/Blocks/PatternLoader.php:58
 msgid "Theme Core"
@@ -395,191 +482,191 @@ msgstr ""
 msgid "Copy"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:77
+#: src/Blocks/EditorBundle.php:80
 msgid "About page"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:78
+#: src/Blocks/EditorBundle.php:81
 msgid "Author archive"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:79
+#: src/Blocks/EditorBundle.php:82
 msgid "Autoplay"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:80
+#: src/Blocks/EditorBundle.php:83
 msgid "Avatar size"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:81
+#: src/Blocks/EditorBundle.php:84
 msgid "Chevron"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:82
+#: src/Blocks/EditorBundle.php:85
 msgid "Chips"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:83
+#: src/Blocks/EditorBundle.php:86
 msgid "Cloud"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:84
+#: src/Blocks/EditorBundle.php:87
 msgid "Collapsed"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:85
+#: src/Blocks/EditorBundle.php:88
 msgid "Companies per page"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:86
+#: src/Blocks/EditorBundle.php:89
 msgid "Curated"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:87
+#: src/Blocks/EditorBundle.php:90
 msgid "Current company label"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:88
+#: src/Blocks/EditorBundle.php:91
 msgid "Dot"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:89
+#: src/Blocks/EditorBundle.php:92
 msgid "Dropdown"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:90
+#: src/Blocks/EditorBundle.php:93
 msgid "Expanded levels"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:91
+#: src/Blocks/EditorBundle.php:94
 msgid "Hide current language"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:92
+#: src/Blocks/EditorBundle.php:95
 msgid "Hide empty categories"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:93
+#: src/Blocks/EditorBundle.php:96
 msgid "Interval (ms)"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:94
+#: src/Blocks/EditorBundle.php:97
 msgid "Label"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:95
+#: src/Blocks/EditorBundle.php:98
 msgid "Label length"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:96
+#: src/Blocks/EditorBundle.php:99
 msgid "Link the category"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:97
+#: src/Blocks/EditorBundle.php:100
 msgid "Link to"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:98
+#: src/Blocks/EditorBundle.php:101
 msgid "List"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:99
+#: src/Blocks/EditorBundle.php:102
 msgid "List label"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:100
+#: src/Blocks/EditorBundle.php:103
 msgid "Maximum depth"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:101
+#: src/Blocks/EditorBundle.php:104
 msgid "Minimum headings"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:102
+#: src/Blocks/EditorBundle.php:105
 msgid "Most posts"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:103
+#: src/Blocks/EditorBundle.php:106
 msgid "Most used"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:104
+#: src/Blocks/EditorBundle.php:107
 msgid "Name"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:105
+#: src/Blocks/EditorBundle.php:108
 msgid "Order"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:106
+#: src/Blocks/EditorBundle.php:109
 msgid "Posts"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:107
+#: src/Blocks/EditorBundle.php:110
 msgid "Separator"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:108
+#: src/Blocks/EditorBundle.php:111
 msgid "Show bio"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:109
+#: src/Blocks/EditorBundle.php:112
 msgid "Show counts"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:110
+#: src/Blocks/EditorBundle.php:113
 msgid "Show description"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:111
+#: src/Blocks/EditorBundle.php:114
 msgid "Show descriptions"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:112
+#: src/Blocks/EditorBundle.php:115
 msgid "Show excerpt"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:113
+#: src/Blocks/EditorBundle.php:116
 msgid "Show excerpts"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:114
+#: src/Blocks/EditorBundle.php:117
 msgid "Show home"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:115
+#: src/Blocks/EditorBundle.php:118
 msgid "Show images"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:116
+#: src/Blocks/EditorBundle.php:119
 msgid "Show intro"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:117
+#: src/Blocks/EditorBundle.php:120
 msgid "Show meta"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:118
+#: src/Blocks/EditorBundle.php:121
 msgid "Show social links"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:119
+#: src/Blocks/EditorBundle.php:122
 msgid "Site setting"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:120
+#: src/Blocks/EditorBundle.php:123
 msgid "Slash"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:121
+#: src/Blocks/EditorBundle.php:124
 msgid "Style"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:123
+#: src/Blocks/EditorBundle.php:126
 msgid "Title"
 msgstr ""
 
-#: src/Blocks/EditorBundle.php:124
+#: src/Blocks/EditorBundle.php:127
 msgid "Topics"
 msgstr ""
 
@@ -732,327 +819,339 @@ msgid "Terminal command"
 msgstr ""
 
 #: src/I18n/JsStrings.php:55
-msgid "This page has no translation. Use the language switcher."
+msgid "Terminal output"
 msgstr ""
 
 #: src/I18n/JsStrings.php:56
-msgid "Blocked: not a link on this site."
+msgid "This page has no translation. Use the language switcher."
 msgstr ""
 
 #: src/I18n/JsStrings.php:57
-msgid "read-only shell · nothing is sent anywhere"
+msgid "Blocked: not a link on this site."
 msgstr ""
 
 #: src/I18n/JsStrings.php:58
-msgid "Type "
+msgid "read-only shell · nothing is sent anywhere"
 msgstr ""
 
 #: src/I18n/JsStrings.php:59
-msgid "loading file system…"
+msgid "Type "
 msgstr ""
 
 #: src/I18n/JsStrings.php:60
-msgid "The terminal could not be loaded."
+msgid "loading file system…"
 msgstr ""
 
 #: src/I18n/JsStrings.php:61
-msgid "list the commands"
+msgid "The terminal could not be loaded."
 msgstr ""
 
 #: src/I18n/JsStrings.php:62
-msgid "Read-only shell. Categories are directories, posts are files. Nothing is sent anywhere."
+msgid "list the commands"
 msgstr ""
 
 #: src/I18n/JsStrings.php:63
-msgid "Tab completes · ↑/↓ history · click names to run them"
+msgid "Read-only shell. Categories are directories, posts are files. Nothing is sent anywhere."
 msgstr ""
 
 #: src/I18n/JsStrings.php:64
-msgid "manual entry of a command"
+msgid "Tab completes · ↑/↓ history · click names to run them"
 msgstr ""
 
 #: src/I18n/JsStrings.php:65
-msgid "What manual page do you want?"
+msgid "manual entry of a command"
 msgstr ""
 
 #: src/I18n/JsStrings.php:66
-msgid "No manual entry for {command}"
+msgid "What manual page do you want?"
 msgstr ""
 
 #: src/I18n/JsStrings.php:67
-msgid "who writes here"
+msgid "No manual entry for {command}"
 msgstr ""
 
 #: src/I18n/JsStrings.php:68
-msgid "show the host name"
+msgid "who writes here"
 msgstr ""
 
 #: src/I18n/JsStrings.php:69
-msgid "show the user"
+msgid "show the host name"
 msgstr ""
 
 #: src/I18n/JsStrings.php:70
-msgid "current date and time"
+msgid "show the user"
 msgstr ""
 
 #: src/I18n/JsStrings.php:71
-msgid "system name"
+msgid "current date and time"
 msgstr ""
 
 #: src/I18n/JsStrings.php:72
-msgid "print text"
+msgid "system name"
 msgstr ""
 
 #: src/I18n/JsStrings.php:73
-msgid "clear the screen (Ctrl+L)"
+msgid "print text"
 msgstr ""
 
 #: src/I18n/JsStrings.php:74
-msgid "commands typed in this tab"
+msgid "clear the screen (Ctrl+L)"
 msgstr ""
 
 #: src/I18n/JsStrings.php:75
-msgid "close the terminal"
+msgid "commands typed in this tab"
 msgstr ""
 
 #: src/I18n/JsStrings.php:76
-msgid "alias of exit"
+msgid "close the terminal"
 msgstr ""
 
 #: src/I18n/JsStrings.php:77
-msgid "where a command lives"
+msgid "alias of exit"
 msgstr ""
 
 #: src/I18n/JsStrings.php:78
-msgid "about this site"
+msgid "where a command lives"
 msgstr ""
 
 #: src/I18n/JsStrings.php:79
-msgid "OS: WordPress · block theme"
+msgid "about this site"
 msgstr ""
 
 #: src/I18n/JsStrings.php:80
-msgid "Site: {site}"
+msgid "OS: WordPress · block theme"
 msgstr ""
 
 #: src/I18n/JsStrings.php:81
-msgid "Posts: {posts} · Directories: {directories}"
+msgid "Site: {site}"
 msgstr ""
 
 #: src/I18n/JsStrings.php:82
-msgid "Shell: joo-sh (read-only)"
+msgid "Posts: {posts} · Directories: {directories}"
 msgstr ""
 
 #: src/I18n/JsStrings.php:83
-msgid "always offline by design"
+msgid "Shell: joo-sh (read-only)"
 msgstr ""
 
 #: src/I18n/JsStrings.php:84
-msgid "ping: connect: Network is unreachable (this shell is offline by design)"
+msgid "always offline by design"
 msgstr ""
 
 #: src/I18n/JsStrings.php:85
-msgid "not available"
+msgid "ping: connect: Network is unreachable (this shell is offline by design)"
 msgstr ""
 
 #: src/I18n/JsStrings.php:86
-msgid "{user} is not in the sudoers file. This incident will be reported to /dev/null."
+msgid "not available"
 msgstr ""
 
 #: src/I18n/JsStrings.php:87
-msgid "refused: the file system is read-only"
+msgid "{user} is not in the sudoers file. This incident will be reported to /dev/null."
 msgstr ""
 
 #: src/I18n/JsStrings.php:88
-msgid "{command}: cannot modify '{path}': Read-only file system"
+msgid "refused: the file system is read-only"
 msgstr ""
 
 #: src/I18n/JsStrings.php:89
-msgid "The file system is read-only. Try cat."
+msgid "{command}: cannot modify '{path}': Read-only file system"
 msgstr ""
 
 #: src/I18n/JsStrings.php:90
-msgid "go to that view on the site (post, category, tag, page)"
+msgid "The file system is read-only. Try cat."
 msgstr ""
 
 #: src/I18n/JsStrings.php:91
-msgid "xdg-open: {path}: No such file or directory → 404"
+msgid "go to that view on the site (post, category, tag, page)"
 msgstr ""
 
 #: src/I18n/JsStrings.php:92
-msgid "no viewer for {name}; use cat"
+msgid "xdg-open: {path}: No such file or directory → 404"
 msgstr ""
 
 #: src/I18n/JsStrings.php:93
-msgid "opening {path} …"
+msgid "no viewer for {name}; use cat"
 msgstr ""
 
 #: src/I18n/JsStrings.php:94
-msgid "alias of open"
+msgid "opening {path} …"
 msgstr ""
 
 #: src/I18n/JsStrings.php:95
-msgid "fake HTTP response for a path (no network)"
+msgid "alias of open"
 msgstr ""
 
 #: src/I18n/JsStrings.php:96
-msgid "curl: try 'curl --help' for more information"
+msgid "fake HTTP response for a path (no network)"
 msgstr ""
 
 #: src/I18n/JsStrings.php:97
-msgid "(simulated, no network)"
+msgid "curl: try 'curl --help' for more information"
 msgstr ""
 
 #: src/I18n/JsStrings.php:98
-msgid "→ open {path}"
+msgid "(simulated, no network)"
 msgstr ""
 
 #: src/I18n/JsStrings.php:99
-msgid "change the site theme"
+msgid "→ open {path}"
 msgstr ""
 
 #: src/I18n/JsStrings.php:100
-msgid "usage: theme dark|light"
+msgid "change the site theme"
 msgstr ""
 
 #: src/I18n/JsStrings.php:101
-msgid "theme → {theme}"
+msgid "usage: theme dark|light"
 msgstr ""
 
 #: src/I18n/JsStrings.php:102
-msgid "change the site language (for example lang en, lang vi)"
+msgid "theme → {theme}"
 msgstr ""
 
 #: src/I18n/JsStrings.php:103
-msgid "usage: lang <code> (for example en or vi)"
+msgid "change the site language (for example lang en, lang vi)"
 msgstr ""
 
 #: src/I18n/JsStrings.php:104
-msgid "lang → {language}"
+msgid "usage: lang <code> (for example en or vi)"
 msgstr ""
 
 #: src/I18n/JsStrings.php:105
-msgid "{command}: cannot access '{path}': No such file or directory"
+msgid "lang → {language}"
 msgstr ""
 
 #: src/I18n/JsStrings.php:106
-msgid "category: "
+msgid "{command}: cannot access '{path}': No such file or directory"
 msgstr ""
 
 #: src/I18n/JsStrings.php:107
-msgid "date: "
+msgid "category: "
 msgstr ""
 
 #: src/I18n/JsStrings.php:108
-msgid "read: "
+msgid "date: "
 msgstr ""
 
 #: src/I18n/JsStrings.php:109
-msgid "tags: "
+msgid "read: "
 msgstr ""
 
 #: src/I18n/JsStrings.php:110
-msgid "list directory (categories) and posts"
+msgid "tags: "
 msgstr ""
 
 #: src/I18n/JsStrings.php:111
-msgid "(empty)"
+msgid "list directory (categories) and posts"
 msgstr ""
 
 #: src/I18n/JsStrings.php:112
-msgid "total {count}"
+msgid "(empty)"
 msgstr ""
 
 #: src/I18n/JsStrings.php:113
-msgid "change directory (cd .., cd ~, cd -)"
+msgid "total {count}"
 msgstr ""
 
 #: src/I18n/JsStrings.php:114
-msgid "bash: cd: {path}: No such file or directory"
+msgid "change directory (cd .., cd ~, cd -)"
 msgstr ""
 
 #: src/I18n/JsStrings.php:115
-msgid "bash: cd: {path}: Not a directory"
+msgid "bash: cd: {path}: No such file or directory"
 msgstr ""
 
 #: src/I18n/JsStrings.php:116
-msgid "print working directory"
+msgid "bash: cd: {path}: Not a directory"
 msgstr ""
 
 #: src/I18n/JsStrings.php:117
-msgid "show a post summary or page"
+msgid "print working directory"
 msgstr ""
 
 #: src/I18n/JsStrings.php:118
-msgid "cat: missing file operand"
+msgid "show a post summary or page"
 msgstr ""
 
 #: src/I18n/JsStrings.php:119
-msgid "cat: {path}: No such file or directory"
+msgid "cat: missing file operand"
 msgstr ""
 
 #: src/I18n/JsStrings.php:120
-msgid "cat: {path}: Is a directory"
+msgid "cat: {path}: No such file or directory"
 msgstr ""
 
 #: src/I18n/JsStrings.php:121
-msgid "first lines of a file"
+msgid "cat: {path}: Is a directory"
 msgstr ""
 
 #: src/I18n/JsStrings.php:122
-msgid "head: missing file operand"
+msgid "first lines of a file"
 msgstr ""
 
 #: src/I18n/JsStrings.php:123
-msgid "head: cannot open '{path}' for reading: No such file or directory"
+msgid "head: missing file operand"
 msgstr ""
 
 #: src/I18n/JsStrings.php:124
-msgid "head: error reading '{path}': Is a directory"
+msgid "head: cannot open '{path}' for reading: No such file or directory"
 msgstr ""
 
 #: src/I18n/JsStrings.php:125
-msgid "directory tree"
+msgid "head: error reading '{path}': Is a directory"
 msgstr ""
 
 #: src/I18n/JsStrings.php:126
-msgid "{path} [error opening dir]"
+msgid "directory tree"
 msgstr ""
 
 #: src/I18n/JsStrings.php:127
-msgid "{directories} directories, {files} files"
+msgid "{path} [error opening dir]"
 msgstr ""
 
 #: src/I18n/JsStrings.php:128
-msgid "find files and directories by name"
+msgid "{directories} directories, {files} files"
 msgstr ""
 
 #: src/I18n/JsStrings.php:129
-msgid "find: '{path}': No such file or directory"
+msgid "find files and directories by name"
 msgstr ""
 
 #: src/I18n/JsStrings.php:130
-msgid "(no matches)"
+msgid "find: '{path}': No such file or directory"
 msgstr ""
 
 #: src/I18n/JsStrings.php:131
-msgid "search titles, excerpts and tags"
+msgid "(no matches)"
 msgstr ""
 
 #: src/I18n/JsStrings.php:132
-msgid "Usage: grep [OPTION]... PATTERN [FILE]..."
+msgid "search titles, excerpts and tags"
 msgstr ""
 
 #: src/I18n/JsStrings.php:133
-msgid "grep: {path}: No such file or directory"
+msgid "Usage: grep [OPTION]... PATTERN [FILE]..."
 msgstr ""
 
 #: src/I18n/JsStrings.php:134
-msgid "(no match)"
+msgid "grep: {path}: No such file or directory"
 msgstr ""
 
 #: src/I18n/JsStrings.php:135
+msgid "(no match)"
+msgstr ""
+
+#: src/I18n/JsStrings.php:136
 msgid "(no match. grep is case-sensitive, try -i)"
+msgstr ""
+
+#: src/I18n/LanguageTagging.php:86
+msgid "Language of the post."
+msgstr ""
+
+#: src/I18n/LanguageTagging.php:108
+msgid "Published translations by language."
 msgstr ""
 
 #: src/I18n/LanguageTagging.php:123
@@ -1075,7 +1174,37 @@ msgstr ""
 msgid "Play video: %s"
 msgstr ""
 
-#: src/Lazy/FragmentLazy.php:185
+#. translators: %s: parameter name.
+#: src/Lazy/FragmentLazy.php:104
+#, php-format
+msgid "Parameter %s is required."
+msgstr ""
+
+#. translators: %s: parameter name.
+#: src/Lazy/FragmentLazy.php:119
+#, php-format
+msgid "Parameter %s must be an integer."
+msgstr ""
+
+#. translators: %s: parameter name.
+#: src/Lazy/FragmentLazy.php:131
+#, php-format
+msgid "Parameter %s is out of range."
+msgstr ""
+
+#. translators: %s: parameter name.
+#: src/Lazy/FragmentLazy.php:147
+#, php-format
+msgid "Parameter %s is not an allowed value."
+msgstr ""
+
+#. translators: %s: parameter name.
+#: src/Lazy/FragmentLazy.php:162
+#, php-format
+msgid "Parameter %s is too long."
+msgstr ""
+
+#: src/Lazy/FragmentLazy.php:233
 msgid "Loading…"
 msgstr ""
 
@@ -1091,8 +1220,16 @@ msgstr ""
 msgid "default follows the site settings; off loads everything immediately; on forces lazy loading."
 msgstr ""
 
+#: src/Lazy/Rest/FragmentController.php:74
+msgid "Unknown fragment."
+msgstr ""
+
+#: src/Lazy/Rest/FragmentController.php:82
+msgid "This fragment is not available right now."
+msgstr ""
+
 #. translators: %d: number of comments.
-#: src/Lazy/SectionLazy.php:144
+#: src/Lazy/SectionLazy.php:155
 #, php-format
 msgid "Show %d comment"
 msgid_plural "Show %d comments"
@@ -1100,8 +1237,14 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of comments.
-#: src/Lazy/SectionLazy.php:145
+#: src/Lazy/SectionLazy.php:156
 msgid "Leave a comment"
+msgstr ""
+
+#. translators: 1: SQL queries, 2: elapsed seconds, 3: scripts, 4: stylesheets, 5: cache hits, 6: cache lookups.
+#: src/Performance/Diagnostics.php:87
+#, php-format
+msgid "Joo: %1$d queries, %2$s s, %3$d JS, %4$d CSS, cache %5$d/%6$d"
 msgstr ""
 
 #: src/Seo/Breadcrumbs/TrailBuilder.php:30
@@ -1199,6 +1342,24 @@ msgstr ""
 
 #: src/Seo/SeoModule.php:261
 msgid "SEO output is consistent"
+msgstr ""
+
+#. translators: 1: minimum PHP version, 2: current PHP version.
+#: src/Support/Requirements.php:40
+#, php-format
+msgid "JOOservices core needs PHP %1$s or newer (found %2$s)."
+msgstr ""
+
+#. translators: 1: minimum WordPress version, 2: current WordPress version.
+#: src/Support/Requirements.php:51
+#, php-format
+msgid "JOOservices core needs WordPress %1$s or newer (found %2$s)."
+msgstr ""
+
+#. translators: %s: PHP extension name.
+#: src/Support/Requirements.php:63
+#, php-format
+msgid "The PHP extension \"%s\" is required by JOOservices core."
 msgstr ""
 
 #: src/Terminal/FsBuilder.php:149
