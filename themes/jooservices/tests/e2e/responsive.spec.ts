@@ -68,9 +68,9 @@ async function json<T>(page: Page, path: string): Promise<T> {
   return (await response.json()) as T;
 }
 
-async function createPage(page: Page, title: string, slug: string, template: string): Promise<WpPage> {
+async function createPage(page: Page, nonce: string, title: string, slug: string, template: string): Promise<WpPage> {
   const response = await page.request.post('/wp-json/wp/v2/pages', {
-    headers: { 'X-WP-Nonce': await page.evaluate(() => (window as any).wpApiSettings?.nonce ?? '') },
+    headers: { 'X-WP-Nonce': nonce },
     data: {
       title,
       slug,
@@ -90,9 +90,9 @@ function pathFromLink(link: string): string {
   return `${url.pathname}${url.search}`;
 }
 
-async function deletePage(page: Page, id: number): Promise<void> {
+async function deletePage(page: Page, nonce: string, id: number): Promise<void> {
   const response = await page.request.delete(`/wp-json/wp/v2/pages/${id}?force=true`, {
-    headers: { 'X-WP-Nonce': await page.evaluate(() => (window as any).wpApiSettings?.nonce ?? '') },
+    headers: { 'X-WP-Nonce': nonce },
   });
   expect(response.ok(), `delete responsive fixture page ${id}`).toBeTruthy();
 }
@@ -238,13 +238,17 @@ async function assertNoScrollOrClipping(page: Page, label: string): Promise<void
 
 async function zoomText(page: Page): Promise<void> {
   await page.evaluate(() => {
-    document.querySelectorAll<HTMLElement>('body *').forEach((element) => {
+    const originalSizes = [...document.querySelectorAll<HTMLElement>('body *')].flatMap((element) => {
       const hasText = [...element.childNodes].some(
         (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim()
       );
-      if (!hasText && !element.matches('input, textarea, select, button')) return;
+      if (!hasText && !element.matches('input, textarea, select, button')) return [];
       const size = Number.parseFloat(getComputedStyle(element).fontSize);
-      if (Number.isFinite(size)) element.style.setProperty('font-size', `${size * 2}px`, 'important');
+      return Number.isFinite(size) ? [{ element, size }] : [];
+    });
+
+    originalSizes.forEach(({ element, size }) => {
+      element.style.setProperty('font-size', `${size * 2}px`, 'important');
     });
   });
 }
@@ -262,13 +266,21 @@ test('every shipped template reflows across the device matrix without clipping',
   const viewports = browserName === 'chromium' ? chromiumViewports : crossEngineViewports;
   await loginAsAdmin(page);
   await page.goto('/wp-admin/post-new.php?post_type=page');
+  const restNonce = await page.evaluate(() => (window as any).wpApiSettings?.nonce ?? '');
+  expect(restNonce, 'the admin page provides a REST nonce for fixture management').not.toBe('');
   const suffix = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
   const created: WpPage[] = [];
 
   try {
-    created.push(await createPage(page, 'Responsive default fixture', `joo-responsive-default-${suffix}`, ''));
-    created.push(await createPage(page, 'Responsive full width fixture', `joo-responsive-full-${suffix}`, 'page-full'));
-    created.push(await createPage(page, 'Responsive canvas fixture', `joo-responsive-canvas-${suffix}`, 'page-canvas'));
+    created.push(
+      await createPage(page, restNonce, 'Responsive default fixture', `joo-responsive-default-${suffix}`, '')
+    );
+    created.push(
+      await createPage(page, restNonce, 'Responsive full width fixture', `joo-responsive-full-${suffix}`, 'page-full')
+    );
+    created.push(
+      await createPage(page, restNonce, 'Responsive canvas fixture', `joo-responsive-canvas-${suffix}`, 'page-canvas')
+    );
     const routes = await templateRoutes(page, created);
     const homeSource = readFileSync(join(templateDirectory, 'home.html'), 'utf8');
     const indexSource = readFileSync(join(templateDirectory, 'index.html'), 'utf8');
@@ -316,7 +328,7 @@ test('every shipped template reflows across the device matrix without clipping',
       await assertResponsiveLayout(page, template);
     }
   } finally {
-    for (const fixture of created.reverse()) await deletePage(page, fixture.id);
+    for (const fixture of created.reverse()) await deletePage(page, restNonce, fixture.id);
   }
 });
 
