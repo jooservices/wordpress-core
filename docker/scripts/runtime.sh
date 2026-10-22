@@ -23,9 +23,6 @@ done
 # WordPress site run from the host: php, composer, node, npm, npx. The site tools (wp, sh, playwright) need the shared runtimes.
 if [[ "${JOOS_HOST_TOOLS:-}" == 1 || ! -f "$workspaces_root/dockers/compose.yaml" || ! -f "$workspaces_root/.env" ]]; then
   cd "$ROOT"
-  # Packaging tests use the same zip interface as the build scripts. Keep the
-  # repository implementation available when the host does not install zip.
-  if ! command -v zip >/dev/null 2>&1; then PATH="$ROOT/tools/bin:$PATH"; export PATH; fi
   case "$tool" in
     php | composer | npm | npx) exec "$tool" "$@" ;;
     php-node | node) exec node "$@" ;;
