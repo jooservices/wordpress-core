@@ -8,6 +8,8 @@ Both products require WordPress 6.6 and PHP 8.1. `Tested up to` is the newest Wo
 
 Use SemVer for each product independently. Fixes increment PATCH, backward-compatible features increment MINOR, and breaking public changes increment MAJOR. Add a newest-first changelog entry in the theme `CHANGELOG.md` and plugin `readme.txt` for every release. Keep the theme README linked to its changelog; the combined release changelog is published in `docs/releases/CHANGELOG.md`.
 
+For theme-core compatibility ranges, stable API rules, deprecations, backward-compatibility checks, and a theme changelog upgrade-notes template, follow the [theme-core upgrade and deprecation guide](guides/upgrading.md).
+
 ## Distribution and updates
 
 ThemeForest is the primary sales channel. `make release` produces an installable theme zip, a separate JOOservices Resume plugin zip, the ThemeForest main download, a preview-image zip, a demo-content zip, SHA-256 checksums, a dependency list, and an evidence report. The theme does not contact a JOOservices licence server. Envato purchase codes and ThemeForest downloads provide marketplace purchase and update delivery. If a buyer's marketplace entitlement expires, the installed theme and plugin continue working; marketplace updates may no longer be available. No feature is disabled and no licence check is sent from a buyer's site.
