@@ -16,12 +16,12 @@ done
 theme="${1:-jooservices}"
 [[ $# -le 1 ]] || { echo 'Usage: perf-vm.sh [theme]' >&2; exit 2; }
 
-ticket="${JOOS_TICKET:-$(git -C "$ROOT" branch --show-current | sed -nE 's/.*((JOOS|JOOWT)-[0-9]+).*/\1/p')}"
+ticket="${JOOS_TICKET:-$(git -C "$ROOT" branch --show-current | sed -nE 's/.*((JOOS|JOOWT|JOOWP)-[0-9]+).*/\1/p')}"
 if [[ -n "${PERF_BASE_URL:-${E2E_BASE_URL:-}}" ]]; then
   site_url="${PERF_BASE_URL:-$E2E_BASE_URL}"
 else
-  [[ "$ticket" =~ ^(JOOS|JOOWT)-[0-9]+$ ]] || {
-    echo 'ERROR: set PERF_BASE_URL or run from a JOOS/JOOWT worktree.' >&2
+  [[ "$ticket" =~ ^(JOOS|JOOWT|JOOWP)-[0-9]+$ ]] || {
+    echo 'ERROR: set PERF_BASE_URL or run from a JOOS/JOOWT/JOOWP worktree.' >&2
     exit 2
   }
   site_host="${JOO_SITE_HOST:-$(printf '%s' "$ticket" | tr 'A-Z' 'a-z').jooservices-wp-themes}"

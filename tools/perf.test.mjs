@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { build } from 'esbuild';
-import { checkAssetBudgets, checkBudgets, remoteChromeConnection } from './perf.mjs';
+import { checkAssetBudgets, checkBudgets, remoteChromeConnection, localChromePath } from './perf.mjs';
 import { readCodeBudgets } from './lib/perf-budgets.mjs';
 import { fromRoot } from './lib/paths.mjs';
 
@@ -105,6 +105,26 @@ describe('remote Lighthouse browser', () => {
       'Invalid LIGHTHOUSE_CDP_PORT'
     );
     expect(() => remoteChromeConnection({ LIGHTHOUSE_CDP_PORT: '9321' })).toThrow('LIGHTHOUSE_CDP_HOST is required');
+  });
+});
+
+describe('localChromePath', () => {
+  it('returns an existing Chromium path', () => {
+    expect(
+      localChromePath(
+        () => '/opt/chrome',
+        () => true
+      )
+    ).toBe('/opt/chrome');
+  });
+
+  it('explains how to use the Dev VM browser when Chromium is missing', () => {
+    expect(() =>
+      localChromePath(
+        () => '/tmp/.cache/ms-playwright/chromium-1248/chrome',
+        () => false
+      )
+    ).toThrow('make perf THEME=<theme>');
   });
 });
 

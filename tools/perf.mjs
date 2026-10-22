@@ -119,6 +119,18 @@ export function remoteChromeConnection(env = process.env) {
   return { host, port };
 }
 
+/** Resolves the Chromium used when no Dev VM browser is supplied; fails clearly when it is missing. */
+export function localChromePath(resolvePath = () => chromium.executablePath(), exists = existsSync) {
+  const path = resolvePath();
+  if (!path || !exists(path)) {
+    throw new Error(
+      `Chromium is not installed at ${path || '(unresolved)'}. Run Lighthouse through "make perf THEME=<theme>", ` +
+        'which uses the Dev VM browser (set LIGHTHOUSE_CDP_HOST and LIGHTHOUSE_CDP_PORT to supply one manually).'
+    );
+  }
+  return path;
+}
+
 async function startCDPForwarder({ host, port }) {
   const server = createServer((client) => {
     const upstream = createConnection({ host, port });
@@ -160,7 +172,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const chrome = remoteChrome
       ? null
       : await launch({
-          chromePath: chromium.executablePath(),
+          chromePath: localChromePath(),
           chromeFlags: ['--headless=new', '--no-sandbox'],
         });
     const cdpForwarder = remoteChrome ? await startCDPForwarder(remoteChrome) : null;
