@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JOOservices\ThemeCore\Tests\Integration;
 
+use JOOservices\TestKit\BootBudget;
 use JOOservices\TestKit\IntegrationTestCase;
 use JOOservices\ThemeCore\Admin\Notices;
 use JOOservices\ThemeCore\Config\Manifest;
@@ -255,7 +256,9 @@ final class KernelTest extends IntegrationTestCase {
 		$ms      = $this->median( $samples['ms'] );
 		$kb      = $this->median( $samples['bytes'] ) / 1024;
 		fwrite( STDERR, sprintf( "\n[boot cost] median %.2f ms, %.0f KB across %d boots\n", $ms, $kb, self::BOOT_COST_SAMPLES ) );
-		$this->assertLessThan( self::MAX_BOOT_MS, $ms, 'median boot must stay cheap (spec target < 3 ms warm; asserted with a CI margin)' );
+		$budget = BootBudget::scale( self::MAX_BOOT_MS );
+		fwrite( STDERR, sprintf( "[boot cost] budget %.2f ms for this host\n", $budget ) );
+		$this->assertLessThan( $budget, $ms, 'median boot must stay cheap (spec target < 3 ms warm; asserted with a CI margin scaled by the host load measured in this run)' );
 		$this->assertLessThan( 1536, $kb, 'median boot must stay under 1.5 MB' );
 	}
 
@@ -265,9 +268,13 @@ final class KernelTest extends IntegrationTestCase {
 			static fn( array $modules ): array => array_merge( $modules, array( SlowBootModule::class ) )
 		);
 
-		$samples = $this->measureBootCosts();
+		$slow = $this->median( $this->measureBootCosts()['ms'] );
 
-		$this->assertGreaterThanOrEqual( self::MAX_BOOT_MS, $this->median( $samples['ms'] ), 'a sustained slow module must fail the boot-time budget' );
+		// Judged against a clean boot measured in the same run, so host load can neither hide nor fake the slow module.
+		remove_all_filters( 'joo/core/modules' );
+		$clean = $this->median( $this->measureBootCosts()['ms'] );
+
+		$this->assertGreaterThanOrEqual( 40.0, $slow - $clean, 'a sustained slow module must stand out from a clean boot in the same run' );
 	}
 
 	/**

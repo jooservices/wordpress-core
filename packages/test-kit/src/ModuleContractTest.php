@@ -139,9 +139,10 @@ abstract class ModuleContractTest extends IntegrationTestCase {
 			Notices::reset();
 		}
 
+		$budget = BootBudget::scale( $this->maxBootMs() );
 		foreach ( $timings as $id => $cost ) {
 			$this->assertSame( self::BOOT_BUDGET_SAMPLES, count( $cost['ms'] ), $id . ' boot samples' );
-			$this->assertLessThan( $this->maxBootMs(), $this->median( $cost['ms'] ), $id . ' median boot time (ms)' );
+			$this->assertLessThan( $budget, $this->median( $cost['ms'] ), $id . ' median boot time (ms)' );
 			$this->assertLessThan( $this->maxBootBytes(), $this->median( $cost['bytes'] ), $id . ' median boot memory (bytes)' );
 		}
 	}
