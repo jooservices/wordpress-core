@@ -21,7 +21,7 @@ The branch retains the checkout-relative theme budget resolution coverage from t
 | `make lint` | Passed after formatting the test change |
 | `make analyse` | Passed: 0 violations, 0 uncovered dependencies, 0 warnings, 0 errors |
 | `bash tests/tooling/ticket-prefix.sh` | Passed, including the wildcard listener and Node runtime probe routing assertions |
-| `make test-unit` | Passed: PHPUnit 288 tests / 3,266 assertions; Vitest 48 files / 375 tests |
+| `make test-unit` | Passed: PHPUnit 288 tests / 3,266 assertions; Vitest 49 files / 377 tests |
 | Node runtime connectivity smoke | Passed: the shared Node runtime reached a temporary DevTools-shaped endpoint through an enumerated non-loopback host interface using `checkRemoteChrome` |
 
 ## Lighthouse evidence not produced
