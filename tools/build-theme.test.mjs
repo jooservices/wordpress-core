@@ -67,7 +67,7 @@ describe('build-theme', () => {
     const root = mkdtempSync(join(scratch, 'starter-package-'));
 
     try {
-      const { stage } = buildTheme('starter', { outDir: root });
+      const { stage } = buildTheme('starter', { outDir: root, zip: false });
       const manifest = JSON.parse(readFileSync(join(stage, 'assets/build/assets.json'), 'utf8'));
 
       expect(manifest.assets).toEqual({});

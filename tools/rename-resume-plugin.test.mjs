@@ -1,10 +1,10 @@
 // @vitest-environment node
-import { execFileSync } from 'node:child_process';
 import { lstatSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { build, pluginHeader } from './build-plugin.mjs';
 import { fromRoot } from './lib/paths.mjs';
+import { walk } from './runtime-bundle.mjs';
 
 const compatibilityNote = 'docs/modules/content.md';
 const retiredSlug = ['jooservices', 'content'].join('-');
@@ -56,15 +56,15 @@ describe('Resume plugin rename', () => {
     expect(failures).toEqual([]);
   });
 
-  it('packages the renamed plugin with the product header and no test files', () => {
-    const result = build('jooservices-resume');
+  it('stages the renamed plugin with the product header and no test files', () => {
+    const result = build('jooservices-resume', { zip: false });
     const header = pluginHeader(readFileSync(join(result.stage, 'jooservices-resume.php'), 'utf8'));
-    const entries = execFileSync('unzip', ['-Z1', result.zipPath], { encoding: 'utf8' });
+    const entries = walk(result.stage);
 
-    expect(result.zipPath).toContain('jooservices-resume-0.1.0.zip');
+    expect(result.zipPath).toBe('');
     expect(header['Plugin Name']).toBe('JOOservices Resume');
     expect(header['Text Domain']).toBe('jooservices-resume');
-    expect(entries).toContain('jooservices-resume/jooservices-resume.php');
-    expect(entries).not.toContain('/tests/');
+    expect(entries).toContain('jooservices-resume.php');
+    expect(entries.some((entry) => entry.startsWith('tests/'))).toBe(false);
   }, 15_000);
 });

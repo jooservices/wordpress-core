@@ -44,7 +44,7 @@ export function addBundledPlugin(stage, pluginZip, slug) {
 
 export function buildTheme(
   slug = 'jooservices',
-  { outDir = fromRoot('artifacts/package'), bundledPluginSlug = null } = {}
+  { outDir = fromRoot('artifacts/package'), bundledPluginSlug = null, zip = true } = {}
 ) {
   const themeDir = fromRoot('themes', slug);
   const coreDir = fromRoot('packages/theme-core');
@@ -106,22 +106,24 @@ export function buildTheme(
   if (rejected.length) problems.push(`unexpected core files: ${rejected.slice(0, 5).join(', ')}`);
   if (problems.length) throw new Error(`package FAILED:\n  ${problems.join('\n  ')}`);
 
-  const zip = join(out, `${slug}-${version}.zip`);
-  rmSync(zip, { force: true });
+  const files = walk(stage).length;
+  if (!zip) return { slug, version, stage, files, size: 0, zipPath: '' };
+
+  const zipPath = join(out, `${slug}-${version}.zip`);
+  rmSync(zipPath, { force: true });
   normalizeTimestamps(stage);
-  execFileSync('zip', ['-q', '-X', zip, ...sortedRelativeFiles(stage).map((file) => `${slug}/${file}`)], {
+  execFileSync('zip', ['-q', '-X', zipPath, ...sortedRelativeFiles(stage).map((file) => `${slug}/${file}`)], {
     cwd: out,
   });
-  const files = walk(stage).length;
-  const size = statSync(zip).size;
+  const size = statSync(zipPath).size;
   console.log(
-    `built ${relative(fromRoot(), zip)}: ${files} files, ${(size / 1024).toFixed(0)} KB (core ${coreFiles.length} files)`
+    `built ${relative(fromRoot(), zipPath)}: ${files} files, ${(size / 1024).toFixed(0)} KB (core ${coreFiles.length} files)`
   );
   // The zip must open and list the theme folder at its root.
-  const listing = execFileSync('unzip', ['-Z1', zip], { encoding: 'utf8' }).split('\n').filter(Boolean);
+  const listing = execFileSync('unzip', ['-Z1', zipPath], { encoding: 'utf8' }).split('\n').filter(Boolean);
   if (!listing.every((entry) => entry.startsWith(`${slug}/`)))
     throw new Error('zip entries are not all below the theme folder');
-  return { slug, version, stage, zipPath: zip, files, size };
+  return { slug, version, stage, zipPath, files, size };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
