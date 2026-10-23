@@ -26,7 +26,7 @@ export function fileLines(shell, node) {
         text(message('terminal.file.date'), 'dim'),
         text(p.d + '  '),
         text(message('terminal.file.read'), 'dim'),
-        text(p.m + ' min'),
+        text(message('terminal.file.minutes', { count: p.m })),
       ],
       [
         text(message('terminal.file.tags'), 'dim'),

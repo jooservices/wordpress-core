@@ -27,6 +27,8 @@ describe('joo/no-literal-ui-string', () => {
     "button.setAttribute('aria-label', 'Pause autoplay');",
     "target.append(document.createTextNode('Did you mean ' + t('x')));",
     "el('p', 'cls', 'Could not load');",
+    "line(text('English', 'err'));",
+    'line(text(`bash: ${name}: command not found`));',
   ])('rejects %s', (code) => {
     const messages = lint(code);
     expect(messages).toHaveLength(1);
@@ -41,6 +43,8 @@ describe('joo/no-literal-ui-string', () => {
     "button.setAttribute('aria-expanded', 'true');",
     "button.setAttribute('aria-label', t('slider.pause'));",
     "el('p', 'cls', t('load_failed'));",
+    "line(text(message('terminal.try_help'), 'err'));",
+    "line(text(args.join(' ')));",
     "node.className = 'joo-company';",
   ])('accepts %s', (code) => {
     expect(lint(code)).toEqual([]);

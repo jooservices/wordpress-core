@@ -1,7 +1,7 @@
 // ESLint rule: a user-visible string in the theme's JavaScript must come from the runtime config (`t('key')`), never
 // from an English literal. Flags literals (also in template literals, `a ? 'x' : 'y'`, `a || 'x'`, `'x' + y`) that
 // reach a user-visible sink: textContent/innerText/title/alt/placeholder/ariaLabel assignments, setAttribute() of
-// aria-label/title/alt/placeholder, createTextNode() and the `el(tag, class, text)` helper. Strings without letters
+// aria-label/title/alt/placeholder, createTextNode() and the `el(tag, class, text)` helper and the terminal's `text(string, style)` span helper. Strings without letters
 // (punctuation, numbers, the empty string) are allowed.
 
 const PROPERTIES = new Set(['textContent', 'innerText', 'title', 'alt', 'placeholder', 'ariaLabel']);
@@ -14,7 +14,10 @@ const ATTRIBUTES = new Set([
   'alt',
   'placeholder',
 ]);
-const HELPERS = new Map([['el', 2]]);
+const HELPERS = new Map([
+  ['el', 2],
+  ['text', 0],
+]);
 
 const hasLetters = (value) => /\p{L}/u.test(value);
 

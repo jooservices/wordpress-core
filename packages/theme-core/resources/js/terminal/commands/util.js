@@ -48,6 +48,7 @@ export function longLine(shell, node) {
   const count = node.t === 'd' ? String(Object.keys(node.k).length + 2) : '1';
   const real = target(shell.fs.root, node) ?? node;
   const spans = [
+    // eslint-disable-next-line joo/no-literal-ui-string -- `ls -l` columns (mode, owner, group), not prose
     text(`${mode} ${count} ${shell.fs.site.user} joo ${humanSize(real).padStart(5, ' ')} ${shortDate(real)} `),
     nameSpan(shell, node),
   ];
