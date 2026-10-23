@@ -120,5 +120,5 @@ export LIGHTHOUSE_CDP_HOST=host.docker.internal
 export LIGHTHOUSE_CDP_PORT="$local_port"
 export E2E_BASE_URL="$site_url"
 export WP_SITE_URL="$site_url"
-export RUNTIME_PASS_ENV="${RUNTIME_PASS_ENV:-} LIGHTHOUSE_CDP_HOST LIGHTHOUSE_CDP_PORT E2E_BASE_URL WP_SITE_URL"
-"$workspaces_root/scripts/docker/runtime" node node tools/perf.mjs --theme "$theme"
+# Use this checkout's runtime wrapper so the shared Node container runs tools/perf.mjs from this worktree.
+bash "$ROOT/docker/scripts/runtime.sh" node tools/perf.mjs --theme "$theme"

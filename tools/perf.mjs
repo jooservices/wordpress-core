@@ -7,8 +7,20 @@ import { dirname, resolve } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import lighthouse from 'lighthouse';
 import { launch } from 'chrome-launcher';
-import { fromRoot } from './lib/paths.mjs';
+import { fromRoot, ROOT } from './lib/paths.mjs';
 import { readCodeBudgets } from './lib/perf-budgets.mjs';
+
+/** Reads one theme's Lighthouse budgets from the selected checkout. */
+export function readThemeBudgets(theme, root = ROOT) {
+  const path = resolve(root, 'themes', theme, 'budgets.json');
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'));
+  } catch (error) {
+    throw new Error(`Cannot read Lighthouse budgets for theme "${theme}" at ${path}: ${error.message}`, {
+      cause: error,
+    });
+  }
+}
 
 /** Compares measured values with budgets. Returns a list of problems. */
 export function checkBudgets(budgets, result, page = {}) {
@@ -167,7 +179,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const base = String(
       args.base ?? process.env.E2E_BASE_URL ?? process.env.WP_SITE_URL ?? 'http://127.0.0.1:8082'
     ).replace(/\/$/, '');
-    const budgets = JSON.parse(readFileSync(fromRoot('themes', theme, 'budgets.json'), 'utf8'));
+    const budgets = readThemeBudgets(theme);
     const remoteChrome = remoteChromeConnection();
     const chrome = remoteChrome
       ? null

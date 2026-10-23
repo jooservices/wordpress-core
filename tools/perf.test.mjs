@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { build } from 'esbuild';
-import { checkAssetBudgets, checkBudgets, remoteChromeConnection, localChromePath } from './perf.mjs';
+import { checkAssetBudgets, checkBudgets, localChromePath, readThemeBudgets, remoteChromeConnection } from './perf.mjs';
 import { readCodeBudgets } from './lib/perf-budgets.mjs';
 import { fromRoot } from './lib/paths.mjs';
 
@@ -129,8 +129,19 @@ describe('localChromePath', () => {
 });
 
 describe('starter performance budgets', () => {
-  it('defines representative pages and keeps the shared Lighthouse thresholds', () => {
-    const starter = JSON.parse(readFileSync(new URL('../themes/starter/budgets.json', import.meta.url), 'utf8'));
+  it('resolves the starter budgets from this checkout at the documented path', () => {
+    const starter = readThemeBudgets('starter');
+    const documentedPath = readFileSync(fromRoot('docs/reference/budgets.md'), 'utf8');
+
+    expect(starter.pages.map(({ name }) => name)).toEqual(['home', 'single', 'category', 'search', 'about']);
+    expect(documentedPath).toContain('themes/starter/budgets.json');
+    expect(() => readThemeBudgets('starter', '/tmp/perf-test-missing-checkout')).toThrow(
+      '/tmp/perf-test-missing-checkout/themes/starter/budgets.json'
+    );
+  });
+
+  it('keeps the documented pages and shared Lighthouse thresholds unchanged', () => {
+    const starter = readThemeBudgets('starter');
     const jooservices = JSON.parse(
       readFileSync(new URL('../themes/jooservices/budgets.json', import.meta.url), 'utf8')
     );
