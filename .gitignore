@@ -14,6 +14,10 @@ node_modules/
 /artifacts/reports/JOOWP-303/*
 !/artifacts/reports/JOOWP-303/perf-budget-resolution.md
 !/artifacts/reports/matrix/
+# Keep the JOOWP-204 cross-engine evidence record reviewable.
+!/artifacts/evidence/
+/artifacts/evidence/*
+!/artifacts/evidence/JOOWP-204/
 !/artifacts/reports/matrix/jooservices-joowp301-2026-10-23.json
 !/artifacts/reports/matrix/jooservices-joowp301-2026-10-23.md
 *.log

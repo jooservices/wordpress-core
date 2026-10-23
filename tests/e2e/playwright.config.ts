@@ -63,12 +63,40 @@ export default defineConfig({
           },
         ]
       : []),
-    // Cross-engine runs (E2E_ENGINES=webkit,firefox): WebKit is the Safari engine.
-    ...(process.env.E2E_ENGINES?.includes('webkit')
-      ? [{ name: 'webkit', use: { ...devices['Desktop Safari'], viewport: { width: 1440, height: 900 } } }]
-      : []),
-    ...(process.env.E2E_ENGINES?.includes('firefox')
-      ? [{ name: 'firefox', use: { ...devices['Desktop Firefox'], viewport: { width: 1440, height: 900 } } }]
-      : []),
+    // Cross-engine runs (E2E_ENGINES=webkit,firefox): WebKit is the Safari engine. Each engine runs at the three
+    // device viewports; `<engine>` is the 1440x900 desktop project. Firefox has no mobile emulation (`isMobile`
+    // is a Chromium and WebKit option), so its phone project is the 390x844 viewport with touch and a 2x pixel ratio.
+    ...crossEngineProjects('webkit', 'Desktop Safari', true),
+    ...crossEngineProjects('firefox', 'Desktop Firefox', false),
   ],
 });
+
+function crossEngineProjects(engine: 'webkit' | 'firefox', device: string, mobileEmulation: boolean) {
+  if (
+    !process.env.E2E_ENGINES?.split(',')
+      .map((name) => name.trim())
+      .includes(engine)
+  )
+    return [];
+  // The jooservices responsive spec has its own per-engine projects above.
+  const ignore = theme === 'jooservices' ? { testIgnore: [responsiveSpec] } : {};
+  return [
+    {
+      name: `${engine}-phone`,
+      use: {
+        ...devices[device],
+        viewport: { width: 390, height: 844 },
+        hasTouch: true,
+        isMobile: mobileEmulation,
+        deviceScaleFactor: 2,
+      },
+      ...ignore,
+    },
+    {
+      name: `${engine}-tablet`,
+      use: { ...devices[device], viewport: { width: 820, height: 1180 }, hasTouch: true },
+      ...ignore,
+    },
+    { name: engine, use: { ...devices[device], viewport: { width: 1440, height: 900 } }, ...ignore },
+  ];
+}

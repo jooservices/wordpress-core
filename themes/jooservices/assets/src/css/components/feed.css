@@ -297,8 +297,11 @@ body.joo-card-density--compact .joo-card {
   border-color: color-mix(in srgb, var(--joo-accent) 50%, var(--joo-line));
 }
 
-.joo-card:not(:has(.joo-card__thumb)) {
-  grid-template-columns: minmax(0, 1fr);
+/* Fallback without :has(): a thumbless card keeps its thumb column and the body stays readable. */
+@supports selector(:has(*)) {
+  .joo-card:not(:has(.joo-card__thumb)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .joo-card__thumb {

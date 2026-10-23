@@ -17,8 +17,11 @@
   color: var(--joo-ink);
 }
 
-.joo-header:has(.wp-block-site-logo img) .joo-logo {
-  display: none;
+/* Fallback without :has(): the text logo stays visible next to the logo image. */
+@supports selector(:has(*)) {
+  .joo-header:has(.wp-block-site-logo img) .joo-logo {
+    display: none;
+  }
 }
 
 .joo-logo-image img {
