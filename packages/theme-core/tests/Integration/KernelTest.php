@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JOOservices\ThemeCore\Tests\Integration;
 
+use JOOservices\TestKit\BootBudget;
 use JOOservices\TestKit\IntegrationTestCase;
 use JOOservices\ThemeCore\Admin\Notices;
 use JOOservices\ThemeCore\Config\Manifest;
@@ -24,7 +25,6 @@ final class KernelTest extends IntegrationTestCase {
 
 	private const FIXTURES          = __DIR__ . '/../Fixtures/manifests/';
 	private const BOOT_COST_SAMPLES = 20;
-	private const MAX_BOOT_MS       = 30.0;
 
 	public function set_up(): void {
 		parent::set_up();
@@ -255,7 +255,9 @@ final class KernelTest extends IntegrationTestCase {
 		$ms      = $this->median( $samples['ms'] );
 		$kb      = $this->median( $samples['bytes'] ) / 1024;
 		fwrite( STDERR, sprintf( "\n[boot cost] median %.2f ms, %.0f KB across %d boots\n", $ms, $kb, self::BOOT_COST_SAMPLES ) );
-		$this->assertLessThan( self::MAX_BOOT_MS, $ms, 'median boot must stay cheap (spec target < 3 ms warm; asserted with a CI margin)' );
+		$units = BootBudget::units( $samples['ms'], $samples['spins'] );
+		fwrite( STDERR, sprintf( "[boot cost] %.2f units (1 unit = median spin %.2f ms; host factor %.2f)\n", $units, $this->median( $samples['spins'] ), BootBudget::hostFactor( $samples['spins'] ) ) );
+		$this->assertLessThan( BootBudget::MAX_BOOT_UNITS, $units, 'median boot must stay within the ceiling, measured against a spin timed right before each boot' );
 		$this->assertLessThan( 1536, $kb, 'median boot must stay under 1.5 MB' );
 	}
 
@@ -265,17 +267,33 @@ final class KernelTest extends IntegrationTestCase {
 			static fn( array $modules ): array => array_merge( $modules, array( SlowBootModule::class ) )
 		);
 
-		$samples = $this->measureBootCosts();
+		$slow = $this->measureBootCosts();
 
-		$this->assertGreaterThanOrEqual( self::MAX_BOOT_MS, $this->median( $samples['ms'] ), 'a sustained slow module must fail the boot-time budget' );
+		remove_all_filters( 'joo/core/modules' );
+		$clean = $this->measureBootCosts();
+
+		$this->assertGreaterThanOrEqual( BootBudget::MAX_BOOT_UNITS, BootBudget::units( $slow['ms'], $slow['spins'] ), 'an injected slow module must exceed the boot ceiling' );
+		$this->assertLessThan( BootBudget::MAX_BOOT_UNITS, BootBudget::units( $clean['ms'], $clean['spins'] ), 'the clean boot of the same run must stay under it' );
+	}
+
+	public function test_doubled_boot_cost_exceeds_the_same_run_healthy_baseline(): void {
+		// The absolute ceiling can clear a doubled boot when the healthy boot is very cheap, so compare within the run.
+		$healthy_run = $this->measureBootCosts();
+		$doubled_run = $this->measureBootCosts( 2 );
+		$healthy     = BootBudget::units( $healthy_run['ms'], $healthy_run['spins'] );
+		$doubled     = BootBudget::units( $doubled_run['ms'], $doubled_run['spins'] );
+		fwrite( STDERR, sprintf( "\n[boot cost] healthy %.2f units, doubled %.2f units\n", $healthy, $doubled ) );
+
+		$this->assertGreaterThan( 1.5 * $healthy, $doubled, 'a boot twice as costly must stand out from the healthy boot of the same run' );
 	}
 
 	/**
 	 * Measures complete kernel boots from the same WordPress hook state.
 	 *
-	 * @return array{ms: list<float>, bytes: list<int>}
+	 * @param int $boots_per_sample Complete boots timed inside one sample; 2 simulates a boot that cost doubled.
+	 * @return array{ms: list<float>, bytes: list<int>, spins: list<float>}
 	 */
-	private function measureBootCosts(): array {
+	private function measureBootCosts( int $boots_per_sample = 1 ): array {
 		if ( 0 === did_action( 'after_setup_theme' ) ) {
 			do_action( 'after_setup_theme' );
 		}
@@ -283,6 +301,7 @@ final class KernelTest extends IntegrationTestCase {
 		$samples = array(
 			'ms'    => array(),
 			'bytes' => array(),
+			'spins' => array(),
 		);
 
 		try {
@@ -292,11 +311,26 @@ final class KernelTest extends IntegrationTestCase {
 				Notices::reset();
 				gc_collect_cycles();
 
-				$memory = memory_get_usage();
-				$start  = hrtime( true );
-				Kernel::boot( self::FIXTURES . 'valid.json' );
-				$samples['ms'][]    = ( hrtime( true ) - $start ) / 1e6;
+				if ( BootBudget::spinsFirst( $sample ) ) {
+					$samples['spins'][] = BootBudget::spin();
+				}
+				$memory  = memory_get_usage();
+				$elapsed = 0;
+				for ( $boot = 0; $boot < $boots_per_sample; ++$boot ) {
+					if ( $boot > 0 ) {
+						$this->restoreHooks( $hooks );
+						Kernel::reset();
+						Notices::reset();
+					}
+					$start = hrtime( true );
+					Kernel::boot( self::FIXTURES . 'valid.json' );
+					$elapsed += hrtime( true ) - $start;
+				}
+				$samples['ms'][]    = $elapsed / 1e6;
 				$samples['bytes'][] = max( 0, memory_get_usage() - $memory );
+				if ( ! BootBudget::spinsFirst( $sample ) ) {
+					$samples['spins'][] = BootBudget::spin();
+				}
 			}
 		} finally {
 			$this->restoreHooks( $hooks );

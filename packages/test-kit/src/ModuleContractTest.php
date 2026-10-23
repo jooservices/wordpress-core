@@ -118,6 +118,8 @@ abstract class ModuleContractTest extends IntegrationTestCase {
 		}
 		$hooks   = $this->snapshotHooks();
 		$timings = array();
+		$spins   = array();
+		$totals  = array();
 
 		try {
 			for ( $sample = 0; $sample < self::BOOT_BUDGET_SAMPLES; ++$sample ) {
@@ -126,9 +128,17 @@ abstract class ModuleContractTest extends IntegrationTestCase {
 				Notices::reset();
 				gc_collect_cycles();
 
+				if ( BootBudget::spinsFirst( $sample ) ) {
+					$spins[] = BootBudget::spin();
+				}
 				Kernel::boot( $this->manifest() );
+				if ( ! BootBudget::spinsFirst( $sample ) ) {
+					$spins[] = BootBudget::spin();
+				}
 
+				$totals[ $sample ] = 0.0;
 				foreach ( Kernel::registry()?->timings() ?? array() as $id => $cost ) {
+					$totals[ $sample ]        += $cost['ms'];
 					$timings[ $id ]['ms'][]    = $cost['ms'];
 					$timings[ $id ]['bytes'][] = $cost['bytes'];
 				}
@@ -139,9 +149,13 @@ abstract class ModuleContractTest extends IntegrationTestCase {
 			Notices::reset();
 		}
 
+		// The whole boot is compared with a spin timed right before each sample, so a doubled boot fails on a busy host too.
+		$this->assertLessThan( BootBudget::MAX_BOOT_UNITS, BootBudget::units( $totals, $spins ), 'median whole-boot cost (units of the same-run spin)' );
+
+		$budget = BootBudget::scale( $this->maxBootMs(), $spins );
 		foreach ( $timings as $id => $cost ) {
 			$this->assertSame( self::BOOT_BUDGET_SAMPLES, count( $cost['ms'] ), $id . ' boot samples' );
-			$this->assertLessThan( $this->maxBootMs(), $this->median( $cost['ms'] ), $id . ' median boot time (ms)' );
+			$this->assertLessThan( $budget, $this->median( $cost['ms'] ), $id . ' median boot time (ms)' );
 			$this->assertLessThan( $this->maxBootBytes(), $this->median( $cost['bytes'] ), $id . ' median boot memory (bytes)' );
 		}
 	}
