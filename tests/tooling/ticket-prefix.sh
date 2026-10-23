@@ -13,7 +13,7 @@ printf 'DB_NAME=x\nDB_USER=x\nDB_PASSWORD=x\nWP_ADMIN_PASSWORD=x\n' > "$tmp/.env
 git -C "$tmp" init -q -b JOOWP-304-core-make-perf-theme-jooservices-cannot
 
 printf 'print-ticket:\n\t@echo $(JOOS_TICKET)\n' > "$tmp/print.mk"
-ticket="$(cd "$tmp" && make --no-print-directory -s -f Makefile -f print.mk print-ticket 2>/dev/null)"
+ticket="$(cd "$tmp" && env -u JOOS_TICKET make --no-print-directory -s -f Makefile -f print.mk print-ticket 2>/dev/null)"
 if [[ "$ticket" != JOOWP-304 ]]; then
   echo "FAIL: Makefile derived '$ticket' instead of JOOWP-304 from a JOOWP branch." >&2
   exit 1
