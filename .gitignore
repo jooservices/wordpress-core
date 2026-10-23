@@ -6,7 +6,13 @@ node_modules/
 .env.*
 !.env.example
 # reports and build output
-/artifacts/
+/artifacts/*
+!/artifacts/reports
+/artifacts/reports/*
+# Keep the JOOWP-303 completion evidence reviewable.
+!/artifacts/reports/JOOWP-303
+/artifacts/reports/JOOWP-303/*
+!/artifacts/reports/JOOWP-303/perf-budget-resolution.md
 *.log
 .DS_Store
 /themes/*/core
