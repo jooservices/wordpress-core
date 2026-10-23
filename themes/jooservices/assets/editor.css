@@ -44,8 +44,10 @@
   overflow-x: auto;
 }
 
-.editor-styles-wrapper .joo-header:has(.wp-block-site-logo img) .joo-logo {
-  display: none;
+@supports selector(:has(*)) {
+  .editor-styles-wrapper .joo-header:has(.wp-block-site-logo img) .joo-logo {
+    display: none;
+  }
 }
 
 .editor-styles-wrapper .joo-logo {

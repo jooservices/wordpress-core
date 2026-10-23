@@ -17,3 +17,7 @@ check, but it does not establish support on every Safari version or on iOS.
 Before a release, record exact browser/OS versions and test evidence for each
 target. Do not treat viewport emulation as a substitute for the iOS Safari and
 Android Chrome checks.
+
+Each engine runs at 390×844 (mobile emulation on WebKit; touch only on
+Firefox), 820×1180 and 1440×900. Unsupported-feature fallbacks and the tests
+that cover them are listed in [browser-fallbacks.md](browser-fallbacks.md).

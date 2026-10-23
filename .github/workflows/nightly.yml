@@ -85,3 +85,23 @@ jobs:
       - run: make init-env
       - run: make new-theme NAME=acme
       - run: make demo THEME=acme
+  cross-engine:
+    # WebKit and Firefox at 390x844, 820x1180 and 1440x900: the shared smoke specs plus the theme responsive and
+    # cross-engine specs (docs/guides/testing.md).
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [webkit, firefox]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.engine }}
+      - run: make init-env
+      - run: make demo THEME=jooservices
+      - run: E2E_ENGINES=${{ matrix.engine }} make test-e2e THEME=jooservices ARGS="tests/e2e/specs/shared/smoke.spec.ts themes/jooservices/tests/e2e/responsive.spec.ts themes/jooservices/tests/e2e/cross-engine.spec.ts --project=${{ matrix.engine }}-phone --project=${{ matrix.engine }}-tablet --project=${{ matrix.engine }} --project=responsive-${{ matrix.engine }}"
