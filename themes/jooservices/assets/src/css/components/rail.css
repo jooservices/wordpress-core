@@ -173,6 +173,7 @@
 
 .joo-companies__pager {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   align-items: center;
   margin-top: 10px;
@@ -183,8 +184,8 @@
 .joo-companies__pager button {
   display: inline-grid;
   place-items: center;
-  min-width: 28px;
-  min-height: 28px;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
   padding: 2px 8px;
   color: var(--joo-ink);
   cursor: pointer;
@@ -245,8 +246,9 @@
   flex: none;
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  box-sizing: border-box;
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
   font: 12px/1 var(--joo-mono);
   color: var(--joo-ink);

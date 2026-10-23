@@ -40,11 +40,19 @@
 .joo-nav .wp-block-navigation-item__content {
   display: inline-flex;
   align-items: center;
-  min-width: 24px;
-  min-height: 24px;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
   padding-block: 2px;
   color: var(--joo-muted);
   white-space: nowrap;
+}
+
+.joo-nav .wp-block-navigation__responsive-container-open,
+.joo-nav .wp-block-navigation__responsive-container-close,
+.joo-nav .wp-block-navigation__submenu-icon {
+  box-sizing: border-box;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
 }
 
 .joo-nav .wp-block-navigation-item__content:hover,
@@ -111,6 +119,7 @@
 .joo-lang--dropdown summary {
   display: inline-flex;
   align-items: center;
+  min-height: 2.75rem;
   padding: 0 12px;
   font: 13px/1 var(--joo-mono);
   color: var(--joo-muted);
@@ -118,6 +127,12 @@
   background: var(--joo-surface);
   border: 1px solid var(--joo-line);
   border-radius: 5px;
+}
+
+.joo-search__close {
+  box-sizing: border-box;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
 }
 
 .joo-lang--dropdown ul {
