@@ -1,5 +1,5 @@
 // <joo-slider>: buttons, dots, keyboard and autoplay on top of the CSS scroll-snap track (which already works without JS).
-import { define, prefersReducedMotion } from 'joo-runtime';
+import { define, prefersReducedMotion, t } from 'joo-runtime';
 
 export class JooSlider extends HTMLElement {
   connectedCallback() {
@@ -104,7 +104,7 @@ export class JooSlider extends HTMLElement {
     if (!this.autoplay || this.timer || document.hidden) return;
     this.timer = setInterval(() => this.step(1), this.interval);
     this.track.setAttribute('aria-live', 'off');
-    this.pauseButton?.setAttribute('aria-label', 'Pause autoplay');
+    this.pauseButton?.setAttribute('aria-label', t('slider.pause'));
   }
 
   stop() {
@@ -117,7 +117,7 @@ export class JooSlider extends HTMLElement {
     this.userPaused = !this.userPaused;
     if (this.userPaused) {
       this.stop();
-      this.pauseButton?.setAttribute('aria-label', 'Start autoplay');
+      this.pauseButton?.setAttribute('aria-label', t('slider.start'));
     } else this.start();
   }
 }

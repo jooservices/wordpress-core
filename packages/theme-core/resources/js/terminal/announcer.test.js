@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import './test-i18n.js';
 import { createAnnouncer, formatAnnouncement } from './announcer.js';
 
 afterEach(() => vi.useRealTimers());

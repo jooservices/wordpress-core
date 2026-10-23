@@ -17,3 +17,7 @@ The dock button is keyboard-operable, reports `aria-expanded`, and advertises th
 
 ## 404 view
 Block `joo/not-found`: real 404 page (status and robots from the SEO module) with a transcript, keyboard-accessible search form and server-side suggestions; the path is echoed escaped. `<joo-404>` lets the visitor check another path against the embedded post index without a network request and reports the result in a polite status region. Its ordinary page links and forms stay in the browser's normal tab order; there is no focus trap.
+
+## Translation of JavaScript strings
+
+Every user-visible string in `packages/theme-core/resources/js` and the block `view.js` files comes from the `i18n` map of the runtime config (`t("key")`), which `JsStrings::map()` fills in PHP with `__()`. The ESLint rule `joo/no-literal-ui-string` (`tools/eslint-rules/`, part of `make lint`) rejects an English literal assigned to `textContent`, `title`, `aria-label` and similar sinks, and `i18n-keys.test.js` fails when a `t("key")` has no PHP entry. Terminal command help (`help`, `man`) summaries and messages are translated through the same map. Command names (`ls`, `cd`, `grep`, ...) stay English by design, like the shell commands they imitate.

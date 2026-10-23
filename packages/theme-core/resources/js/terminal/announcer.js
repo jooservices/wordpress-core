@@ -1,8 +1,10 @@
+import { t } from 'joo-runtime';
+
 const compact = (value) =>
   String(value ?? '')
     .replace(/\s+/g, ' ')
     .trim();
-const overflowText = ' More output is available in the terminal log.';
+const overflowText = () => ` ${t('terminal.announce.overflow')}`;
 
 /**
  * Makes one concise announcement for a command result.
@@ -15,9 +17,11 @@ export function formatAnnouncement(command, output, maxCharacters = 240) {
   const limit = Math.max(64, Math.floor(maxCharacters));
   const name = compact(command);
   const result = compact(output);
-  const message = `${name ? `Command ${name}.` : 'Command completed.'}${result ? ` ${result}` : ''}`;
+  const head = name ? t('terminal.announce.command').replace('{command}', name) : t('terminal.announce.completed');
+  const message = `${head}${result ? ` ${result}` : ''}`;
   if (message.length <= limit) return message;
-  return `${message.slice(0, limit - overflowText.length).trimEnd()}${overflowText}`;
+  const overflow = overflowText();
+  return `${message.slice(0, limit - overflow.length).trimEnd()}${overflow}`;
 }
 
 /**
@@ -33,9 +37,8 @@ export function createAnnouncer(region, { delay = 200, maxCharacters = 240 } = {
   let overflow = false;
 
   const flush = () => {
-    region.textContent = overflow
-      ? `${pending.slice(0, limit - overflowText.length).trimEnd()}${overflowText}`
-      : pending;
+    const suffix = overflowText();
+    region.textContent = overflow ? `${pending.slice(0, limit - suffix.length).trimEnd()}${suffix}` : pending;
     timer = undefined;
     pending = '';
     overflow = false;

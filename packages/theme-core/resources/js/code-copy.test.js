@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { setupTerminalI18n } from './terminal/test-i18n.js';
 
 const render = (html) =>
   document.body.replaceChildren(...new DOMParser().parseFromString(html, 'text/html').body.childNodes);
@@ -9,6 +10,7 @@ beforeEach(() => {
   vi.resetModules();
   vi.useFakeTimers();
   render(box);
+  setupTerminalI18n();
 });
 
 afterEach(() => vi.useRealTimers());

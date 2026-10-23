@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import '../../js/terminal/test-i18n.js';
 import './view.js';
 
 const render = (html) =>
