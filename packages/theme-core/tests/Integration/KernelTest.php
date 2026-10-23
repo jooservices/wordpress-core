@@ -276,12 +276,24 @@ final class KernelTest extends IntegrationTestCase {
 		$this->assertLessThan( BootBudget::MAX_BOOT_UNITS, BootBudget::units( $clean['ms'], $clean['spins'] ), 'the clean boot of the same run must stay under it' );
 	}
 
+	public function test_doubled_boot_cost_exceeds_the_same_run_healthy_baseline(): void {
+		// The absolute ceiling can clear a doubled boot when the healthy boot is very cheap, so compare within the run.
+		$healthy_run = $this->measureBootCosts();
+		$doubled_run = $this->measureBootCosts( 2 );
+		$healthy     = BootBudget::units( $healthy_run['ms'], $healthy_run['spins'] );
+		$doubled     = BootBudget::units( $doubled_run['ms'], $doubled_run['spins'] );
+		fwrite( STDERR, sprintf( "\n[boot cost] healthy %.2f units, doubled %.2f units\n", $healthy, $doubled ) );
+
+		$this->assertGreaterThan( 1.5 * $healthy, $doubled, 'a boot twice as costly must stand out from the healthy boot of the same run' );
+	}
+
 	/**
 	 * Measures complete kernel boots from the same WordPress hook state.
 	 *
+	 * @param int $boots_per_sample Complete boots timed inside one sample; 2 simulates a boot that cost doubled.
 	 * @return array{ms: list<float>, bytes: list<int>, spins: list<float>}
 	 */
-	private function measureBootCosts(): array {
+	private function measureBootCosts( int $boots_per_sample = 1 ): array {
 		if ( 0 === did_action( 'after_setup_theme' ) ) {
 			do_action( 'after_setup_theme' );
 		}
@@ -302,10 +314,19 @@ final class KernelTest extends IntegrationTestCase {
 				if ( BootBudget::spinsFirst( $sample ) ) {
 					$samples['spins'][] = BootBudget::spin();
 				}
-				$memory = memory_get_usage();
-				$start  = hrtime( true );
-				Kernel::boot( self::FIXTURES . 'valid.json' );
-				$samples['ms'][]    = ( hrtime( true ) - $start ) / 1e6;
+				$memory  = memory_get_usage();
+				$elapsed = 0;
+				for ( $boot = 0; $boot < $boots_per_sample; ++$boot ) {
+					if ( $boot > 0 ) {
+						$this->restoreHooks( $hooks );
+						Kernel::reset();
+						Notices::reset();
+					}
+					$start = hrtime( true );
+					Kernel::boot( self::FIXTURES . 'valid.json' );
+					$elapsed += hrtime( true ) - $start;
+				}
+				$samples['ms'][]    = $elapsed / 1e6;
 				$samples['bytes'][] = max( 0, memory_get_usage() - $memory );
 				if ( ! BootBudget::spinsFirst( $sample ) ) {
 					$samples['spins'][] = BootBudget::spin();

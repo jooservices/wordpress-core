@@ -34,7 +34,11 @@ The earlier flake at saturated CPUs came from the stand-in `BootBudgetTest` boot
 
 ## AC4: JOOS-123
 
-Closing a Jira ticket is outside the checkout. JOOS-123 to be closed as covered by JOOWP-243 once this merges (hand-off item).
+Removed by the owner amendment of 2026-10-23: the ticket is complete once the boot-cost test is stable and this report states what it covers. JOOS-123 is therefore not closed by this change and nothing is left to hand off.
+
+## Doubled-boot check
+
+The fixed 0.55-unit ceiling alone does not reject a doubled boot when the healthy boot is cheap (a healthy 0.24 units doubles to 0.48). `KernelTest::test_doubled_boot_cost_exceeds_the_same_run_healthy_baseline` therefore measures healthy boots and boots timed twice per sample (2x cost) in the same run and requires doubled > 1.5x healthy. The absolute ceiling stays as a gross guard.
 
 ## Test environment
 
@@ -46,4 +50,4 @@ Closing a Jira ticket is outside the checkout. JOOS-123 to be closed as covered 
 
 ## Other
 
-`artifacts/package/jooservices-resume-0.1.0.zip` is restored in the worktree from `origin/develop`. It is git-ignored, so it needs `git add -f` to stop showing as deleted against develop.
+`artifacts/package/jooservices-resume-0.1.0.zip` is restored byte-for-byte from `origin/develop`. It is git-ignored, so it needs `git add -f` to stop showing as deleted against develop.
