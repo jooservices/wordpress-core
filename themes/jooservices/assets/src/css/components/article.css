@@ -247,7 +247,8 @@
 }
 
 .joo-code__copy {
-  min-height: 24px;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
   padding: 1px 10px;
   font: 12px/1.6 var(--joo-mono);
   color: rgb(205 217 232);
