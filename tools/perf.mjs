@@ -131,6 +131,30 @@ export function remoteChromeConnection(env = process.env) {
   return { host, port };
 }
 
+/** Checks that the Node runtime can reach the supplied Chrome DevTools endpoint. */
+export async function checkRemoteChrome(connection, fetchImpl = fetch) {
+  const endpoint = `http://${connection.host}:${connection.port}/json/version`;
+  const response = await fetchImpl(endpoint, { signal: AbortSignal.timeout(5000) });
+  if (!response.ok) throw new Error(`Dev VM Chromium debugging endpoint returned HTTP ${response.status}.`);
+  const version = await response.json();
+  if (!version.Browser || !version.webSocketDebuggerUrl) {
+    throw new Error('Dev VM Chromium returned an invalid DevTools version response.');
+  }
+  return version;
+}
+
+/** Resolves the Chromium used when no Dev VM browser is supplied; fails clearly when it is missing. */
+export function localChromePath(resolvePath = () => chromium.executablePath(), exists = existsSync) {
+  const path = resolvePath();
+  if (!path || !exists(path)) {
+    throw new Error(
+      `Chromium is not installed at ${path || '(unresolved)'}. Run Lighthouse through "make perf THEME=<theme>", ` +
+        'which uses the Dev VM browser (set LIGHTHOUSE_CDP_HOST and LIGHTHOUSE_CDP_PORT to supply one manually).'
+    );
+  }
+  return path;
+}
+
 async function startCDPForwarder({ host, port }) {
   const server = createServer((client) => {
     const upstream = createConnection({ host, port });
@@ -169,10 +193,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     ).replace(/\/$/, '');
     const budgets = readThemeBudgets(theme);
     const remoteChrome = remoteChromeConnection();
+    if (remoteChrome) {
+      try {
+        await checkRemoteChrome(remoteChrome);
+      } catch (error) {
+        throw new Error(`Cannot reach Dev VM Chromium from the Node runtime: ${error.message}`, { cause: error });
+      }
+    }
     const chrome = remoteChrome
       ? null
       : await launch({
-          chromePath: chromium.executablePath(),
+          chromePath: localChromePath(),
           chromeFlags: ['--headless=new', '--no-sandbox'],
         });
     const cdpForwarder = remoteChrome ? await startCDPForwarder(remoteChrome) : null;
