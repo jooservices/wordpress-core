@@ -17,7 +17,7 @@ use JOOservices\ThemeCore\Support\Hooks;
  * Decides whether core prints SEO tags or leaves them to an SEO plugin.
  * (The spec sketch named this namespace "Yield"; that is a reserved word, so the class lives in Seo directly.)
  *
- * @api
+ * @internal
  */
 final class YieldPolicy {
 

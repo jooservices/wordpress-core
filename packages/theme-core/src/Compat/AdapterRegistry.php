@@ -18,7 +18,7 @@ use JOOservices\ThemeCore\Support\Logger;
 /**
  * Holds the adapters, boots the ones whose plugin is active (failures are isolated and logged) and reports state.
  *
- * @api
+ * @internal
  */
 final class AdapterRegistry {
 

@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Container;
 /**
  * Same method signatures as Psr\Container\ContainerInterface so a PSR-11 swap is trivial.
  *
- * @api
+ * @internal
  */
 interface ContainerInterface {
 

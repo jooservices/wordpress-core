@@ -14,7 +14,7 @@ use JOOservices\ThemeCore\Support\Hooks;
 /**
  * What kind of page this request is, resolved once after the main query.
  *
- * @api
+ * @internal
  */
 final class Context {
 

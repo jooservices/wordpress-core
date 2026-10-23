@@ -14,7 +14,7 @@ use JOOservices\ThemeCore\Support\Hooks;
 /**
  * Absolute canonical URL of the current page (null where none applies).
  *
- * @api
+ * @internal
  */
 final class Canonical {
 

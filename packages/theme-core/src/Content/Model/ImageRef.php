@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Content\Model;
 /**
  * Image reference (url and size). Immutable.
  *
- * @api
+ * @internal
  */
 final class ImageRef {
 

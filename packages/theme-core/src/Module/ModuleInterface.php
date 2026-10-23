@@ -14,7 +14,7 @@ use JOOservices\ThemeCore\Container\Container;
 /**
  * A unit of core functionality that can be enabled or disabled.
  *
- * @api
+ * @internal
  */
 interface ModuleInterface {
 

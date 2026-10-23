@@ -14,7 +14,7 @@ use JOOservices\ThemeCore\Support\Hooks;
 /**
  * Reads an Advanced Custom Fields value when ACF is active; falls back to post meta.
  *
- * @api
+ * @internal
  */
 final class Acf {
 

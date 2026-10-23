@@ -19,7 +19,7 @@ use JOOservices\ThemeCore\Support\Hooks;
  * Current language, locale, default and configured languages. Resolution order for the current language:
  * multilingual plugin, language tag of the queried post, site locale, default language.
  *
- * @api
+ * @internal
  */
 final class Languages {
 

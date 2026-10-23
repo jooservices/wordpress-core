@@ -14,7 +14,7 @@ use JOOservices\ThemeCore\Compat\Multilingual\Lang;
 /**
  * One interface for language data, so SEO and the switcher need no plugin specific code.
  *
- * @api
+ * @internal
  */
 interface Multilingual {
 

@@ -13,7 +13,7 @@ namespace JOOservices\ThemeCore\Support;
  * Every core hook is named joo/{module}/{event}; calling them through this class keeps names consistent and
  * lets the documentation generator find them.
  *
- * @api
+ * @internal
  */
 final class Hooks {
 

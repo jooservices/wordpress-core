@@ -20,7 +20,7 @@ use JOOservices\ThemeCore\Support\Paths;
  * Scans `resources/blocks/<slug>/block.json` (and folders added with `joo/blocks/register`), registers every
  * enabled block as a dynamic block and wires its built view module and style (loaded only when it renders).
  *
- * @api
+ * @internal
  */
 final class BlockRegistrar {
 

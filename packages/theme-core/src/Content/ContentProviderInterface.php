@@ -19,7 +19,7 @@ use JOOservices\ThemeCore\Content\Model\Topic;
 /**
  * Stable data API for blocks, structured data and the terminal. Only published, public content is returned.
  *
- * @api
+ * @internal
  */
 interface ContentProviderInterface {
 

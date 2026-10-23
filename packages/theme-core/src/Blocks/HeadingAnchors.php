@@ -15,7 +15,7 @@ use JOOservices\ThemeCore\Seo\Text;
  * Adds unique ids and a "link to section" anchor to h2..h4 headings of singular posts. The TOC computes the same
  * ids from the post content, so both always agree.
  *
- * @api
+ * @internal
  */
 final class HeadingAnchors {
 

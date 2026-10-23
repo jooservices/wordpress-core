@@ -15,7 +15,7 @@ use JOOservices\ThemeCore\Support\Logger;
 /**
  * Prints at most four <link rel="preload"> elements (fonts, the LCP image, the main stylesheet).
  *
- * @api
+ * @internal
  */
 final class Preloader {
 

@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\I18n;
 /**
  * The `i18n` map of the `joo-config` JSON (keys used by `t(key, fallback)` in the view modules).
  *
- * @api
+ * @internal
  */
 final class JsStrings {
 

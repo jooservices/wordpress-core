@@ -16,7 +16,7 @@ use JOOservices\ThemeCore\Config\Manifest;
  * Generates @font-face rules (font-display swap plus a metric-adjusted fallback face) from the manifest and
  * preloads at most two font files.
  *
- * @api
+ * @internal
  */
 final class Fonts {
 

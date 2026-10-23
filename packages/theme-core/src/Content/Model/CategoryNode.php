@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Content\Model;
 /**
  * Node of the category tree. Immutable.
  *
- * @api
+ * @internal
  */
 final class CategoryNode {
 

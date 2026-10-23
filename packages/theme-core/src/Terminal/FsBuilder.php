@@ -22,7 +22,7 @@ use JOOservices\ThemeCore\Support\ReadingTime;
  * category (links elsewhere), tags are virtual directories of links, pages, authors, README and `.config`.
  * Drafts, private and password protected content never appear.
  *
- * @api
+ * @internal
  */
 final class FsBuilder {
 

@@ -16,7 +16,7 @@ use JOOservices\ThemeCore\Support\Hooks;
  * Sets `data-theme` on <html> in PHP (no-JS default) and with a tiny inline script before first paint
  * (stored choice, else the system preference when `design.followSystem`, else the default).
  *
- * @api
+ * @internal
  */
 final class ThemeScheme {
 

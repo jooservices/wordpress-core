@@ -14,7 +14,7 @@ namespace JOOservices\ThemeCore\Performance;
  * invalidates every entry that used it. Uses the persistent object cache when present and transients otherwise.
  * A soft TTL with a short lock lets one request rebuild while others serve the stale value (stampede protection).
  *
- * @api
+ * @internal
  */
 final class FragmentCache {
 

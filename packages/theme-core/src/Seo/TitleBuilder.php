@@ -15,7 +15,7 @@ use JOOservices\ThemeCore\Support\Hooks;
 /**
  * Builds the document title from the per-post override or the template of the context.
  *
- * @api
+ * @internal
  */
 final class TitleBuilder {
 

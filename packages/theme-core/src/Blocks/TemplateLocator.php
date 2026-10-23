@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Blocks;
 /**
  * child theme parts/joo/{slug}.php, parent theme parts/joo/{slug}.php, then the block folder's render.php.
  *
- * @api
+ * @internal
  */
 final class TemplateLocator {
 

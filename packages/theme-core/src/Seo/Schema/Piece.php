@@ -14,7 +14,7 @@ use JOOservices\ThemeCore\Seo\Context;
 /**
  * One node of the JSON-LD graph.
  *
- * @api
+ * @internal
  */
 interface Piece {
 

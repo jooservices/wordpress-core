@@ -18,7 +18,7 @@ use JOOservices\ThemeCore\Support\Logger;
  * Subclasses provide the data; the template (theme override or core default) turns it into HTML.
  * Templates receive $data, $attrs, $block and $wrapper (get_block_wrapper_attributes()) and must escape their output.
  *
- * @api
+ * @internal
  */
 abstract class DynamicBlock {
 

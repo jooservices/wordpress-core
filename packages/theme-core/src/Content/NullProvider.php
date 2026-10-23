@@ -16,7 +16,7 @@ use JOOservices\ThemeCore\Content\Model\Profile;
 /**
  * Empty answers everywhere, so blocks stay empty instead of failing.
  *
- * @api
+ * @internal
  */
 final class NullProvider implements ContentProviderInterface {
 

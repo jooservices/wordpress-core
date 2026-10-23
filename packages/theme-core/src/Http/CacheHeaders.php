@@ -13,7 +13,7 @@ namespace JOOservices\ThemeCore\Http;
  * Adds Cache-Control and a weak ETag to cacheable GET responses of the joo/v1 namespace and answers conditional
  * requests with 304. The comments snapshot route is private and must not be cached.
  *
- * @api
+ * @internal
  */
 final class CacheHeaders {
 

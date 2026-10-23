@@ -13,7 +13,7 @@ namespace JOOservices\ThemeCore\Blocks;
  * Wraps `core/code` output with a language label and a copy button (hidden until the script loads); the script
  * module is enqueued only on pages that render a code block.
  *
- * @api
+ * @internal
  */
 final class CodeEnhancer {
 

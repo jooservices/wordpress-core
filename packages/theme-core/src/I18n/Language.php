@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\I18n;
 /**
  * A language of the site.
  *
- * @api
+ * @internal
  */
 final class Language {
 

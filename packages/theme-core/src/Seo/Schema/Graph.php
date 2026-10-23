@@ -16,7 +16,7 @@ use JOOservices\ThemeCore\Support\Logger;
 /**
  * Collects pieces, generates nodes, removes empty values, dedupes by id and drops dangling references.
  *
- * @api
+ * @internal
  */
 final class Graph {
 

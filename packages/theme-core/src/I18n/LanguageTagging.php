@@ -15,7 +15,7 @@ use JOOservices\ThemeCore\Seo\Context;
  * Validates `_joo_lang`, adds the admin column, filter and bulk action, exposes REST fields and keeps translation
  * groups consistent when a root post is trashed.
  *
- * @api
+ * @internal
  */
 final class LanguageTagging {
 

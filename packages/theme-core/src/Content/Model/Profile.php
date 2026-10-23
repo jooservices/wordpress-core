@@ -12,7 +12,7 @@ namespace JOOservices\ThemeCore\Content\Model;
 /**
  * Owner profile. Immutable.
  *
- * @api
+ * @internal
  */
 final class Profile {
 

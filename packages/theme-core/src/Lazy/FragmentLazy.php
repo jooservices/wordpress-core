@@ -17,7 +17,7 @@ use JOOservices\ThemeCore\Performance\FragmentCache;
  * (the same function serves the inline and the REST output, so both are identical) or stored as a snapshot when
  * an anonymous request renders a published, unprotected post (template-bound blocks such as core/comments).
  *
- * @api
+ * @internal
  */
 final class FragmentLazy {
 

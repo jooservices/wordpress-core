@@ -16,7 +16,7 @@ use JOOservices\ThemeCore\Lazy\FragmentLazy;
  * left-rail blocks. When the lazy policy allows it the page carries a `<joo-lazy>` placeholder with the inline HTML
  * in `<noscript>`.
  *
- * @api
+ * @internal
  */
 abstract class FragmentBlock extends DynamicBlock {
 
