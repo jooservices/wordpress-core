@@ -1,0 +1,50 @@
+{
+  "kind": "ticket-evidence",
+  "ticket": "JOOWP-301",
+  "theme": "jooservices",
+  "date": "2026-10-23",
+  "runtime": {
+    "wordpress": "7.1.3",
+    "php": "8.3.30"
+  },
+  "existingClsBudget": 0.02,
+  "ownerAmendment": "Lighthouse evidence through the Dev VM is out of scope. Completion: code change made, runnable tests pass, report lists the evidence not produced.",
+  "environmentLimitation": "The baseline browser smoke and plugin matrix use the shared WordPress site and Dev VM browser. The owner amendment places Lighthouse evidence through the Dev VM out of scope, so no baseline or matrix browser evidence was produced for this report.",
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "status": "UNCONFIRMED",
+      "evidenceProduced": false,
+      "requiredRoutes": ["home", "category", "tag", "search", "single"],
+      "limitation": "Baseline runtime and browser smoke were not run; Dev VM browser evidence is out of scope per the 2026-10-23 owner amendment."
+    },
+    {
+      "id": "AC2",
+      "status": "UNCONFIRMED",
+      "evidenceProduced": false,
+      "limitation": "The WordPress 7.1.3 / PHP 8.3.30 plugin matrix was not run; Dev VM browser evidence is out of scope per the 2026-10-23 owner amendment."
+    }
+  ],
+  "evidenceNotProduced": [
+    "MATRIX_VARIANT=baseline-no-third-party make test-matrix THEME=jooservices ARGS=\"--runtime-only\" was not run; no baseline CLS measurements were produced for home, category, tag, search, or single.",
+    "make test-matrix THEME=jooservices was not run; no per-plugin CLS outcomes were produced on WordPress 7.1.3 / PHP 8.3.30.",
+    "Lighthouse/browser evidence through the Dev VM, excluded by the owner amendment."
+  ],
+  "historicalEvidence": {
+    "baseline": "jooservices-baseline-no-third-party-2026-10-20.{json,md}",
+    "pluginMatrix": "jooservices-wp-7.1.3-php-8.3.30-2026-10-20.{json,md}",
+    "note": "These reports predate the JOOWP-301 code change and do not confirm AC1 or AC2 for this change."
+  },
+  "runnableVerification": {
+    "staticRegressionTest": "themes/jooservices/tests/layout-stability.test.mjs",
+    "staticRegressionTestResult": "PASS (2 tests)",
+    "projectChecks": {
+      "composer install --no-interaction --prefer-dist": "PASS",
+      "npm ci --no-audit --no-fund": "PASS",
+      "make lint": "PASS",
+      "make analyse": "PASS (PHPStan, TypeScript, and Deptrac reported zero errors, warnings, violations, or uncovered rules)",
+      "make test-unit": "PASS (PHPUnit: 288 tests, 3266 assertions; Vitest: 49 files, 373 tests)"
+    },
+    "runtimeAcceptanceCriteriaConfirmed": false
+  }
+}
