@@ -33,10 +33,13 @@ if ! grep -q '(JOOS|JOOWT|JOOWP)-\[0-9\]+|staging' "$ROOT/docker/scripts/wp-task
 fi
 if ! grep -Fq '((JOOS|JOOWT|JOOWP)-[0-9]+)' "$ROOT/docker/scripts/perf-vm.sh" ||
   ! grep -Fq 'export LIGHTHOUSE_CDP_PORT="$local_port"' "$ROOT/docker/scripts/perf-vm.sh" ||
-  ! grep -Fq 'local_bind="0.0.0.0"' "$ROOT/docker/scripts/perf-vm.sh" ||
-  ! grep -Fq 'ssh -M -g -S "$control" -f -N' "$ROOT/docker/scripts/perf-vm.sh" ||
+  ! grep -Fq 'ssh -M -S "$control" -f -N' "$ROOT/docker/scripts/perf-vm.sh" ||
+  grep -Fq 'ssh -M -g' "$ROOT/docker/scripts/perf-vm.sh" ||
+  ! grep -Fq '"$local_bind" != 0.0.0.0' "$ROOT/docker/scripts/perf-vm.sh" ||
+  grep -Fq 'local_bind="0.0.0.0"' "$ROOT/docker/scripts/perf-vm.sh" ||
+  ! grep -Fq 'docker network inspect bridge' "$ROOT/docker/scripts/perf-vm.sh" ||
   ! grep -Fq '"$local_bind:$local_port:127.0.0.1:$remote_port"' "$ROOT/docker/scripts/perf-vm.sh" ||
-  ! grep -Fq 'cdp_hosts=(host.docker.internal)' "$ROOT/docker/scripts/perf-vm.sh" ||
+  ! grep -Fq 'cdp_hosts=("$local_bind")' "$ROOT/docker/scripts/perf-vm.sh" ||
   ! grep -Fq 'checkRemoteChrome' "$ROOT/docker/scripts/perf-vm.sh" ||
   ! grep -Fq 'Verified Dev VM Chromium tunnel from the Node runtime via' "$ROOT/docker/scripts/perf-vm.sh";
 then

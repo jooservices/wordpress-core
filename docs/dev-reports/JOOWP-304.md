@@ -4,7 +4,7 @@ Date: 2026-10-23 UTC
 
 ## Change verified
 
-The perf route accepts JOOWP worktrees. `docker/scripts/perf-vm.sh` now binds its temporary SSH local forward to `0.0.0.0` and starts the SSH control master with `-g`, allowing the Node runtime container to connect to the forwarded DevTools port. It tries `host.docker.internal` first, then the shell's non-loopback IPv4 addresses, and keeps the first route that the Node runtime verifies at `/json/version`.
+The perf route accepts JOOWP worktrees. `docker/scripts/perf-vm.sh` now binds its temporary SSH local forward only to the Docker bridge gateway address (`docker network inspect bridge`, then `docker0`; override with `PERF_CDP_BIND`; a wildcard address is rejected) and does not use `ssh -g`, so the unauthenticated DevTools port is not exposed on other host interfaces. The Node runtime verifies `/json/version` at that address before Lighthouse starts.
 
 `tools/perf.mjs` also checks the configured DevTools endpoint from the runtime before Lighthouse starts. This gives an early, explicit error when the runtime cannot reach Chromium. Regression coverage checks the public endpoint validation, JOOWP ticket routing, non-loopback forwarding, and the runtime reachability probe.
 

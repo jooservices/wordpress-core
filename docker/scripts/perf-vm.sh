@@ -45,7 +45,7 @@ remote_log="/tmp/${run_id}.log"
 remote_pid=""
 remote_port=""
 local_port=""
-local_bind="0.0.0.0"
+local_bind=""
 reverse_added=0
 local_forward_added=0
 master_started=0
@@ -70,8 +70,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# The Node runtime is a remote client of this local forward, so allow its connection through the master.
-ssh -M -g -S "$control" -f -N "${ssh_opts[@]}" dev
+ssh -M -S "$control" -f -N "${ssh_opts[@]}" dev
 master_started=1
 vm true || { echo 'ERROR: the Dev VM is not reachable.' >&2; exit 2; }
 
@@ -111,9 +110,19 @@ for _ in $(seq 1 20); do
 done
 (( browser_ready )) || { echo 'ERROR: Dev VM Chromium did not expose its debugging endpoint.' >&2; exit 2; }
 
+# The DevTools endpoint is unauthenticated: bind it only to the Docker bridge gateway the Node runtime reaches
+# (override with PERF_CDP_BIND), never to a wildcard address, and never allow remote clients (no ssh -g).
+local_bind="${PERF_CDP_BIND:-$(docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}' 2>/dev/null || true)}"
+if [[ -z "$local_bind" ]]; then
+  local_bind="$(ip -4 -o addr show docker0 2>/dev/null | awk '{sub(/\/.*/, "", $4); print $4; exit}')"
+fi
+[[ "$local_bind" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ && "$local_bind" != 0.0.0.0 ]] || {
+  echo 'ERROR: could not resolve the Docker bridge gateway address; set PERF_CDP_BIND to it.' >&2
+  exit 2
+}
 ssh -S "$control" -O forward -L "$local_bind:$local_port:127.0.0.1:$remote_port" dev
 local_forward_added=1
-curl -fsS --max-time 3 "http://127.0.0.1:$local_port/json/version" >/dev/null || {
+curl -fsS --max-time 3 "http://$local_bind:$local_port/json/version" >/dev/null || {
   echo 'ERROR: local Chromium debug tunnel did not answer.' >&2
   exit 2
 }
@@ -121,20 +130,8 @@ curl -fsS --max-time 3 "http://127.0.0.1:$local_port/json/version" >/dev/null ||
 export LIGHTHOUSE_CDP_PORT="$local_port"
 export E2E_BASE_URL="$site_url"
 export WP_SITE_URL="$site_url"
-# In nested runtimes, host.docker.internal can name the outer Docker host instead of this shell's network namespace.
-# Try it first, then the shell's non-loopback IPv4 addresses, and keep the first route verified from the Node runtime.
-host_addresses="$(node --input-type=module -e '
-import os from "node:os";
-for (const addresses of Object.values(os.networkInterfaces())) {
-  for (const address of addresses ?? []) {
-    if (address.family === "IPv4" && !address.internal) console.log(address.address);
-  }
-}
-')"
-cdp_hosts=(host.docker.internal)
-while IFS= read -r address; do
-  [[ -n "$address" ]] && cdp_hosts+=("$address")
-done <<<"$host_addresses"
+# The tunnel listens only on $local_bind, so that is the one address the Node runtime may use; verify it from there.
+cdp_hosts=("$local_bind")
 cdp_host=""
 for candidate in "${cdp_hosts[@]}"; do
   if LIGHTHOUSE_CDP_HOST="$candidate" LIGHTHOUSE_CDP_PORT="$local_port" \
@@ -150,7 +147,7 @@ for candidate in "${cdp_hosts[@]}"; do
   fi
 done
 [[ -n "$cdp_host" ]] || {
-  echo 'ERROR: Node runtime cannot reach the Dev VM Chromium tunnel through host.docker.internal or a host interface.' >&2
+  echo 'ERROR: Node runtime cannot reach the Dev VM Chromium tunnel at the Docker bridge gateway (set PERF_CDP_BIND if it differs).' >&2
   exit 2
 }
 export LIGHTHOUSE_CDP_HOST="$cdp_host"
