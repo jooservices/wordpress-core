@@ -1,6 +1,6 @@
 // <joo-embed>: click-to-load video facade. The anchor inside is a normal link (works without JavaScript); on
 // click the privacy-friendly player iframe replaces it and receives focus.
-import { define } from 'joo-runtime';
+import { define, t } from 'joo-runtime';
 
 const PLAYERS = {
   youtube: (id, start) =>
@@ -32,7 +32,7 @@ class JooEmbed extends HTMLElement {
     if (!build || !id) return;
     const iframe = document.createElement('iframe');
     iframe.src = build(id, Number(this.getAttribute('start')) || 0);
-    iframe.title = this.getAttribute('title') || 'Video';
+    iframe.title = this.getAttribute('title') || t('embed.video');
     iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
     iframe.allowFullscreen = true;
     iframe.setAttribute('loading', 'eager');

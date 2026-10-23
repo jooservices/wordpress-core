@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import data from '../../js/terminal/__fixtures__/demo-fs.json';
+import { setupTerminalI18n } from '../../js/terminal/test-i18n.js';
 
 const state = { extra: [] };
 
@@ -19,8 +20,10 @@ vi.mock('joo-runtime', async () => {
   };
 });
 
-const render = (html) =>
+const render = (html) => {
   document.body.replaceChildren(...new DOMParser().parseFromString(html, 'text/html').body.childNodes);
+  setupTerminalI18n();
+};
 
 const markup = (open = '') => `
 <joo-terminal class="joo-term" data-state="closed"${open}>
@@ -34,6 +37,7 @@ const panel = () => document.querySelector('.joo-term__panel');
 
 beforeEach(async () => {
   state.extra = [];
+  setupTerminalI18n();
   globalThis.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => data });
   await import('./view.js');
 });

@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import globals from 'globals';
 import jsdoc from 'eslint-plugin-jsdoc';
+import noLiteralUiString from './tools/eslint-rules/no-literal-ui-string.mjs';
 
 const unsafeHtml = [
   {
@@ -41,6 +42,13 @@ export default [
       'jsdoc/check-types': 'warn',
       'no-unused-vars': ['error', { argsIgnorePattern: '^_', caughtErrors: 'none' }],
     },
+  },
+  {
+    // R9.2: user-visible JS strings come from the runtime config (t('key')), filled in PHP with __().
+    files: ['packages/theme-core/resources/js/**/*.js', 'packages/theme-core/resources/blocks/*/view.js'],
+    ignores: ['**/*.test.js', '**/test-i18n.js'],
+    plugins: { joo: { rules: { 'no-literal-ui-string': noLiteralUiString } } },
+    rules: { 'joo/no-literal-ui-string': 'error' },
   },
   {
     // Terminal engine files must stay free of DOM and network access (see JOOWT-C15.2).

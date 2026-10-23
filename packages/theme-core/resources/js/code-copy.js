@@ -1,4 +1,6 @@
-// Copy buttons of .joo-code blocks (event delegation, no dependencies).
+// Copy buttons of .joo-code blocks (event delegation); strings come from the runtime config.
+import { t } from 'joo-runtime';
+
 const FEEDBACK_MS = 1500;
 
 /**
@@ -38,8 +40,8 @@ export async function onClick(button) {
   const ok = await copy(code.textContent ?? '');
   const status = box.querySelector('.joo-code__status');
   const label = button.textContent;
-  button.textContent = ok ? 'Copied' : 'Press Ctrl+C';
-  if (status) status.textContent = ok ? 'Code copied' : 'Copy failed';
+  button.textContent = ok ? t('code.copied') : t('code.press_ctrl_c');
+  if (status) status.textContent = ok ? t('code.status_copied') : t('code.copy_failed');
   setTimeout(() => {
     button.textContent = label;
     if (status) status.textContent = '';

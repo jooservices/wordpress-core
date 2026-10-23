@@ -2,7 +2,12 @@
 // the DOM, the network or location (the dock applies results). Output blocks:
 //   { kind: 'lines', lines: [[span, ...], ...] }   span: { text, style?: 'dim'|'err'|'ok'|'mark'|'ps', cmd?: string }
 //   { kind: 'cols', items: [span, ...] }
+import { t } from 'joo-runtime';
 import { display, list, pathOf, resolve } from './fs.js';
+
+/** Translated copy with `{name}` placeholders replaced (the same contract as `message()` in commands/util.js). */
+const format = (key, values = {}) =>
+  Object.entries(values).reduce((output, [name, value]) => output.replaceAll(`{${name}}`, String(value)), t(key));
 
 /**
  * Plain text span.
@@ -120,9 +125,7 @@ export class Shell {
     if (this.history.length > this.maxHistory) this.history.shift();
     this.cursor = this.history.length;
     if (/(&&|\|\||;|\||>|<)/.test(raw.replace(/(["'])(?:\\.|(?!\1).)*\1/g, ''))) {
-      result.blocks.push(
-        line(text('bash: syntax error: unsupported operator (pipes, redirects and && are not available)', 'err'))
-      );
+      result.blocks.push(line(text(format('terminal.syntax_error'), 'err')));
       result.exitCode = 2;
       return result;
     }
@@ -141,8 +144,10 @@ export class Shell {
       result.blocks.push(
         line(
           text(
-            `bash: ${name}: command not found` +
-              (best && best.score > 0.4 ? `. Did you mean '${best.key}'?` : ". Try 'help'."),
+            format('terminal.command_not_found', { name }) +
+              (best && best.score > 0.4
+                ? format('terminal.did_you_mean_command', { command: best.key })
+                : format('terminal.try_help')),
             'err'
           )
         )
@@ -153,7 +158,9 @@ export class Shell {
       command.run({ shell: this, args: tokens, result });
     } catch (error) {
       result.exitCode = 1;
-      result.blocks.push(line(text(`error: ${error instanceof Error ? error.message : String(error)}`, 'err')));
+      result.blocks.push(
+        line(text(format('terminal.error', { message: error instanceof Error ? error.message : String(error) }), 'err'))
+      );
     }
     return result;
   }

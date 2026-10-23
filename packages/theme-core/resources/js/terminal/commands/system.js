@@ -64,6 +64,8 @@ export const commands = [
     completion: 'none',
     readonly: true,
     run({ shell, args, result }) {
+      // English by design: it imitates the output of the real `uname` command (docs/modules/terminal.md).
+      /* eslint-disable joo/no-literal-ui-string */
       result.blocks.push(
         line(
           text(
@@ -73,6 +75,7 @@ export const commands = [
           )
         )
       );
+      /* eslint-enable joo/no-literal-ui-string */
     },
   },
   {
@@ -130,6 +133,7 @@ export const commands = [
     completion: 'none',
     readonly: true,
     run({ shell, args, result }) {
+      // eslint-disable-next-line joo/no-literal-ui-string -- a file system path, not prose
       if (args[0] && shell.commands.has(args[0])) result.blocks.push(line(text('/usr/bin/' + args[0])));
       else result.exitCode = 1;
     },

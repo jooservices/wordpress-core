@@ -2,6 +2,10 @@
 // on an exact match, otherwise the closest posts.
 import { define, t } from 'joo-runtime';
 
+// Protocol status lines of the 404 joke: not prose, so they are not translated.
+const HTTP_OK = 'HTTP/2 200 OK';
+const HTTP_404 = 'HTTP/2 404';
+
 /** Last segment of a path without extension, lowercase. */
 export function slugOf(path) {
   const last = String(path).split('?')[0].split('#')[0].split('/').filter(Boolean).pop() ?? '';
@@ -72,11 +76,11 @@ export class Joo404 extends HTMLElement {
       return link;
     };
     if (exact) {
-      target.append(document.createTextNode('HTTP/2 200 OK → '), anchor(exact));
+      target.append(document.createTextNode(HTTP_OK + ' → '), anchor(exact));
     } else if (near.length) {
-      target.append(document.createTextNode('HTTP/2 404 · ' + t('did_you_mean', 'Did you mean') + ' '));
+      target.append(document.createTextNode(HTTP_404 + ' · ' + t('did_you_mean', 'Did you mean') + ' '));
       near.forEach((row, i) => target.append(...(i ? [document.createTextNode(' · ')] : []), anchor(row)));
-    } else target.textContent = 'HTTP/2 404';
+    } else target.textContent = HTTP_404;
   }
 }
 
