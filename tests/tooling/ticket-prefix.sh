@@ -32,8 +32,14 @@ if ! grep -q '(JOOS|JOOWT|JOOWP)-\[0-9\]+|staging' "$ROOT/docker/scripts/wp-task
   exit 1
 fi
 if ! grep -Fq '((JOOS|JOOWT|JOOWP)-[0-9]+)' "$ROOT/docker/scripts/perf-vm.sh" ||
-  ! grep -Fq 'export LIGHTHOUSE_CDP_HOST=host.docker.internal' "$ROOT/docker/scripts/perf-vm.sh" ||
-  ! grep -Fq 'export LIGHTHOUSE_CDP_PORT="$local_port"' "$ROOT/docker/scripts/perf-vm.sh"; then
+  ! grep -Fq 'export LIGHTHOUSE_CDP_PORT="$local_port"' "$ROOT/docker/scripts/perf-vm.sh" ||
+  ! grep -Fq 'local_bind="0.0.0.0"' "$ROOT/docker/scripts/perf-vm.sh" ||
+  ! grep -Fq 'ssh -M -g -S "$control" -f -N' "$ROOT/docker/scripts/perf-vm.sh" ||
+  ! grep -Fq '"$local_bind:$local_port:127.0.0.1:$remote_port"' "$ROOT/docker/scripts/perf-vm.sh" ||
+  ! grep -Fq 'cdp_hosts=(host.docker.internal)' "$ROOT/docker/scripts/perf-vm.sh" ||
+  ! grep -Fq 'checkRemoteChrome' "$ROOT/docker/scripts/perf-vm.sh" ||
+  ! grep -Fq 'Verified Dev VM Chromium tunnel from the Node runtime via' "$ROOT/docker/scripts/perf-vm.sh";
+then
   echo "FAIL: perf-vm.sh does not route JOOWP perf runs to the Dev VM browser." >&2
   exit 1
 fi

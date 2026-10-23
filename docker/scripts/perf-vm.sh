@@ -45,6 +45,7 @@ remote_log="/tmp/${run_id}.log"
 remote_pid=""
 remote_port=""
 local_port=""
+local_bind="0.0.0.0"
 reverse_added=0
 local_forward_added=0
 master_started=0
@@ -58,7 +59,7 @@ cleanup() {
       vm "kill -TERM $remote_pid 2>/dev/null || true; for i in \$(seq 1 10); do kill -0 $remote_pid 2>/dev/null || break; sleep 1; done; rm -rf '$remote_user_data'; rm -f '$remote_log'" >/dev/null 2>&1 || true
     fi
     if (( local_forward_added )); then
-      ssh -S "$control" -O cancel -L "$local_port:127.0.0.1:$remote_port" dev >/dev/null 2>&1 || true
+      ssh -S "$control" -O cancel -L "$local_bind:$local_port:127.0.0.1:$remote_port" dev >/dev/null 2>&1 || true
     fi
     if (( reverse_added )); then
       ssh -S "$control" -O cancel -R "$site_port:127.0.0.1:$site_port" dev >/dev/null 2>&1 || true
@@ -69,7 +70,8 @@ cleanup() {
 }
 trap cleanup EXIT
 
-ssh -M -S "$control" -f -N "${ssh_opts[@]}" dev
+# The Node runtime is a remote client of this local forward, so allow its connection through the master.
+ssh -M -g -S "$control" -f -N "${ssh_opts[@]}" dev
 master_started=1
 vm true || { echo 'ERROR: the Dev VM is not reachable.' >&2; exit 2; }
 
@@ -109,16 +111,49 @@ for _ in $(seq 1 20); do
 done
 (( browser_ready )) || { echo 'ERROR: Dev VM Chromium did not expose its debugging endpoint.' >&2; exit 2; }
 
-ssh -S "$control" -O forward -L "$local_port:127.0.0.1:$remote_port" dev
+ssh -S "$control" -O forward -L "$local_bind:$local_port:127.0.0.1:$remote_port" dev
 local_forward_added=1
 curl -fsS --max-time 3 "http://127.0.0.1:$local_port/json/version" >/dev/null || {
   echo 'ERROR: local Chromium debug tunnel did not answer.' >&2
   exit 2
 }
 
-export LIGHTHOUSE_CDP_HOST=host.docker.internal
 export LIGHTHOUSE_CDP_PORT="$local_port"
 export E2E_BASE_URL="$site_url"
 export WP_SITE_URL="$site_url"
+# In nested runtimes, host.docker.internal can name the outer Docker host instead of this shell's network namespace.
+# Try it first, then the shell's non-loopback IPv4 addresses, and keep the first route verified from the Node runtime.
+host_addresses="$(node --input-type=module -e '
+import os from "node:os";
+for (const addresses of Object.values(os.networkInterfaces())) {
+  for (const address of addresses ?? []) {
+    if (address.family === "IPv4" && !address.internal) console.log(address.address);
+  }
+}
+')"
+cdp_hosts=(host.docker.internal)
+while IFS= read -r address; do
+  [[ -n "$address" ]] && cdp_hosts+=("$address")
+done <<<"$host_addresses"
+cdp_host=""
+for candidate in "${cdp_hosts[@]}"; do
+  if LIGHTHOUSE_CDP_HOST="$candidate" LIGHTHOUSE_CDP_PORT="$local_port" \
+    bash "$ROOT/docker/scripts/runtime.sh" node --input-type=module -e '
+      import { checkRemoteChrome } from "./tools/perf.mjs";
+      await checkRemoteChrome({
+        host: process.env.LIGHTHOUSE_CDP_HOST,
+        port: Number(process.env.LIGHTHOUSE_CDP_PORT),
+      });
+    ' >/dev/null 2>&1; then
+    cdp_host="$candidate"
+    break
+  fi
+done
+[[ -n "$cdp_host" ]] || {
+  echo 'ERROR: Node runtime cannot reach the Dev VM Chromium tunnel through host.docker.internal or a host interface.' >&2
+  exit 2
+}
+export LIGHTHOUSE_CDP_HOST="$cdp_host"
+echo "Verified Dev VM Chromium tunnel from the Node runtime via $LIGHTHOUSE_CDP_HOST."
 # Use this checkout's runtime wrapper so the shared Node container runs tools/perf.mjs from this worktree.
 bash "$ROOT/docker/scripts/runtime.sh" node tools/perf.mjs --theme "$theme"

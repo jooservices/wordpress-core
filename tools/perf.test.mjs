@@ -3,7 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { build } from 'esbuild';
-import { checkAssetBudgets, checkBudgets, localChromePath, readThemeBudgets, remoteChromeConnection } from './perf.mjs';
+import {
+  checkAssetBudgets,
+  checkBudgets,
+  checkRemoteChrome,
+  localChromePath,
+  readThemeBudgets,
+  remoteChromeConnection,
+} from './perf.mjs';
 import { readCodeBudgets } from './lib/perf-budgets.mjs';
 import { fromRoot } from './lib/paths.mjs';
 
@@ -105,6 +112,32 @@ describe('remote Lighthouse browser', () => {
       'Invalid LIGHTHOUSE_CDP_PORT'
     );
     expect(() => remoteChromeConnection({ LIGHTHOUSE_CDP_PORT: '9321' })).toThrow('LIGHTHOUSE_CDP_HOST is required');
+  });
+
+  it('checks the DevTools endpoint from the Node runtime before running Lighthouse', async () => {
+    const fetchMock = async (url, options) => {
+      expect(url).toBe('http://host.docker.internal:9321/json/version');
+      expect(options.signal).toBeInstanceOf(AbortSignal);
+      return new Response(
+        JSON.stringify({ Browser: 'Chrome/124.0', webSocketDebuggerUrl: 'ws://127.0.0.1/devtools/browser/id' })
+      );
+    };
+
+    await expect(checkRemoteChrome({ host: 'host.docker.internal', port: 9321 }, fetchMock)).resolves.toMatchObject({
+      Browser: 'Chrome/124.0',
+    });
+  });
+
+  it('rejects an unreachable or invalid DevTools endpoint', async () => {
+    const unreachable = async () => new Response('', { status: 502 });
+    const invalid = async () => new Response(JSON.stringify({ Browser: 'Chrome/124.0' }));
+
+    await expect(checkRemoteChrome({ host: 'host.docker.internal', port: 9321 }, unreachable)).rejects.toThrow(
+      'HTTP 502'
+    );
+    await expect(checkRemoteChrome({ host: 'host.docker.internal', port: 9321 }, invalid)).rejects.toThrow(
+      'invalid DevTools version response'
+    );
   });
 });
 
