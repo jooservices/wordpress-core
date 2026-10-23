@@ -31,4 +31,10 @@ if ! grep -q '(JOOS|JOOWT|JOOWP)-\[0-9\]+|staging' "$ROOT/docker/scripts/wp-task
   echo "FAIL: wp-task.sh or shared-db.sh does not accept JOOWP tickets." >&2
   exit 1
 fi
-echo "ok:   JOOWP tickets pass the make perf route (Makefile, init-env, wp-task, shared-db)"
+if ! grep -Fq '((JOOS|JOOWT|JOOWP)-[0-9]+)' "$ROOT/docker/scripts/perf-vm.sh" ||
+  ! grep -Fq 'export LIGHTHOUSE_CDP_HOST=host.docker.internal' "$ROOT/docker/scripts/perf-vm.sh" ||
+  ! grep -Fq 'export LIGHTHOUSE_CDP_PORT="$local_port"' "$ROOT/docker/scripts/perf-vm.sh"; then
+  echo "FAIL: perf-vm.sh does not route JOOWP perf runs to the Dev VM browser." >&2
+  exit 1
+fi
+echo "ok:   JOOWP tickets pass the make perf route (Makefile, init-env, wp-task, shared-db, perf-vm)"
