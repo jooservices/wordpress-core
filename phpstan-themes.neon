@@ -8,7 +8,6 @@ parameters:
     - packages/test-kit/src
     - tools
   excludePaths:
-    - tools/boot-units-probe.php
     - themes/*/core
     - themes/*/core/*
     - themes/*/core/**

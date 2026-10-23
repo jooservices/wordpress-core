@@ -51,8 +51,6 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - name: Install zip and unzip (packaging tests)
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends zip unzip
       - run: composer install --no-interaction --prefer-dist
       - run: npm ci
       - run: make test-unit
