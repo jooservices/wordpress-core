@@ -83,6 +83,7 @@ expect_fail "deptrac" php -d error_reporting=24575 vendor/bin/deptrac analyse --
 rm -rf packages/theme-core/src/ToolingFixture themes/jooservices/inc/ToolingFixture.php
 expect_pass "deptrac" php -d error_reporting=24575 vendor/bin/deptrac analyse --no-progress --fail-on-uncovered
 bash tests/tooling/docs-compat.sh || fail=1
+bash tests/tooling/ticket-prefix.sh || fail=1
 # core version: single source of truth
 php tools/check-version.php >/dev/null 2>&1 && echo "ok:   check-version passes for the real core" || { echo "FAIL: check-version"; fail=1; }
 mkdir -p "$TMP/ver" && cp packages/theme-core/composer.json packages/theme-core/core.php packages/theme-core/CHANGELOG.md "$TMP/ver/"

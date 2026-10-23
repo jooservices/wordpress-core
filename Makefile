@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
 THEME ?= jooservices
-JOOS_TICKET ?= $(shell git branch --show-current | sed -nE 's/.*((JOOS|JOOWT)-[0-9]+).*/\1/p')
+JOOS_TICKET ?= $(shell git branch --show-current | sed -nE 's/.*((JOOS|JOOWT|JOOWP)-[0-9]+).*/\1/p')
 export JOOS_TICKET WP_VERSION WP_PHP_VERSION MATRIX_VARIANT E2E_ENGINES E2E_ARTIFACT_DIR
 
 .PHONY: migrate test-migrations staging-up staging-update staging-reseed test-marketplace critical screenshots plugins-off plugins-on plugins-package demo-plugins seed-live new-theme seed seed-reset i18n coverage fix test-tooling install-wp help up down reset shell wp logs link-core init-env shared-db-create shared-db-drop deps lint analyse test-unit test-integration test-e2e test-e2e-demo demo-package demo health perf boot-cost test-matrix package docs clean hooks release
