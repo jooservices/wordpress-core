@@ -4,7 +4,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 ROOT="$(cd "$SCRIPT_DIR/../.." && pwd -P)"
 
 usage() {
-  echo "Usage: shared-db.sh create JOOS-<number>|JOOWT-<number>|staging | drop JOOS-<number>|JOOWT-<number>|staging (drop requires CONFIRM=<the same name>)" >&2
+  echo "Usage: shared-db.sh create JOOS-<number>|JOOWT-<number>|JOOWP-<number>|staging | drop JOOS-<number>|JOOWT-<number>|JOOWP-<number>|staging (drop requires CONFIRM=<the same name>)" >&2
   exit 2
 }
 
@@ -15,7 +15,7 @@ ticket="$2"
 if [[ "$ticket" == staging ]]; then
   database="wp_staging"
 else
-  [[ "$ticket" =~ ^(JOOS|JOOWT)-([0-9]+)$ ]] || usage
+  [[ "$ticket" =~ ^(JOOS|JOOWT|JOOWP)-([0-9]+)$ ]] || usage
   database="wp_${BASH_REMATCH[1]}_${BASH_REMATCH[2]}"
 fi
 username="$database"
